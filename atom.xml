@@ -4,7 +4,7 @@
   <title><![CDATA[捷道]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-18T17:36:35+08:00</updated>
+  <updated>2012-12-18T18:14:42+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,5 +12,14 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[NoSQL走向成熟]]></title>
+    <link href="http://agiledon.github.com/blog/2012/12/18/nosql-is-growing-up/"/>
+    <updated>2012-12-18T17:49:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/12/18/nosql-is-growing-up</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
 </feed>
