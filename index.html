@@ -9,8 +9,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="在玛雅预言中的末世之年，整个IT业界却似乎可以用“波澜不惊”四个字来概括。没有惊天动地的大新闻来攫取眼球，对于媒体人而言，或许是一种不幸；但对于程序员，却可以减少太多技术选择带来的茫然。没有你方唱罢我登场的喧嚣，没有概念经济的浮夸与炒作，许多技术于是从绚烂归于平淡。 技术由绚烂归于平淡， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,7 +93,25 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><p>在玛雅预言中的末世之年，整个IT业界却似乎可以用“波澜不惊”四个字来概括。没有惊天动地的大新闻来攫取眼球，对于媒体人而言，或许是一种不幸；但对于程序员，却可以减少太多技术选择带来的茫然。没有你方唱罢我登场的喧嚣，没有概念经济的浮夸与炒作，许多技术于是从绚烂归于平淡。</p>
+
+<p>技术由绚烂归于平淡，并不意味着它将落伍于时代，退出历史舞台，而是大浪淘沙炼出真金，乃返璞归真的升华。业界颇有几种技术正是沿着这样的发展脉络不屈地前进，例如本期《架构师》专题讨论的技术NoSQL。</p>
+
+<p>编者认为，NoSQL在褪去浮华之后，已经逐渐迈向了成熟。一个标志是用户群的增加。虽然，Martin Fowler在去年<a href="http://www.infoq.com/cn/articles/nosql-distilled-book-review">接受InfoQ的采访</a>时，认为：“关系数据库仍然是大多数情况下的选择，至少未来几年是这样的。毕竟，关系数据库产品很成熟，有丰富的支持工具，而且相对来说人们对它们已经有很好地理解了。”但他同样对采用NoSQL技术的项目表示信心满满。</p>
+
+<p>可以看到，许多NoSQL技术已经在互联网应用以及大数据处理方面露出峥嵘，即使是在企业应用领域，它们也逐渐崭露头角。以文档数据库为例，作为个中翘楚的MongoDB，就被SoureForge、MTV等互联网站广泛使用。而作为全球排名第一的ERP软件开放商SAP，也将MongoDB作为其PaaS平台的核心组件，用以支持企业内容管理（Enterprise Content Management）。Neo4j作为图形数据库的领跑者，目前已有许多财富500强的企业如Adobe，Cisco成为了Neo4j的客户。</p>
+
+<p>提及NoSQL技术，就不能不提到它与关系型数据库之间的关系，尤其是我们在实际运用中，会面临一个棘手的问题，那就是如何实现关系数据库到NoSQL的平滑迁移。很显然，只要支持这一特性，就能更好地将NoSQL运用到遗留系统的技术栈迁移场景，拓宽NoSQL技术的应用范围。MongoDB很好地做到了这一点，例如<a href="http://www.serverdensity.com/">Server Density</a>就选择了从MySQL迁移到MongoDB。</p>
+
+<p>不仅是MongoDB支持这种迁移，Couchbase支持的特性也不让MongoDB专美于前。本期《架构师》的专题文章《<a href="http://www.infoq.com/cn/articles/Transition-RDBMS-NoSQL">从关系数据库向NoSQL迁移：采访Couchbase的产品管理主管Dipti Borkar</a>》介绍了使用Couchbase进行这种迁移的时机、步骤、困难以及选择NoSQL的优点。</p>
+
+<p>NoSQL产品之间的良性竞争也可以从另一个侧面证明NoSQL技术的成熟。例如CouchDB与MongoDB之间的竞争。事实上，CouchDB这种使用JSON作为文档，运用JavaScript完成MapReduce查询的方式，以及侧重于Availability（可用性）与Partition-Tolerance（分区容忍度）的表现（相对而言，MongoDB更侧重于一致性与分区容忍度），使得它迅速成为了诸多互联网站的新宠。本期专题文章《<a href="http://www.infoq.com/cn/articles/warner-couchdb">CouchDB是什么？为什么我们要关注它？</a>》非常详细地介绍了CouchDB。</p>
+
+<p>或许，我们还可以从各种NoSQL产品的版本来判断NoSQL的成熟度，例如MongoDB的版本已经发展到2.2.2，Neo4j的版本发展到了1.9。不过，这种判断未免有些草率。判断成熟度的另一个佐证则是该技术是否产生了大量相关的衍伸产品。Martin Fowler在展望 NoSQL数据库市场的发展趋势时，就认为“现在的一切都是在添加工具和成熟度，使这些数据库更容易很好地使用。”对于 NoSQL技术，我们确实看到了这种趋势，如Apache GORA与Spring Data的出现。Spring Data提供了访问数据库的统一API，因为它既能支持关系型数据库，又能支持REST、大数据以及主流的NoSQL数据库，如MongoDB、Neo4j等。Apache GORA则是NoSQL数据库的ORM框架，提供了各种NoSQL数据存储之上的统一前端。专题文章《<a href="http://www.infoq.com/cn/articles/nioche-apache-nutch2">Julien Nioche谈Apache Nutch 2的特性及产品路线图</a>》在介绍Web搜索框架Nutch时，谈到了它与NoSQL以及ORM框架GORA之间的关系。</p>
+
+<p>此外，还有许多创新的NoSQL产品的出现，让人眼睛一亮。例如提供不可变数据库服务器的<a href="http://www.datomic.com/">Datomic</a>，具备事务管理和部署的特性，并能在云中将数据库作为服务提供给用户。还有<a href="https://voltdb.com/">VoltDB</a>，它尝试在提供可伸缩性的同时使用SQL范型。或许它们不能完全划归到NoSQL类别中，而应该称之为NewSQL，甚至是MoreSQL。<a href="https://451research.com/">451 Group</a>的高级分析师Matthew Aslett就将NoSQL定义为“旨在满足分布式体系结构的可扩展性需求和/或无模式数据管理需求”，NewSQL则被定义为“旨在满足分布式体系结构的需求，或提高性能以便不必再进行横向扩展”。Alexander Tatiyants撰写的文章《<a href="http://tatiyants.com/nosql-no-more-lets-double-down-with-moresql">NoSQL No More: Let’s double down with MoreSQL</a>》，则掀起了MoreSQL的热潮。个人认为，这些技术事实上还是NoSQL技术的一种发展。</p>
+
+<p>我们还可以预见，在很长一段时间内，会存在关系数据库与NoSQL并存的状态，甚至在同一个系统中出现，这正是Martin Fowler所谓的<a href="http://martinfowler.com/bliki/PolyglotPersistence.html">Polyglot Persistence</a>。这显然是由这两种不同类型的数据库，甚至是不同类别的NoSQL数据库各自适应的场景不同导致的必然结果。无论如何，种种迹象证明，NoSQL技术已经走向成熟，是到了该收获果实的季节了。</p>
 </div>
   
   
