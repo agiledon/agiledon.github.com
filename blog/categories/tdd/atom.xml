@@ -4,7 +4,7 @@
   <title><![CDATA[Category: TDD | 捷道]]></title>
   <link href="http://agiledon.github.com/blog/categories/tdd/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-20T17:11:44+08:00</updated>
+  <updated>2012-12-20T17:45:59+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2012/08/25/tasking-in-tdd/"/>
     <updated>2012-08-25T12:59:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/08/25/tasking-in-tdd</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/tdd.jpg" width="240" height="293">
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2012/12/tdd.jpg" width="240" height="293">
 我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作，第一是生成或组装Queue希望获得的消息，第二才是消息的propogation。</p>
 
 <p>消息的获得大约要经历如下步骤。首先是通过GlobalCustomer的Id，获得对应的指定产品的ProductCustomer（可能包含多个）。由于GlobalCustomer与ProductCustomer之间存在多对多的关系，我们还需要根据获得的每个ProductCustomer，逆向反推出它所对应的GlobalCustomer（可能包含多个）。在得到ProductCustomer对应的GlobalCustomer后，再调用GetConsent的Web Service，获得每个GlobalCustomer对应的Consent信息。之后，再根据Consent信息中包含的某些Indicator值，运用业务规则，获得最终external queue需要的由indicator值以及客户的基本信息组成的消息。</p>
@@ -89,7 +89,7 @@
 
 <p>我忠实地记录了今天结对时，进行任务分解的过程。然而我一直在思考，可否通过我建立的职责模型来帮助我们进行业务分解呢？这个职责模型如下图所示：</p>
 
-<p><img class="center" src="/images/responsibility.png" width="191" height="181"></p>
+<p><img class="center" src="/images/2012/12/responsibility.png" width="191" height="181"></p>
 
 <p>我在这个模型中将职责分为三个层次：业务价值、业务功能与业务实现。这里有个前提，就是在划分职责时，需要基于某个特定的场景。就好像我们在识别用例时，需要识别用例的边界一般。通常意义上，业务价值就是在实现这个需求时，你的消费者（可以是UI的视图、控制器，又或者是领域层，或者客户端）所希望调用的接口。这个消费者可以理解为角色，它是参与这个场景的入口，识别职责就是从角色的视角出发，理解需求。</p>
 
