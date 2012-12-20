@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>捷道</title>
+  <title>软件系统的稳定性 - 捷道</title>
   <meta name="author" content="张逸">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.com/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2012/12/20/stability-of-software-system/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,15 +63,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2012/12/20/stability-of-software-system/">软件系统的稳定性</a></h1>
+      <h1 class="entry-title">软件系统的稳定性</h1>
     
     
       <p class="meta">
@@ -89,14 +86,14 @@
 
 <time datetime="2012-12-20T19:59:00+08:00" pubdate data-updated="true">Dec 20<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/12/20/stability-of-software-system/#disqus_thread">Comments</a>
+         | <a href="#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p><img class="left" src="/images/2012/12/stability.jpg" width="290" height="387"></p>
+<div class="entry-content"><p><img class="left" src="/images/2012/12/stability.jpg" width="290" height="387"></p>
 
 <p>软件系统的稳定性，主要决定于整体的系统架构设计，然而也不可忽略编程的细节，正所谓“千里之堤，溃于蚁穴”，一旦考虑不周，看似无关紧要的代码片段可能会带来整体软件系统的崩溃。这正是我阅读Release It!的直接感受。究其原因，一方面是程序员对代码质量的追求不够，在项目进度的压力下，只考虑了功能实现，而不用过多的追求质量属性；第二则是对编程语言的正确编码方式不够了解，不知如何有效而正确的编码；第三则是知识量的不足，在编程时没有意识到实现会对哪些因素造成影响。</p>
 
@@ -153,76 +150,65 @@
 
 <p>正是这一小段代码，是造成Airline系统崩溃的罪魁祸首。程序员充分地考虑了资源的释放，但在这段代码中他却没有对多个资源的释放给予足够的重视，而是以释放单资源的做法去处理多资源。在finally语句块中，如果释放Statement资源的操作失败了，就可能抛出异常，因为在finally中并没有捕获这种异常，就会导致后面的conn.close()语句没有执行，从而导致Connection资源未能及时释放。最终导致连接池中存放了大量未能及时释放的Connection资源，却不能得到使用，直到连接池满。当后续请求lookupByCity()时，就会在调用connectionPool.getConnection()方法时被阻塞。这些被阻塞的请求会越来越多，最后导致资源耗尽，整个系统崩溃。</p>
 
+<!--more-->
+
+
+<p><img class="center" src="/images/2012/12/releaseit.jpg" width="333" height="399"></p>
+
+<p>Release It!的作者对Java中同步方法的使用也提出了警告。同步方法虽然可以较好地解决并发问题，在一定程度上可以避免出现资源抢占、竟态条件和死锁的情况。但它的一个副作用同步锁可能导致线程阻塞。这就要求同步方法的执行时间不能太长。此外，Java的接口方法是不能标记synchronized关键字。当我们在调用封装好的第三方API时，基于“面向接口设计”的原理，可能调用者只知道公开的接口方法，却不知道实现类事实上将其实现为同步方法，这种未知性就可能存在隐患。</p>
+
+<p>假设有这样的一个接口：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">GlobalObjectCache</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果接口方法get()的实现如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">){</span>
+</span><span class='line'>   <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>   <span class="k">if</span><span class="o">(</span><span class="n">obj</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>       <span class="n">items</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">obj</span><span class="o">);</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'>   <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">protected</span> <span class="n">Object</span> <span class="nf">create</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>   <span class="c1">//...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段代码很简单，当调用者试图根据id获得目标对象时，首先会在Cache中寻找，如果有就直接返回；否则通过create()方法获得目标对象，然后再将它存储到Cache中。create()方法是该类定义的一个非final方法，它执行了DB的查询功能。现在，假设使用该类的用户对它进行了扩展，例如定义RemoteAvailabilityCache类派生该类，并重写create()方法，将原来的本地调用改为远程调用。问题出现了。由于采用create()方法是远程调用，当服务端比较繁忙时，发出的远程调用请求可能会被阻塞。由于get()方法是同步方法，在方法体内，每次只能有一个线程访问它，直到方法执行完毕释放锁。现在create()方法被阻塞，就会导致其他试图调用RemoteAvailabilityCache对象的get()方法的线程随之而被阻塞。进而可能导致系统崩溃。</p>
+
+<p>当然，我们可以认为这种扩展本身是不合理的。但从设计的角度来看，它并没有违背Liskove替换原则。从接口的角度看，它的行为也没有发生任何改变，仅仅是实现发生了变化。如果不是同步方法，则一个调用线程的阻塞并不会影响到其他调用线程，问题就可以避免了。当然，这里的同步方法本身是合理的，因为只有采取同步的方式才能保证对Cache的读取是支持并发的。书中给出这个例子，无非是要说明同步方法潜在的危险，提示我们在编写代码时，需要考虑周全。</p>
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/12/20/stability-of-software-system/">阅读全文 &rarr;</a>
-    </footer>
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/18/nosql-is-growing-up/">NoSQL走向成熟</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
 
-<time datetime="2012-12-18T17:49:00+08:00" pubdate data-updated="true">Dec 18<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/18/nosql-is-growing-up/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/2012/12/architect201212.jpg" width="283" height="400"></p>
-
-<p><strong>本文是InfoQ中文站2012年12月《架构师》刊首语。</strong></p>
-
-<p>在玛雅预言中的末世之年，整个IT业界却似乎可以用“波澜不惊”四个字来概括。没有惊天动地的大新闻来攫取眼球，对于媒体人而言，或许是一种不幸；但对于程序员，却可以减少太多技术选择带来的茫然。没有你方唱罢我登场的喧嚣，没有概念经济的浮夸与炒作，许多技术于是从绚烂归于平淡。</p>
-
-<p>技术由绚烂归于平淡，并不意味着它将落伍于时代，退出历史舞台，而是大浪淘沙炼出真金，乃返璞归真的升华。业界颇有几种技术正是沿着这样的发展脉络不屈地前进，例如本期《架构师》专题讨论的技术NoSQL。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/12/18/nosql-is-growing-up/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/11/use-sbt-in-intellij/">在MAC的IntelliJ下使用SBT与ScalaTest</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -234,138 +220,42 @@
   
 
 
-<time datetime="2012-10-11T12:34:00+08:00" pubdate data-updated="true">Oct 11<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/10/11/use-sbt-in-intellij/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install sbt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: &#8216;idea&#8217;，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/10/11/use-sbt-in-intellij/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2012-12-20T19:59:00+08:00" pubdate data-updated="true">Dec 20<span>th</span>, 2012</time>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/25/tasking-in-tdd/">Tasking in TDD</a></h1>
-    
-    
-      <p class="meta">
-        
 
-
-
-
-
-
-
-
+<span class="categories">
   
+    <a class='category' href='/blog/categories/architecture/'>Architecture</a>
+  
+</span>
 
 
-<time datetime="2012-08-25T12:59:00+08:00" pubdate data-updated="true">Aug 25<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/08/25/tasking-in-tdd/#disqus_thread">Comments</a>
-        
-      </p>
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/2012/12/tdd.jpg" width="240" height="293">
-我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作，第一是生成或组装Queue希望获得的消息，第二才是消息的propogation。</p>
-
-<p>消息的获得大约要经历如下步骤。首先是通过GlobalCustomer的Id，获得对应的指定产品的ProductCustomer（可能包含多个）。由于GlobalCustomer与ProductCustomer之间存在多对多的关系，我们还需要根据获得的每个ProductCustomer，逆向反推出它所对应的GlobalCustomer（可能包含多个）。在得到ProductCustomer对应的GlobalCustomer后，再调用GetConsent的Web Service，获得每个GlobalCustomer对应的Consent信息。之后，再根据Consent信息中包含的某些Indicator值，运用业务规则，获得最终external queue需要的由indicator值以及客户的基本信息组成的消息。</p>
-
+      <div class="sharing">
+  
+  
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/08/25/tasking-in-tdd/">阅读全文 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/28/refactoring-from-beginning/">重构-勿以善小而不为</a></h1>
-    
-    
-      <p class="meta">
-        
+        <a class="basic-alignment left" href="/blog/2012/12/18/nosql-is-growing-up/" title="Previous Post: NoSQL走向成熟">&laquo; NoSQL走向成熟</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-28T16:36:00+08:00" pubdate data-updated="true">Jun 28<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/06/28/refactoring-from-beginning/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/2012/12/refactoring.jpg" width="400" height="200">
-重构最大的敌人不是技巧与能力，而是懒惰，或者说是态度。许多细小的重构看似无足轻重，例如方法重命名，提取方法，即使重构了，似乎对代码的结构也没有太大的影响，于是就决定淡然处之，心里想“事情还未到不可挽回的地步，实现功能要紧，至于重构，还是以后再做吧！”这样一想，于是就会滋生得过且过的想法，等到代码开始变得一团糟时，重构已经变得无比困难了。此时需要的重构技巧，将百倍难于发现坏味道之初。</p>
-
-<p>在我参加的前一个项目中，我们定义了一个处理OrderSet的Controller。刚刚开始开发时，对于OrderSet的操作并不多，主要是Search与Count操作。OrderSet分为WithDetails与WithoutDetail两种类型。为了实现的简单，我们将这两种类型的操作都放在一个Controller中。随着操作的逐渐增多，这个Controller就变得越来越庞大，逐渐变得臃肿起来。每当我需要调用或者修改Controller时，我都在想：“嗯，这个代码太糟糕了，什么时候给它重构一下。”想是这么想，却一直扮演着说话的巨人，行动的矮子。即使兴起这样的念头，又因为其他的工作将此念头浇灭。直到有一天，这个Controller的代码已经到了忍无可忍的地步，我和我的Pair终于达成一致意见，决定对此代码进行手术。我们花费了近一天的时间对Controller以及相关的Repository进行了彻底的重构。重构前后的代码天差地别，我终于可以不用像吃了苍蝇那般看着代码恶心了。这种重构后体验到的愉悦简直无与伦比，最关键是结果令人满意，重构后的代码变得更可读，更简单，也更容易增加新的功能。</p>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/06/28/refactoring-from-beginning/">阅读全文 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -398,7 +288,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/agiledon">@agiledon</a> on GitHub
@@ -432,6 +322,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -446,7 +337,10 @@
       var disqus_shortname = 'agiledon';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2012/12/20/stability-of-software-system/';
+        var disqus_url = 'http://agiledon.github.com/blog/2012/12/20/stability-of-software-system/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

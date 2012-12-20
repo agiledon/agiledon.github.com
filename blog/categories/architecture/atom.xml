@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Architecture | 捷道]]></title>
+  <link href="http://agiledon.github.com/blog/categories/architecture/atom.xml" rel="self"/>
+  <link href="http://agiledon.github.com/"/>
+  <updated>2012-12-20T20:08:09+08:00</updated>
+  <id>http://agiledon.github.com/</id>
+  <author>
+    <name><![CDATA[张逸]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[软件系统的稳定性]]></title>
+    <link href="http://agiledon.github.com/blog/2012/12/20/stability-of-software-system/"/>
+    <updated>2012-12-20T19:59:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/12/20/stability-of-software-system</id>
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2012/12/stability.jpg" width="290" height="387"></p>
+
+<p>软件系统的稳定性，主要决定于整体的系统架构设计，然而也不可忽略编程的细节，正所谓“千里之堤，溃于蚁穴”，一旦考虑不周，看似无关紧要的代码片段可能会带来整体软件系统的崩溃。这正是我阅读Release It!的直接感受。究其原因，一方面是程序员对代码质量的追求不够，在项目进度的压力下，只考虑了功能实现，而不用过多的追求质量属性；第二则是对编程语言的正确编码方式不够了解，不知如何有效而正确的编码；第三则是知识量的不足，在编程时没有意识到实现会对哪些因素造成影响。</p>
+
+<p>例如在Release It!一书中，给出了如下的Java代码片段：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">cf</span><span class="o">.</span><span class="na">flightsearch</span><span class="o">;</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlightSearch</span> <span class="kd">implements</span> <span class="n">SessionBean</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kd">private</span> <span class="n">MonitoredDataSource</span> <span class="n">connectionPool</span><span class="o">;</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="n">List</span> <span class="nf">lookupByCity</span><span class="o">(.</span> <span class="o">.</span> <span class="o">.)</span> <span class="kd">throws</span> <span class="n">SQLException</span><span class="o">,</span> <span class="n">RemoteException</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>   <span class="n">Statement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>   <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">conn</span> <span class="o">=</span> <span class="n">connectionPool</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
+</span><span class='line'>       <span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">createStatement</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="c1">// Do the lookup logic</span>
+</span><span class='line'>       <span class="c1">// return a list of results</span>
+</span><span class='line'>   <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>       <span class="k">if</span> <span class="o">(</span><span class="n">stmt</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">stmt</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>       <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>正是这一小段代码，是造成Airline系统崩溃的罪魁祸首。程序员充分地考虑了资源的释放，但在这段代码中他却没有对多个资源的释放给予足够的重视，而是以释放单资源的做法去处理多资源。在finally语句块中，如果释放Statement资源的操作失败了，就可能抛出异常，因为在finally中并没有捕获这种异常，就会导致后面的conn.close()语句没有执行，从而导致Connection资源未能及时释放。最终导致连接池中存放了大量未能及时释放的Connection资源，却不能得到使用，直到连接池满。当后续请求lookupByCity()时，就会在调用connectionPool.getConnection()方法时被阻塞。这些被阻塞的请求会越来越多，最后导致资源耗尽，整个系统崩溃。</p>
+
+<!--more-->
+
+
+<p><img class="center" src="/images/2012/12/releaseit.jpg" width="333" height="399"></p>
+
+<p>Release It!的作者对Java中同步方法的使用也提出了警告。同步方法虽然可以较好地解决并发问题，在一定程度上可以避免出现资源抢占、竟态条件和死锁的情况。但它的一个副作用同步锁可能导致线程阻塞。这就要求同步方法的执行时间不能太长。此外，Java的接口方法是不能标记synchronized关键字。当我们在调用封装好的第三方API时，基于“面向接口设计”的原理，可能调用者只知道公开的接口方法，却不知道实现类事实上将其实现为同步方法，这种未知性就可能存在隐患。</p>
+
+<p>假设有这样的一个接口：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">GlobalObjectCache</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>如果接口方法get()的实现如下：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">){</span>
+</span><span class='line'>   <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>   <span class="k">if</span><span class="o">(</span><span class="n">obj</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>   <span class="n">items</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">obj</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="o">}</span>
+</span><span class='line'>   <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">protected</span> <span class="n">Object</span> <span class="nf">create</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>   <span class="c1">//...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这段代码很简单，当调用者试图根据id获得目标对象时，首先会在Cache中寻找，如果有就直接返回；否则通过create()方法获得目标对象，然后再将它存储到Cache中。create()方法是该类定义的一个非final方法，它执行了DB的查询功能。现在，假设使用该类的用户对它进行了扩展，例如定义RemoteAvailabilityCache类派生该类，并重写create()方法，将原来的本地调用改为远程调用。问题出现了。由于采用create()方法是远程调用，当服务端比较繁忙时，发出的远程调用请求可能会被阻塞。由于get()方法是同步方法，在方法体内，每次只能有一个线程访问它，直到方法执行完毕释放锁。现在create()方法被阻塞，就会导致其他试图调用RemoteAvailabilityCache对象的get()方法的线程随之而被阻塞。进而可能导致系统崩溃。</p>
+
+<p>当然，我们可以认为这种扩展本身是不合理的。但从设计的角度来看，它并没有违背Liskove替换原则。从接口的角度看，它的行为也没有发生任何改变，仅仅是实现发生了变化。如果不是同步方法，则一个调用线程的阻塞并不会影响到其他调用线程，问题就可以避免了。当然，这里的同步方法本身是合理的，因为只有采取同步的方式才能保证对Cache的读取是支持并发的。书中给出这个例子，无非是要说明同步方法潜在的危险，提示我们在编写代码时，需要考虑周全。</p>
+]]></content>
+  </entry>
+  
+</feed>
