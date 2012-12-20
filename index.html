@@ -93,7 +93,7 @@
   </header>
 
 
-  <div class="entry-content"><p><img class="center" src="/images/architect201212.png" width="283" height="400"></p>
+  <div class="entry-content"><p><img class="left" src="/images/architect201212.png" width="283" height="400"></p>
 
 <p><strong>本文是InfoQ中文站2012年12月《架构师》刊首语。</strong></p>
 
@@ -101,23 +101,12 @@
 
 <p>技术由绚烂归于平淡，并不意味着它将落伍于时代，退出历史舞台，而是大浪淘沙炼出真金，乃返璞归真的升华。业界颇有几种技术正是沿着这样的发展脉络不屈地前进，例如本期《架构师》专题讨论的技术NoSQL。</p>
 
-<p>编者认为，NoSQL在褪去浮华之后，已经逐渐迈向了成熟。一个标志是用户群的增加。虽然，Martin Fowler在去年<a href="http://www.infoq.com/cn/articles/nosql-distilled-book-review">接受InfoQ的采访</a>时，认为：“关系数据库仍然是大多数情况下的选择，至少未来几年是这样的。毕竟，关系数据库产品很成熟，有丰富的支持工具，而且相对来说人们对它们已经有很好地理解了。”但他同样对采用NoSQL技术的项目表示信心满满。</p>
-
-<p>可以看到，许多NoSQL技术已经在互联网应用以及大数据处理方面露出峥嵘，即使是在企业应用领域，它们也逐渐崭露头角。以文档数据库为例，作为个中翘楚的MongoDB，就被SoureForge、MTV等互联网站广泛使用。而作为全球排名第一的ERP软件开放商SAP，也将MongoDB作为其PaaS平台的核心组件，用以支持企业内容管理（Enterprise Content Management）。Neo4j作为图形数据库的领跑者，目前已有许多财富500强的企业如Adobe，Cisco成为了Neo4j的客户。</p>
-
-<p>提及NoSQL技术，就不能不提到它与关系型数据库之间的关系，尤其是我们在实际运用中，会面临一个棘手的问题，那就是如何实现关系数据库到NoSQL的平滑迁移。很显然，只要支持这一特性，就能更好地将NoSQL运用到遗留系统的技术栈迁移场景，拓宽NoSQL技术的应用范围。MongoDB很好地做到了这一点，例如<a href="http://www.serverdensity.com/">Server Density</a>就选择了从MySQL迁移到MongoDB。</p>
-
-<p>不仅是MongoDB支持这种迁移，Couchbase支持的特性也不让MongoDB专美于前。本期《架构师》的专题文章《<a href="http://www.infoq.com/cn/articles/Transition-RDBMS-NoSQL">从关系数据库向NoSQL迁移：采访Couchbase的产品管理主管Dipti Borkar</a>》介绍了使用Couchbase进行这种迁移的时机、步骤、困难以及选择NoSQL的优点。</p>
-
-<p>NoSQL产品之间的良性竞争也可以从另一个侧面证明NoSQL技术的成熟。例如CouchDB与MongoDB之间的竞争。事实上，CouchDB这种使用JSON作为文档，运用JavaScript完成MapReduce查询的方式，以及侧重于Availability（可用性）与Partition-Tolerance（分区容忍度）的表现（相对而言，MongoDB更侧重于一致性与分区容忍度），使得它迅速成为了诸多互联网站的新宠。本期专题文章《<a href="http://www.infoq.com/cn/articles/warner-couchdb">CouchDB是什么？为什么我们要关注它？</a>》非常详细地介绍了CouchDB。</p>
-
-<p>或许，我们还可以从各种NoSQL产品的版本来判断NoSQL的成熟度，例如MongoDB的版本已经发展到2.2.2，Neo4j的版本发展到了1.9。不过，这种判断未免有些草率。判断成熟度的另一个佐证则是该技术是否产生了大量相关的衍伸产品。Martin Fowler在展望 NoSQL数据库市场的发展趋势时，就认为“现在的一切都是在添加工具和成熟度，使这些数据库更容易很好地使用。”对于 NoSQL技术，我们确实看到了这种趋势，如Apache GORA与Spring Data的出现。Spring Data提供了访问数据库的统一API，因为它既能支持关系型数据库，又能支持REST、大数据以及主流的NoSQL数据库，如MongoDB、Neo4j等。Apache GORA则是NoSQL数据库的ORM框架，提供了各种NoSQL数据存储之上的统一前端。专题文章《<a href="http://www.infoq.com/cn/articles/nioche-apache-nutch2">Julien Nioche谈Apache Nutch 2的特性及产品路线图</a>》在介绍Web搜索框架Nutch时，谈到了它与NoSQL以及ORM框架GORA之间的关系。</p>
-
-<p>此外，还有许多创新的NoSQL产品的出现，让人眼睛一亮。例如提供不可变数据库服务器的<a href="http://www.datomic.com/">Datomic</a>，具备事务管理和部署的特性，并能在云中将数据库作为服务提供给用户。还有<a href="https://voltdb.com/">VoltDB</a>，它尝试在提供可伸缩性的同时使用SQL范型。或许它们不能完全划归到NoSQL类别中，而应该称之为NewSQL，甚至是MoreSQL。<a href="https://451research.com/">451 Group</a>的高级分析师Matthew Aslett就将NoSQL定义为“旨在满足分布式体系结构的可扩展性需求和/或无模式数据管理需求”，NewSQL则被定义为“旨在满足分布式体系结构的需求，或提高性能以便不必再进行横向扩展”。Alexander Tatiyants撰写的文章《<a href="http://tatiyants.com/nosql-no-more-lets-double-down-with-moresql">NoSQL No More: Let’s double down with MoreSQL</a>》，则掀起了MoreSQL的热潮。个人认为，这些技术事实上还是NoSQL技术的一种发展。</p>
-
-<p>我们还可以预见，在很长一段时间内，会存在关系数据库与NoSQL并存的状态，甚至在同一个系统中出现，这正是Martin Fowler所谓的<a href="http://martinfowler.com/bliki/PolyglotPersistence.html">Polyglot Persistence</a>。这显然是由这两种不同类型的数据库，甚至是不同类别的NoSQL数据库各自适应的场景不同导致的必然结果。无论如何，种种迹象证明，NoSQL技术已经走向成熟，是到了该收获果实的季节了。</p>
 </div>
   
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/18/nosql-is-growing-up/">阅读全文 &rarr;</a>
+    </footer>
   
 
 
@@ -165,62 +154,12 @@
 
 <p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: &#8216;idea&#8217;，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.scalatest&quot;</span> <span class="o">%</span> <span class="s">&quot;scalatest_2.9.1&quot;</span> <span class="o">%</span> <span class="s">&quot;1.8&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意，在sbt文件中一定要有一条空行哦，不然就会报错。现在，转到项目主目录下，运行sbt的命令，就能自动下载scalatest的包了。可惜这样还不够，因为即使下载了scalatest，IntelliJ仍然拒绝认识它，然后很恼人地给出红色错误提示。例如在test目录下写一个scalatest的单元测试：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.junit.runner.RunWith</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.junit.JUnitRunner</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.Suite</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">JUnitRunner</span><span class="o">])</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">MySuiteTest</span> <span class="k">extends</span> <span class="nc">Suite</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">testAddition</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">===</span> <span class="mi">2</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">4</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>它根本就不认识JUnit和ScalaTest，所以类似Suite，@RunWith之类的东西皆为红色，看着让人闹心。当然，我在这里还用了JUnit，所以还需要在build.sbt中添加JUnit的依赖。</p>
-
-<p>要想能够在IntelliJ Idea中更新项目，就像Gradle一样，也需要专门为idea服务的插件，sbt中即为sbt-idea。方法是在mac的用户主目录下，找到.sbt/plugins目录，然后看看有没有build.sbt文件。如果没有，就创建一个。事实上，要是连.sbt/plugins目录也没有找到，没关系，同样可以自己创建。接下来，在build.sbt文件中写入：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;sbt-idea-repo&quot;</span> <span class="n">at</span> <span class="s">&quot;http://mpeltonen.github.com/maven/&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">addSbtPlugin</span><span class="o">(</span><span class="s">&quot;com.github.mpeltonen&quot;</span> <span class="o">%%</span> <span class="s">&quot;sbt-idea&quot;</span> <span class="o">%</span> <span class="s">&quot;1.1.0&quot;</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>添加了这个插件后，就可以回到自己项目的目录下，运行sbt gen-idea，就可以更新IntelliJ Idea中的项目了。再看看Idea中的代码，之前那些恼人的红色应该就会消失了。</p>
-
-<p>在使用ScalaTest时，还碰到一个小问题。我在搜寻scalatest的repository时（在Maven Repository），直接打开了第一个搜索结果，最新的版本是1.4 RC2。它的sbt repository为：libraryDependencies += &#8220;org.scalatest&#8221; % &#8220;scalatest&#8221; % &#8220;1.4.RC2&#8221;</p>
-
-<p>结果就悲剧了，跑测试怎么样也跑不过，抛出的异常为：java.lang.ClassCastException: scala.collection.immutable.Set$EmptySet$ cannot be cast to scala.collection.generic.Addable</p>
-
-<p>最初，我没有想到是scala与scalatest版本不匹配的问题，还以为自己的单元测试语法不对。几经搜寻，在搜到的这个帖子（http://www.scala-lang.org/node/11466）上看到版本不兼容问题，我才如大梦初醒般，想着去查询各自的版本。我使用的scala为最新版本2.9.2，而scalatest的1.4 RC2依赖的是scala 2.8.0版本。而就在这篇帖子中，则提到scala是向前兼容，却不支持向后兼容。我在Maven Repository中又做了一次搜索，结果发现scalatest的第二条搜索结果，才是我需要的，它的最新版本是2.0 M4，最新稳定版本则为1.8，都依赖于Scala 2.9.1。这就是说，与我使用的scala仅有最小版本的区别。在build.sbt中更改为该版本的repository（即前面给出的内容），测试就可以通过了。</p>
 </div>
   
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/10/11/use-sbt-in-intellij/">阅读全文 &rarr;</a>
+    </footer>
   
 
 
@@ -254,99 +193,17 @@
   </header>
 
 
-  <div class="entry-content"><p>我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作，第一是生成或组装Queue希望获得的消息，第二才是消息的propogation。</p>
+  <div class="entry-content"><p><img class="left" src="/images/tdd.jpg" width="240" height="293">
+我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作，第一是生成或组装Queue希望获得的消息，第二才是消息的propogation。</p>
 
 <p>消息的获得大约要经历如下步骤。首先是通过GlobalCustomer的Id，获得对应的指定产品的ProductCustomer（可能包含多个）。由于GlobalCustomer与ProductCustomer之间存在多对多的关系，我们还需要根据获得的每个ProductCustomer，逆向反推出它所对应的GlobalCustomer（可能包含多个）。在得到ProductCustomer对应的GlobalCustomer后，再调用GetConsent的Web Service，获得每个GlobalCustomer对应的Consent信息。之后，再根据Consent信息中包含的某些Indicator值，运用业务规则，获得最终external queue需要的由indicator值以及客户的基本信息组成的消息。</p>
 
-<p>在分解任务时，我的直觉告诉我可以通过这个分析出来的执行步骤来划分任务，而且我们事先已经获知，查询GlobalCustomer与ProductCustomer之间的信息可以通过调用系统已有的EjbBean来实现。根据这样的任务分解，我们进行测试驱动，似乎可以编写的第一个测试用例为：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_retieve_associate_product_customers_by_global_customer_id</span><span class="o">(){</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然而，在开始测试驱动时，我首先想到的是我们自己的Service如何与已有的CustomerDao(其内部又调用了FindProfile的EjbBean）进行交互，所以我打算先写一个基础的测试用例，表现这种对象的协作关系，例如：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_invoke_CustomerDao</span><span class="o">(){</span>
-</span><span class='line'>  <span class="n">CustomerDao</span> <span class="n">dao</span> <span class="o">=</span> <span class="n">createMock</span><span class="o">(</span><span class="n">CustomerDao</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">expect</span><span class="o">(</span><span class="n">dao</span><span class="o">.</span><span class="na">findProductCustomersBy</span><span class="o">(</span><span class="n">customerId</span><span class="o">).</span><span class="na">andReturn</span><span class="o">(</span><span class="n">productCustomers</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">replay</span><span class="o">(</span><span class="n">dao</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="n">retrieveService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RetrieveCustomerService</span><span class="o">(</span><span class="n">dao</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">retrieveService</span><span class="o">.</span><span class="na">retrieve</span><span class="o">(</span><span class="n">customerId</span><span class="o">);</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="n">verify</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然而，这似乎只是一个简单的职责委派，编写这样的一个测试用例并没有任何价值。同事认为，我们在分解任务时，应该从功能上分析，即根据指定的GlobalCustomer的id获得一个具有ProductCustomer与GlobalCustomer映射关系的最终对象，这个映射关系需要一个概念来表示。经过分析，这个概念其实就是最终我们要得到的GlobalCustomer，区别在于这个retrieve的行为，它需要表现领域特征。这个行为的输入是GlobalCustomerId，输出则是List<GlobalCustomer>。这样分解的好处是可以直接寻找到我们需要的接口，再通过这个测试用例去驱动我们的设计。例如，我们编写出这样的测试用例：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_retrieve_associate_global_customers_which_have_same_product_customer</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">List</span><span class="o">&lt;</span><span class="n">GlobalCustomer</span><span class="o">&gt;</span> <span class="n">gCustomers</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">retrieve</span><span class="o">(</span><span class="n">gCustomerId</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">assertThat</span><span class="o">(</span><span class="n">gCustomers</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们对retrieve()这个名称并不满意，但目前我们没有找到合适的行为概念，所以就保留了这一定义。因为我们有测试保证，一旦找到正确的行为特征，我们可以及时重构。在这个测试用例中，我们对返回结果进行的断言是不合理的，因为这个断言断定了返回的结果数目。这可能是不稳定的。为了保证测试的稳定性，我们需要为其准备数据。我们分别为GlobalCustomer与ProductCustomer定义了Builder来构建测试数据。而随着对这个测试用例的逐渐完善，我们发现了在CustomerDao中还需要提供一个方法findGlobalCustomerBy(productId, productCustomerId)。我们可以继续对CustomerDao提供Mock实现，但最好的方式是转移阵地，先为CustomerDao编写单元测试。</p>
-
-<p>我忠实地记录了今天结对时，进行任务分解的过程。然而我一直在思考，可否通过我建立的职责模型来帮助我们进行业务分解呢？这个职责模型如下图所示：</p>
-
-<p><img class="center" src="/images/responsibility.png" width="191" height="181"></p>
-
-<p>我在这个模型中将职责分为三个层次：业务价值、业务功能与业务实现。这里有个前提，就是在划分职责时，需要基于某个特定的场景。就好像我们在识别用例时，需要识别用例的边界一般。通常意义上，业务价值就是在实现这个需求时，你的消费者（可以是UI的视图、控制器，又或者是领域层，或者客户端）所希望调用的接口。这个消费者可以理解为角色，它是参与这个场景的入口，识别职责就是从角色的视角出发，理解需求。</p>
-
-<p>在编写User Story时，我们有一个固定的模板，即as……，I want to……，So that……。这里的as子句就是要我们寻找的角色。注意，这里的角色不一定是具体映射到现实世界中的人，而应该是参与者，可能是人，也可能是系统的某个对象。So that就是这个User Story所要体现的价值。这与User Story的INVEST原则中的V是完全一致的。</p>
-
-<p>当我们识别出业务价值后，它就成为了我们需要识别的最外部接口，我们就可以按照这个业务价值来进行测试驱动。当然，谨慎的做法是再继续细分，在识别价值后，分析实现这些价值应该由哪些业务功能组成。我的同事李彦辉认为这就是寻找解决方案的过程。不同的解决方案可能导致不同的测试驱动方向。他提到的一个例子是消息转换。一种解决方案是通过jaxb将消息转换为Java对象，然后再定义转换映射的Transformer，通过硬编码或者反射的方式将其转换为相关的领域对象。在执行了业务操作后，再将返回的结果转换为另一个Jaxb对象。而另一种解决方案则是通过引入模板，例如StringTemplate或者Velocity，定义转换的模板，然后进行替换实现。这两种解决方案的区别，直接影响了我们划分任务的方式。</p>
-
-<p>因此，我们可以将这个识别功能的过程，看做是寻找解决方案的过程。在这个过程中，若有对技术不了解的环节，则需要做一定程度的Spike。Spike的过程仍然可以通过TDD来完成。在《测试驱动开发的艺术（Test Driven-Practical TDD and Acceptance TDD for Java Developers）》一书中，将其称之为学习测试（Learning Test）。此外，Spike需要设定一个TimeBox，以避免陷入无休止的探索中。</p>
-
-<p>我们识别的这些业务功能，组成了实现整个业务价值的每个环节。多个业务功能可能体现的是一个业务流程，也可能随着角色的场景变换（因为场景也可以是嵌套的，即在大的场景中为业务功能的内容，放在小的场景中其实是业务价值），体现不同的设计意图。举例来说，从业务价值看，我们需要提供邮件转发的业务；而在分析邮件转发的业务价值时，又可以得到发送邮件的业务功能。站在实现者角度看，所谓邮件的转发就是发送邮件，但二者在业务概念上还是存在层次上的差别。站在最外层场景的角度来看，转发才是场景消费者真正关心的业务目标。</p>
-
-<p>模型中最里面的一圈为业务实现，它往往关注的是在实现每个功能时，需要通过什么方式来实现，这就可能牵涉到对基础设施的访问，例如对xml文件、数据库、网络方面的调用。分析到这里时，基本上我们已经可以编码实现了。</p>
-
-<p>借助这个模型，我们可以从业务价值这一层开始测试驱动。不过最佳方式应该是在充分地理解需求后，通过探索解决方案以获得业务功能后，再根据功能划分任务。注意，这个模型是有层次的，场景也是可以嵌套的，因而这个过程是一个渐进的过程，是一个层层递进的过程，可以由外及内，也需要在合适的时候，先跳到模型的内层，在对其实现进行测试驱动时，再回到外部一层，关注这个业务价值中各个业务功能对象之间的协作。注意，这种协作本身也可能体现一种业务逻辑。倘若仅仅是单纯的职责委派，就没有编写测试的必要了。</p>
-
-<p>让我们采用这个模型来识别我们要实现的User Story的职责，列举如下：</p>
-
-<pre><code>传播处理后的Consent消息给指定Queue 
-    组装并生成需要的Consent消息； 
-        根据GlobalCustomerId获得对应的ProductCustomers以及它们所对应的GlobalCustomers； 
-            调用FindProfileEjb根据GlobalCustomerId获得对应的ProductCustomers对象； 
-            遍历ProductCustomer对象，并调用FindProfileEjb获得对应的GlobalCustomer对象；
-        调用WebService获得GlobalCustomer对应的Consent信息； 
-        根据业务规则获得该GlobalCustomer正确的Indicator值； 
-        根据Indicator值与GlobalCustomer信息组装消息；
-    传播消息给指定Queue
-</code></pre>
-
-<p>整体看来，这是一个嵌套四层的任务分解列表。最外层的任务就是我们的业务价值，它又被分解为两个业务功能，相当于业务价值实现的两个部分，但却分别承担了两个不同的职责。如果从封装职责的角度来看，这里识别出来的第二个功能所承担的主要职责为消息的propagation，从职责上看，它与承担业务价值的对象（可以命名为PropagateConsentService）有着非常紧密的关系，因而可以直接将该功能分配给它。除非单独的消息传播功能还有其他重用的必要。根据业务价值的第一个功能的描述，其实我们可以定义一个ConsentMessageAssembler，并根据识别出来的下一级功能，得到RetrieveCustomerService。依此类推，这里不再赘述。通过这种业务职责分析模型，在一定程度上也可以帮助我们进行任务分解。最重要的一点还是在于我们要深入地分析需求，理清思路，并通过探寻获得合理的解决方案。</p>
 </div>
   
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/08/25/tasking-in-tdd/">阅读全文 &rarr;</a>
+    </footer>
   
 
 

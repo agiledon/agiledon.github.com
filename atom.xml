@@ -4,7 +4,7 @@
   <title><![CDATA[捷道]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-20T16:04:05+08:00</updated>
+  <updated>2012-12-20T16:21:56+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,13 +18,16 @@
     <link href="http://agiledon.github.com/blog/2012/12/18/nosql-is-growing-up/"/>
     <updated>2012-12-18T17:49:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/18/nosql-is-growing-up</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/architect201212.png" width="283" height="400"></p>
+    <content type="html"><![CDATA[<p><img class="left" src="http://agiledon.github.com/images/architect201212.png" width="283" height="400"></p>
 
 <p><strong>本文是InfoQ中文站2012年12月《架构师》刊首语。</strong></p>
 
 <p>在玛雅预言中的末世之年，整个IT业界却似乎可以用“波澜不惊”四个字来概括。没有惊天动地的大新闻来攫取眼球，对于媒体人而言，或许是一种不幸；但对于程序员，却可以减少太多技术选择带来的茫然。没有你方唱罢我登场的喧嚣，没有概念经济的浮夸与炒作，许多技术于是从绚烂归于平淡。</p>
 
 <p>技术由绚烂归于平淡，并不意味着它将落伍于时代，退出历史舞台，而是大浪淘沙炼出真金，乃返璞归真的升华。业界颇有几种技术正是沿着这样的发展脉络不屈地前进，例如本期《架构师》专题讨论的技术NoSQL。</p>
+
+<!--more-->
+
 
 <p>编者认为，NoSQL在褪去浮华之后，已经逐渐迈向了成熟。一个标志是用户群的增加。虽然，Martin Fowler在去年<a href="http://www.infoq.com/cn/articles/nosql-distilled-book-review">接受InfoQ的采访</a>时，认为：“关系数据库仍然是大多数情况下的选择，至少未来几年是这样的。毕竟，关系数据库产品很成熟，有丰富的支持工具，而且相对来说人们对它们已经有很好地理解了。”但他同样对采用NoSQL技术的项目表示信心满满。</p>
 
@@ -62,6 +65,11 @@
 
 
 <p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: &#8216;idea&#8217;，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
+
+<!--more-->
+
+
+
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.scalatest&quot;</span> <span class="o">%</span> <span class="s">&quot;scalatest_2.9.1&quot;</span> <span class="o">%</span> <span class="s">&quot;1.8&quot;</span>
@@ -125,9 +133,13 @@
     <link href="http://agiledon.github.com/blog/2012/08/25/tasking-in-tdd/"/>
     <updated>2012-08-25T12:59:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/08/25/tasking-in-tdd</id>
-    <content type="html"><![CDATA[<p>我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作，第一是生成或组装Queue希望获得的消息，第二才是消息的propogation。</p>
+    <content type="html"><![CDATA[<p><img class="left" src="http://agiledon.github.com/images/tdd.jpg" width="240" height="293">
+我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作，第一是生成或组装Queue希望获得的消息，第二才是消息的propogation。</p>
 
 <p>消息的获得大约要经历如下步骤。首先是通过GlobalCustomer的Id，获得对应的指定产品的ProductCustomer（可能包含多个）。由于GlobalCustomer与ProductCustomer之间存在多对多的关系，我们还需要根据获得的每个ProductCustomer，逆向反推出它所对应的GlobalCustomer（可能包含多个）。在得到ProductCustomer对应的GlobalCustomer后，再调用GetConsent的Web Service，获得每个GlobalCustomer对应的Consent信息。之后，再根据Consent信息中包含的某些Indicator值，运用业务规则，获得最终external queue需要的由indicator值以及客户的基本信息组成的消息。</p>
+
+<!--more-->
+
 
 <p>在分解任务时，我的直觉告诉我可以通过这个分析出来的执行步骤来划分任务，而且我们事先已经获知，查询GlobalCustomer与ProductCustomer之间的信息可以通过调用系统已有的EjbBean来实现。根据这样的任务分解，我们进行测试驱动，似乎可以编写的第一个测试用例为：</p>
 
