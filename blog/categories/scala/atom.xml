@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Scala | 捷道]]></title>
   <link href="http://agiledon.github.com/blog/categories/scala/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-20T12:46:38+08:00</updated>
+  <updated>2012-12-20T12:56:19+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[在MAC的IntelliJ下使用SBT与ScalaTest]]></title>
-    <link href="http://agiledon.github.com/blog/2012/12/20/use-sbt-in-intellij/"/>
-    <updated>2012-12-20T12:34:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/12/20/use-sbt-in-intellij</id>
+    <link href="http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij/"/>
+    <updated>2012-10-11T12:34:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij</id>
     <content type="html"><![CDATA[<p>正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。
 <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure></notextile></div>
