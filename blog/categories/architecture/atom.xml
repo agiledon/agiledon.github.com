@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Architecture | 捷道]]></title>
   <link href="http://agiledon.github.com/blog/categories/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-20T20:08:09+08:00</updated>
+  <updated>2012-12-20T21:55:19+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,9 +18,12 @@
     <link href="http://agiledon.github.com/blog/2012/12/20/stability-of-software-system/"/>
     <updated>2012-12-20T19:59:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/20/stability-of-software-system</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2012/12/stability.jpg" width="290" height="387"></p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/stability.jpg" width="290" height="387"></p>
 
 <p>软件系统的稳定性，主要决定于整体的系统架构设计，然而也不可忽略编程的细节，正所谓“千里之堤，溃于蚁穴”，一旦考虑不周，看似无关紧要的代码片段可能会带来整体软件系统的崩溃。这正是我阅读Release It!的直接感受。究其原因，一方面是程序员对代码质量的追求不够，在项目进度的压力下，只考虑了功能实现，而不用过多的追求质量属性；第二则是对编程语言的正确编码方式不够了解，不知如何有效而正确的编码；第三则是知识量的不足，在编程时没有意识到实现会对哪些因素造成影响。</p>
+
+<!--more-->
+
 
 <p>例如在Release It!一书中，给出了如下的Java代码片段：
 <div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -78,9 +81,6 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>正是这一小段代码，是造成Airline系统崩溃的罪魁祸首。程序员充分地考虑了资源的释放，但在这段代码中他却没有对多个资源的释放给予足够的重视，而是以释放单资源的做法去处理多资源。在finally语句块中，如果释放Statement资源的操作失败了，就可能抛出异常，因为在finally中并没有捕获这种异常，就会导致后面的conn.close()语句没有执行，从而导致Connection资源未能及时释放。最终导致连接池中存放了大量未能及时释放的Connection资源，却不能得到使用，直到连接池满。当后续请求lookupByCity()时，就会在调用connectionPool.getConnection()方法时被阻塞。这些被阻塞的请求会越来越多，最后导致资源耗尽，整个系统崩溃。</p>
-
-<!--more-->
-
 
 <p><img class="center" src="/images/2012/12/releaseit.jpg" width="333" height="399"></p>
 

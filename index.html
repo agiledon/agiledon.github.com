@@ -96,62 +96,9 @@
   </header>
 
 
-  <div class="entry-content"><p><img class="left" src="/images/2012/12/stability.jpg" width="290" height="387"></p>
+  <div class="entry-content"><p><img class="center" src="/images/2012/12/stability.jpg" width="290" height="387"></p>
 
 <p>软件系统的稳定性，主要决定于整体的系统架构设计，然而也不可忽略编程的细节，正所谓“千里之堤，溃于蚁穴”，一旦考虑不周，看似无关紧要的代码片段可能会带来整体软件系统的崩溃。这正是我阅读Release It!的直接感受。究其原因，一方面是程序员对代码质量的追求不够，在项目进度的压力下，只考虑了功能实现，而不用过多的追求质量属性；第二则是对编程语言的正确编码方式不够了解，不知如何有效而正确的编码；第三则是知识量的不足，在编程时没有意识到实现会对哪些因素造成影响。</p>
-
-<p>例如在Release It!一书中，给出了如下的Java代码片段：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">cf</span><span class="o">.</span><span class="na">flightsearch</span><span class="o">;</span>
-</span><span class='line'><span class="c1">//...</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlightSearch</span> <span class="kd">implements</span> <span class="n">SessionBean</span> <span class="o">{</span>
-</span><span class='line'>   <span class="kd">private</span> <span class="n">MonitoredDataSource</span> <span class="n">connectionPool</span><span class="o">;</span>
-</span><span class='line'>   <span class="kd">public</span> <span class="n">List</span> <span class="nf">lookupByCity</span><span class="o">(.</span> <span class="o">.</span> <span class="o">.)</span> <span class="kd">throws</span> <span class="n">SQLException</span><span class="o">,</span> <span class="n">RemoteException</span> <span class="o">{</span>
-</span><span class='line'>       <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>       <span class="n">Statement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>       <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>           <span class="n">conn</span> <span class="o">=</span> <span class="n">connectionPool</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
-</span><span class='line'>           <span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">createStatement</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>           <span class="c1">// Do the lookup logic</span>
-</span><span class='line'>           <span class="c1">// return a list of results</span>
-</span><span class='line'>       <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-</span><span class='line'>           <span class="k">if</span> <span class="o">(</span><span class="n">stmt</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>               <span class="n">stmt</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>           <span class="o">}</span>
-</span><span class='line'>           <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>               <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>           <span class="o">}</span>
-</span><span class='line'>       <span class="o">}</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>正是这一小段代码，是造成Airline系统崩溃的罪魁祸首。程序员充分地考虑了资源的释放，但在这段代码中他却没有对多个资源的释放给予足够的重视，而是以释放单资源的做法去处理多资源。在finally语句块中，如果释放Statement资源的操作失败了，就可能抛出异常，因为在finally中并没有捕获这种异常，就会导致后面的conn.close()语句没有执行，从而导致Connection资源未能及时释放。最终导致连接池中存放了大量未能及时释放的Connection资源，却不能得到使用，直到连接池满。当后续请求lookupByCity()时，就会在调用connectionPool.getConnection()方法时被阻塞。这些被阻塞的请求会越来越多，最后导致资源耗尽，整个系统崩溃。</p>
 
 </div>
   
