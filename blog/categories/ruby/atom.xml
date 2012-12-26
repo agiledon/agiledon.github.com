@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: octopress | 捷道]]></title>
-  <link href="http://agiledon.github.com/blog/categories/octopress/atom.xml" rel="self"/>
+  <title><![CDATA[Category: ruby | 捷道]]></title>
+  <link href="http://agiledon.github.com/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
   <updated>2012-12-26T12:58:31+08:00</updated>
   <id>http://agiledon.github.com/</id>

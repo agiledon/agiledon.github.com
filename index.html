@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="在GitHub上创建了自己的博客后，先后在Jekyll和Octopress之间来回折腾了好一段时间。之前打算直接使用Jekyll提供的博客模板，后来觉得太费神，看到Octopress还不错，且它也是基于Jekyll，并能非常方便地部署到GitHub上。经过最初的安装到对博客的深入改造， &hellip;">
+  <meta name="description" content="在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,49 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/26/weibo-plugin-for-octopress/">Octopress的新浪微博插件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-26T12:26:00+08:00" pubdate data-updated="true">Dec 26<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/26/weibo-plugin-for-octopress/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。一些插件为octopress提供了新浪微博的share按钮，但这并不是我想要的。也许已经有快速现成的方法支持我想要的功能，但我没有找到。那么何必还去上穷碧落下黄泉的去搜索了，身为一个程序员，这种事情就自己搞定好了。正好可以练手Ruby。经过半天的代码编写和测试，我的这个新浪微博插件就实现了。它主要能够运行rake命令，解析最新博客的标题与URL，再替换_config.yml配置文件中配置的微博模板的内容，并将其发布到新浪微博中。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/26/weibo-plugin-for-octopress/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -461,6 +504,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/12/26/weibo-plugin-for-octopress/">Octopress的新浪微博插件</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/12/25/octopress-issues-solution-and-tips/">Octopress博客问题解决方案与技巧</a>
       </li>
     
@@ -474,10 +521,6 @@
     
       <li class="post">
         <a href="/blog/2012/12/20/stability-of-software-system/">软件系统的稳定性</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/18/nosql-is-growing-up/">NoSQL走向成熟</a>
       </li>
     
   </ul>
@@ -515,7 +558,7 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Farchitecture%27+style%3D%27font-size%3A+30.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fcoding%27+style%3D%27font-size%3A+30.0%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fdesign%27+style%3D%27font-size%3A+30.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fgeek%27+style%3D%27font-size%3A+30.0%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Finfoq%27+style%3D%27font-size%3A+30.0%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fnosql%27+style%3D%27font-size%3A+30.0%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Foctopress%27+style%3D%27font-size%3A+30.0%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Frefactor%27+style%3D%27font-size%3A+50.0%25%27%3ERefactor%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fscala%27+style%3D%27font-size%3A+30.0%25%27%3EScala%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Ftdd%27+style%3D%27font-size%3A+30.0%25%27%3ETDD%3C%2Fa%3E+%3C%2Ftags%3E"></span>
+    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Farchitecture%27+style%3D%27font-size%3A+30.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fcoding%27+style%3D%27font-size%3A+30.0%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fdesign%27+style%3D%27font-size%3A+30.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fgeek%27+style%3D%27font-size%3A+30.0%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Finfoq%27+style%3D%27font-size%3A+30.0%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fnosql%27+style%3D%27font-size%3A+30.0%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Foctopress%27+style%3D%27font-size%3A+30.0%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Foctopress%27+style%3D%27font-size%3A+30.0%25%27%3Eoctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Frefactor%27+style%3D%27font-size%3A+50.0%25%27%3ERefactor%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fruby%27+style%3D%27font-size%3A+30.0%25%27%3Eruby%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Fscala%27+style%3D%27font-size%3A+30.0%25%27%3EScala%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Fcategories%2Ftdd%27+style%3D%27font-size%3A+30.0%25%27%3ETDD%3C%2Fa%3E+%3C%2Ftags%3E"></span>
 </section>
 
 <section>

@@ -4,7 +4,7 @@
   <title><![CDATA[捷道]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-26T10:43:18+08:00</updated>
+  <updated>2012-12-26T12:58:31+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,96 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress的新浪微博插件]]></title>
+    <link href="http://agiledon.github.com/blog/2012/12/26/weibo-plugin-for-octopress/"/>
+    <updated>2012-12-26T12:26:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/12/26/weibo-plugin-for-octopress</id>
+    <content type="html"><![CDATA[<p>在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。一些插件为octopress提供了新浪微博的share按钮，但这并不是我想要的。也许已经有快速现成的方法支持我想要的功能，但我没有找到。那么何必还去上穷碧落下黄泉的去搜索了，身为一个程序员，这种事情就自己搞定好了。正好可以练手Ruby。经过半天的代码编写和测试，我的这个新浪微博插件就实现了。它主要能够运行rake命令，解析最新博客的标题与URL，再替换_config.yml配置文件中配置的微博模板的内容，并将其发布到新浪微博中。</p>
+
+<!--more-->
+
+
+<h2>实现</h2>
+
+<p>我最初是在octopress的plugin目录下创建了post_weibo.rb文件。后来发现，当我们执行rake generate时，它事实上会去执行jekyll命令。而该命令则会去遍历plugin目录下的ruby文件，并执行之。这显然不是我希望看到的。我希望在发表的新博客完全就绪时，我再考虑发送通知到新浪微博。于是，我单独建立了一个新的文件夹&#8221;_custom&#8221;，并将post_weibo.rb文件放进去。</p>
+
+<p>post_weibo.rb文件实现了这个插件的所有功能，主要方法为post_weibo()，如下所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">post_weibo</span>
+</span><span class='line'>    <span class="n">conn</span> <span class="o">=</span> <span class="no">Faraday</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:url</span> <span class="o">=&gt;</span> <span class="s2">&quot;https://api.weibo.com&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">post</span> <span class="s1">&#39;/2/statuses/update.json&#39;</span><span class="p">,</span>
+</span><span class='line'>                       <span class="ss">:access_token</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s1">&#39;access_token&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>                       <span class="ss">:status</span> <span class="o">=&gt;</span> <span class="n">generate_post</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;post successful&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>它使用了faraday来发送post请求到新浪api。发送请求时需要获得access_token。该值可以到新浪申请。具体API说明请查阅<a href="http://open.weibo.com/wiki/2/statuses/update">开发文档</a>。</p>
+
+<p>post_weibo.rb文件的其余方法皆是为生成微博内容服务的。具体代码可以通过我在<a href="https://github.com/agiledon/octopress-weibo">github上的repository</a>获得，这里不再赘述。大体思路是通过获得_post目录下创建日期最近的markdown文件，读取该文件，获得title的值。解析文件名，获得博客链接地址的后面部分，至于前面部分（即博客地址），则从_config.yml中获取，然后组装成正确的博客URL。接下来，再从_config.yml中读取配好的template，将title和url替换，并作为status值，交给post请求。</p>
+
+<h2>Rake任务</h2>
+
+<p>我单独加入了一个Rake任务，这样方便我们执行以发送微博。方法是打开octopress根目录下的Rakefile文件，在合适位置加入如下内容：</p>
+
+<pre><code>desc "Post the title and url of latest blog to Sina Weibo"
+    task :weibo do
+    puts "Post the title and url of latest blog to Sina Weibo"
+    system "ruby _custom/post_weibo.rb"
+end
+</code></pre>
+
+<h2>配置</h2>
+
+<p>要正确的发送微博，就必须在_config.yml中配置好相关信息。主要需要配置你的access_token与微博模板，如下所示：</p>
+
+<pre><code>access_token: Your access token provided by Sina weibo
+post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}》，请访问链接：%{blog_url}
+</code></pre>
+
+<p>注意，在配置post_template时，你虽然可以任意修改模板内容，但不能修改我事先留下的两个变量，即%{blog_title}和%{blog_title}。模板内容支持英语、中文和其他语言。</p>
+
+<p>例如，如果你创建了一个新的博客，文件名为2012-12-25-test-demo.markdown，标题为“测试演示&#8221;。那么，你所发表的微博内容就应该为：</p>
+
+<pre><code>我在agiledon.github.com上发表了最新博客《测试演示》，请访问链接：http://agiledon.github.com/2012/12/25/test-demo
+</code></pre>
+
+<p>当然，这里的http://agiledon.github.com取决于你在_config.yml中的url配置.</p>
+
+<h2>依赖</h2>
+
+<p>因为在post_weibo.rb文件中，我使用了一个第三方库faraday来简化发送post请求的ruby代码。为保证rake命令的正确执行，应该在Gemfile文件中加入如下内容:</p>
+
+<pre><code>gem "faraday", "~&gt; 0.8.4"
+</code></pre>
+
+<p>加入后，在转到octopress根目录下，运行如下命令安装faraday：</p>
+
+<pre><code>bundle install
+</code></pre>
+
+<h2>使用</h2>
+
+<p>如果一切配置妥当，当你编写了新的博客并发表到博客上之后，只要你认为一切Ok了，就可以执行命令：</p>
+
+<pre><code>rake weibo
+</code></pre>
+
+<p>它就会自动将最新博客的标题与URL按照你事先设定的模板内容，发布到你的新浪微博中。一旦发布成功，在控制台下会显示“post successful!”</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Octopress博客问题解决方案与技巧]]></title>

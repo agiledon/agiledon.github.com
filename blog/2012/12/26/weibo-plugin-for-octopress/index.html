@@ -6,13 +6,11 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>在MAC的IntelliJ下使用SBT与ScalaTest - 捷道</title>
+  <title>Octopress的新浪微博插件 - 捷道</title>
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。 1
-port install sbt 或者： 1
-brew install &hellip;">
+  <meta name="description" content="在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +19,7 @@ brew install &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2012/12/26/weibo-plugin-for-octopress/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -71,7 +69,7 @@ brew install &hellip;">
   
   <header>
     
-      <h1 class="entry-title">在MAC的IntelliJ下使用SBT与ScalaTest</h1>
+      <h1 class="entry-title">Octopress的新浪微博插件</h1>
     
     
       <p class="meta">
@@ -87,7 +85,7 @@ brew install &hellip;">
   
 
 
-<time datetime="2012-10-11T12:34:00+08:00" pubdate data-updated="true">Oct 11<span>th</span>, 2012</time>
+<time datetime="2012-12-26T12:26:00+08:00" pubdate data-updated="true">Dec 26<span>th</span>, 2012</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -96,31 +94,16 @@ brew install &hellip;">
   </header>
 
 
-<div class="entry-content"><p>正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install sbt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: &#8216;idea&#8217;，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
+<div class="entry-content"><p>在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。一些插件为octopress提供了新浪微博的share按钮，但这并不是我想要的。也许已经有快速现成的方法支持我想要的功能，但我没有找到。那么何必还去上穷碧落下黄泉的去搜索了，身为一个程序员，这种事情就自己搞定好了。正好可以练手Ruby。经过半天的代码编写和测试，我的这个新浪微博插件就实现了。它主要能够运行rake命令，解析最新博客的标题与URL，再替换_config.yml配置文件中配置的微博模板的内容，并将其发布到新浪微博中。</p>
 
 <!--more-->
 
 
+<h2>实现</h2>
 
+<p>我最初是在octopress的plugin目录下创建了post_weibo.rb文件。后来发现，当我们执行rake generate时，它事实上会去执行jekyll命令。而该命令则会去遍历plugin目录下的ruby文件，并执行之。这显然不是我希望看到的。我希望在发表的新博客完全就绪时，我再考虑发送通知到新浪微博。于是，我单独建立了一个新的文件夹&#8221;_custom&#8221;，并将post_weibo.rb文件放进去。</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.scalatest&quot;</span> <span class="o">%</span> <span class="s">&quot;scalatest_2.9.1&quot;</span> <span class="o">%</span> <span class="s">&quot;1.8&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意，在sbt文件中一定要有一条空行哦，不然就会报错。现在，转到项目主目录下，运行sbt的命令，就能自动下载scalatest的包了。可惜这样还不够，因为即使下载了scalatest，IntelliJ仍然拒绝认识它，然后很恼人地给出红色错误提示。例如在test目录下写一个scalatest的单元测试：</p>
+<p>post_weibo.rb文件实现了这个插件的所有功能，主要方法为post_weibo()，如下所示：</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -130,45 +113,69 @@ brew install &hellip;">
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.junit.runner.RunWith</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.junit.JUnitRunner</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.Suite</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">post_weibo</span>
+</span><span class='line'>    <span class="n">conn</span> <span class="o">=</span> <span class="no">Faraday</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:url</span> <span class="o">=&gt;</span> <span class="s2">&quot;https://api.weibo.com&quot;</span><span class="p">)</span>
 </span><span class='line'>
-</span><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">JUnitRunner</span><span class="o">])</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">MySuiteTest</span> <span class="k">extends</span> <span class="nc">Suite</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">testAddition</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">===</span> <span class="mi">2</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">4</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
+</span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">post</span> <span class="s1">&#39;/2/statuses/update.json&#39;</span><span class="p">,</span>
+</span><span class='line'>                       <span class="ss">:access_token</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s1">&#39;access_token&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>                       <span class="ss">:status</span> <span class="o">=&gt;</span> <span class="n">generate_post</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;post successful&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>它根本就不认识JUnit和ScalaTest，所以类似Suite，@RunWith之类的东西皆为红色，看着让人闹心。当然，我在这里还用了JUnit，所以还需要在build.sbt中添加JUnit的依赖。</p>
+<p>它使用了faraday来发送post请求到新浪api。发送请求时需要获得access_token。该值可以到新浪申请。具体API说明请查阅<a href="http://open.weibo.com/wiki/2/statuses/update">开发文档</a>。</p>
 
-<p>要想能够在IntelliJ Idea中更新项目，就像Gradle一样，也需要专门为idea服务的插件，sbt中即为sbt-idea。方法是在mac的用户主目录下，找到.sbt/plugins目录，然后看看有没有build.sbt文件。如果没有，就创建一个。事实上，要是连.sbt/plugins目录也没有找到，没关系，同样可以自己创建。接下来，在build.sbt文件中写入：</p>
+<p>post_weibo.rb文件的其余方法皆是为生成微博内容服务的。具体代码可以通过我在<a href="https://github.com/agiledon/octopress-weibo">github上的repository</a>获得，这里不再赘述。大体思路是通过获得_post目录下创建日期最近的markdown文件，读取该文件，获得title的值。解析文件名，获得博客链接地址的后面部分，至于前面部分（即博客地址），则从_config.yml中获取，然后组装成正确的博客URL。接下来，再从_config.yml中读取配好的template，将title和url替换，并作为status值，交给post请求。</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;sbt-idea-repo&quot;</span> <span class="n">at</span> <span class="s">&quot;http://mpeltonen.github.com/maven/&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">addSbtPlugin</span><span class="o">(</span><span class="s">&quot;com.github.mpeltonen&quot;</span> <span class="o">%%</span> <span class="s">&quot;sbt-idea&quot;</span> <span class="o">%</span> <span class="s">&quot;1.1.0&quot;</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<h2>Rake任务</h2>
 
+<p>我单独加入了一个Rake任务，这样方便我们执行以发送微博。方法是打开octopress根目录下的Rakefile文件，在合适位置加入如下内容：</p>
 
-<p>添加了这个插件后，就可以回到自己项目的目录下，运行sbt gen-idea，就可以更新IntelliJ Idea中的项目了。再看看Idea中的代码，之前那些恼人的红色应该就会消失了。</p>
+<pre><code>desc "Post the title and url of latest blog to Sina Weibo"
+    task :weibo do
+    puts "Post the title and url of latest blog to Sina Weibo"
+    system "ruby _custom/post_weibo.rb"
+end
+</code></pre>
 
-<p>在使用ScalaTest时，还碰到一个小问题。我在搜寻scalatest的repository时（在Maven Repository），直接打开了第一个搜索结果，最新的版本是1.4 RC2。它的sbt repository为：libraryDependencies += &#8220;org.scalatest&#8221; % &#8220;scalatest&#8221; % &#8220;1.4.RC2&#8221;</p>
+<h2>配置</h2>
 
-<p>结果就悲剧了，跑测试怎么样也跑不过，抛出的异常为：java.lang.ClassCastException: scala.collection.immutable.Set$EmptySet$ cannot be cast to scala.collection.generic.Addable</p>
+<p>要正确的发送微博，就必须在_config.yml中配置好相关信息。主要需要配置你的access_token与微博模板，如下所示：</p>
 
-<p>最初，我没有想到是scala与scalatest版本不匹配的问题，还以为自己的单元测试语法不对。几经搜寻，在搜到的这个帖子（http://www.scala-lang.org/node/11466）上看到版本不兼容问题，我才如大梦初醒般，想着去查询各自的版本。我使用的scala为最新版本2.9.2，而scalatest的1.4 RC2依赖的是scala 2.8.0版本。而就在这篇帖子中，则提到scala是向前兼容，却不支持向后兼容。我在Maven Repository中又做了一次搜索，结果发现scalatest的第二条搜索结果，才是我需要的，它的最新版本是2.0 M4，最新稳定版本则为1.8，都依赖于Scala 2.9.1。这就是说，与我使用的scala仅有最小版本的区别。在build.sbt中更改为该版本的repository（即前面给出的内容），测试就可以通过了。</p>
+<pre><code>access_token: Your access token provided by Sina weibo
+post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}》，请访问链接：%{blog_url}
+</code></pre>
+
+<p>注意，在配置post_template时，你虽然可以任意修改模板内容，但不能修改我事先留下的两个变量，即%{blog_title}和%{blog_title}。模板内容支持英语、中文和其他语言。</p>
+
+<p>例如，如果你创建了一个新的博客，文件名为2012-12-25-test-demo.markdown，标题为“测试演示&#8221;。那么，你所发表的微博内容就应该为：</p>
+
+<pre><code>我在agiledon.github.com上发表了最新博客《测试演示》，请访问链接：http://agiledon.github.com/2012/12/25/test-demo
+</code></pre>
+
+<p>当然，这里的http://agiledon.github.com取决于你在_config.yml中的url配置.</p>
+
+<h2>依赖</h2>
+
+<p>因为在post_weibo.rb文件中，我使用了一个第三方库faraday来简化发送post请求的ruby代码。为保证rake命令的正确执行，应该在Gemfile文件中加入如下内容:</p>
+
+<pre><code>gem "faraday", "~&gt; 0.8.4"
+</code></pre>
+
+<p>加入后，在转到octopress根目录下，运行如下命令安装faraday：</p>
+
+<pre><code>bundle install
+</code></pre>
+
+<h2>使用</h2>
+
+<p>如果一切配置妥当，当你编写了新的博客并发表到博客上之后，只要你认为一切Ok了，就可以执行命令：</p>
+
+<pre><code>rake weibo
+</code></pre>
+
+<p>它就会自动将最新博客的标题与URL按照你事先设定的模板内容，发布到你的新浪微博中。一旦发布成功，在控制台下会显示“post successful!”</p>
 </div>
 
 
@@ -191,12 +198,12 @@ brew install &hellip;">
   
 
 
-<time datetime="2012-10-11T12:34:00+08:00" pubdate data-updated="true">Oct 11<span>th</span>, 2012</time>
+<time datetime="2012-12-26T12:26:00+08:00" pubdate data-updated="true">Dec 26<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/scala/'>Scala</a>
+    <a class='category' href='/blog/categories/octopress/'>octopress</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
   
 </span>
 
@@ -214,10 +221,8 @@ brew install &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/08/25/tasking-in-tdd/" title="Previous Post: Tasking in TDD">&laquo; Tasking in TDD</a>
+        <a class="basic-alignment left" href="/blog/2012/12/25/octopress-issues-solution-and-tips/" title="Previous Post: Octopress博客问题解决方案与技巧">&laquo; Octopress博客问题解决方案与技巧</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/12/18/nosql-is-growing-up/" title="Next Post: NoSQL走向成熟">NoSQL走向成熟 &raquo;</a>
       
     </p>
   </footer>
@@ -330,8 +335,8 @@ brew install &hellip;">
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij/';
-        var disqus_url = 'http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij/';
+        var disqus_identifier = 'http://agiledon.github.com/blog/2012/12/26/weibo-plugin-for-octopress/';
+        var disqus_url = 'http://agiledon.github.com/blog/2012/12/26/weibo-plugin-for-octopress/';
         var disqus_script = 'embed.js';
       
     (function () {
