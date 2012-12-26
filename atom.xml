@@ -4,7 +4,7 @@
   <title><![CDATA[捷道]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-26T13:06:54+08:00</updated>
+  <updated>2012-12-26T15:44:43+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -399,7 +399,7 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 
 <p>正是这一小段代码，是造成Airline系统崩溃的罪魁祸首。程序员充分地考虑了资源的释放，但在这段代码中他却没有对多个资源的释放给予足够的重视，而是以释放单资源的做法去处理多资源。在finally语句块中，如果释放Statement资源的操作失败了，就可能抛出异常，因为在finally中并没有捕获这种异常，就会导致后面的conn.close()语句没有执行，从而导致Connection资源未能及时释放。最终导致连接池中存放了大量未能及时释放的Connection资源，却不能得到使用，直到连接池满。当后续请求lookupByCity()时，就会在调用connectionPool.getConnection()方法时被阻塞。这些被阻塞的请求会越来越多，最后导致资源耗尽，整个系统崩溃。</p>
 
-<p><img class="center" src="http://agiledon.github.com/images/2012/12/releaseit.jpg" width="333" height="399"></p>
+<p><img class="center" src="http://agiledon.github.com/images/2012/12/releaseIt.jpg" width="333" height="399"></p>
 
 <p>Release It!的作者对Java中同步方法的使用也提出了警告。同步方法虽然可以较好地解决并发问题，在一定程度上可以避免出现资源抢占、竟态条件和死锁的情况。但它的一个副作用同步锁可能导致线程阻塞。这就要求同步方法的执行时间不能太长。此外，Java的接口方法是不能标记synchronized关键字。当我们在调用封装好的第三方API时，基于“面向接口设计”的原理，可能调用者只知道公开的接口方法，却不知道实现类事实上将其实现为同步方法，这种未知性就可能存在隐患。</p>
 
