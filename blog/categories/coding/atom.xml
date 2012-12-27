@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 捷道]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-27T16:03:16+08:00</updated>
+  <updated>2012-12-27T16:07:18+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,85 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在MAC的IntelliJ下使用SBT与ScalaTest]]></title>
+    <link href="http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij/"/>
+    <updated>2012-10-11T12:34:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij</id>
+    <content type="html"><![CDATA[<p>正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure></notextile></div>
+或者：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install sbt</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: 'idea'，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
+
+<!--more-->
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.scalatest&quot;</span> <span class="o">%</span> <span class="s">&quot;scalatest_2.9.1&quot;</span> <span class="o">%</span> <span class="s">&quot;1.8&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>注意，在sbt文件中一定要有一条空行哦，不然就会报错。现在，转到项目主目录下，运行sbt的命令，就能自动下载scalatest的包了。可惜这样还不够，因为即使下载了scalatest，IntelliJ仍然拒绝认识它，然后很恼人地给出红色错误提示。例如在test目录下写一个scalatest的单元测试：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.junit.runner.RunWith</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.junit.JUnitRunner</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.Suite</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;@</span><span class="nc">RunWith</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">JUnitRunner</span><span class="o">])</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MySuiteTest</span> <span class="k">extends</span> <span class="nc">Suite</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">testAddition</span><span class="o">()</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">===</span> <span class="mi">2</span><span class="o">)</span>
+</span><span class='line'><span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">4</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>它根本就不认识JUnit和ScalaTest，所以类似Suite，@RunWith之类的东西皆为红色，看着让人闹心。当然，我在这里还用了JUnit，所以还需要在build.sbt中添加JUnit的依赖。</p>
+
+<p>要想能够在IntelliJ Idea中更新项目，就像Gradle一样，也需要专门为idea服务的插件，sbt中即为sbt-idea。方法是在mac的用户主目录下，找到.sbt/plugins目录，然后看看有没有build.sbt文件。如果没有，就创建一个。事实上，要是连.sbt/plugins目录也没有找到，没关系，同样可以自己创建。接下来，在build.sbt文件中写入：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;sbt-idea-repo&quot;</span> <span class="n">at</span> <span class="s">&quot;http://mpeltonen.github.com/maven/&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">addSbtPlugin</span><span class="o">(</span><span class="s">&quot;com.github.mpeltonen&quot;</span> <span class="o">%%</span> <span class="s">&quot;sbt-idea&quot;</span> <span class="o">%</span> <span class="s">&quot;1.1.0&quot;</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>添加了这个插件后，就可以回到自己项目的目录下，运行sbt gen-idea，就可以更新IntelliJ Idea中的项目了。再看看Idea中的代码，之前那些恼人的红色应该就会消失了。</p>
+
+<p>在使用ScalaTest时，还碰到一个小问题。我在搜寻scalatest的repository时（在Maven Repository），直接打开了第一个搜索结果，最新的版本是1.4 RC2。它的sbt repository为：libraryDependencies += "org.scalatest" % "scalatest" % "1.4.RC2"</p>
+
+<p>结果就悲剧了，跑测试怎么样也跑不过，抛出的异常为：java.lang.ClassCastException: scala.collection.immutable.Set$EmptySet$ cannot be cast to scala.collection.generic.Addable</p>
+
+<p>最初，我没有想到是scala与scalatest版本不匹配的问题，还以为自己的单元测试语法不对。几经搜寻，在搜到的这个帖子（http://www.scala-lang.org/node/11466）上看到版本不兼容问题，我才如大梦初醒般，想着去查询各自的版本。我使用的scala为最新版本2.9.2，而scalatest的1.4 RC2依赖的是scala 2.8.0版本。而就在这篇帖子中，则提到scala是向前兼容，却不支持向后兼容。我在Maven Repository中又做了一次搜索，结果发现scalatest的第二条搜索结果，才是我需要的，它的最新版本是2.0 M4，最新稳定版本则为1.8，都依赖于Scala 2.9.1。这就是说，与我使用的scala仅有最小版本的区别。在build.sbt中更改为该版本的repository（即前面给出的内容），测试就可以通过了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tasking in TDD]]></title>
