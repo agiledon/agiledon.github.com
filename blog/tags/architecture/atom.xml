@@ -1,100 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>案例分析:基于消息的分布式架构 - 捷道</title>
-  <meta name="author" content="张逸">
-
-  
-  <meta name="description" content="美国计算机科学家，LaTex的作者Leslie Lamport说：“分布式系统就是这样一个系统，系统中一个你甚至都不知道的计算机出了故障，却可能导致你自己的计算机不可用。”一语道破了开发分布式系统的玄机，那就是它的复杂与不可控。所以Martin Fowler强调： &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="捷道" type="application/atom+xml">
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">捷道</a></h1>
-  
-    <h2>张逸的技术博客</h2>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:agiledon.github.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-  <li><a href="/about">About Me</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div>
-<article class="hentry" role="article">
-  
-  <header>
+  <title><![CDATA[Tag: Architecture | 捷道]]></title>
+  <link href="http://agiledon.github.com/blog/tags/architecture/atom.xml" rel="self"/>
+  <link href="http://agiledon.github.com/"/>
+  <updated>2012-12-27T16:03:16+08:00</updated>
+  <id>http://agiledon.github.com/</id>
+  <author>
+    <name><![CDATA[张逸]]></name>
     
-      <h1 class="entry-title">案例分析:基于消息的分布式架构</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-
-
-<time datetime="2012-12-27T11:31:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2012</time>
-        
-         | <a href="#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-<div class="entry-content"><p><img class="center" src="/images/2012/12/messagearchitecture.jpg" width="600" height="450"></p>
+  <entry>
+    <title type="html"><![CDATA[案例分析:基于消息的分布式架构]]></title>
+    <link href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/"/>
+    <updated>2012-12-27T11:31:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/messagearchitecture.jpg" width="600" height="450"></p>
 
 <p>美国计算机科学家，LaTex的作者Leslie Lamport说：“分布式系统就是这样一个系统，系统中一个你甚至都不知道的计算机出了故障，却可能导致你自己的计算机不可用。”一语道破了开发分布式系统的玄机，那就是它的复杂与不可控。所以Martin Fowler强调：分布式调用的第一原则就是不要分布式。这句话看似颇具哲理，然而就企业应用系统而言，只要整个系统在不停地演化，并有多个子系统共同存在时，这条原则就会被迫打破。盖因为在当今的企业应用系统中，很难寻找到完全不需要分布式调用的场景。Martin Fowler提出的这条原则，一方面是希望设计者能够审慎地对待分布式调用，另一方面却也是分布式系统自身存在的缺陷所致。无论是CORBA，还是EJB 2；无论是RPC平台，还是Web Service，都因为驻留在不同进程空间的分布式组件，而引入额外的复杂度，并可能对系统的效率、可靠性、可预测性等诸多方面带来负面的影响。</p>
 
@@ -179,43 +103,27 @@
 
 <h3>场景一：基于消息的统一服务架构</h3>
 
-<p>在制造工业的CIMS系统中，我们尝试将各种业务以服务的形式公开给客户端的调用者，例如定义这样的接口：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IService</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">IMessage</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">IMessage</span> <span class="n">aMessage</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">void</span> <span class="nf">SendRequest</span><span class="p">(</span><span class="n">IMessage</span> <span class="n">aMessage</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>之所以能够设计这样的服务，原因在于我们对业务信息进行了高度的抽象，以消息的形式在服务之间传递。此时的消息其实是生产者与消费者之间的契约或接口，只要遵循这样的契约，按照规定的格式对消息进行转换与抽取，就能很好地支持系统的分布式处理。</p>
-
-<p>在这个CIMS系统中，我们将消息划分为ID，Name和Body，通过定义如下的接口方法，可以获得消息主体的相关属性：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>在制造工业的CIMS系统中，我们尝试将各种业务以服务的形式公开给客户端的调用者，例如定义这样的接口：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IMessage</span><span class="p">:</span><span class="n">ICloneable</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>     <span class="kt">string</span> <span class="n">MessageID</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>     <span class="kt">string</span> <span class="nf">MessageName</span><span class="p">()</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'>     <span class="n">IMessageItemSequence</span> <span class="nf">CreateMessageBody</span><span class="p">();</span>
-</span><span class='line'>     <span class="n">IMessageItemSequence</span> <span class="nf">GetMessageBody</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IService</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">IMessage</span> <span class="n">Execute</span><span class="p">(</span><span class="n">IMessage</span> <span class="n">aMessage</span><span class="p">);</span>
+</span><span class='line'><span class="k">void</span> <span class="nf">SendRequest</span><span class="p">(</span><span class="n">IMessage</span> <span class="n">aMessage</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
+<p>之所以能够设计这样的服务，原因在于我们对业务信息进行了高度的抽象，以消息的形式在服务之间传递。此时的消息其实是生产者与消费者之间的契约或接口，只要遵循这样的契约，按照规定的格式对消息进行转换与抽取，就能很好地支持系统的分布式处理。</p>
 
-<p>消息主体类Message实现了IMessage接口。在该类中，消息体Body为IMessageItemSequence类型。这个类型用于获取和设置消息的内容：Value和Item：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>在这个CIMS系统中，我们将消息划分为ID，Name和Body，通过定义如下的接口方法，可以获得消息主体的相关属性：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -224,17 +132,51 @@
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IItemValueSetting</span> <span class="p">{</span>
-</span><span class='line'>     <span class="kt">string</span> <span class="nf">getSubValue</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">);</span>
-</span><span class='line'>     <span class="k">void</span> <span class="nf">setSubValue</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">,</span> <span class="kt">string</span> <span class="k">value</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IMessageItemSequence</span><span class="p">:</span><span class="n">IItemValueSetting</span><span class="p">,</span> <span class="n">ICloneable</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>     <span class="n">IMessageItem</span> <span class="nf">GetMessageItem</span><span class="p">(</span><span class="kt">string</span> <span class="n">aName</span><span class="p">);</span>
-</span><span class='line'>     <span class="n">IMessageItem</span> <span class="nf">CreateMessageItem</span><span class="p">(</span><span class="kt">string</span> <span class="n">aName</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IMessage</span><span class="p">:</span><span class="n">ICloneable</span>
+</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span> <span class="kt">string</span> <span class="n">MessageID</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'> <span class="kt">string</span> <span class="nf">MessageName</span><span class="p">()</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'> <span class="n">IMessageItemSequence</span> <span class="nf">CreateMessageBody</span><span class="p">();</span>
+</span><span class='line'> <span class="n">IMessageItemSequence</span> <span class="nf">GetMessageBody</span><span class="p">();</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
+<p>消息主体类Message实现了IMessage接口。在该类中，消息体Body为IMessageItemSequence类型。这个类型用于获取和设置消息的内容：Value和Item：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IItemValueSetting</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span> <span class="kt">string</span> <span class="n">getSubValue</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'> <span class="k">void</span> <span class="nf">setSubValue</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">,</span> <span class="kt">string</span> <span class="k">value</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IMessageItemSequence</span><span class="p">:</span><span class="n">IItemValueSetting</span><span class="p">,</span> <span class="n">ICloneable</span>
+</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span> <span class="n">IMessageItem</span> <span class="n">GetMessageItem</span><span class="p">(</span><span class="kt">string</span> <span class="n">aName</span><span class="p">);</span>
+</span><span class='line'> <span class="n">IMessageItem</span> <span class="nf">CreateMessageItem</span><span class="p">(</span><span class="kt">string</span> <span class="n">aName</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>Value为字符串类型，它利用了HashTable存储Key和Value的键值对。Item则为IMessageItem类型，在IMessageItemSequence的实现类中，同样利用了HashTable存储Key和Item的键值对。</p>
 
@@ -314,9 +256,8 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 
 <p>在并发处理方面，RabbitMQ本身是基于erlang编写的消息中间件，作为一门面向并发处理的编程语言，erlang对并发处理的天生优势使得我们对RabbitMQ的并发特性抱有信心。RabbitMQ可以非常容易地部署到Windows、Linux等操作系统下，同时，它也可以很好地部署到服务器集群中。它的队列容量是没有限制的（取决于安装RabbitMQ的磁盘容量），发送与接收信息的性能表现也非常好。RabbitMQ提供了Java、.NET、Erlang以及C语言的客户端API，调用非常简单，并且不会给整个系统引入太多第三方库的依赖。 例如.NET客户端只需要依赖一个程序集。</p>
 
-<p>即使我们选择了RabbitMQ，但仍有必要对系统与具体的消息中间件进行解耦，这就要求我们对消息的生产者与消费者进行抽象，例如定义如下的接口：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>即使我们选择了RabbitMQ，但仍有必要对系统与具体的消息中间件进行解耦，这就要求我们对消息的生产者与消费者进行抽象，例如定义如下的接口：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -330,26 +271,34 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'>    <span class="k">public</span> <span class="k">interface</span> <span class="n">IQueueSubscriber</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Action</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">action</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">requeueFailedMessages</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="k">interface</span> <span class="n">IQueueProvider</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">T</span> <span class="n">Pop</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">);</span>
-</span><span class='line'>        <span class="n">T</span> <span class="n">PopAndAwaitAcknowledgement</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">);</span>
-</span><span class='line'>        <span class="n">T</span> <span class="n">PopAndAwaitAcknowledgement</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">requeueFailedMessages</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">void</span> <span class="nf">Push</span><span class="p">(</span><span class="n">FunctionalArea</span> <span class="n">functionalArea</span><span class="p">,</span> <span class="kt">string</span> <span class="n">routingKey</span><span class="p">,</span> <span class="kt">object</span> <span class="n">payload</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">interface</span> <span class="n">IQueueSubscriber</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Action</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">action</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">requeueFailedMessages</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IQueueProvider</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">T</span> <span class="n">Pop</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">T</span> <span class="n">PopAndAwaitAcknowledgement</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">T</span> <span class="n">PopAndAwaitAcknowledgement</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">requeueFailedMessages</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">void</span> <span class="nf">Push</span><span class="p">(</span><span class="n">FunctionalArea</span> <span class="n">functionalArea</span><span class="p">,</span> <span class="kt">string</span> <span class="n">routingKey</span><span class="p">,</span> <span class="kt">object</span> <span class="n">payload</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-
-<p>在这两个接口的实现类中，我们封装了RabbitMQ的调用类，例如：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>在这两个接口的实现类中，我们封装了RabbitMQ的调用类，例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -393,56 +342,57 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 <span class='line-number'>42</span>
 <span class='line-number'>43</span>
 <span class='line-number'>44</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">RabbitMQSubscriber</span> <span class="p">:</span> <span class="n">IQueueSubscriber</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Action</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">action</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="k">using</span> <span class="p">(</span><span class="n">IConnection</span> <span class="n">connection</span> <span class="p">=</span> <span class="n">_factory</span><span class="p">.</span><span class="n">OpenConnection</span><span class="p">())</span>
-</span><span class='line'>            <span class="k">using</span> <span class="p">(</span><span class="n">IModel</span> <span class="n">channel</span> <span class="p">=</span> <span class="n">connection</span><span class="p">.</span><span class="n">CreateModel</span><span class="p">())</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="kt">var</span> <span class="n">consumer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">QueueingBasicConsumer</span><span class="p">(</span><span class="n">channel</span><span class="p">);</span>
-</span><span class='line'>                <span class="kt">string</span> <span class="n">consumerTag</span> <span class="p">=</span> <span class="n">channel</span><span class="p">.</span><span class="n">BasicConsume</span><span class="p">(</span><span class="n">queueName</span><span class="p">,</span> <span class="n">AcknowledgeImmediately</span><span class="p">,</span> <span class="n">consumer</span><span class="p">);</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
-</span><span class='line'>                <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="p">(</span><span class="n">BasicDeliverEventArgs</span><span class="p">)</span> <span class="n">consumer</span><span class="p">.</span><span class="n">Queue</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">class</span> <span class="nc">RabbitMQSubscriber</span> <span class="p">:</span> <span class="n">IQueueSubscriber</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Action</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">action</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">using</span> <span class="p">(</span><span class="n">IConnection</span> <span class="n">connection</span> <span class="p">=</span> <span class="n">_factory</span><span class="p">.</span><span class="n">OpenConnection</span><span class="p">())</span>
+</span><span class='line'>        <span class="k">using</span> <span class="p">(</span><span class="n">IModel</span> <span class="n">channel</span> <span class="p">=</span> <span class="n">connection</span><span class="p">.</span><span class="n">CreateModel</span><span class="p">())</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">consumer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">QueueingBasicConsumer</span><span class="p">(</span><span class="n">channel</span><span class="p">);</span>
+</span><span class='line'>            <span class="kt">string</span> <span class="n">consumerTag</span> <span class="p">=</span> <span class="n">channel</span><span class="p">.</span><span class="n">BasicConsume</span><span class="p">(</span><span class="n">queueName</span><span class="p">,</span> <span class="n">AcknowledgeImmediately</span><span class="p">,</span> <span class="n">consumer</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="p">(</span><span class="n">BasicDeliverEventArgs</span><span class="p">)</span> <span class="n">consumer</span><span class="p">.</span><span class="n">Queue</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">serializer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">JavaScriptSerializer</span><span class="p">();</span>
+</span><span class='line'>            <span class="kt">string</span> <span class="n">json</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">Body</span><span class="p">);</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">message</span> <span class="p">=</span> <span class="n">serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="n">json</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">action</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">RabbitMQProvider</span> <span class="p">:</span> <span class="n">IQueueProvider</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="n">T</span> <span class="n">Pop</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">returnVal</span> <span class="p">=</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">bool</span> <span class="n">acknowledgeImmediately</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">connection</span> <span class="p">=</span> <span class="n">_factory</span><span class="p">.</span><span class="n">OpenConnection</span><span class="p">())</span>
+</span><span class='line'>        <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">channel</span> <span class="p">=</span> <span class="n">connection</span><span class="p">.</span><span class="n">CreateModel</span><span class="p">())</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">channel</span><span class="p">.</span><span class="n">BasicGet</span><span class="p">(</span><span class="n">queueName</span><span class="p">,</span> <span class="n">acknowledgeImmediately</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">response</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
 </span><span class='line'>                <span class="kt">var</span> <span class="n">serializer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">JavaScriptSerializer</span><span class="p">();</span>
-</span><span class='line'>                <span class="kt">string</span> <span class="n">json</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">Body</span><span class="p">);</span>
-</span><span class='line'>                <span class="kt">var</span> <span class="n">message</span> <span class="p">=</span> <span class="n">serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">json</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="n">action</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">json</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">Body</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">returnVal</span> <span class="p">=</span> <span class="n">serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="n">json</span><span class="p">);</span>
 </span><span class='line'>            <span class="p">}</span>
 </span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="n">returnVal</span><span class="p">;</span>
 </span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">RabbitMQProvider</span> <span class="p">:</span> <span class="n">IQueueProvider</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">public</span> <span class="n">T</span> <span class="n">Pop</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">returnVal</span> <span class="p">=</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
-</span><span class='line'>            <span class="k">const</span> <span class="kt">bool</span> <span class="n">acknowledgeImmediately</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">connection</span> <span class="p">=</span> <span class="n">_factory</span><span class="p">.</span><span class="n">OpenConnection</span><span class="p">())</span>
-</span><span class='line'>            <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">channel</span> <span class="p">=</span> <span class="n">connection</span><span class="p">.</span><span class="n">CreateModel</span><span class="p">())</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">channel</span><span class="p">.</span><span class="n">BasicGet</span><span class="p">(</span><span class="n">queueName</span><span class="p">,</span> <span class="n">acknowledgeImmediately</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">response</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
-</span><span class='line'>                <span class="p">{</span>
-</span><span class='line'>                    <span class="kt">var</span> <span class="n">serializer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">JavaScriptSerializer</span><span class="p">();</span>
-</span><span class='line'>                    <span class="kt">var</span> <span class="n">json</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">Body</span><span class="p">);</span>
-</span><span class='line'>                    <span class="n">returnVal</span> <span class="p">=</span> <span class="n">serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">json</span><span class="p">);</span>
-</span><span class='line'>                <span class="p">}</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">return</span> <span class="n">returnVal</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
 
-
-<p>我们用Quartz.Net来实现Batch Job。通过定义一个实现了IStatefulJob接口的Job类，在Execute()方法中完成对队列的侦听。Job中RabbitMQSubscriber类的ListenTo()方法会调用Queue的Dequeue()方法，当接收的消息到达队列时，Job会侦听到消息达到的事件，然后以同步的方式使得消息弹出队列，并将消息作为参数传递给Action委托。因此，在Batch Job的Execute()方法中，可以定义消息处理的方法，并调用RabbitMQSubscriber类的ListenTo()方法，如下所示（注意，这里传递的消息事实上是Job的Id）：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>我们用Quartz.Net来实现Batch Job。通过定义一个实现了IStatefulJob接口的Job类，在Execute()方法中完成对队列的侦听。Job中RabbitMQSubscriber类的ListenTo()方法会调用Queue的Dequeue()方法，当接收的消息到达队列时，Job会侦听到消息达到的事件，然后以同步的方式使得消息弹出队列，并将消息作为参数传递给Action委托。因此，在Batch Job的Execute()方法中，可以定义消息处理的方法，并调用RabbitMQSubscriber类的ListenTo()方法，如下所示（注意，这里传递的消息事实上是Job的Id）：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -456,22 +406,37 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">JobExecutionContext</span> <span class="n">context</span><span class="p">)</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span>    <span class="k">public</span> <span class="k">void</span> <span class="n">Execute</span><span class="p">(</span><span class="n">JobExecutionContext</span> <span class="n">context</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kt">string</span> <span class="n">queueName</span> <span class="p">=</span> <span class="n">queueConfigurer</span><span class="p">.</span><span class="n">GetQueueProviders</span><span class="p">().</span><span class="n">Queue</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">try</span>
 </span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">string</span> <span class="n">queueName</span> <span class="p">=</span> <span class="n">queueConfigurer</span><span class="p">.</span><span class="n">GetQueueProviders</span><span class="p">().</span><span class="n">Queue</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
-</span><span class='line'>            <span class="k">try</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="n">queueSubscriber</span><span class="p">.</span><span class="n">ListenTo</span><span class="p">&lt;</span><span class="n">MyJob</span><span class="p">&gt;(</span>
-</span><span class='line'><span class="n">queueName</span><span class="p">,</span>
-</span><span class='line'>                      <span class="n">job</span> <span class="p">=&gt;</span> <span class="n">request</span><span class="p">.</span><span class="n">MakeRequest</span><span class="p">(</span><span class="n">job</span><span class="p">.</span><span class="n">Id</span><span class="p">.</span><span class="n">ToString</span><span class="p">()));</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>            <span class="k">catch</span><span class="p">(</span><span class="n">Exception</span> <span class="n">err</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="n">Log</span><span class="p">.</span><span class="n">WarnFormat</span><span class="p">(</span><span class="s">&quot;Unexpected exception while processing queue &#39;{0}&#39;, Details: {1}&quot;</span><span class="p">,</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">err</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">queueSubscriber</span><span class="p">.</span><span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">MyJob</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">queueName</span><span class="p">,&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span>                <span class="n">job</span> <span class="p">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">request</span><span class="p">.</span><span class="n">MakeRequest</span><span class="p">(</span><span class="n">job</span><span class="p">.</span><span class="n">Id</span><span class="p">.</span><span class="n">ToString</span><span class="p">()));</span>
 </span><span class='line'>        <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+</span><span class='line'>        <span class="k">catch</span><span class="p">(</span><span class="n">Exception</span> <span class="n">err</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Log</span><span class="p">.</span><span class="n">WarnFormat</span><span class="p">(</span><span class="s">&quot;Unexpected exception while processing queue &#39;{0}&#39;, Details: {1}&quot;</span><span class="p">,</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">err</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>队列的相关信息例如队列名都存储在配置文件中。Execute()方法调用了request对象的MakeRequest()方法，并将获得的消息（即JobId）传递给该方法。它会根据JobId到数据库中查询该Job对应的信息，并执行真正的业务处理。</p>
 
@@ -535,204 +500,126 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 <p>对于分布式系统而言，还需要考虑服务执行结果的一致性，尤其是当某个业务需要多个服务参与到一个会话中时，一旦某个服务发生故障，就可能导致应用出现状态不一致的情况，因为只有所有参与者都成功执行了任务，才能视为完全成功。这就牵涉到分布式事务的问题，此时任务的执行就变成了事务型的：即任务必须是原子的，结果状态必须保持一致。在任务处理过程中，状态修改是彼此隔离的，成功的状态修改在整个事务执行过程中是持久的。这就是事务的ACID（Atomic，Consistent，Isolated与Durable）属性。</p>
 
 <p>一种方案是引入分布式事务协调器，即DTC（Distributed Transaction Coordinator）,将事务分为两段式甚至三段式提交，要求整个事务的所有参与者以投票形式决定事务是完全成功还是失败。另一种方案是降低对结果一致性的要求。根据eBay的最佳实践，考虑到分布式事务的成本，获得分布式资源即时的一致性是不必要的，也是不现实的。在Randy Shoup的文章《<a href="http://www.infoq.com/cn/articles/ebay-scalability-best-practices">可伸缩性最佳实践：来自eBay的经验</a>》中提到了Eric Brewer的CAP公理：分布式系统的三项重要指标——一致性（Consistency）、可用性（Availability）和 分区耐受性（Partition-tolerance）——在任意时刻，只有两项能同时成立。我们应该根据不同的应用场景，权衡这三个要素。在不必要保证即时的一致性前提下，我们可以考虑合理地划分服务，尽量将可能作用在同一个事务范围的业务操作部署在同一个进程中，以避免分布式部署。如果确实需要多个分布式服务之间保持执行结果的一致，可以考虑引入数据核对，异步恢复事件或集中决算等手段。</p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
+]]></content>
+  </entry>
   
+  <entry>
+    <title type="html"><![CDATA[软件系统的稳定性]]></title>
+    <link href="http://agiledon.github.com/blog/2012/12/20/stability-of-software-system/"/>
+    <updated>2012-12-20T19:59:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/12/20/stability-of-software-system</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/stability.jpg" width="290" height="387"></p>
 
-<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+<p>软件系统的稳定性，主要决定于整体的系统架构设计，然而也不可忽略编程的细节，正所谓“千里之堤，溃于蚁穴”，一旦考虑不周，看似无关紧要的代码片段可能会带来整体软件系统的崩溃。这正是我阅读Release It!的直接感受。究其原因，一方面是程序员对代码质量的追求不够，在项目进度的压力下，只考虑了功能实现，而不用过多的追求质量属性；第二则是对编程语言的正确编码方式不够了解，不知如何有效而正确的编码；第三则是知识量的不足，在编程时没有意识到实现会对哪些因素造成影响。</p>
 
-      
-
-
+<!--more-->
 
 
+<p>例如在Release It!一书中，给出了如下的Java代码片段：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">cf</span><span class="o">.</span><span class="na">flightsearch</span><span class="o">;</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlightSearch</span> <span class="kd">implements</span> <span class="n">SessionBean</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kd">private</span> <span class="n">MonitoredDataSource</span> <span class="n">connectionPool</span><span class="o">;</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="n">List</span> <span class="nf">lookupByCity</span><span class="o">(.</span> <span class="o">.</span> <span class="o">.)</span> <span class="kd">throws</span> <span class="n">SQLException</span><span class="o">,</span> <span class="n">RemoteException</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>   <span class="n">Statement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>   <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">conn</span> <span class="o">=</span> <span class="n">connectionPool</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
+</span><span class='line'>       <span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">createStatement</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="c1">// Do the lookup logic</span>
+</span><span class='line'>       <span class="c1">// return a list of results</span>
+</span><span class='line'>   <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>       <span class="k">if</span> <span class="o">(</span><span class="n">stmt</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">stmt</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>       <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
+<p>正是这一小段代码，是造成Airline系统崩溃的罪魁祸首。程序员充分地考虑了资源的释放，但在这段代码中他却没有对多个资源的释放给予足够的重视，而是以释放单资源的做法去处理多资源。在finally语句块中，如果释放Statement资源的操作失败了，就可能抛出异常，因为在finally中并没有捕获这种异常，就会导致后面的conn.close()语句没有执行，从而导致Connection资源未能及时释放。最终导致连接池中存放了大量未能及时释放的Connection资源，却不能得到使用，直到连接池满。当后续请求lookupByCity()时，就会在调用connectionPool.getConnection()方法时被阻塞。这些被阻塞的请求会越来越多，最后导致资源耗尽，整个系统崩溃。</p>
 
+<p><img class="center" src="/images/2012/12/releaseIt.jpg" width="333" height="399"></p>
 
+<p>Release It!的作者对Java中同步方法的使用也提出了警告。同步方法虽然可以较好地解决并发问题，在一定程度上可以避免出现资源抢占、竟态条件和死锁的情况。但它的一个副作用同步锁可能导致线程阻塞。这就要求同步方法的执行时间不能太长。此外，Java的接口方法是不能标记synchronized关键字。当我们在调用封装好的第三方API时，基于“面向接口设计”的原理，可能调用者只知道公开的接口方法，却不知道实现类事实上将其实现为同步方法，这种未知性就可能存在隐患。</p>
 
+<p>假设有这样的一个接口：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">GlobalObjectCache</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>如果接口方法get()的实现如下：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">){</span>
+</span><span class='line'>   <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>   <span class="k">if</span><span class="o">(</span><span class="n">obj</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>   <span class="n">items</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">obj</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="o">}</span>
+</span><span class='line'>   <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">protected</span> <span class="n">Object</span> <span class="nf">create</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>   <span class="c1">//...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这段代码很简单，当调用者试图根据id获得目标对象时，首先会在Cache中寻找，如果有就直接返回；否则通过create()方法获得目标对象，然后再将它存储到Cache中。create()方法是该类定义的一个非final方法，它执行了DB的查询功能。现在，假设使用该类的用户对它进行了扩展，例如定义RemoteAvailabilityCache类派生该类，并重写create()方法，将原来的本地调用改为远程调用。问题出现了。由于采用create()方法是远程调用，当服务端比较繁忙时，发出的远程调用请求可能会被阻塞。由于get()方法是同步方法，在方法体内，每次只能有一个线程访问它，直到方法执行完毕释放锁。现在create()方法被阻塞，就会导致其他试图调用RemoteAvailabilityCache对象的get()方法的线程随之而被阻塞。进而可能导致系统崩溃。</p>
+
+<p>当然，我们可以认为这种扩展本身是不合理的。但从设计的角度来看，它并没有违背Liskove替换原则。从接口的角度看，它的行为也没有发生任何改变，仅仅是实现发生了变化。如果不是同步方法，则一个调用线程的阻塞并不会影响到其他调用线程，问题就可以避免了。当然，这里的同步方法本身是合理的，因为只有采取同步的方式才能保证对Cache的读取是支持并发的。书中给出这个例子，无非是要说明同步方法潜在的危险，提示我们在编写代码时，需要考虑周全。</p>
+]]></content>
+  </entry>
   
-
-
-<time datetime="2012-12-27T11:31:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2012</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/architecture/'>Architecture</a>
-  
-</span>
-
-
-    </p>
-    <p class="meta">
-      tags: 
-
-<span class="categories">
-  
-    <a class='category' href='/blog/tags/architecture/'>Architecture</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  
-  <div class="g-plusone" data-size="medium"></div>
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2012/12/26/weibo-plugin-for-octopress/" title="Previous Post: Octopress的新浪微博插件">&laquo; Octopress的新浪微博插件</a>
-      
-      
-    </p>
-  </footer>
-</article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-  </section>
-
-</div>
-
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2012/12/27/distributed-architecture-based-on-message/">案例分析:基于消息的分布式架构</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/26/weibo-plugin-for-octopress/">Octopress的新浪微博插件</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/25/octopress-issues-solution-and-tips/">Octopress博客问题解决方案与技巧</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/21/literature-and-software/">文学与软件</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/21/geek-pictures-in-brisbane/">geek pictures in Brisbane</a>
-      </li>
-    
-  </ul>
-</section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
-  
-  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
-  
-  <script type="text/javascript">
-    $.domReady(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'agiledon',
-            count: 0,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-<section>
-  <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Farchitecture%27+style%3D%27font-size%3A+50.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoding%27+style%3D%27font-size%3A+30.0%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign%27+style%3D%27font-size%3A+30.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgeek%27+style%3D%27font-size%3A+30.0%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Finfoq%27+style%3D%27font-size%3A+30.0%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnosql%27+style%3D%27font-size%3A+30.0%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foctopress%27+style%3D%27font-size%3A+50.0%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Frefactor%27+style%3D%27font-size%3A+30.0%25%27%3ERefactor%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Frefactoring%27+style%3D%27font-size%3A+30.0%25%27%3ERefactoring%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fruby%27+style%3D%27font-size%3A+30.0%25%27%3ERuby%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftdd%27+style%3D%27font-size%3A+30.0%25%27%3ETDD%3C%2Fa%3E+%3C%2Ftags%3E"></span>
-</section>
-
-<section>
-  <h1>Sina Weibo</h1>
-    <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
-</section>
-
-<section class="googleplus">
-  <h1>
-    <a href="https://plus.google.com/bruce.e.zhang@gmail.com?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
-</section>
-
-
-
-  
-</aside>
-
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - 张逸 -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
-  
-
-<script type="text/javascript">
-      var disqus_shortname = 'agiledon';
-      
-        
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/';
-        var disqus_url = 'http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/';
-        var disqus_script = 'embed.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
-
-
-
-
-
-  <script type="text/javascript">
-    (function() {
-      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
-      script.src = 'https://apis.google.com/js/plusone.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
-    })();
-  </script>
-
-
-
-
-
-
-
-</body>
-</html>
+</feed>

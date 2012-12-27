@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Life | 捷道]]></title>
+  <link href="http://agiledon.github.com/blog/categories/life/atom.xml" rel="self"/>
+  <link href="http://agiledon.github.com/"/>
+  <updated>2012-12-27T16:03:16+08:00</updated>
+  <id>http://agiledon.github.com/</id>
+  <author>
+    <name><![CDATA[张逸]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[geek pictures in Brisbane]]></title>
+    <link href="http://agiledon.github.com/blog/2012/12/21/geek-pictures-in-brisbane/"/>
+    <updated>2012-12-21T17:01:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/12/21/geek-pictures-in-brisbane</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/spring.jpg" width="567" height="340">
+这是我在今年四月到澳洲Brisbane街头拍到的一组照片，Geek们，看到这些名称，是否有些熟悉的感觉呢？</p>
+
+<!--more-->
+
+
+<p><img class="center" src="/images/2012/12/fitness.jpg" width="567" height="340"></p>
+
+<p><img class="center" src="/images/2012/12/hudson.jpg" width="567" height="340"></p>
+
+<p><img class="center" src="/images/2012/12/groovy.jpg" width="425" height="709"></p>
+]]></content>
+  </entry>
+  
+</feed>

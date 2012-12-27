@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: InfoQ | 捷道]]></title>
-  <link href="http://agiledon.github.com/blog/categories/infoq/atom.xml" rel="self"/>
+  <title><![CDATA[Category: News | 捷道]]></title>
+  <link href="http://agiledon.github.com/blog/categories/news/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-27T13:32:48+08:00</updated>
+  <updated>2012-12-27T16:03:16+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
