@@ -94,7 +94,7 @@
   </header>
 
 
-<div class="entry-content"><p>在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。一些插件为octopress提供了新浪微博的share按钮，但这并不是我想要的。也许已经有快速现成的方法支持我想要的功能，但我没有找到。那么何必还去上穷碧落下黄泉的去搜索了，身为一个程序员，这种事情就自己搞定好了。正好可以练手Ruby。经过半天的代码编写和测试，我的这个新浪微博插件就实现了。它主要能够运行rake命令，解析最新博客的标题与URL，再替换_config.yml配置文件中配置的微博模板的内容，并将其发布到新浪微博中。</p>
+<div class="entry-content"><p>在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。一些插件为octopress提供了新浪微博的share按钮，但这并不是我想要的。也许已经有快速现成的方法支持我想要的功能，但我没有找到。那么何必还去上穷碧落下黄泉的去搜索了，身为一个程序员，这种事情就自己搞定好了。正好可以练手Ruby。经过半天的代码编写和测试，我的这个新浪微博插件就实现了。它主要能够运行rake命令，解析最新博客的标题与URL，再替换weibo-config.yml配置文件中配置的微博模板的内容，并将其发布到新浪微博中。</p>
 
 <!--more-->
 
@@ -117,7 +117,7 @@
 </span><span class='line'>    <span class="n">conn</span> <span class="o">=</span> <span class="no">Faraday</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:url</span> <span class="o">=&gt;</span> <span class="s2">&quot;https://api.weibo.com&quot;</span><span class="p">)</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">result</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">post</span> <span class="s1">&#39;/2/statuses/update.json&#39;</span><span class="p">,</span>
-</span><span class='line'>                       <span class="ss">:access_token</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s1">&#39;access_token&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>                       <span class="ss">:access_token</span> <span class="o">=&gt;</span> <span class="vi">@weibo_config</span><span class="o">[</span><span class="s1">&#39;access_token&#39;</span><span class="o">]</span><span class="p">,</span>
 </span><span class='line'>                       <span class="ss">:status</span> <span class="o">=&gt;</span> <span class="n">generate_post</span>
 </span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;post successful&quot;</span>
 </span><span class='line'>  <span class="k">end</span>
@@ -126,7 +126,7 @@
 
 <p>它使用了faraday来发送post请求到新浪api。发送请求时需要获得access_token。该值可以到新浪申请。具体API说明请查阅<a href="http://open.weibo.com/wiki/2/statuses/update">开发文档</a>。</p>
 
-<p>post_weibo.rb文件的其余方法皆是为生成微博内容服务的。具体代码可以通过我在<a href="https://github.com/agiledon/octopress-weibo">github上的repository</a>获得，这里不再赘述。大体思路是通过获得_post目录下创建日期最近的markdown文件，读取该文件，获得title的值。解析文件名，获得博客链接地址的后面部分，至于前面部分（即博客地址），则从_config.yml中获取，然后组装成正确的博客URL。接下来，再从_config.yml中读取配好的template，将title和url替换，并作为status值，交给post请求。</p>
+<p>post_weibo.rb文件的其余方法皆是为生成微博内容服务的。具体代码可以通过我在<a href="https://github.com/agiledon/octopress-weibo">github上的repository</a>获得，这里不再赘述。大体思路是通过获得_post目录下创建日期最近的markdown文件，读取该文件，获得title的值。解析文件名，获得博客链接地址的后面部分，至于前面部分（即博客地址），则从_config.yml中获取，然后组装成正确的博客URL。接下来，再从新增的weibo-config.yml中读取配好的template，将title和url替换，并作为status值，交给post请求。</p>
 
 <h2>Rake任务</h2>
 
@@ -141,7 +141,7 @@ end
 
 <h2>配置</h2>
 
-<p>要正确的发送微博，就必须在_config.yml中配置好相关信息。主要需要配置你的access_token与微博模板，如下所示：</p>
+<p>要正确的发送微博，就必须在新增的weibo-config.yml中配置好相关信息。主要需要配置你的access_token与微博模板，如下所示：</p>
 
 <pre><code>access_token: Your access token provided by Sina weibo
 post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}》，请访问链接：%{blog_url}
@@ -154,7 +154,9 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 <pre><code>我在agiledon.github.com上发表了最新博客《测试演示》，请访问链接：http://agiledon.github.com/2012/12/25/test-demo
 </code></pre>
 
-<p>当然，这里的http://agiledon.github.com取决于你在_config.yml中的url配置.</p>
+<p>当然，这里的http://agiledon.github.com取决于你在_config.yml中的url配置。</p>
+
+<p>为了保证你的access_token安全，你可以在.gitignore中加入新增配置weibo-config.yml，从而避免对该配置的提交。这也是我为什么要将weibo-config.yml中的配置信息从_config.yml中独立出来的缘故。</p>
 
 <h2>依赖</h2>
 
