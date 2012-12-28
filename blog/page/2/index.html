@@ -6,11 +6,11 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>Tag: TDD - 捷道</title>
+  <title>捷道</title>
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Tag: TDD">
+  <meta name="description" content="重构最大的敌人不是技巧与能力，而是懒惰，或者说是态度。许多细小的重构看似无足轻重，例如方法重命名，提取方法，即使重构了，似乎对代码的结构也没有太大的影响，于是就决定淡然处之，心里想“事情还未到不可挽回的地步，实现功能要紧，至于重构，还是以后再做吧！”这样一想，于是就会滋生得过且过的想法， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.comblog/tags/tdd/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/page/2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -64,40 +64,63 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
-    <h1 class="entry-title">Tag: TDD</h1>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/28/refactoring-from-beginning/">重构-勿以善小而不为</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-28T16:36:00+08:00" pubdate data-updated="true">Jun 28<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/28/refactoring-from-beginning/#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+  <div class="entry-content"><p><img class="left" src="/images/2012/12/refactoring.jpg" width="400" height="200">
+重构最大的敌人不是技巧与能力，而是懒惰，或者说是态度。许多细小的重构看似无足轻重，例如方法重命名，提取方法，即使重构了，似乎对代码的结构也没有太大的影响，于是就决定淡然处之，心里想“事情还未到不可挽回的地步，实现功能要紧，至于重构，还是以后再做吧！”这样一想，于是就会滋生得过且过的想法，等到代码开始变得一团糟时，重构已经变得无比困难了。此时需要的重构技巧，将百倍难于发现坏味道之初。</p>
 
-  
-  <h2>2012</h2>
-
-<article>
-  
-<h1><a href="/blog/2012/08/25/tasking-in-tdd/">Tasking in TDD</a></h1>
-<time datetime="2012-08-25T12:59:00+08:00" pubdate><span class='month'>Aug</span> <span class='day'>25</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/coding/'>Coding</a></span>
-</footer>
-
-
-</article>
+<p>在我参加的前一个项目中，我们定义了一个处理OrderSet的Controller。刚刚开始开发时，对于OrderSet的操作并不多，主要是Search与Count操作。OrderSet分为WithDetails与WithoutDetail两种类型。为了实现的简单，我们将这两种类型的操作都放在一个Controller中。随着操作的逐渐增多，这个Controller就变得越来越庞大，逐渐变得臃肿起来。每当我需要调用或者修改Controller时，我都在想：“嗯，这个代码太糟糕了，什么时候给它重构一下。”想是这么想，却一直扮演着说话的巨人，行动的矮子。即使兴起这样的念头，又因为其他的工作将此念头浇灭。直到有一天，这个Controller的代码已经到了忍无可忍的地步，我和我的Pair终于达成一致意见，决定对此代码进行手术。我们花费了近一天的时间对Controller以及相关的Repository进行了彻底的重构。重构前后的代码天差地别，我终于可以不用像吃了苍蝇那般看着代码恶心了。这种重构后体验到的愉悦简直无与伦比，最关键是结果令人满意，重构后的代码变得更可读，更简单，也更容易增加新的功能。</p>
 
 </div>
-
   
-</article>
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/06/28/refactoring-from-beginning/">阅读全文 &rarr;</a>
+    </footer>
+  
 
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
 </div>
-
 <aside class="sidebar">
   
     <section>
@@ -130,7 +153,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
+    <li class="loading">Status updating&#8230;</li>
   </ul>
   
   <a href="https://github.com/agiledon">@agiledon</a> on GitHub
@@ -180,7 +203,6 @@
 
   
 </aside>
-
 
     </div>
   </div>
