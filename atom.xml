@@ -4,7 +4,7 @@
   <title><![CDATA[捷道]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-27T19:51:50+08:00</updated>
+  <updated>2012-12-28T09:51:46+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -616,7 +616,7 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 
 <p>打开在octopress根目录下的Rakefile文件，在文件末尾增加如下代码：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -638,28 +638,29 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>desc "Begin a new post in #{source_dir}/#{posts_dir} with Alias"
-</span><span class='line'>task :post, :title, :title_alias do |t, args|
-</span><span class='line'>  raise "### You haven't set anything up yet. First run `rake install` to set up an Octopress theme." unless File.directory?(source_dir)
-</span><span class='line'>  mkdir_p "#{source_dir}/#{posts_dir}"
-</span><span class='line'>  args.with_defaults(:title => 'new-post')
-</span><span class='line'>  title = args.title
-</span><span class='line'>  title_alias = args.title_alias
-</span><span class='line'>  filename = "#{source_dir}/#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.#{new_post_ext}"
-</span><span class='line'>  if File.exist?(filename)
-</span><span class='line'>    abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
-</span><span class='line'>  end
-</span><span class='line'>  puts "Creating new post: #{filename}"
-</span><span class='line'>  open(filename, 'w') do |post|
-</span><span class='line'>    post.puts "---"
-</span><span class='line'>    post.puts "layout: post"
-</span><span class='line'>    post.puts "title: \"#{title_alias}\""
-</span><span class='line'>    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
-</span><span class='line'>    post.puts "comments: true"
-</span><span class='line'>    post.puts "categories: "
-</span><span class='line'>    post.puts "---"
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">desc</span> <span class="s2">&quot;Begin a new post in </span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2"> with Alias&quot;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:post</span><span class="p">,</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:title_alias</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="s2">&quot;### You haven&#39;t set anything up yet. First run `rake install` to set up an Octopress theme.&quot;</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">directory?</span><span class="p">(</span><span class="n">source_dir</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">mkdir_p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="n">args</span><span class="o">.</span><span class="n">with_defaults</span><span class="p">(</span><span class="ss">:title</span> <span class="o">=&gt;</span> <span class="s1">&#39;new-post&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">title</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">title</span>
+</span><span class='line'>  <span class="n">title_alias</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">title_alias</span>
+</span><span class='line'>  <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">to_url</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">new_post_ext</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">abort</span><span class="p">(</span><span class="s2">&quot;rake aborted!&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">ask</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. Do you want to overwrite?&quot;</span><span class="p">,</span> <span class="o">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="o">]</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Creating new post: </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">post</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;layout: post&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;title: </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">title_alias</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;date: </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;comments: true&quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;categories: &quot;</span>
+</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>新的post任务接收两个参数，第一个参数与之前的new_post任务需要的参数完全相同，第二个参数alias就可以设置到markdown文件的title:中。例如我们要建立一个博客，标题为“如何建立Octopress博客”，则可以输入命令：</p>
@@ -672,24 +673,24 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 
 <p><strong>图片问题</strong></p>
 
-<p>加入图片在Octopress中，支持的Markdown语法为[使用时，请去掉%前面的空格]：</p>
+<p>加入图片在Octopress中，支持的Markdown语法为：</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{ % img [position] [url] [width] [height] %}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{% img [position] [url] [width] [height] %}</span></code></pre></td></tr></table></div></figure>
 
 
 <p>position可以设置为left，right或center。url可以是网上的图片url。如果是自己博客的图片，通常建议放在source/images目录下。为了将来更好地维护，建议按照年和月建立两层目录，如2012/12。因为rake generate命令会自动生成博客，放在source/images目录下的图片也会被复制过去。因而在markdown的img语法中，图片的url应该是/images/2012/12/picture.jpg。</p>
 
 <p><strong>代码问题</strong></p>
 
-<p>Octopress支持的代码高亮有很多。我个人还是比较喜欢直接用codeblock标签。虽然每次敲入这个codeblock不太方便，但它胜在灵活见解。例如，粘贴的代码为ruby语言，就可以在代码片段前后分别加上[使用时，请去掉%前面的空格]：</p>
+<p>Octopress支持的代码高亮有很多。我个人还是比较喜欢直接用codeblock标签。虽然每次敲入这个codeblock不太方便，但它胜在灵活见解。例如，粘贴的代码为ruby语言，就可以在代码片段前后分别加上：</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{ % codeblock lang:ruby %}
+</pre></td><td class='code'><pre><code class=''><span class='line'>{% codeblock lang:ruby %}
 </span><span class='line'># Here is ruby source code
-</span><span class='line'>{ % endcodeblock %}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>{% endcodeblock %}</span></code></pre></td></tr></table></div></figure>
 
 
 <p><strong>摘要问题</strong></p>
@@ -702,7 +703,7 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 
 <p><strong>插件</strong></p>
 
-<p>在<a href="http://octopress.org/docs/">Octopress官方网站</a>提供了一些插件说明和相关链接，但还有一些第三方的插件是放在这个<a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">网站链接</a>下的。我自己也写了一个针对新浪微博的插件，会在下一篇博客中详细介绍。</p>
+<p>在<a href="http://octopress.org/docs/">Octopress官方网站</a>提供了一些插件说明和相关链接，但还有一些第三方的插件是放在这个<a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">网站链接</a>下的。我自己也写了一个针对新浪微博的插件，会在<a href="http://agiledon.github.com/blog/2012/12/26/weibo-plugin-for-octopress/">下一篇博客</a>中详细介绍。</p>
 ]]></content>
   </entry>
   
