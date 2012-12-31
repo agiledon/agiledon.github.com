@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Architecture | 捷道]]></title>
   <link href="http://agiledon.github.com/blog/tags/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2012-12-28T12:20:10+08:00</updated>
+  <updated>2012-12-31T12:40:25+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,39 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[对CQRS的基础理解]]></title>
+    <link href="http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs/"/>
+    <updated>2012-12-31T10:59:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/seperated.jpg" width="500" height="375">
+CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，它甚至可以被称为是一种架构风格，可以取得与MapReduce，REST同等的地位，对软件系统的整体架构产生重要影响。</p>
+
+<p>CQRS即Command Query Responsibility Seperation（命令查询职责分离），其设计思想来源于Mayer提出的CQS（Command Query Seperation）。这种命令与查询的分离方式，可以更好地控制请求者的操作。查询操作不会造成数据的修改，因而它属于一种幂等操作，可以反复地发起，而不用担心会对系统造成影响。基于这种特性，我们还可以为其提供缓存，从而改进查询的性能。命令操作则与之相反，它会直接影响系统信息的改变。查询操作与命令操作对事务的要求也不一样。由于查询操作不会改变系统状态，因而，不会产生最终的数据不一致。从请求响应的角度来看，查询操作常常需要同步请求，实时返回结果；命令操作则不然，因为我们并不期待命令操作必须返回结果，这就可以采用fire-and-forget方式，而这种方式正是运用异步操作的前提。此外，对于大多数软件系统而言，查询操作发起的频率通常要远远高于命令操作。如上种种，都是将命令与查询进行分离的根本原因。</p>
+
+<p>这就很好地阐释了我们为何需要运用CQRS模式，同时也说明了CQRS的适用场景。</p>
+
+<!--more-->
+
+
+<p>只要充分理解了运用CQRS模式的意图，理解CQRS模式就变得容易了许多。下图是CQRS框架<a href="http://www.axonframework.org">AxonFramework</a>官方文档给出的CQRS架构图。
+<img class="center" src="/images/2012/12/cqrs-arch.png" width="613" height="434"></p>
+
+<p>在这个架构图中，最核心的概念是Command、Event。以我的理解，CQRS模式的风格源头就是基于事件的异步状态机模型。抛开命令查询分离这一核心原则，这才是CQRS的基础内容。CQRS对设计者的影响，是将领域逻辑，尤其是业务流程，皆看做是一种领域对象状态迁移的过程。这一点与REST将HTTP应用协议看做是应用状态迁移的引擎，有着异曲同工之妙。这种观点（或设计视图）引出了Command与Event的概念。Command是系统中会引起状态变化的活动，通常是一种命令语气，例如注册会议RegisterToConference。至于Event，则描述了某种事件的发生，通常是命令的结果（但并不一定是直接结果，但源头一定是因为发送了命令），例如OrderConfirmed。我发现，这种事件更接近于一种事实，即某次数据改变的结果，是一种确定无疑已经发生的事实。这一思想直接引入了Event Source，并带来Audit（审计）的好处。而它更是与<a href="http://www.datomic.com">Datomic数据库</a>的设计哲学一脉相承。Datomic的设计哲学就是：“将数据(Data)看做是事实(Fact)。每个事实都是过去的痕迹，虽然这种过去可以遗忘，但却无法改变。”Event Source可以将这些事件的发生过程记录下来，使得我们可以追溯业务流程。
+<img class="center" src="/images/2012/12/datomic.jpg" width="563" height="274"></p>
+
+<p>Command和Event都有对应的Handler来处理。它们具有一个共同的特征，即支持异步处理方式。这也是为何在架构中需要引入Command Bus和Event Bus的原因。在UI端执行命令请求，事实上就是将命令（注意，这是一个命令对象，你完全将其理解为Command模式的运用。注意，命令的命名一定要恰如其分地体现业务的意图）发送到Command Bus中。Command Bus更像是一个调停者（Mediator），在接收到Command时，会将其路由到准确的CommandHandler，由CommandHandler来处理该命令。在Axon Framework中，Command Bus提供了dispatch()方法对命令进行分发。也就是说，在它的实现中，并没有对Command提供异步处理，而仅仅是完成路由的功能。不过，在我自己的框架实现中，我却将Command Bus看做是消息通道，而将Command Handler看做是该消息通道的侦听者。因此，我引入了队列来实现Command Bus。很难说明哪种方式更合理，这还要取决于业务模型。整体来看，后一个方案似乎有些重型了。不过，我现在并未引入消息队列，而是使用了Scala的Actor，从多线程的角度来实现CommandBus的异步模型，也可以说得过去。</p>
+
+<p>Event的处理与之相似。Axon Framework同时支持同步和异步方式。从框架角度讲，提供更多的选择是一件好事。但基于CQRS模式的核心思想来看，如果对Command(包括Event)的处理未采用异步模型，它就没有发挥出足够的优势，此时采用CQRS，反而会增加设计难度，有些得不偿失。</p>
+
+<p>在Command端，基本的处理流程是由UI发起命令请求，发送到CommandBus，并由它分发给对应的Command Handler来处理命令。Command Handler会与领域对象，特别是与Aggregation Root对象通信。在处理了相关的业务逻辑后，会触发Event。一方面，它会将Event放到Event Store中；另一方面，同时会将Event发送到Event Bus，再由Event Handler处理事件。根据Axon Framework的官方文档，Event Handler会负责更新数据源，从而保证查询端能够得到最新的数据。</p>
+
+<p>然而，这一过程并不是这样简单。因为整个过程可能体现的是一个状态机。Command会导致状态的迁移，并在执行Aggregate的逻辑时，触发对应的Event。Event Handler在处理事件时，并不一定是这个业务过程的终点，它可能会发送引起下一个状态迁移的命令，从而形成一个不断迁移的过程，直至业务完全结束。这就需要我们在引入CQRS时，需要改变之前的设计思路，尽量从状态迁移的角度去理解业务逻辑。UML中的状态图是一个很好的分析工具。另外，它也带来一个挑战，就是事务。因为整个过程都涉及到数据状态的变化，当某个状态迁移出现问题时，要保证数据的最终结果是一致的。Axon Framework的解决方案是引入<a href="http://martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work模式</a>。此外，在真正实现时，究竟是由Event Handler去更新数据源，还是交由Aggregate去完成，还有待考量。我倾向于由Aggregate委派给Repository来完成。从职责分配的角度来看，这种方式更为合理。因为与数据源打交道的逻辑绝对不能太过于分散，以免数据源的改变影响到整个领域层。在DDD中，持久逻辑都是被封装到Repository（在其内部，又会委派给基础设施层中提供数据访问的对象）。换言之，这种实践是符合DDD的设计思想的。</p>
+
+<p>本文没有详细讨论Repository、Aggregate Root在引入CQRS后，二者会产生什么样的变化？此外，命令查询职责分离模式对数据源的要求，在Command端与Query端的范式已经产生了根本的区别，在设计时我们应该如何考虑？这些内容，我将在以后的博客深入分析。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[案例分析:基于消息的分布式架构]]></title>
