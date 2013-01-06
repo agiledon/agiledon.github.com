@@ -6,11 +6,12 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>Tag: Coding - 捷道</title>
+  <title>使用Homebrew在Mountain Lion上安装MySQL - 捷道</title>
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Tag: Coding">
+  <meta name="description" content="使用Homebrew在Max OS下安装，一切都变得容易了许多。你只需要知道你要安装的软件或工具的名称，然后输入一条命令行即可。不过安装MySQL就有点不一样，在输入命令行安装了MySQL之后，还需要做一些配置。 首先运行命令： 1
+$ brew install mysql &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.comblog/tags/coding/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -65,36 +66,138 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Tag: Coding</h1>
+    
+      <h1 class="entry-title">使用Homebrew在Mountain Lion上安装MySQL</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-06T13:05:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p><img class="center" src="/images/2013/01/Mountain-Lion.jpg"></p>
 
-  
-  <h2>2012</h2>
+<p>使用Homebrew在Max OS下安装，一切都变得容易了许多。你只需要知道你要安装的软件或工具的名称，然后输入一条命令行即可。不过安装MySQL就有点不一样，在输入命令行安装了MySQL之后，还需要做一些配置。</p>
 
-<article>
-  
-<h1><a href="/blog/2012/12/21/literature-and-software/">文学与软件</a></h1>
-<time datetime="2012-12-21T18:59:00+08:00" pubdate><span class='month'>Dec</span> <span class='day'>21</span> <span class='year'>2012</span></time>
+<p>首先运行命令：</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/design/'>Design</a></span>
-</footer>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install mysql</span></code></pre></td></tr></table></div></figure>
 
 
-</article>
+<p>Homebrew确实安装了MySQL，但是运行mysql命令，却并不能进入MySQL。通过在Google上查询解决方案，找到博客<a href="http://madebyhoundstooth.com/blog/install-mysql-on-mountain-lion-with-homebrew/">Install MySQL on Mountain Lion with Homebrew</a>，给出了如下的步骤：</p>
 
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p ~/Library/LaunchAgents
+</span><span class='line'>$ cp /usr/local/Cellar/mysql/5.5.25a/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
+</span><span class='line'>$ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+</span><span class='line'>
+</span><span class='line'>$ unset TMPDIR
+</span><span class='line'>$ mysql_install_db --verbose --user=`YOUR_USER_NAME` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+</span><span class='line'>
+</span><span class='line'>$ /usr/local/Cellar/mysql/5.5.25a/bin/mysqladmin -u root password 'YOUR_NEW_PASSWORD'
+</span><span class='line'>
+</span><span class='line'>$ mysql.server start</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在，你就可以运行mysql命令使用MySQL了。</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-06T13:05:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/tools/'>Tools</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/mysql/'>MySQL</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/31/basic-understanding-on-cqrs/" title="Previous Post: 对CQRS的基础理解">&laquo; 对CQRS的基础理解</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -196,7 +299,10 @@
       var disqus_shortname = 'agiledon';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
