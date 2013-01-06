@@ -4,7 +4,7 @@
   <title><![CDATA[晴窗笔记]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-01-06T16:47:59+08:00</updated>
+  <updated>2013-01-06T17:11:07+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -1998,6 +1998,107 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 
 
 <p>现在这种方式不再需要向Session存放数据，并且只用了一次请求来完成。虽然是用同步的方式进行Post，但由于post的数据最多不会超过200k，用户不会感受到很明显的阻塞现象，是完全可以接受的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[IsDefined的问题]]></title>
+    <link href="http://agiledon.github.com/blog/2011/10/11/Issue-of-isdefined/"/>
+    <updated>2011-10-11T17:06:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2011/10/11/Issue-of-isdefined</id>
+    <content type="html"><![CDATA[<p>在.NET 4.0(当然也包括4.0以前的版本)下，用反射判断某个方法是否运用了自定义Attribute时，可以通过调用MethodInfo的IsDefined()方法进行确认。当然，IsDefined()方法事实上定义在MethodInfo的父类MemberInfo中，但它仅仅被定义为抽象方法，真正的实现是在MethodInfo的子类DynamicMethod中。调用方式如下所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">methodInfo</span><span class="p">.</span><span class="n">IsDefined</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MyAttribute</span><span class="p">),</span> <span class="k">false</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然而，在实际开发中，我发现该方法有一个问题。如果获得MethodInfo的方式是通过加载程序集，然后利用反射方式获得的MethodInfo对象，即使该方法运用了自定义Attribute，返回的结果仍然是false。例如，我们将需要判断的方法所在的类定义到一个单独的Project中，并编译为单独的dll文件，然后，利用Assembly的LoadFile()方式获得程序集：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="kt">var</span> <span class="n">assembly</span> <span class="p">=</span> <span class="n">Assembly</span><span class="p">.</span><span class="n">LoadFile</span><span class="p">(</span><span class="n">assemblyPath</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">types</span> <span class="p">=</span> <span class="n">assembly</span><span class="p">.</span><span class="n">GetExportedTypes</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">types</span><span class="p">.</span><span class="n">ToList</span><span class="p">().</span><span class="n">ForEach</span><span class="p">(</span>
+</span><span class='line'>      <span class="n">type</span> <span class="p">=&gt;</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="kt">var</span> <span class="n">flag</span> <span class="p">=</span>
+</span><span class='line'>              <span class="n">type</span><span class="p">.</span><span class="n">GetMethods</span><span class="p">().</span><span class="n">Where</span><span class="p">(</span><span class="n">methodInfo</span> <span class="p">=&gt;</span> <span class="p">!</span><span class="n">methodInfo</span><span class="p">.</span><span class="n">IsAbstract</span><span class="p">).</span><span class="n">Any</span><span class="p">(</span>
+</span><span class='line'>                  <span class="n">methodInfo</span> <span class="p">=&gt;</span> <span class="n">methodInfo</span><span class="p">.</span><span class="n">IsDefined</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MyAttribute</span><span class="p">),</span> <span class="k">false</span><span class="p">));</span>
+</span><span class='line'>          <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Flag of IsDefined is: {0}&quot;</span><span class="p">,</span> <span class="n">flag</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>打印出来的值为false。</p>
+
+<!--more-->
+
+
+<p>反之，如果不是通过加载程序集，而是直接通过typeof()获得的Type，并调用其下MethodInfo.IsDefined()方法，只要该方法被运用了指定的Attribute，返回的结果则为true。</p>
+
+<p>分析原因，大约是获得Type的方式不同所造成的。Assembly类的GetExportedType()实现如下所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[SecuritySafeCritical]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">override</span> <span class="n">Type</span><span class="p">[]</span> <span class="nf">GetExportedTypes</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Type</span><span class="p">[]</span> <span class="n">o</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">GetExportedTypes</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">GetNativeHandle</span><span class="p">(),</span> <span class="n">JitHelpers</span><span class="p">.</span><span class="n">GetObjectHandleOnStack</span><span class="p">&lt;</span><span class="n">Type</span><span class="p">[]&gt;(</span><span class="k">ref</span> <span class="n">o</span><span class="p">));</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，这里返回的Type[]事实上是通过引用方式传递给了JitHelpers的GetObjectHandleOnStack&lt;Type[]>方法中：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TargetedPatchingOptOut(&quot;Performance critical to inline across NGen image boundaries&quot;), SecurityCritical]</span>
+</span><span class='line'><span class="k">internal</span> <span class="k">static</span> <span class="n">ObjectHandleOnStack</span> <span class="n">GetObjectHandleOnStack</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">ref</span> <span class="n">T</span> <span class="n">o</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">class</span>
+</span><span class='line'><span class="err">{</span>
+</span><span class='line'>    <span class="n">TypedReference</span> <span class="n">reference</span> <span class="p">=</span> <span class="n">__makeref</span><span class="p">(</span><span class="n">o</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nf">ObjectHandleOnStack</span><span class="p">(</span><span class="n">reference</span><span class="p">.</span><span class="n">GetPointerOnStack</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里将Type转换成了TypedReference。关键大约就是这里，可惜我无法找到typeof()的具体实现方式。代码追踪到这里，就无法判断这里发生的真实原因了。若要了解.NET底层机制的同学，可以告诉我。</p>
+
+<p>若要解决反射方式无法通过IsDefined()判断的问题，可以调用MethodInfo的GetCustomAttribute()方法。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">IsAppliedWith</span><span class="p">(</span><span class="k">this</span> <span class="n">MethodInfo</span> <span class="n">methodInfo</span><span class="p">,</span> <span class="n">Type</span> <span class="n">attributeType</span><span class="p">,</span> <span class="kt">string</span> <span class="n">attributeName</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">methodInfo</span><span class="p">.</span><span class="n">GetCustomAttributes</span><span class="p">(</span><span class="n">attributeType</span><span class="p">,</span> <span class="k">false</span><span class="p">).</span><span class="n">ToString</span><span class="p">().</span><span class="n">Contains</span><span class="p">(</span><span class="n">attributeName</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>无论是利用反射加载，还是使用typeof，采用这种方式判断方法是否运用了指定的Attribute，都是能够生效的。</p>
 ]]></content>
   </entry>
   
