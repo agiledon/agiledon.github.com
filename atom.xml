@@ -4,7 +4,7 @@
   <title><![CDATA[晴窗笔记]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-01-06T14:09:36+08:00</updated>
+  <updated>2013-01-06T16:47:59+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -1998,6 +1998,53 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 
 
 <p>现在这种方式不再需要向Session存放数据，并且只用了一次请求来完成。虽然是用同步的方式进行Post，但由于post的数据最多不会超过200k，用户不会感受到很明显的阻塞现象，是完全可以接受的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[设计恰如其分的架构]]></title>
+    <link href="http://agiledon.github.com/blog/2011/10/10/design-just-enough-architecture/"/>
+    <updated>2011-10-10T16:35:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2011/10/10/design-just-enough-architecture</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2011/10/justenough01.png"></p>
+
+<p>Thoughtworks的Sam Newman在Mythoughtworks的Software Development小组中给出了Evolutionary Architecture的一些资源。其中一个是Martin Fowler与Rebecca Parsons在QCon SF 2009的一次演讲，题目为<a href="http://www.infoq.com/presentations/agilists-and-architects">Agilists and Architects: Allies not Adversaries Presentation</a>。演讲主要谈到了在敏捷方法中的架构活动（在Martin Fowler的演讲中，播放了黑客帝国中的一个片段，很有意思）。另一个资源则是同样作为thoughtworker的Neal Ford在IBM developerWorks发表的<a href="http://www.ibm.com/developerworks/cn/java/j-eaed1/">Evelutionary Architecture and Emergent Design(演进架构与紧急设计)</a>系列。这是很棒的一个讲解演进架构的系列文章，谈到了TDD、代码复用、连贯接口、DSL、重构、惯用法模式、指标等与演进架构和紧急设计有关的内容。</p>
+
+<!--more-->
+
+
+<p><img class="left" src="http://agiledon.github.com/images/2011/10/justenough02.png">
+事实上，关于演进式架构已经是老调重弹。Martin Fowler在2004年发表的文章<a href="http://martinfowler.com/articles/designDead.html">Is Design Dead</a>中谈到了计划式设计与演进式设计之间的区别。在我的书《<a href="http://product.china-pub.com/196623&amp;ref=xilie">软件设计精要与模式</a>》第一章中，也简单阐述了我对二者的理解。书中给出了一个建筑学的隐喻：拙政园与周庄。拙政园是计划式设计的典范，没有详尽的计划，也许就不会有疏朗典雅的拙政园。周庄却并非某人在某一时刻灵感捕捉后的设计成果，而是经历了数百年的历史沧桑，渐进地增添与更替各种建筑，最后形成现在这般灵秀的水乡风貌。在书中，我写道：</p>
+
+<p>演进的设计，同样需要遵循架构设计的基本准则，它与计划的设计唯一的区别是设计的目标。演进的设计提倡满足客户现有的需求；而计划的设计则需要考虑未来的功能扩展。演进的设计推崇尽快地实现，追求快速确定解决方案，快速编码以及快速实现；而计划的设计则需要考虑计划的周密性，架构的完整性并保证开发过程的有条不紊。</p>
+
+<p>最近正在阅读George Fairbanks的著作<a href="http://www.amazon.com/Just-Enough-Software-Architecture-Risk-Driven/dp/0984618104">Just Enough Software Architecture</a>，书中除了计划式设计和演进式设计之外，还提到了第三种设计：Minimal planned design（最小计划设计），这算是一种中庸之道的选择。书中认为，演进式设计需要与一些敏捷实践配合，包括重构、测试驱动设计与持续集成（evolutionary design must be paired with supporting practices like refactoring, test-driven design, and continuous integration.）George认为计划式设计背后隐藏的思想是在构造开始之前，制订的计划可以设计出很好的细节（The general idea behind planned design is that plans are worked out in great detail before construction begins）。他还提到：</p>
+
+<p>当架构为并行的多个团队所共享时，计划式架构设计就具有实践意义，在子团队开始工作之前，这种计划式设计颇有效用（Planned architecture design is also practical when an architecture is shared by many teams working in parallel, and therefore useful to know before the sub-teams start working）。</p>
+
+<p><img class="right" src="http://agiledon.github.com/images/2011/10/justenough03.png">
+书中还写道：（对于多团队开发而言）计划式架构定义了高层的组件与连接器，并与局部的设计相匹配，而子团队则设计这些组件与连接器的内部模型。架构常常会保证整体的不变量与设计决策，例如建立并发策略、连接器的标准集、分配高层职责或定义某些局部的质量属性场景（a planned architecture that define the top-level components and connectors can be paired with local designs, where sub-teams design the internal models of the components and connectors. The architecture usually insists on some overall invariants and design decisions, such as setting up a concurrency policy, a standard set of connectors, allocating high-level responsibilities, or defining some localized quality attribute scenarios）。</p>
+
+<p>至于最小计划设计，则介乎于演进式设计与计划式设计之间。支持这种设计的人认为：如果完全采取演进式设计，可能会使得设计走向死胡同；而计划式设计又非常难，因为事先对系统并没有全面的了解，可能导致设计错误。在2002年Bill Venners对Martin Fowler的采访中，Martin Fowler认为，最合理的分配是20%的计划式设计，80%的演进式设计（I think 80 percent of the time evolutionary design works for me as well. ）。在George的书中，作者认为需要权衡计划式与演进式设计。一种做法是在项目初期进行计划式设计，确保架构能够处理最大的风险。之后，就可以通过局部的设计来应对需求的变化，或者采用演进式设计，通过推行重构、测试驱动设计与持续集成对架构进行演化。</p>
+
+<p>整体而言，这三种方式的设计各有优劣，我们应根据具体的场景，具体的项目，具体的团队进行针对性地分析。应该把握“因地制宜”的原则，认识到不同的项目需要不同的设计方式。对于不同的开发团队，做出的选择也会不同。例如，如果开发团队精于重构、测试驱动设计，并能很好地实施持续集成，就可以考虑采用演进式设计或最小计划设计。当然，就我个人的意见，比较倾向于Minimal planned design。至于它在演进式设计与计划式设计之前的权衡，不必完全照搬Martin Fowler给出的比例。</p>
+
+<p>在Sam Newman给出的演进式架构资源中，还有一篇<a href="http://www.codingthearchitecture.com/index.html">coding the architecture</a>的文章<a href="http://www.codingthearchitecture.com/pages/book/just-enough-architecture.html">Just enough architecture</a>。这篇文章则从方法学的角度分析来如何获得恰如其分的架构。这是文章中非常漂亮的一幅图：
+<img class="center" src="http://agiledon.github.com/images/2011/10/justenough04.png"></p>
+
+<p>文章以及上图所表达出来的含义是：传统的瀑布式采取事先设计的做法，可以认为是计划式设计；敏捷方法学倾向于演进式设计；处于其中的RUP则更像是前面提到的最小计划设计。文中主要还是关注我们在架构过程中如何做到架构的“just enough”。事实上，这一观点在George Fairbanks的著作Just enough software architecture中被反复提到，要做到这一点，就需要采用风险驱动模型（Risk-Driven Model）。RDM的架构步骤分为三步：</p>
+
+<ol>
+<li><p>识别风险并进行优先级排列</p></li>
+<li><p>选择并应用相关技术</p></li>
+<li><p>评估风险是否降低</p></li>
+</ol>
+
+
+<p>其实风险驱动模型的三个步骤很容易理解，关键是我们应该如何识别风险，如何排列优先级，又该如何确定解决或控制风险的技术，并进行合理地评估，这是风险驱动模型的难点。我认为RDM带来的益处在于它给出了一个非常具有实践意义的驱动原则与方法，它告诉架构师，当我们在对系统进行架构时，需要从一开始就要重视风险，例如系统的安全性、可伸缩性、安全等诸多与质量属性有关的技术风险。个人认为：风险驱动加上场景驱动，以及技术约束，就等于敏捷架构。大体如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2011/10/justenough05.png"></p>
+
+<p>风险驱动主要用于处理质量属性相关的架构内容，而场景驱动则用于处理与功能需求相关的架构内容，而技术约束则是架构层面，可能是产品线、环境等能够对系统架构产生直接影响的约束因素。至于敏捷架构的目标，就是设计恰如其分的架构。</p>
 ]]></content>
   </entry>
   
