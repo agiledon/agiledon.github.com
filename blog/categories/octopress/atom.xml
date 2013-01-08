@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | 晴窗笔记]]></title>
   <link href="http://agiledon.github.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-01-06T17:11:07+08:00</updated>
+  <updated>2013-01-08T17:12:42+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,345 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[为Octopress创建Tag]]></title>
+    <link href="http://agiledon.github.com/blog/2013/01/08/create-tag-for-octopress/"/>
+    <updated>2013-01-08T15:55:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/01/08/create-tag-for-octopress</id>
+    <content type="html"><![CDATA[<p>Octopress本身并不支持生成Tag，而仅仅支持Category。许多为Octopress提供的Tag Cloud，事实上一种假象，乃Category Cloud。对于博客分类而言，Tag与Category完全是不同的维度。Octopress的Category原理，事实上就是在博客目录下建立对应的Category目录，我们完全可以照搬此做法，简单改造，就可以支持Tag了。当然，为了在博客上生成Tag Cloud，自然还需要使用一些现有的插件。</p>
+
+<h3>准备</h3>
+
+<p>Octopress有一个第三方插件<a href="https://github.com/bizkit/octopress-cumulus">octopress-cumulus</a>，可以生成酷酷的3D Tag Cloud。当然，本质上，这还是Category Cloud。但它的效果可以为我使用。因此，先按照该插件的要求，下载对应的文件。最重要的两个文件是source/javascripts目录下的tagcloud.swf与plugin目录下的category_cloud.rb。前者是生成3D效果的Flash；后者则是读取Category信息到swf中的插件。至于source/_includes/custom/asides/目录下的category_cloud.html文件，则是用于显示边栏的Tag Cloud效果。</p>
+
+<!--more-->
+
+
+<h3>生成Tag</h3>
+
+<p>Octopress用于生成Category的ruby文件放在plugin中，文件名为category_generator.rb。参考该文件，我们可以实现自己的tag_generator.rb。它们之间有许多相似之处，若要避免重复代码，完全可以做一些公共实现的提取。无奈，我们也不能直接去改category_generator.rb，所以就采用了最偷懒的办法。先复制文件，然后再将与Category有关的为Tag。原理完全一样，就是读取markdown里设置的tags标签值，为tag生成对应的目录。代码如下：
+```ruby tag_generator.rb
+module Jekyll</p>
+
+<p>  # The TagIndex class creates a single tag page for the specified tag.
+  class TagIndex &lt; Page</p>
+
+<pre><code># Initializes a new TagIndex.
+#
+#  +base+         is the String path to the &lt;source&gt;.
+#  +tag_dir+ is the String path between &lt;source&gt; and the tag folder.
+#  +tag+     is the tag currently being processed.
+def initialize(site, base, tag_dir, tag)
+  @site = site
+  @base = base
+  @dir  = tag_dir
+  @name = 'index.html'
+  self.process(@name)
+  # Read the YAML data from the layout page.
+  self.read_yaml(File.join(base, '_layouts'), 'tag_index.html')
+  self.data['tag']    = tag
+  # Set the title for this page.
+  title_prefix             = site.config['tag_title_prefix'] || 'Tag: '
+  self.data['title']       = "#{title_prefix}#{tag}"
+  # Set the meta-description for this page.
+  meta_description_prefix  = site.config['tag_meta_description_prefix'] || 'Tag: '
+  self.data['description'] = "#{meta_description_prefix}#{tag}"
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>  # The tagFeed class creates an Atom feed for the specified tag.
+  class TagFeed &lt; Page</p>
+
+<pre><code># Initializes a new tagFeed.
+#
+#  +base+         is the String path to the &lt;source&gt;.
+#  +tag_dir+ is the String path between &lt;source&gt; and the tag folder.
+#  +tag+     is the tag currently being processed.
+def initialize(site, base, tag_dir, tag)
+  @site = site
+  @base = base
+  @dir  = tag_dir
+  @name = 'atom.xml'
+  self.process(@name)
+  # Read the YAML data from the layout page.
+  self.read_yaml(File.join(base, '_includes/custom'), 'tag_feed.xml')
+  self.data['tag']    = tag
+  # Set the title for this page.
+  title_prefix             = site.config['tag_title_prefix'] || 'Tag: '
+  self.data['title']       = "#{title_prefix}#{tag}"
+  # Set the meta-description for this page.
+  meta_description_prefix  = site.config['tag_meta_description_prefix'] || 'Tag: '
+  self.data['description'] = "#{meta_description_prefix}#{tag}"
+
+  # Set the correct feed URL.
+  self.data['feed_url'] = "#{tag_dir}/#{name}"
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>  # The Site class is a built-in Jekyll class with access to global site config information.
+  class Site</p>
+
+<pre><code># Creates an instance of tagIndex for each tag page, renders it, and
+# writes the output to a file.
+#
+#  +tag_dir+ is the String path to the tag folder.
+#  +tag+     is the tag currently being processed.
+def write_tag_index(tag_dir, tag)
+  index = TagIndex.new(self, self.source, tag_dir, tag)
+  index.render(self.layouts, site_payload)
+  index.write(self.dest)
+  # Record the fact that this page has been added, otherwise Site::cleanup will remove it.
+  self.pages &lt;&lt; index
+
+  # Create an Atom-feed for each index.
+  feed = TagFeed.new(self, self.source, tag_dir, tag)
+  feed.render(self.layouts, site_payload)
+  feed.write(self.dest)
+  # Record the fact that this page has been added, otherwise Site::cleanup will remove it.
+  self.pages &lt;&lt; feed
+end
+
+# Loops through the list of tag pages and processes each one.
+def write_tag_indexes
+  if self.layouts.key? 'tag_index'
+    dir = self.config['tag_dir'] || 'tags'
+    self.tags.keys.each do |tag|
+      self.write_tag_index(File.join(dir, tag.gsub(/_|\P{Word}/, '-').gsub(/-{2,}/, '-').downcase), tag)
+    end
+
+  # Throw an exception if the layout couldn't be found.
+  else
+    throw "No 'tag_index' layout found."
+  end
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>  # Jekyll hook - the generate method is called by jekyll, and generates all of the tag pages.
+  class GenerateTags &lt; Generator</p>
+
+<pre><code>safe true
+priority :low
+
+def generate(site)
+  site.write_tag_indexes
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>  # Adds some extra filters used during the tag creation process.
+  module Filters</p>
+
+<pre><code># Outputs a list of tags as comma-separated &lt;a&gt; links. This is used
+# to output the tag list for each post on a tag page.
+#
+#  +tags+ is the list of tags to format.
+#
+# Returns string
+#
+def tag_links(tags)
+  dir = @context.registers[:site].config['tag_dir']
+  tags = tags.sort!.map do |item|
+    "&lt;a class='category' href='http://agiledon.github.com/#{dir}/#{item.gsub(/_|\P{Word}/, '-').gsub(/-{2,}/, '-').downcase}/'&gt;#{item}&lt;/a&gt;"
+  end
+
+  case tags.length
+  when 0
+    ""
+  when 1
+    tags[0].to_s
+  else
+    "#{tags[0...-1].join(', ')}, #{tags[-1]}"
+  end
+end
+
+# Outputs the post.date as formatted html, with hooks for CSS styling.
+#
+#  +date+ is the date object to format as HTML.
+#
+# Returns string
+def date_to_html_string(date)
+  result = '&lt;span class="month"&gt;' + date.strftime('%b').upcase + '&lt;/span&gt; '
+  result += date.strftime('&lt;span class="day"&gt;%d&lt;/span&gt; ')
+  result += date.strftime('&lt;span class="year"&gt;%Y&lt;/span&gt; ')
+  result
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>end
+```</p>
+
+<p>有了这个ruby文件，当我们在执行rake generate时，就可以生成对应的tag了。</p>
+
+<h3>生成Tag Cloud</h3>
+
+<p>有了生成好的tag，就可以生成Tag Cloud。现在，先将octopress-cumulus插件提供的category_cloud.rb改名为tag_cloud.rb，以避免混淆试听。然后再修改它的实现。基本原理就是将category相关的信息如category_dir改为与Tag有关的。还是直接将修改后的内容送上吧：
+```ruby tag_cloud.rb  <br/>
+module Jekyll</p>
+
+<p>  class TagCloud &lt; Liquid::Tag</p>
+
+<pre><code>def initialize(tag_name, markup, tokens)
+  @opts = {}
+  @opts['bgcolor'] = '#ffffff'
+  @opts['tcolor1'] = '#333333'
+  @opts['tcolor2'] = '#333333'
+  @opts['hicolor'] = '#000000'
+
+  opt_names = ['bgcolor', 'tcolor1', 'tcolor2', 'hicolor']
+
+  opt_names.each do |opt_name|
+      if markup.strip =~ /\s*#{opt_name}:(#[0-9a-fA-F]+)/iu
+        @opts[opt_name] = $1
+        markup = markup.strip.sub(/#{opt_name}:\w+/iu,'')
+      end
+  end
+
+  opt_names = opt_names[1..3]
+  opt_names.each do |opt_name|
+      @opts[opt_name] = '0x' + @opts[opt_name][1..8]
+  end
+
+  super
+end
+
+def render(context)
+  lists = {}
+  max, min = 1, 1
+  config = context.registers[:site].config
+  tag_dir = config['url'] + config['root'] + config['tag_dir'] + '/'
+  tags = context.registers[:site].tags
+  tags.keys.sort_by{ |str| str.downcase }.each do |tag|
+    count = tags[tag].count
+    lists[tag] = count
+    max = count if count &gt; max
+  end
+
+  bgcolor = @opts['bgcolor']
+
+  bgcolor = @opts['bgcolor']
+  tcolor1 = @opts['tcolor1']
+  tcolor2 = @opts['tcolor2']
+  hicolor = @opts['hicolor']
+
+  html = ''
+  html &lt;&lt; "&lt;embed type='application/x-shockwave-flash' src='http://agiledon.github.com/javascripts/tagcloud.swf'"
+  html &lt;&lt; "width='100%' height='250' bgcolor='#{bgcolor}' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'"
+
+  html &lt;&lt; 'flashvars="'
+  html &lt;&lt; "tcolor=#{tcolor1}&amp;amp;tcolor2=#{tcolor2}&amp;amp;hicolor=#{hicolor}&amp;amp;tspeed=100&amp;amp;distr=true&amp;amp;mode=tags&amp;amp;"
+
+  html &lt;&lt; 'tagcloud='
+
+  tagcloud = ''
+  tagcloud &lt;&lt; '&lt;tags&gt;'
+
+
+  lists.each do | tag, counter |
+    url = tag_dir + tag.gsub(/_|\P{Word}/u, '-').gsub(/-{2,}/u, '-').downcase
+    style = "font-size: #{10 + (40 * Float(counter)/max)}%"
+
+    tagcloud &lt;&lt; "&lt;a href='#{url}' style='#{style}'&gt;#{tag}"
+    tagcloud &lt;&lt; "&lt;/a&gt; "
+
+  end
+
+  tagcloud &lt;&lt; '&lt;/tags&gt;'
+
+  # tagcloud urlencode
+  tagcloud = CGI.escape(tagcloud)
+
+  html &lt;&lt; tagcloud
+  html &lt;&lt; '"&gt;'
+  html
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>Liquid::Template.register_tag('tag_cloud', Jekyll::TagCloud)
+```</p>
+
+<p>Octopress是将Category写到了blog/categories下，因此我将Tag写到了blog/tags下。这就是上面代码中tag_dir的值。这个值应该配置在_config.yml下：如下所示：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>category_dir: blog/categories
+</span><span class='line'>tag_dir: blog/tags</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>同样的，你也可以把custom\asides下的category_cloud.html改为tag_cloud.html。当然，要记住，改名后，还需要到_config.yml的asides设置中做相应修改。</p>
+
+<h3>扫尾工作</h3>
+
+<p>现在，博客右侧的Tag Cloud应该可以工作了。但是，当你去单击某个Tag时，会出现404页面。此外，每篇博客下面仅显示了Category的信息。该怎么解决？</p>
+
+<p>首先，你需要转到source/_layouts/文件夹下，复制category_index.html文件，更名为tag_index.html文件，将div内的内容修改为：
+
+```html tag_index.html</p>
+
+<div id="blog-archives" class="category">
+{% for post in site.tags[page.tag] %}
+{% capture this_year %}{{ post.date | date: "%Y" }}{% endcapture %}
+{% unless year == this_year %}
+  {% assign year = this_year %}
+  <h2>{{ year }}</h2>
+{% endunless %}
+<article>
+  {% include archive_post.html %}
+</article>
+{% endfor %}
+</div>
+
+
+<p>```
+</p>
+
+<p>仍然在该文件夹下，打开post.html文件，在footer节对应的Category下方，增加如下内容：
+
+```html post.html</p>
+
+<pre><code>&lt;p class="meta"&gt;
+  Tags: {% include post/tags.html %}
+&lt;/p&gt;
+</code></pre>
+
+<p>```
+</p>
+
+<p>接下来，转到source/_includes/post/目录下，创建tags.html文件，内容为：
+
+```html tags.html
+{% capture tag %}{% if post %}{{ post.tags | tag_links | size }}{% else %}{{ page.tags | tag_links | size }}{% endif %}{% endcapture %}
+{% unless tag == '0' %}
+<span class="categories">
+  {% if post %}</p>
+
+<pre><code>{{ post.tags | tag_links }}
+</code></pre>
+
+<p>  {% else %}</p>
+
+<pre><code>{{ page.tags | tag_links }}
+</code></pre>
+
+<p>  {% endif %}
+</span>
+{% endunless %}
+```
+</p>
+
+<p>若要支持Tag的Feed，还可以在source/_includes/custom目录下模仿category_feed.xml，创建一个tag_feed.xml。这里就不再赘述。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Octopress的新浪微博插件]]></title>

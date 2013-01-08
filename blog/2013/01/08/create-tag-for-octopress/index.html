@@ -1,0 +1,868 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>为Octopress创建Tag - 晴窗笔记</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="Octopress本身并不支持生成Tag，而仅仅支持Category。许多为Octopress提供的Tag Cloud，事实上一种假象，乃Category Cloud。对于博客分类而言，Tag与Category完全是不同的维度。Octopress的Category原理， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/01/08/create-tag-for-octopress/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="晴窗笔记" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">晴窗笔记</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">为Octopress创建Tag</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-08T15:55:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Octopress本身并不支持生成Tag，而仅仅支持Category。许多为Octopress提供的Tag Cloud，事实上一种假象，乃Category Cloud。对于博客分类而言，Tag与Category完全是不同的维度。Octopress的Category原理，事实上就是在博客目录下建立对应的Category目录，我们完全可以照搬此做法，简单改造，就可以支持Tag了。当然，为了在博客上生成Tag Cloud，自然还需要使用一些现有的插件。</p>
+
+<h3>准备</h3>
+
+<p>Octopress有一个第三方插件<a href="https://github.com/bizkit/octopress-cumulus">octopress-cumulus</a>，可以生成酷酷的3D Tag Cloud。当然，本质上，这还是Category Cloud。但它的效果可以为我使用。因此，先按照该插件的要求，下载对应的文件。最重要的两个文件是source/javascripts目录下的tagcloud.swf与plugin目录下的category_cloud.rb。前者是生成3D效果的Flash；后者则是读取Category信息到swf中的插件。至于source/_includes/custom/asides/目录下的category_cloud.html文件，则是用于显示边栏的Tag Cloud效果。</p>
+
+<!--more-->
+
+
+<h3>生成Tag</h3>
+
+<p>Octopress用于生成Category的ruby文件放在plugin中，文件名为category_generator.rb。参考该文件，我们可以实现自己的tag_generator.rb。它们之间有许多相似之处，若要避免重复代码，完全可以做一些公共实现的提取。无奈，我们也不能直接去改category_generator.rb，所以就采用了最偷懒的办法。先复制文件，然后再将与Category有关的为Tag。原理完全一样，就是读取markdown里设置的tags标签值，为tag生成对应的目录。代码如下：</p>
+
+<figure class='code'><figcaption><span>tag_generator.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Jekyll</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># The TagIndex class creates a single tag page for the specified tag.</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">TagIndex</span> <span class="o">&lt;</span> <span class="no">Page</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Initializes a new TagIndex.</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="c1">#  +base+         is the String path to the &lt;source&gt;.</span>
+</span><span class='line'>    <span class="c1">#  +tag_dir+ is the String path between &lt;source&gt; and the tag folder.</span>
+</span><span class='line'>    <span class="c1">#  +tag+     is the tag currently being processed.</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">tag_dir</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@site</span> <span class="o">=</span> <span class="n">site</span>
+</span><span class='line'>      <span class="vi">@base</span> <span class="o">=</span> <span class="n">base</span>
+</span><span class='line'>      <span class="vi">@dir</span>  <span class="o">=</span> <span class="n">tag_dir</span>
+</span><span class='line'>      <span class="vi">@name</span> <span class="o">=</span> <span class="s1">&#39;index.html&#39;</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="vi">@name</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># Read the YAML data from the layout page.</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">read_yaml</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="s1">&#39;_layouts&#39;</span><span class="p">),</span> <span class="s1">&#39;tag_index.html&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s1">&#39;tag&#39;</span><span class="o">]</span>    <span class="o">=</span> <span class="n">tag</span>
+</span><span class='line'>      <span class="c1"># Set the title for this page.</span>
+</span><span class='line'>      <span class="n">title_prefix</span>             <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;tag_title_prefix&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;Tag: &#39;</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span>       <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">title_prefix</span><span class="si">}#{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="c1"># Set the meta-description for this page.</span>
+</span><span class='line'>      <span class="n">meta_description_prefix</span>  <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;tag_meta_description_prefix&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;Tag: &#39;</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s1">&#39;description&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">meta_description_prefix</span><span class="si">}#{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># The tagFeed class creates an Atom feed for the specified tag.</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">TagFeed</span> <span class="o">&lt;</span> <span class="no">Page</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Initializes a new tagFeed.</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="c1">#  +base+         is the String path to the &lt;source&gt;.</span>
+</span><span class='line'>    <span class="c1">#  +tag_dir+ is the String path between &lt;source&gt; and the tag folder.</span>
+</span><span class='line'>    <span class="c1">#  +tag+     is the tag currently being processed.</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">tag_dir</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@site</span> <span class="o">=</span> <span class="n">site</span>
+</span><span class='line'>      <span class="vi">@base</span> <span class="o">=</span> <span class="n">base</span>
+</span><span class='line'>      <span class="vi">@dir</span>  <span class="o">=</span> <span class="n">tag_dir</span>
+</span><span class='line'>      <span class="vi">@name</span> <span class="o">=</span> <span class="s1">&#39;atom.xml&#39;</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="vi">@name</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># Read the YAML data from the layout page.</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">read_yaml</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="s1">&#39;_includes/custom&#39;</span><span class="p">),</span> <span class="s1">&#39;tag_feed.xml&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s1">&#39;tag&#39;</span><span class="o">]</span>    <span class="o">=</span> <span class="n">tag</span>
+</span><span class='line'>      <span class="c1"># Set the title for this page.</span>
+</span><span class='line'>      <span class="n">title_prefix</span>             <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;tag_title_prefix&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;Tag: &#39;</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span>       <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">title_prefix</span><span class="si">}#{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="c1"># Set the meta-description for this page.</span>
+</span><span class='line'>      <span class="n">meta_description_prefix</span>  <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;tag_meta_description_prefix&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;Tag: &#39;</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s1">&#39;description&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">meta_description_prefix</span><span class="si">}#{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># Set the correct feed URL.</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">data</span><span class="o">[</span><span class="s1">&#39;feed_url&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">tag_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># The Site class is a built-in Jekyll class with access to global site config information.</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Site</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Creates an instance of tagIndex for each tag page, renders it, and</span>
+</span><span class='line'>    <span class="c1"># writes the output to a file.</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="c1">#  +tag_dir+ is the String path to the tag folder.</span>
+</span><span class='line'>    <span class="c1">#  +tag+     is the tag currently being processed.</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">write_tag_index</span><span class="p">(</span><span class="n">tag_dir</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">index</span> <span class="o">=</span> <span class="no">TagIndex</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="nb">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">tag_dir</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">index</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">layouts</span><span class="p">,</span> <span class="n">site_payload</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">index</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># Record the fact that this page has been added, otherwise Site::cleanup will remove it.</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">&lt;&lt;</span> <span class="n">index</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># Create an Atom-feed for each index.</span>
+</span><span class='line'>      <span class="n">feed</span> <span class="o">=</span> <span class="no">TagFeed</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="nb">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">tag_dir</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">feed</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">layouts</span><span class="p">,</span> <span class="n">site_payload</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">feed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># Record the fact that this page has been added, otherwise Site::cleanup will remove it.</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">&lt;&lt;</span> <span class="n">feed</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Loops through the list of tag pages and processes each one.</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">write_tag_indexes</span>
+</span><span class='line'>      <span class="k">if</span> <span class="nb">self</span><span class="o">.</span><span class="n">layouts</span><span class="o">.</span><span class="n">key?</span> <span class="s1">&#39;tag_index&#39;</span>
+</span><span class='line'>        <span class="n">dir</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;tag_dir&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;tags&#39;</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">tag</span><span class="o">|</span>
+</span><span class='line'>          <span class="nb">self</span><span class="o">.</span><span class="n">write_tag_index</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir</span><span class="p">,</span> <span class="n">tag</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/_|\P{Word}/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/-{2,}/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">downcase</span><span class="p">),</span> <span class="n">tag</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># Throw an exception if the layout couldn&#39;t be found.</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="kp">throw</span> <span class="s2">&quot;No &#39;tag_index&#39; layout found.&quot;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Jekyll hook - the generate method is called by jekyll, and generates all of the tag pages.</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">GenerateTags</span> <span class="o">&lt;</span> <span class="no">Generator</span>
+</span><span class='line'>    <span class="n">safe</span> <span class="kp">true</span>
+</span><span class='line'>    <span class="n">priority</span> <span class="ss">:low</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">site</span><span class="o">.</span><span class="n">write_tag_indexes</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Adds some extra filters used during the tag creation process.</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Filters</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Outputs a list of tags as comma-separated &lt;a&gt; links. This is used</span>
+</span><span class='line'>    <span class="c1"># to output the tag list for each post on a tag page.</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="c1">#  +tags+ is the list of tags to format.</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="c1"># Returns string</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">tag_links</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">dir</span> <span class="o">=</span> <span class="vi">@context</span><span class="o">.</span><span class="n">registers</span><span class="o">[</span><span class="ss">:site</span><span class="o">].</span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;tag_dir&#39;</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">tags</span> <span class="o">=</span> <span class="n">tags</span><span class="o">.</span><span class="n">sort!</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">item</span><span class="o">|</span>
+</span><span class='line'>        <span class="s2">&quot;&lt;a class=&#39;category&#39; href=&#39;/</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">item</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/_|\P{Word}/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/-{2,}/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">downcase</span><span class="si">}</span><span class="s2">/&#39;&gt;</span><span class="si">#{</span><span class="n">item</span><span class="si">}</span><span class="s2">&lt;/a&gt;&quot;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">case</span> <span class="n">tags</span><span class="o">.</span><span class="n">length</span>
+</span><span class='line'>      <span class="k">when</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="s2">&quot;&quot;</span>
+</span><span class='line'>      <span class="k">when</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="n">tags</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">to_s</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="s2">&quot;</span><span class="si">#{</span><span class="n">tags</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">-</span><span class="mi">1</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="n">tags</span><span class="o">[-</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># Outputs the post.date as formatted html, with hooks for CSS styling.</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="c1">#  +date+ is the date object to format as HTML.</span>
+</span><span class='line'>    <span class="c1">#</span>
+</span><span class='line'>    <span class="c1"># Returns string</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">date_to_html_string</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;&lt;span class=&quot;month&quot;&gt;&#39;</span> <span class="o">+</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%b&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upcase</span> <span class="o">+</span> <span class="s1">&#39;&lt;/span&gt; &#39;</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">+=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;&lt;span class=&quot;day&quot;&gt;%d&lt;/span&gt; &#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">+=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;&lt;span class=&quot;year&quot;&gt;%Y&lt;/span&gt; &#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">result</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了这个ruby文件，当我们在执行rake generate时，就可以生成对应的tag了。</p>
+
+<h3>生成Tag Cloud</h3>
+
+<p>有了生成好的tag，就可以生成Tag Cloud。现在，先将octopress-cumulus插件提供的category_cloud.rb改名为tag_cloud.rb，以避免混淆试听。然后再修改它的实现。基本原理就是将category相关的信息如category_dir改为与Tag有关的。还是直接将修改后的内容送上吧：</p>
+
+<figure class='code'><figcaption><span>tag_cloud.rb   </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Jekyll</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">TagCloud</span> <span class="o">&lt;</span> <span class="no">Liquid</span><span class="o">::</span><span class="no">Tag</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">markup</span><span class="p">,</span> <span class="n">tokens</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@opts</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>      <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;bgcolor&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;#ffffff&#39;</span>
+</span><span class='line'>      <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;tcolor1&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;#333333&#39;</span>
+</span><span class='line'>      <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;tcolor2&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;#333333&#39;</span>
+</span><span class='line'>      <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;hicolor&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;#000000&#39;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">opt_names</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;bgcolor&#39;</span><span class="p">,</span> <span class="s1">&#39;tcolor1&#39;</span><span class="p">,</span> <span class="s1">&#39;tcolor2&#39;</span><span class="p">,</span> <span class="s1">&#39;hicolor&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">opt_names</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">opt_name</span><span class="o">|</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">markup</span><span class="o">.</span><span class="n">strip</span> <span class="o">=~</span> <span class="sr">/\s*</span><span class="si">#{</span><span class="n">opt_name</span><span class="si">}</span><span class="sr">:(#[0-9a-fA-F]+)/iu</span>
+</span><span class='line'>            <span class="vi">@opts</span><span class="o">[</span><span class="n">opt_name</span><span class="o">]</span> <span class="o">=</span> <span class="vg">$1</span>
+</span><span class='line'>            <span class="n">markup</span> <span class="o">=</span> <span class="n">markup</span><span class="o">.</span><span class="n">strip</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sr">/</span><span class="si">#{</span><span class="n">opt_name</span><span class="si">}</span><span class="sr">:\w+/iu</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">opt_names</span> <span class="o">=</span> <span class="n">opt_names</span><span class="o">[</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">3</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">opt_names</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">opt_name</span><span class="o">|</span>
+</span><span class='line'>          <span class="vi">@opts</span><span class="o">[</span><span class="n">opt_name</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;0x&#39;</span> <span class="o">+</span> <span class="vi">@opts</span><span class="o">[</span><span class="n">opt_name</span><span class="o">][</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">8</span><span class="o">]</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">super</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">lists</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>      <span class="n">max</span><span class="p">,</span> <span class="n">min</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="n">config</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">registers</span><span class="o">[</span><span class="ss">:site</span><span class="o">].</span><span class="n">config</span>
+</span><span class='line'>      <span class="n">tag_dir</span> <span class="o">=</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;url&#39;</span><span class="o">]</span> <span class="o">+</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;root&#39;</span><span class="o">]</span> <span class="o">+</span> <span class="n">config</span><span class="o">[</span><span class="s1">&#39;tag_dir&#39;</span><span class="o">]</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span>
+</span><span class='line'>      <span class="n">tags</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">registers</span><span class="o">[</span><span class="ss">:site</span><span class="o">].</span><span class="n">tags</span>
+</span><span class='line'>      <span class="n">tags</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">sort_by</span><span class="p">{</span> <span class="o">|</span><span class="n">str</span><span class="o">|</span> <span class="n">str</span><span class="o">.</span><span class="n">downcase</span> <span class="p">}</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">tag</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">count</span> <span class="o">=</span> <span class="n">tags</span><span class="o">[</span><span class="n">tag</span><span class="o">].</span><span class="n">count</span>
+</span><span class='line'>        <span class="n">lists</span><span class="o">[</span><span class="n">tag</span><span class="o">]</span> <span class="o">=</span> <span class="n">count</span>
+</span><span class='line'>        <span class="n">max</span> <span class="o">=</span> <span class="n">count</span> <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="n">max</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">bgcolor</span> <span class="o">=</span> <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;bgcolor&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">bgcolor</span> <span class="o">=</span> <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;bgcolor&#39;</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">tcolor1</span> <span class="o">=</span> <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;tcolor1&#39;</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">tcolor2</span> <span class="o">=</span> <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;tcolor2&#39;</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">hicolor</span> <span class="o">=</span> <span class="vi">@opts</span><span class="o">[</span><span class="s1">&#39;hicolor&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">html</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>      <span class="n">html</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;&lt;embed type=&#39;application/x-shockwave-flash&#39; src=&#39;/javascripts/tagcloud.swf&#39;&quot;</span>
+</span><span class='line'>      <span class="n">html</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;width=&#39;100%&#39; height=&#39;250&#39; bgcolor=&#39;</span><span class="si">#{</span><span class="n">bgcolor</span><span class="si">}</span><span class="s2">&#39; id=&#39;tagcloudflash&#39; name=&#39;tagcloudflash&#39; quality=&#39;high&#39; allowscriptaccess=&#39;always&#39;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">html</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;flashvars=&quot;&#39;</span>
+</span><span class='line'>      <span class="n">html</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;tcolor=</span><span class="si">#{</span><span class="n">tcolor1</span><span class="si">}</span><span class="s2">&amp;amp;tcolor2=</span><span class="si">#{</span><span class="n">tcolor2</span><span class="si">}</span><span class="s2">&amp;amp;hicolor=</span><span class="si">#{</span><span class="n">hicolor</span><span class="si">}</span><span class="s2">&amp;amp;tspeed=100&amp;amp;distr=true&amp;amp;mode=tags&amp;amp;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">html</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;tagcloud=&#39;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">tagcloud</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>      <span class="n">tagcloud</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;&lt;tags&gt;&#39;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">lists</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span> <span class="n">tag</span><span class="p">,</span> <span class="n">counter</span> <span class="o">|</span>
+</span><span class='line'>        <span class="n">url</span> <span class="o">=</span> <span class="n">tag_dir</span> <span class="o">+</span> <span class="n">tag</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/_|\P{Word}/u</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/-{2,}/u</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">downcase</span>
+</span><span class='line'>        <span class="n">style</span> <span class="o">=</span> <span class="s2">&quot;font-size: </span><span class="si">#{</span><span class="mi">10</span> <span class="o">+</span> <span class="p">(</span><span class="mi">40</span> <span class="o">*</span> <span class="nb">Float</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span><span class="o">/</span><span class="n">max</span><span class="p">)</span><span class="si">}</span><span class="s2">%&quot;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">tagcloud</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;&lt;a href=&#39;</span><span class="si">#{</span><span class="n">url</span><span class="si">}</span><span class="s2">&#39; style=&#39;</span><span class="si">#{</span><span class="n">style</span><span class="si">}</span><span class="s2">&#39;&gt;</span><span class="si">#{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>        <span class="n">tagcloud</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;&lt;/a&gt; &quot;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">tagcloud</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;&lt;/tags&gt;&#39;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1"># tagcloud urlencode</span>
+</span><span class='line'>      <span class="n">tagcloud</span> <span class="o">=</span> <span class="no">CGI</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">tagcloud</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">html</span> <span class="o">&lt;&lt;</span> <span class="n">tagcloud</span>
+</span><span class='line'>      <span class="n">html</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;&quot;&gt;&#39;</span>
+</span><span class='line'>      <span class="n">html</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Liquid</span><span class="o">::</span><span class="no">Template</span><span class="o">.</span><span class="n">register_tag</span><span class="p">(</span><span class="s1">&#39;tag_cloud&#39;</span><span class="p">,</span> <span class="no">Jekyll</span><span class="o">::</span><span class="no">TagCloud</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Octopress是将Category写到了blog/categories下，因此我将Tag写到了blog/tags下。这就是上面代码中tag_dir的值。这个值应该配置在_config.yml下：如下所示：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>category_dir: blog/categories
+</span><span class='line'>tag_dir: blog/tags</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同样的，你也可以把custom\asides下的category_cloud.html改为tag_cloud.html。当然，要记住，改名后，还需要到_config.yml的asides设置中做相应修改。</p>
+
+<h3>扫尾工作</h3>
+
+<p>现在，博客右侧的Tag Cloud应该可以工作了。但是，当你去单击某个Tag时，会出现404页面。此外，每篇博客下面仅显示了Category的信息。该怎么解决？</p>
+
+<p>首先，你需要转到source/_layouts/文件夹下，复制category_index.html文件，更名为tag_index.html文件，将div内的内容修改为：</p>
+
+<figure class='code'><figcaption><span>tag_index.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;blog-archives&quot;</span> <span class="na">class=</span><span class="s">&quot;category&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>{% for post in site.tags[page.tag] %}
+</span><span class='line'>{% capture this_year %}{{ post.date | date: &quot;%Y&quot; }}{% endcapture %}
+</span><span class='line'>{% unless year == this_year %}
+</span><span class='line'>  {% assign year = this_year %}
+</span><span class='line'>  <span class="nt">&lt;h2&gt;</span>{{ year }}<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'>{% endunless %}
+</span><span class='line'><span class="nt">&lt;article&gt;</span>
+</span><span class='line'>  {% include archive_post.html %}
+</span><span class='line'><span class="nt">&lt;/article&gt;</span>
+</span><span class='line'>{% endfor %}
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>仍然在该文件夹下，打开post.html文件，在footer节对应的Category下方，增加如下内容：</p>
+
+<figure class='code'><figcaption><span>post.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">&quot;meta&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  Tags: {% include post/tags.html %}
+</span><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接下来，转到source/_includes/post/目录下，创建tags.html文件，内容为：</p>
+
+<figure class='code'><figcaption><span>tags.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>{% capture tag %}{% if post %}{{ post.tags | tag_links | size }}{% else %}{{ page.tags | tag_links | size }}{% endif %}{% endcapture %}
+</span><span class='line'>{% unless tag == &#39;0&#39; %}
+</span><span class='line'><span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;categories&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  {% if post %}
+</span><span class='line'>    {{ post.tags | tag_links }}
+</span><span class='line'>  {% else %}
+</span><span class='line'>    {{ page.tags | tag_links }}
+</span><span class='line'>  {% endif %}
+</span><span class='line'><span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>{% endunless %}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>若要支持Tag的Feed，还可以在source/_includes/custom目录下模仿category_feed.xml，创建一个tag_feed.xml。这里就不再赘述。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-08T15:55:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/octopress/'>Octopress</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/octopress/'>Octopress</a>, <a class='category' href='/blog/tags/ruby/'>Ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/" title="Previous Post: 使用Homebrew在Mountain Lion上安装MySQL">&laquo; 使用Homebrew在Mountain Lion上安装MySQL</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/01/08/create-tag-for-octopress/">为Octopress创建Tag</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/">使用Homebrew在Mountain Lion上安装MySQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/31/basic-understanding-on-cqrs/">对CQRS的基础理解</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/28/mock-log/">对Log进行mock</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/27/distributed-architecture-based-on-message/">案例分析:基于消息的分布式架构</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fapi%27+style%3D%27font-size%3A+20.0%25%27%3EAPI%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Farchitecture%27+style%3D%27font-size%3A+50.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoding%27+style%3D%27font-size%3A+20.0%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcqrs%27+style%3D%27font-size%3A+20.0%25%27%3ECQRS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcsharp%27+style%3D%27font-size%3A+20.0%25%27%3ECSharp%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign%27+style%3D%27font-size%3A+30.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+20.0%25%27%3EDotNet%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+20.0%25%27%3EDotNET%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fextjs%27+style%3D%27font-size%3A+20.0%25%27%3EExtJS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgae%27+style%3D%27font-size%3A+20.0%25%27%3EGAE%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgeek%27+style%3D%27font-size%3A+20.0%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Finfoq%27+style%3D%27font-size%3A+20.0%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjava%27+style%3D%27font-size%3A+20.0%25%27%3EJava%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmock%27+style%3D%27font-size%3A+20.0%25%27%3EMock%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmvc%27+style%3D%27font-size%3A+20.0%25%27%3EMVC%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmysql%27+style%3D%27font-size%3A+20.0%25%27%3EMySQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnosql%27+style%3D%27font-size%3A+20.0%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foctopress%27+style%3D%27font-size%3A+40.0%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Frefactoring%27+style%3D%27font-size%3A+30.0%25%27%3ERefactoring%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fruby%27+style%3D%27font-size%3A+30.0%25%27%3ERuby%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscala%27+style%3D%27font-size%3A+20.0%25%27%3EScala%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftdd%27+style%3D%27font-size%3A+20.0%25%27%3ETDD%3C%2Fa%3E+%3C%2Ftags%3E"></span>
+</section>
+
+<section>
+  <h1>Sina Weibo</h1>
+    <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/bruce.e.zhang@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/01/08/create-tag-for-octopress/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/01/08/create-tag-for-octopress/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>
