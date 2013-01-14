@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Tag: ThoughtWorks | 晴窗笔记]]></title>
+  <link href="http://agiledon.github.com/blog/tags/thoughtworks/atom.xml" rel="self"/>
+  <link href="http://agiledon.github.com/"/>
+  <updated>2013-01-14T11:21:28+08:00</updated>
+  <id>http://agiledon.github.com/</id>
+  <author>
+    <name><![CDATA[张逸]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[纪念Aaron]]></title>
+    <link href="http://agiledon.github.com/blog/2013/01/14/remember-aaron/"/>
+    <updated>2013-01-14T10:40:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/01/14/remember-aaron</id>
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/01/aaron-swartz.jpg">
+今天的心情难以用言语表达。打开公司邮件，看到邮件“ThoughtWorks Declares Tuesday January 15, 2013 as Day of Remembrance for Aaron Swartz”，有一种被震惊的感觉。虽然我与Aaron素昧平生，但只要了解他的生平，就不由不对他产生敬意。这是一位天才，可是如今却像流星一般陨落了。让我感叹生命如此无常的，还在于我恰恰在大约1个月前的公司视频会议上看到过Aaron，当时Aaron身陷美国联邦检查官的起诉中。Roy为此表示愤慨，并组织召开了此次视频会议，Aaron也有出席。在视频中，Aaron瘦削的面庞，蓬松的长发，以及略带忧郁的眼神，确乎很有极客的风范。然而，怎么也想不到，这最初的一面，就成为了最后一面。生命真是残酷。</p>
+
+<p>关于Aaron这次案件的来龙去脉，可以确定的几点是：</p>
+
+<ol>
+<li><p>Aaron确实利用了一些黑客手段，下载了MIT大量的JSTOR在线期刊资料；</p></li>
+<li><p>但是，可以确定Aaron绝对未曾将这些资料用于商业用途；</p></li>
+<li><p>JSTOR并无起诉Aaron的意愿，而是美国联邦检查官代表美国政府的决定；</p></li>
+</ol>
+
+
+<p>作为最年轻的计算机黑客，Aaron在14岁就合作编写了RSS 1.0规范，并是社会新闻网站Reddit的联合创始人之一。他在自杀之前是ThoughtWorks纽约Office的员工。在ThoughtWorks，他参与了大量社会公益项目，是一些项目的Team Leader，在纽约office以及Away Days上，做了大量的演讲。他还参与了大量纽约技术社区的活动，并使得ThoughtWorks纽约Office成为了纽约开发社区的中心。</p>
+
+<p>如下截图是可以在公司内部Wiki上找到的Aaron发表的文章：
+<img class="center" src="/images/2013/01/aaron-thread.png"></p>
+
+<p>我们创建了<a href="http://www.rememberaaronsw.com">http://www.rememberaaronsw.com</a>来纪念这位卓越的计算机天才。明天是我们纪念Aaron的日子。明天晨9:00的Standup Meeting，让我们为Aaron Swartz默哀！</p>
+]]></content>
+  </entry>
+  
+</feed>
