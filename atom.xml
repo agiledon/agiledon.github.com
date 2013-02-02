@@ -4,7 +4,7 @@
   <title><![CDATA[晴窗笔记]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-01-14T13:41:37+08:00</updated>
+  <updated>2013-02-02T23:48:22+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,316 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[设计模式的一些变化]]></title>
+    <link href="http://agiledon.github.com/blog/2013/02/02/change-of-design-patterns/"/>
+    <updated>2013-02-02T22:28:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/02/02/change-of-design-patterns</id>
+    <content type="html"><![CDATA[<p>经历了几次过度设计，我对一些设计模式开始抱有谨慎的戒惧。我希望能够合理地运用设计模式，而非为模式而模式。事实上，现在的我较少会有意识地运用设计模式；更多地是通过职责来驱动，以期获得合理的职责分配。之后，再通过辨别代码的坏味道，运用重构来改善设计。大多数情况下，这种方式对于设计而言，已经足够。不过，有时我们仍有必要根据具体场景，做出合理判断和决策。</p>
+
+<p>我曾经遭遇的一个Story，是要实现一个Web Service，提供update的服务接口。需求要求对服务的Request进行验证。这一验证功能并非Story的核心功能，但其逻辑却比核心逻辑复杂数倍。它需要针对不同情况，遵循多个规则验证Request。这些验证逻辑如此的复杂，以至于我们可以在第一时间做出判断，它必须是单独的职责，绝对不适合放到Service对象中。</p>
+
+<p>这种职责分离还不够。因为每一条验证规则，都可以视为一个单独的验证职责。若将每种验证规则封装为一个验证对象，就能很好地满足SRP。每个验证对象只需要做好自己的事情即可，结果只有两个，要么错误，要么通过。若当验证逻辑为一个整体，则可以理解为：只要违背了一条验证规则，出现错误，则可以视为验证不通过；否则将继续验证下一条规则。</p>
+
+<!--more-->
+
+
+<p>乍一看来，这完全符合职责链模式的要求。我的Pair也完全同意了这一点。当我们按照这一思路进行编码时，我的疑惑随着步伐的前进，变得愈深，好像有什么东西在拽着自己，阻止我们前进。因为我们使用了Spring，故而需要将这个职责的链条通过依赖注入的方式拼接。为了迎合这种要求，标准的职责链模式需要微调。例如，我们写出这样的职责链超类：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">UpdateRequestValidator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">UpdateRequestValidator</span> <span class="n">nextValidator</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">UpdateRequestValidator</span><span class="o">(</span><span class="n">UpdateRequestValidator</span> <span class="n">nextValidaor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">nextValidator</span> <span class="o">=</span> <span class="n">nextValidator</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="n">ValidateResult</span> <span class="nf">validate</span><span class="o">(</span><span class="n">UpdateRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">ValidateResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">doValidate</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">isError</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">nextValidator</span><span class="o">.</span><span class="na">validate</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">ValidateResult</span> <span class="nf">doValidate</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果仔细分析这段代码，可以发现我们是在运用装饰器模式的手法来实现职责链。这就让人感到奇怪了。由于我们自定义了构造函数，要求传入一个UpdateRequestValidator，似乎可以避免对nextValidator非空的判断。可是，链条的末尾又该放入哪个对象呢？为此，我们还定义了一个NullValidator，它什么都不做，并被要求放到职责链构造的最末尾。</p>
+
+<p>够奇怪吧。这里我们对Spring的配置做出了假设，一厢情愿地要求NullValidator必须作为职责链的最后一个。可是，我们却未对这种假设做出任何约束。</p>
+
+<p>与其如此别扭，还不如对设计做出调整。只要验证逻辑的职责分离与封装是合理的，我们未必一定要运用职责链模式（或者这种不伦不类的装饰器模式）。抛开这种约束后，每个Validator就可以变得更单纯，无需假设这个链条的组成；而是将这个链式逻辑转交给包含了UpdateRequestValidator列表对象的Validator对象，它可以被看成是Validator的合成对象：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UpdateRequestValidator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">ValidateResult</span> <span class="nf">validate</span><span class="o">(</span><span class="n">UpdateRequest</span> <span class="n">request</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerNotFoundValidator</span> <span class="kd">implements</span> <span class="n">UpdateRequestValidator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">ValidateResult</span> <span class="nf">validate</span><span class="o">(</span><span class="n">UpdateRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">//do something;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CompositeUpdateRequestValidator</span> <span class="kd">implements</span> <span class="n">UpdateRequestValidator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">UpdateRequestValidator</span><span class="o">&gt;</span> <span class="n">validators</span><span class="o">;</span>
+</span><span class='line'>  <span class="nd">@Required</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValidators</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">UpdateRequestValidator</span> <span class="n">validators</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">validators</span> <span class="o">=</span> <span class="n">validators</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">ValidateResult</span> <span class="nf">validate</span><span class="o">(</span><span class="n">UpdateRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">ValidateResult</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="n">UpdateRequestValidator</span> <span class="n">validator</span> <span class="o">:</span> <span class="n">validators</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">result</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">isError</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我觉得修改后的设计意图清晰许多了，并且，它对使用者没有了隐含的约束，在Spring的ApplicationContext配置文件中，也能够很好地将我们单独实现的Validator作为List的元素配置给CompositeUpdateRequestValidator。我喜欢这样的调整。</p>
+
+<p>我对装饰器模式持同样态度。正如有人说道：装饰器模式的方式有些像洋葱。洋葱的味道虽好，不过在剥洋葱时，却要小心不要被呛出眼泪。在阅读<a href="http://www.axonframework.org">Axon Framework</a>的源代码时，我发现一种设计方式，可以避免装饰器模式的洋葱构造，却能达到同样的装饰效果。我将其成为Interceptor模式。</p>
+
+<p>需求是希望对CommandHandler对象的命令请求进行包装（或装饰），例如为命令请求提供日志或事务功能。这些功能可以是组合的。传统的方式是运用装饰器模式，例如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CommandHandler</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">handle</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoggingCommand</span> <span class="kd">implements</span> <span class="n">CommandHandler</span><span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">CommandHandler</span> <span class="n">commandHandler</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">LoggingCommand</span><span class="o">(</span><span class="n">CommandHandler</span> <span class="n">commandHandler</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">commandHandler</span> <span class="o">=</span> <span class="n">commandHandler</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">logInfo</span><span class="o">(</span><span class="s">&quot;begin execute command&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">commandHandler</span><span class="o">.</span><span class="na">handle</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">logInfo</span><span class="o">(</span><span class="s">&quot;end execute command&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TransactionCommand</span> <span class="kd">implements</span> <span class="n">CommandHandler</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">CommandHandler</span> <span class="n">commandHandler</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">TransactionCommand</span><span class="o">(</span><span class="n">CommandHandler</span> <span class="n">commandHandler</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">commandHandler</span> <span class="o">=</span> <span class="n">commandHandler</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">myTransaction</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">commandHandler</span><span class="o">.</span><span class="na">handle</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">myTransaction</span><span class="o">.</span><span class="na">commitTransaction</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">myTransaction</span><span class="o">.</span><span class="na">rollbackTransaction</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>假设有一个命令对象PlaceOrderCommandHandler，同时需要日志和事务功能，就需要如下构造方式：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">CommandHandler</span> <span class="n">command</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransactionCommand</span><span class="o">(</span><span class="k">new</span> <span class="n">LoggingCommand</span><span class="o">(</span><span class="k">new</span> <span class="n">PlaceOrderCommandHandler</span><span class="o">()));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种构造方式既复杂，也不容易使用Spring来注入。Axon的设计方式转变了设计视角，将这种对命令的包装，看做是对命令请求的一种拦截，这就好似AOP的pointcut一般。它定义了一个InterceptorChain，负责完成整个拦截器链条的组装，并将这些拦截职责通过Chain完成一层层的传递。设计如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CommandHandlerInterceptor</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">InterceptorChain</span> <span class="n">interceptorChain</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoggingInterceptor</span> <span class="kd">implements</span> <span class="n">CommandHandlerInterceptor</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">InterceptorChain</span> <span class="n">interceptorChain</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">info</span><span class="o">(</span><span class="s">&quot;LOG: begin&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">interceptorChain</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">info</span><span class="o">(</span><span class="s">&quot;LOG: end&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TransactionInterceptor</span> <span class="kd">implements</span> <span class="n">CommandHandlerInterceptor</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">InterceptorChain</span> <span class="n">interceptorChain</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">transaction</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">interceptorChain</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">transaction</span><span class="o">.</span><span class="na">commitTransaction</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">transaction</span><span class="o">.</span><span class="na">rollbackTransaction</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">InterceptorChain</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Iterator</span><span class="o">&lt;?</span> <span class="kd">extends</span>  <span class="n">CommandHandlerInterceptor</span><span class="o">&gt;</span> <span class="n">interceptorChain</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">CommandHandler</span> <span class="n">handler</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">proceed</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">interceptorChain</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">interceptorChain</span><span class="o">.</span><span class="na">next</span><span class="o">().</span><span class="na">handle</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">handler</span><span class="o">.</span><span class="na">handle</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Required</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setHandler</span><span class="o">(</span><span class="n">CommandHandler</span> <span class="n">handler</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">handler</span> <span class="o">=</span> <span class="n">handler</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Required</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setInterceptorChain</span><span class="o">(</span><span class="n">Iterator</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">CommandHandlerInterceptor</span><span class="o">&gt;</span> <span class="n">interceptorChain</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">interceptorChain</span> <span class="o">=</span> <span class="n">interceptorChain</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在InterceptorChain类中，handler对象就是我们要包装（或者说拦截）的命令对象。注意，Interceptor对象的handle()方法，是将InterceptorChain对象作为参数传入的。于是就形成了如下的方法调用时序：
+<img class="center" src="http://agiledon.github.com/images/2013/02/interceptor.png"></p>
+
+<p>只要理解了InterceptorChain起到的委派传递作用，就能很好地理解这个设计。这种方式将之前装饰器模式那种洋葱式的构造转移到列表中，并通过迭代器进行迭代。同时，它将对CommandHandler以及相关拦截器对象的依赖转移到了外面，很好地支持IoC容器对依赖的注入，从而使得代码可以变得更简单，更灵活。</p>
+
+<p>总之，当我们在运用设计模式时，一定要结合当前上下文，对设计模式做出合理的判断，甚至可以大胆地对GOF总结的设计模式进行大刀阔斧地挑战或修改。关键还在于把握设计模式的核心原则，并在“简单设计”的前提下，做出设计的决策。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[纪念Aaron]]></title>
