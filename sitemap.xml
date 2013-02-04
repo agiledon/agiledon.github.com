@@ -1,6 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>http://agiledon.github.com/blog/2011/10/09/handle-legacy-system/</loc>
+        <lastmod>2013-02-04T20:09:12+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/blog/2011/10/10/design-just-enough-architecture/</loc>
         <lastmod>2013-02-03T18:00:33+08:00</lastmod>
     </url>
@@ -96,7 +100,7 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-02-03T22:40:37+08:00</lastmod>
+        <lastmod>2013-02-04T20:09:12+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -104,6 +108,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-02-03T22:40:37+08:00</lastmod>
+        <lastmod>2013-02-04T20:09:12+08:00</lastmod>
     </url>
 </urlset>

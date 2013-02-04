@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>处理遗留系统 - 晴窗笔记</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="处理遗留系统，几乎是每个程序员都不可能绕过的一件麻烦事儿。因为时间压力，技能不足以及功能复杂等诸多原因，常常使得遗留系统的代码变得糟糕混乱，可读性与维护性差，无法保证功能的可测试性，纠缠不清的代码让类、方法之间紧紧耦合在一起。如果遗留系统能够正常工作，那么我们还可以置之不理， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2011/10/09/handle-legacy-system/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="晴窗笔记" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">晴窗笔记</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">处理遗留系统</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-09T19:57:00+08:00" pubdate data-updated="true">Oct 9<span>th</span>, 2011</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><img class="center" src="/images/2011/10/legecy.png"></p>
+
+<p>处理遗留系统，几乎是每个程序员都不可能绕过的一件麻烦事儿。因为时间压力，技能不足以及功能复杂等诸多原因，常常使得遗留系统的代码变得糟糕混乱，可读性与维护性差，无法保证功能的可测试性，纠缠不清的代码让类、方法之间紧紧耦合在一起。如果遗留系统能够正常工作，那么我们还可以置之不理，即使代码接近腐烂的边缘，我们还可以得过且过。倘若我们需要维护遗留系统，或者需要为它添加新的功能，又或者需要将新的系统与遗留系统进行集成，就必须正视遗留系统带来的问题了。</p>
+
+<p>处理遗留系统，首先需要分析和了解遗留系统，尤其这个遗留系统并非你开发时，更需如此。我们可以考虑双管齐下的办法。一是从业务逻辑方面去了解。相比新系统而言，遗留系统的唯一好处就是它往往是可以运行可以使用的。因此，最好的办法是直接运行遗留系统，通过实际操作了解系统的各个功能点、业务流程。这样的直观感受可以最快地帮助你了解该系统：它能够做什么？它能达成什么目标？它的范围是什么？它存在什么问题？其二则需要从系统架构出发，了解遗留系统的逻辑结构和物理分布。可以阅读架构文档和源代码，如果能够咨询遗留系统的设计者或开发人员，就更好。尽快地描绘出遗留系统的轮廓图，可以帮助你从技术的宏观角度剖析遗留系统的结构与组成。再结合你对该系统业务的理解，快速地掌握遗留系统。如果需要阅读源代码，最好能够从主程序入口开始，找到一些主要的模块，了解其大体的设计方式与编码习惯。由于之前对系统架构已有了解，阅读代码时，不应在一开始就去理解代码实现的细节，而应结合架构文档，比对代码实现是否与文档的描述一致，并充分利用自己的技术与经验，找到阅读代码的终南捷径。例如，如果我们知道该系统采用了MVC架构，就可以很容易地根据Url找到对应的Controller对象，并在该对象中寻找业务功能实现的脉络。又例如我们知道系统采用了SSH框架，而我们又非常熟悉SSH框架，就可以基本忽略系统基础设施的部分，直接了解系统的业务实现。如果是Swing系统，而且在界面中混杂了大量的业务逻辑和界面逻辑，则需要找到系统实现的特点，譬如系统的业务都是通过菜单项进行操作，就可以在界面中找到相关的菜单对象，然后根据这些对象的Action操作，一步一步跟踪。甚至可以利用调试的方法，设置断点，来摸清楚系统的运行机制与执行顺序。</p>
+
+<!--more-->
+
+
+<p>分析遗留系统需要有的放矢，根据目标快速锁定范围。例如，如果我们是因为系统性能出现问题，而要去分析遗留系统，就无需过于关心业务逻辑，而应从性能分析入手。考虑数据库的访问，IO操作，缓存机制，资源的使用等诸多方面。这就需要借助一些经验和技术了，当然也可以考虑使用一些工具，用以诊断性能瓶颈。我们曾经在一个项目中，发现遗留系统的性能问题非常严重。根据分析，我们发现系统对字符串的处理存在问题，大量使用了String类型的对象完成字符的拼接。而在进行数据库查询时，很多代码是直接性地一次将相关表的数据“拉”到内存的集合对象中，然后利用过滤器在集合对象中进行筛选。而在对数据进行更改时，又没有很好地利用业务特性，完成一次提交，导致产生多次数据库访问。在系统的某些公共模块中，重复多次加载了Spring的配置文件。还有某些占用了较大资源的对象，对于系统用户而言应该是同一个对象，但却没有设计为单例。因为我们抱着改善遗留系统性能的目的，所以在分析遗留系统时，就应该事先确定可能导致性能损耗的地方，而不是全方位地去了解整个系统。</p>
+
+<p>在维护遗留系统时，需要根据不同的场景做出不同的决策。简言之，我们需要排定优先级。如果时间紧迫，则解决问题是第一要务。尽快通过出错情况和记录日志辨别出错原因，定位出错代码，并解决之，而不是去考虑设计的优雅，代码的重用。我在一次解决报表显示的问题时，采用的就是这种做法。虽然与错误相关的代码相当丑陋，但由于时间紧迫，解决Bug才是最要紧的，所以我基本上没有去修改或改善既有代码的结构，仅仅解决了问题就结束了对遗留系统的处理。这个问题的处理过程在我的另一篇博客《<a href="http://www.cnblogs.com/wayfarer/archive/2011/02/18/1957530.html">精益求精，抑或得过且过</a>》中详细论述。是的，我在此时选择了得过且过的做法，主要原因就在于优先级列表中，问题的解决才是最高优先级。在这次处理过程中，我部分地利用了copy &amp; paste的做法，并通过引入新方法的方式来解决bug，而不是直接修改出现问题的方法。这是因为该方法的引用点存在多处，由于遗留系统并没有单元测试的保护，我不能草率地修改，否则可能导致一个bug的修复，结果引入更多无法预测的Bug。</p>
+
+<p>这样的处理方式其实是我不甘心的选择。在时间允许的情况下，我会考虑对相关代码进行一些小的重构，例如提取方法或提取类等。虽然这些重构不能改变遗留系统的本质，但至少可以提高代码的可读性，并能在一定程度下去除代码重复。</p>
+
+<p><img class="right" src="/images/2011/10/implpatterns.png"></p>
+
+<p>这一实例实际引出了单元测试的必要性。如果我们的开发都能够在单元测试的呵护下进行，即使当它随着时间的推移，慢慢变成了丑陋的遗留代码，因为有单元测试的保护，在对它进行手术时，成功的几率却会变得更大。因此，认为编写单元测试是浪费时间的观点，事实上是一种短视的做法。缺乏单元测试，就是一种<a href="http://en.wikipedia.org/wiki/Technical_debt">技术债(technical debt)</a>。现在欠下的，将来总是要还的。我们不能忽略软件的维护成本。事实上，在软件成本中，维护成本所占的比例远远大于开发成本。Kent Beck在《<a href="http://book.douban.com/subject/3324516/">实现模式(Implementation Patterns)</a>》一书中认为：“维护的代价很大，这是因为理解现有代码需要花费时间，而且容易出错。知道了需要修改什么以后，做出改动就变得轻而易举了。掌握现在的代码做了哪些事情是最需要花费人力物力的部分，改动之后，还要进行测试和部署。”</p>
+
+<p>当然，在处理遗留系统时，仍然可以进行单元测试。但它需要的技能更高，付出的精力更多。若要完成对遗留系统的单元测试，首要必须解决的就是依赖。解除依赖是面向对象系统开发中似乎亘古不变的话题。无论你翻阅哪一本面向对象著作，都会提到这个问题。依赖的起源其实在于对象的协作。根据<a href="http://baike.baidu.com/view/4779987.htm">单一职责原则</a>，一个类显然不能承担太多的职责。如果一个系统的所有功能都是一个对象完成的，那么这个对象就成了邪恶的“上帝”对象。它的粒度太大，因此难以重用，不够灵活，细节纠缠，无法维护。这样的设计是我们必须避免的。既然一个类不能承担太多职责，系统要完成客户要求的所有功能，就必须让许多对象互相协作，就像人类社会的人际交往一般，于是，就产生了对象之间的依赖。凡事有利必有弊，这种细粒度的对象协作，虽然保证了对象的重用性、灵活性，却也因为协作带来的依赖，导致对象之间存在一定的耦合度，变得难以替换。由于一个对象依赖另一个对象，就使得我们在单元测试时，无法独立地测试我们的目标对象。</p>
+
+<p>依赖虽然不可避免，但如果能够保证对象之间的良好协作，就能够最大程度保证系统的松耦合。对象协作一般可以分为类协作、接口协作与回调协作（回调协作通常可以看做是接口协作的一种特殊方式，关于这三种协作的特点与方式，我会在以后的文章中谈到）。依赖最弱的是接口协作，这也是我们努力达到的目标，它符合“面向接口设计”的基本原则。同时，也能够保证对象的封装性，通过将实现细节隐藏起来，从而降低对象之间的依赖程度。</p>
+
+<p><img class="left" src="/images/2011/10/artoflegacy.png"></p>
+
+<p>知易行难，要对付遗留系统中的依赖问题，通常需要付出百倍的努力。Michael Feathers在其大作《<a href="http://book.douban.com/subject/2248759/">修改代码的艺术(Working Effectively with Legacy Code)</a>》中，给出了很多好的解除遗留代码依赖的实践。例如他提出的接缝类型，隐藏依赖，以及影响结构图。解除依赖需要合理地利用封装与抽象，包括对方法参数的封装与抽象。对于遗留系统而言，Feathers提出的影响结构图尤其有用。当你需要修改某个方法时，影响结构图可以帮助你分析该方法的依赖传播途径，避免因为修改对其他代码造成影响。具体做法可以参考该书。当然，现在有很多IDE工具事实上还支持生成依赖图，它可以在一定程度上帮助你寻找依赖的方向与结构。不过，手工方式的分析尤其是通过手绘影响结构图仍然不可缺少，它更能帮助你深入地理解遗留系统。为遗留系统绘制包图(Package Diagram)同样非常重要，它既能帮助你理解遗留系统的结构，又能为我们找到系统中可能存在的双向依赖和循环依赖，找到分解不合理的包，这就为我们的系统重构奠定了良好的基础。</p>
+
+<p>如果遗留系统非常复杂，以至于无法重构，同时我们又需要在遗留系统的基础上增加新的特性和功能，好的做法就是做好新、旧功能之间的隔离。暂时可以不去考虑遗留系统的原有结构和代码（大多数情况，这些遗留系统其实是可以正常工作的），而只需要为新增的功能做好单元测试，并以好的设计原则与编码规范来要求新功能的实现。同时，我们还可以编写一些自动化的回归测试用例（例如使用Cucumber结合Watir为Web系统编写回归测试），保证新增的功能不会影响到原有系统。如果新增功能的实现需要调用原有系统中的某些类或方法，而这些类和方法却又难以分解，则可以考虑参照原有实现编写新的类或方法，新的类一定要做到合理的封装与抽象，保证它的高内聚与松耦合；也可以在新的类中不去真正实现，而是通过运用<a href="http://en.wikipedia.org/wiki/Adapter_pattern">Adapter模式</a>来重用旧有的类。</p>
+
+<p>只要不是更改开发平台，通常情况下，我们不会考虑重写遗留系统。如果需要重构遗留系统，就必须采取“分而治之，小步前进”的策略。可以首先选择实现较为容易，或者独立性较好的模块进行重构。将遗留系统逐步提取为一些可重用的模块与类，就可以形成“星星之火，可以燎原”的态势。其中，对于原有类或模块的调用方，由于在重构时可能会更改接口，因此可以考虑引入<a href="http://en.wikipedia.org/wiki/Facade_pattern">Facade模式</a>或Adapter模式，或者对接口进行另一层的包装，或者对接口进行适配，使系统慢慢被替换，最后演化为一个结构合理的良好系统。在重构时，甚至可以考虑将一些独立性很好的功能，提取为单独进程下的应用或服务，通过Web Service、Socket或Restful的方式进行调用，既保证了重用，又能够使遗留系统变得更简单，成功瘦身。</p>
+
+<p>我们还需谨记的一点是，虽然模块乃至服务的重构对系统的改造更加重要，但我们却不能忽视代码的质量。小到方法的提取，以及变量的命名都非常重要。也许它不会给系统带来根本的改变，但它却能够改善代码的可阅读性，进而提高系统的可维护性。所谓”聚沙成塔“，无论是系统还是模块，其实都是这些类和方法以及变量组成的。</p>
+
+<p>对遗留系统的处理不可能“一蹴而就”，必须遵循循序渐进的做法，逐步改善。处理遗留系统影响深远，成本也非常高，所以我们也不能因为脑袋一发热，就开始气势汹涌地“提枪上阵”，错将风车当做了魔鬼，结果撞得头破血流。必须对整个遗留系统进行审慎的分析，并结合具体情况考虑这项工程的复杂度、成本与预算，了解团队的重构与设计能力。处理遗留系统的前路漫漫，我们固然需要上下而求索的决心与勇气，却也不能在茫然失措中迷失了前进的方向。遗留系统的处理，必须慎之，慎之，再慎之！</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-09T19:57:00+08:00" pubdate data-updated="true">Oct 9<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/architecture/'>Architecture</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/architecture/'>Architecture</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/10/10/design-just-enough-architecture/" title="Next Post: 设计恰如其分的架构">设计恰如其分的架构 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/02/03/reading-hrabal/">过于喧嚣的孤独</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/02/change-of-design-patterns/">设计模式的一些变化</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/14/remember-aaron/">纪念Aaron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/08/create-tag-for-octopress/">为Octopress创建Tag</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/">使用Homebrew在Mountain Lion上安装MySQL</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fapi%27+style%3D%27font-size%3A+18.0%25%27%3EAPI%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Farchitecture%27+style%3D%27font-size%3A+50.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoding%27+style%3D%27font-size%3A+18.0%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcqrs%27+style%3D%27font-size%3A+18.0%25%27%3ECQRS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcsharp%27+style%3D%27font-size%3A+18.0%25%27%3ECSharp%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign%27+style%3D%27font-size%3A+26.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-pattern%27+style%3D%27font-size%3A+18.0%25%27%3EDesign+Pattern%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+18.0%25%27%3EDotNet%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+18.0%25%27%3EDotNET%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fextjs%27+style%3D%27font-size%3A+18.0%25%27%3EExtJS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgae%27+style%3D%27font-size%3A+18.0%25%27%3EGAE%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgeek%27+style%3D%27font-size%3A+18.0%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Finfoq%27+style%3D%27font-size%3A+18.0%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjava%27+style%3D%27font-size%3A+18.0%25%27%3EJava%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fliterature%27+style%3D%27font-size%3A+18.0%25%27%3ELiterature%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmock%27+style%3D%27font-size%3A+18.0%25%27%3EMock%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmvc%27+style%3D%27font-size%3A+18.0%25%27%3EMVC%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmysql%27+style%3D%27font-size%3A+18.0%25%27%3EMySQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnosql%27+style%3D%27font-size%3A+18.0%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnovel%27+style%3D%27font-size%3A+18.0%25%27%3ENovel%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foctopress%27+style%3D%27font-size%3A+34.0%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Freading%27+style%3D%27font-size%3A+18.0%25%27%3EReading%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Frefactoring%27+style%3D%27font-size%3A+26.0%25%27%3ERefactoring%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fruby%27+style%3D%27font-size%3A+26.0%25%27%3ERuby%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscala%27+style%3D%27font-size%3A+18.0%25%27%3EScala%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftdd%27+style%3D%27font-size%3A+18.0%25%27%3ETDD%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthoughtworks%27+style%3D%27font-size%3A+18.0%25%27%3EThoughtWorks%3C%2Fa%3E+%3C%2Ftags%3E"></span>
+</section>
+
+<section>
+  <h1>Sina Weibo</h1>
+    <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/bruce.e.zhang@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2011/10/09/handle-legacy-system/';
+        var disqus_url = 'http://agiledon.github.com/blog/2011/10/09/handle-legacy-system/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>
