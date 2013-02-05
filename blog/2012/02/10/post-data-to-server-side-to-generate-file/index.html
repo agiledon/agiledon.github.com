@@ -317,6 +317,8 @@
     
       <div class="sharing">
   
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2012/02/10/post-data-to-server-side-to-generate-file/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2012/02/10/post-data-to-server-side-to-generate-file/" >Tweet</a>
+  
   
   <div class="g-plusone" data-size="medium"></div>
   
@@ -371,6 +373,23 @@
     
   </ul>
 </section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("agiledon", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/agiledon" class="twitter-follow-button" data-show-count="false">Follow @agiledon</a>
+  
+</section>
+
 
 <section>
   <h1>GitHub Repos</h1>
@@ -466,6 +485,16 @@
   </script>
 
 
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
 
 
 
