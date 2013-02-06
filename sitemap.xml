@@ -99,12 +99,16 @@
         <lastmod>2013-02-03T22:40:37+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2013/02/05/role-of-object/</loc>
+        <lastmod>2013-02-06T12:16:29+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2013-02-05T20:08:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-02-04T22:33:49+08:00</lastmod>
+        <lastmod>2013-02-06T12:16:29+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -112,6 +116,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-02-04T22:33:49+08:00</lastmod>
+        <lastmod>2013-02-06T12:16:29+08:00</lastmod>
     </url>
 </urlset>
