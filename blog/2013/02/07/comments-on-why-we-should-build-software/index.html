@@ -6,11 +6,11 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>Tag: MVC - 晴窗笔记</title>
+  <title>软件开发未必等同于盖房子 - 晴窗笔记</title>
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Tag: MVC">
+  <meta name="description" content="微软研究院首席研究员Leslie Lamport发表了文章Why We Should Build Software Like We Build Houses，吐槽了对如今程序员不愿意做分析，画草图，而是直接开始编码的现状。看了这篇文章后，我对Lamport的观点有一些想法，觉得不吐不快。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.comblog/tags/mvc/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -66,36 +66,126 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Tag: MVC</h1>
+    
+      <h1 class="entry-title">软件开发未必等同于盖房子</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-07T15:13:00+08:00" pubdate data-updated="true">Feb 7<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p><img class="center" src="/images/2013/02/sketch.jpg">
+微软研究院首席研究员Leslie Lamport发表了文章<a href="http://www.wired.com.edgesuite.net/opinion/2013/01/code-bugs-programming-why-we-need-specs/#more-122883">Why We Should Build Software Like We Build Houses</a>，吐槽了对如今程序员不愿意做分析，画草图，而是直接开始编码的现状。看了这篇文章后，我对Lamport的观点有一些想法，觉得不吐不快。</p>
 
-  
-  <h2>2012</h2>
+<p>其实从文章标题以及作者开篇名义提出的问题来看，显然基于一个假设，或者说事先设定的隐喻，那就是用建筑业来形容软件开发。作者认为建筑设计师在修建房屋之前都会绘制一幅详尽的计划（或蓝图），而软件开发人员却并不这样。以两个不同的行业做对比，认为一个行业这么做了，另一个行业不这样做就有问题，这个假设合理吗？虽然，软件行业中所谓Architecture以及Build的概念确乎来自于建筑行业，甚至这种隐喻在许多年前为诸多大师认可，因而提出诸如软件工程等思想；虽然，它山之石可以攻玉，借鉴别的领域的最佳实践，确乎可以帮助软件开发收获灵感，避免去走太多弯路；然而，毕竟二者之间并不能完全划等号。</p>
 
-<article>
-  
-<h1><a href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/">Post数据到服务端生成文件</a></h1>
-<time datetime="2012-02-10T11:27:00+08:00" pubdate><span class='month'>Feb</span> <span class='day'>10</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/coding/'>Coding</a></span>
-</footer>
+<!--more-->
 
 
-</article>
+<p>作者似乎看到了这一点，担心这一理论站不住脚，于是在文中驳斥了他自己代表其他程序员提出的问题：“They think tearing down walls is hard but changing code is easy, so blueprints of programs aren’t necessary.”以此来说明，既然修改代码比推倒一堵墙要难，那么修建房子尚且要画蓝图，为何编写代码就不画蓝图呢？看起来，这一论断是合乎逻辑性的，但我始终觉得作者一直在混淆Design与Coding这两个概念。</p>
 
+<p>确如作者所说，许多程序员在Coding的时候，并未做太多分析以及画草图的工作，但他似乎忽略了，更多的程序员在Coding之前，其实还经历了大量的Design工作。这个Design工作与Lamport所谓的绘制草图，有何区别呢？即使采用TDD的做法，通常的做法仍然是需要运用分解任务的方式，来分析需求，理清设计思路，以辨别或识别出领域概念，进而合理地分配职责。就我个人而言，很多时候，我也会对领域模型画一些粗略的类图或时序图；而在开发期间，我们也会就软件开发撰写一些文档，并放在团队wiki上共享出来。</p>
+
+<p>这是让我对本文产生疑惑的地方——那就是作者妄图批判的开发软件的做法其实根本算是一种子虚乌有。</p>
+
+<p>我猜测，作者真正想表达的意思是，因为有了Specification，就能更好地理解设计意图，在将来代码产生变化时，也能够参考此文档，以便于更好地修改代码。这一观点并没有错误，但软件业的开发者不是一直这样践行着吗？多数程序员对文档的诟病是：如何同步文档，使得文档表达的内容能够真实反映程序的实现。对这个问题，作者避而不答。然而，这个问题恰恰是建筑业与软件业一个主要的区别。整体而言，软件业更多地是一种演进而迭代的过程，而世界上大多数建筑（不排除有个别例外，但显然这对于软件业而言，却是常态），在建筑设计师完成设计后，不会做出太多的改变。</p>
+
+<p>正是因为文档的这些问题，才有人提出代码即文档，从而开始推动代码的可读性。当然，也是为了更好地应对变化，才会要求代码具有可扩展性。即使如此，也从来不会有人去彻底地否定文档，尤其针对极为复杂的软件系统而言。</p>
+
+<p>因而，我并不觉得这篇文章有何价值。软件业的最大问题并非从业人员不去编写Specification，多数还是沟通交流的问题，如何正确地理解需求，如何正确地理解设计，如何快速地发布可工作的软件，以期得到用户真正满足其内心需求的反馈。更多的问题还包括诸如管理问题，技术难题，部署问题等等。Specification编写的问题或许存在，需要解决的优先级并没有如此之高。</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-07T15:13:00+08:00" pubdate data-updated="true">Feb 7<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/reading/'>Reading</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/architecture/'>Architecture</a>, <a class='category' href='/blog/tags/design/'>Design</a>, <a class='category' href='/blog/tags/reading/'>Reading</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/02/05/role-of-object/" title="Previous Post: 对象的角色">&laquo; 对象的角色</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -221,7 +311,10 @@
       var disqus_shortname = 'agiledon';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
