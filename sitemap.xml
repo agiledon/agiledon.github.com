@@ -96,7 +96,7 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/2013/02/03/reading-hrabal/</loc>
-        <lastmod>2013-02-03T22:40:37+08:00</lastmod>
+        <lastmod>2013-02-13T23:12:37+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/2013/02/05/role-of-object/</loc>
@@ -109,12 +109,16 @@
         <lastmod>2013-02-07T15:56:35+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2013/02/13/the-image-of-time/</loc>
+        <lastmod>2013-02-14T21:06:34+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2013-02-05T20:08:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-02-07T15:56:35+08:00</lastmod>
+        <lastmod>2013-02-14T21:06:34+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -122,6 +126,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-02-07T15:56:35+08:00</lastmod>
+        <lastmod>2013-02-14T21:06:34+08:00</lastmod>
     </url>
 </urlset>
