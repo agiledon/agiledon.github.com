@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Design | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/design/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-15T15:49:26+08:00</updated>
+  <updated>2013-02-16T17:46:57+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[HDFS的架构]]></title>
+    <link href="http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs/"/>
+    <updated>2013-02-16T15:33:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs</id>
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/02/hdfs.jpg">
+HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Hadoop</a>下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然，这样的架构设计主要还是满足系统的质量属性，包括如何保证分布式存储的可靠性，如何很好地支持硬件的水平扩展，如何支持对大数据处理的高性能以及客户端请求的高吞吐量。所以，HDFS的架构设计颇有参考价值，在Hadoop的Apache官方网站上也给出了<a href="http://hadoop.apache.org/docs/current/hdfs_design.html">HDFS的架构指南</a>。在<a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>卷I的第8章也详细介绍了HDFS的架构。</p>
+
+<p>HDFS的高层设计看起来很简单，主要包含NameNode与DataNode，它们之间的通信，包括客户端与HDFS NameNode服务器的通信则基于TCP/IP。客户端通过一个可配置的TCP端口连接到NameNode，通过ClientProtocol协议与NameNode交互。而DataNode使用DatanodeProtocol协议与NameNode交互。一个远程过程调用(RPC)模型被抽象出来封装ClientProtocol和Datanodeprotocol协议。</p>
+
+<!--more-->
+
+
+<p>通常，一个HDFS Cluter由一个NameNode和多个DataNode组成，且在大多数情况下，会由一台专门的机器运行NameNode实例。下图是HDFS的High Level Architecture：
+<img class="center" src="/images/2013/02/hdfs01.gif"></p>
+
+<div align="center">本图来自<a href="http://www.ibm.com/developerworks/library/wa-introhdfs/">IBM DeveloperWorks</a></div>
+
+
+<p>注意，在这个架构图中，观察各节点之间的通信，容易造成一个误解是NameNode会直接与DataNode通信。实则不然。虽然，NameNode可以看做是DataNode的管理者甚至是仲裁者，但由于DataNode的数量通常很多，且都是分布式部署在不同的机器上，若NameNode需要主动发起对各个DataNode的请求，会导致NameNode的负载过大，且对于网络的要求也极高。因此，在设计上，NameNode不会主动发起RPC，而是响应来自客户端或Datanode的RPC请求。如果NameNode需要获得指定DataNode的信息，则是通过DataNode调用函数后的一个简单返回值。每个DataNode都会维护一个开放的Socket，以支持客户端代码或其他DataNode的读写请求。NameNode知道该Socket的Host与Port。</p>
+
+<p><img class="left" src="/images/2013/02/hdfs02.png">
+一个好的架构必然遵循了好的架构原则。HDFS架构有许多值得我们借鉴或参考的设计决策，其中它所遵循的架构原则，对HDFS满足架构目标起到了决定性的作用。这些原则包括：元数据与数据分离；主/从架构；一次写入多次读取；移动计算比移动数据更划算。</p>
+
+<h4>元数据与数据分离</h4>
+
+<p>这主要体现在NameNode与DataNode之分，这种分离是HDFS最关键的架构决策。这两种节点的分离，意味着关注点的分离。对于一个文件系统而言，文件本身的属性（即元数据）与文件所持有的数据属于两个不同的关注点。一个简单的例子是文件名的更改。如果不实现分离，针对一个属性的修改，就可能需要对数据块进行操作，这是不合理的。如果不分离这两种节点，也不利于文件系统的分布式部署，因为我们很难找到一个主入口点。显然，这一原则是与后面提到的主/从架构是一脉相承的。</p>
+
+<p>NameNode负责维护文件系统的名字空间，任何对文件系统名字空间或属性的修改都将被NameNode记录下来。NameNode会负责执行与文件系统命名空间的操作，包括打开、关闭、重命名文件或目录。它同时还要负责决定数据块到DataNode的映射。从某种意义上讲，NameNode是所有HDFS元数据的仲裁者和资源库。</p>
+
+<p>DataNode则负责响应文件系统客户端发出的读写请求，同时还将在NameNode的指导下负责执行数据库的创建、删除以及复制。</p>
+
+<p>因为所有的用户数据都存放在DataNode中，而不会流过NameNode，就使得NameNode的负载变小，且更有利于为NameNode建立副本。</p>
+
+<h4>主/从架构</h4>
+
+<p>主从架构表现的是Component之间的关系，即由主组件控制从组件。在HDFS中，一个HDFS集群是由一个NameNode和一定数目的DataNode组成。NameNode是一个中心服务器，负责管理文件系统的名字空间(namespace)以及客户端对文件的访问。集群中的DataNode一般是一个节点一个，负责管理它所在节点上的存储。</p>
+
+<h4>一次写入多次读写</h4>
+
+<p>一次写入多次读写，即Write Once Read Many，是HDFS针对文件访问采取的访问模型。HDFS中的文件只能写一次，且在任何时间只能有一个Writer。当文件被创建，接着写入数据，最后，一旦文件被关闭，就不能再修改。这种模型可以有效地保证数据一致性，且避免了复杂的并发同步处理，很好地支持了对数据访问的高吞吐量。</p>
+
+<h4>移动计算比移动数据更划算</h4>
+
+<p>移动计算比移动数据更划算，即moving computation is cheaper than moving data。对于数据运算而言，越靠近数据，执行运算的性能就越好，尤其是当数据量非常大的时候，更是如此。由于分布式文件系统的数据并不一定存储在一台机器上，就使得运算的数据常常与执行运算的位置不相同。如果直接去远程访问数据，可能需要发起多次网络请求，且传输数据的成本也相当客观。因此最好的方式是保证数据与运算离得最近。这就带来两种不同的策略。一种是移动数据，另一种是移动运算。显然，移动数据，尤其是大数据的成本非常之高。要让网络的消耗最低，并提高系统的吞吐量，最佳方式是将运算的执行移到离它要处理的数据更近的地方，而不是移动数据。</p>
+
+<p>HDFS在改善吞吐量与数据访问性能上还做出了一个好的设计决策，就是数据块的Staging。当客户端创建文件时，并没有立即将其发送给NameNode，而是将文件数据存储到本地的临时文件中。这个操作是透明的，客户端不会觉察，也不必关心。文件的创建事实上是一个流数据的写，当临时文件累计的数据量超过一个数据块大小时，客户端才会联系NameNode。NameNode将文件名插入文件系统的层次结构中，并且分配一个数据块给它。然后返回Datanode的标识符和目标数据块给客户端。接着，客户端将这块数据从本地临时文件上传到指定的Datanode上。当文件关闭时，在临时文件中剩余的没有上传的数据也会传输到指定的Datanode上。然后客户端告诉Namenode文件已经关闭。此时Namenode才将文件创建操作提交到HDFS的文件系统。这个操作的大致时序图如下所示：
+<img class="center" src="/images/2013/02/hdfs03.png"></p>
+
+<p>采用这种客户端缓存的方式，可以有效地减少网络请求，避免大数据的写入造成网络堵塞，进而提高网络吞吐量。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[软件开发未必等同于盖房子]]></title>
@@ -211,132 +264,6 @@
 <img class="center" src="/images/2011/10/justenough05.png"></p>
 
 <p>风险驱动主要用于处理质量属性相关的架构内容，而场景驱动则用于处理与功能需求相关的架构内容，而技术约束则是架构层面，可能是产品线、环境等能够对系统架构产生直接影响的约束因素。至于敏捷架构的目标，就是设计恰如其分的架构。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[解依赖与接缝]]></title>
-    <link href="http://agiledon.github.com/blog/2011/08/07/decouple-and-seam/"/>
-    <updated>2011-08-07T21:58:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2011/08/07/decouple-and-seam</id>
-    <content type="html"><![CDATA[<p>接缝（seam）是Michael C. Feathers提出的概念。Feathers在Working Effectively with Legacy Code一书中对接缝的定义如下：接缝，顾名思义，就是指程序中的一些特殊的点，在这些点上你无需作任何修改就可以达到改动程序行为的目的。</p>
-
-<p>“接缝”这个词语不太好理解，根据我的理解，大约还是依赖点的含义。通过事先找到依赖点，并采取一定方式解除依赖，就能够改善代码质量，尤其是针对遗留代码而言。准确而言，我们寻找接缝以及解依赖，就是为了代码能够具有好的可重用性与可扩展性，尤其是当我们能解除对其他外部服务的依赖时，可以带来程序的可测试性。</p>
-
-<p>最近项目组的同事和我讨论了这样一个满足可测试性的问题。项目中需要对返回的响应信息PlatformResponse进行处理，这些信息会根据不同的StatusCode，得到不同的提示或出错信息。为了避免分支语句的判断，同事利用hash table将StatusCode与提示（出错）信息进行了映射，然后根据当前的StatusCode就可以返回对应的结果。返回结果后，还需要调用外部服务对消息进行处理，例如消息的输出。由于之前相关的类PlatformResponse并没有提供这一逻辑，相关服务要返回消息时，直接返回了PlatformResponse对象，然后再由客户端根据当前的StatusCode来判断，输出相关的提示信息，所以同事将这些逻辑写到了扩展方法中，例如定义PlatformResponseHelper静态类：</p>
-
-<!--more-->
-
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">PlatformResponseHelper</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">private</span> <span class="k">static</span> <span class="n">HashTable</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">String</span><span class="p">,</span><span class="n">String</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageMapping</span> <span class="p">=</span> <span class="c1">//ignore;</span>
-</span><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Output</span><span class="p">(</span><span class="k">this</span> <span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">ServiceLocator</span><span class="p">.</span><span class="n">Lookup</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">IMessageWriter</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;.</span><span class="n">Write</span><span class="p">(</span><span class="n">messageMapping</span><span class="p">[</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">]);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>通过引入扩展方法，Controller得到的PlatformResponse对象就可以通过调用扩展方法Output()输出获得的提示(出错)信息。注意，在上面的代码中，ServiceLocator是一个单例的服务定位器对象，通过它可以获得注册的服务。在Controller中，同样调用了ServiceLocator来获得它所需的业务服务。</p>
-
-<p>现在，我们需要进行单元测试。项目之前已经为ServiceLocator提供了Mock对象，并且该对象在Controller中也是通过依赖注入的方式获得的。所以，在测试Controller时，可以通过注入模拟的ServiceLocator对象进行测试，从而解除与外部服务之间的依赖关系。现在，在增加了PlatformResponse的扩展方法时，遇到了难题，即如何解除扩展方法与ServiceLocator之间的依赖关系？</p>
-
-<p>显然，这里的ServiceLocator.Lookup<IMessageWriter>.Write()方法调用就是前面所说的“接缝”。我们希望在单元测试中不依赖于ServiceLocator，这就需要解除PlatformResponse与ServiceLocator之间的耦合关系。同事希望既能达到可测试性的目的，又要保障调用的简单。</p>
-
-<p>在面向对象设计中，最常见的解除依赖的方法是职责分离以及抽象，或者利用反射或IOC容器来解除具体依赖。由于要解除与ServiceLocator的耦合关系，再加上调用PlatformResponse相关方法的Controller也是通过依赖注入ServiceLocator对象的，所以我首先想到将ServiceLocator转移到扩展方法的外部，通过传入参数的方式注入依赖。由于这个对象是单例的，因此Controller获得的ServiceLocator也就是PlatformResponse需要的对象。当我们调用PlatformResponse的Output()方法时，可以将Controller获得的ServiceLocator对象作为方法参数传给PlatformResponse。在Controller层，我们利用依赖注入注入Mock对象，就可以达到较好的可测试性了。</p>
-
-<p>然而，倘若要这样做，就需要将调用代码改为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">businessService</span><span class="p">.</span><span class="n">Response</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="n">serviceLocator</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>同事觉得在调用Output()方法时，还需要传入ServiceLocator对象，实在不够优雅而简洁。</p>
-
-<p>由于C#的扩展方法有很多限制，例如它要求必须是静态类和静态方法，很难利用OO的一些特性，所以我想到的第二个方案是不采用扩展方法，而是将之前的逻辑直接封装到PlatformResponse中。我们可以将Output()方法定义为虚方法，然后再为测试定义PlatformResponse的子类，它将作为测试使用的Mock类，重写Output()方法。遗憾的是，系统基本上都是在调用外部服务的时候才获得的PlatformResponse对象。我们不可能去修改服务对象，使其在单元测试时返回该类的子类对象。</p>
-
-<p>第三条路是转移职责，将扩展方法Output()转移到一个专门的类，例如OutputMessage，由它来负责管理StatusCode与提示（出错）消息之间的映射关系，以及消息的输出，然后由子类重写消息处理的逻辑，完成模拟。例如代码：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">OutputMessage</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">private</span> <span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">;</span>
-</span><span class='line'><span class="k">private</span> <span class="n">HashTable</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">String</span><span class="p">,</span> <span class="n">String</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageMapping</span> <span class="p">=</span> <span class="c1">//ignore;</span>
-</span><span class='line'><span class="k">public</span> <span class="nf">OutputMessage</span><span class="p">(</span><span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="n">response</span> <span class="p">=</span> <span class="n">response</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">Output</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">OutputInternal</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">OutputInternal</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">ServiceLocator</span><span class="p">.</span><span class="n">Lookup</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">IMessageWriter</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;.</span><span class="n">Write</span><span class="p">(</span><span class="n">messageMapping</span><span class="p">[</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">]);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MockOutputMessage</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="n">MockOutputMessage</span><span class="p">(</span><span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">):</span><span class="k">base</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">{}</span>
-</span><span class='line'><span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">OutputInternal</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'><span class="c1">//mock international service to handle message;</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>   <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>实际上这一方案是第二种方案的一种变化。因为我们无法修改一个已经被广泛使用的类，所以只能在引入新职责的时候，通过引入新生类来完成职责的增加，并利用子类重写的方式达到可测试的目的。</p>
-
-<p>可是这一方案实际上更无法达到同事的目标，因为改动后的调用变得比第一种方案更复杂：
-<code>csharp
-   new OutputMessage(businessService.Response).Output();
-</code></p>
-
-<p>我们必须考虑OutputMessage对象的创建，同事还需要将PlatformResponse对象传入，再调用它的Output()方法。虽然不需要传入方法参数，但对象的创建以及构造函数参数的传入，反而让事情变得更复杂。</p>
-
-<p>那么，应该怎么办？同事的理想目标是调用简单。就目前而言，在C#中，只有扩展方法才能让我们对PlatformResponse对象的message处理显得如此的自然而简洁。再加上PlatformMessage对象已经被广泛使用，因此从PlatformMessage类的角度进行处理，就变得不再可能。</p>
-
-<p>让我们再来仔细思考“接缝”的问题。是谁引入了依赖点？接缝是调用ServiceLocator这条语句，而它的目的实际上是需要获得IMessageWriter。是这个外部服务成为测试的障碍。所以解决的重点应该是解除与IMessageWriter之间的依赖。要这样做，就需要修改Output()扩展方法，使其能够传入IMessageWriter对象。这种改进事实上与第一种方案没有什么区别，唯一的不同是它依赖于更小的接口，而不是全局的ServiceLocator对象。我认为，这已经是一个最好的方案了。但是同事依旧执著于调用的简单性。他认为，不能为了单元测试，而改变客户端调用的方式。</p>
-
-<p>现在，我们已经明白扩展方法是最简单的实现方式，纠结仅仅在于IMessageWriter服务的获取方式而已。在产品代码中，我们可以通过ServiceLocator来获得IMessageWriter对象，而在测试的时候，我们又需要模拟该服务对象。若要两全齐美，只有区分测试与生产环境。事实上，这是我最初想到的做法，就是引入预定义来区分测试与真正的生产环境。但同事无法接受这种C++所主要采取的预定义做法。因此，我唯一能想到的是修改PlatformMessage类的定义，提供设置IMessageWriter的属性（因为C#并不支持扩展属性），并在Output()方法中判断IMessageWriter对象是否为null。如果为null，则说明它没有在测试环境下注入，这就需要通过ServiceLocator获得。
-Liquid error: invalid byte sequence in US-ASCII</p>
-
-<p>虽然我修改了PlatformResponse类的定义，但由于需要调用或创建PlatformResponse对象的外部服务并不需要新增加的MessageWriter属性，因此这样的修改实际上是扩展，并不会影响到以前的代码。这就是我唯一能够想到的满足同事要求的方案。在测试时，我们可以通过为PlatformResponse注入模拟的IMessageWriter对象，而在真正的产品代码中，则无需为它设置MessageWriter属性，而是直接调用它的扩展方法Output()。美中不足之处在于它为调用者提供了一定的开放性，使得调用者能够自由设置MessageWriter属性，破坏了对象的封装。为使这种破坏带来的影响降到最低，在单元测试放在同一个项目的前提下，可以考虑将MessageWriter属性定义为internal。</p>
-
-<p>我们常常需要在灵活性和简单性之间进行设计权衡。大多数情况下，都可能产生非此即彼的选择。要做到两全齐美真的很难。从面向对象的角度来看，我不认为最后的方案是最佳方案。其实，通过方法参数注入IMessageWriter的做法已经足够好了，它并没有加大结构与调用的复杂性。无论怎样，设计总是见仁见智的问题，就看大家的选择了。唯一需要遵循的原则，就是设计必须结合具体的场景来做出正确的决定。</p>
 ]]></content>
   </entry>
   

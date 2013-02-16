@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Architecture | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-15T15:49:26+08:00</updated>
+  <updated>2013-02-16T17:46:57+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[HDFS的架构]]></title>
+    <link href="http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs/"/>
+    <updated>2013-02-16T15:33:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs</id>
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/02/hdfs.jpg">
+HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Hadoop</a>下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然，这样的架构设计主要还是满足系统的质量属性，包括如何保证分布式存储的可靠性，如何很好地支持硬件的水平扩展，如何支持对大数据处理的高性能以及客户端请求的高吞吐量。所以，HDFS的架构设计颇有参考价值，在Hadoop的Apache官方网站上也给出了<a href="http://hadoop.apache.org/docs/current/hdfs_design.html">HDFS的架构指南</a>。在<a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>卷I的第8章也详细介绍了HDFS的架构。</p>
+
+<p>HDFS的高层设计看起来很简单，主要包含NameNode与DataNode，它们之间的通信，包括客户端与HDFS NameNode服务器的通信则基于TCP/IP。客户端通过一个可配置的TCP端口连接到NameNode，通过ClientProtocol协议与NameNode交互。而DataNode使用DatanodeProtocol协议与NameNode交互。一个远程过程调用(RPC)模型被抽象出来封装ClientProtocol和Datanodeprotocol协议。</p>
+
+<!--more-->
+
+
+<p>通常，一个HDFS Cluter由一个NameNode和多个DataNode组成，且在大多数情况下，会由一台专门的机器运行NameNode实例。下图是HDFS的High Level Architecture：
+<img class="center" src="/images/2013/02/hdfs01.gif"></p>
+
+<div align="center">本图来自<a href="http://www.ibm.com/developerworks/library/wa-introhdfs/">IBM DeveloperWorks</a></div>
+
+
+<p>注意，在这个架构图中，观察各节点之间的通信，容易造成一个误解是NameNode会直接与DataNode通信。实则不然。虽然，NameNode可以看做是DataNode的管理者甚至是仲裁者，但由于DataNode的数量通常很多，且都是分布式部署在不同的机器上，若NameNode需要主动发起对各个DataNode的请求，会导致NameNode的负载过大，且对于网络的要求也极高。因此，在设计上，NameNode不会主动发起RPC，而是响应来自客户端或Datanode的RPC请求。如果NameNode需要获得指定DataNode的信息，则是通过DataNode调用函数后的一个简单返回值。每个DataNode都会维护一个开放的Socket，以支持客户端代码或其他DataNode的读写请求。NameNode知道该Socket的Host与Port。</p>
+
+<p><img class="left" src="/images/2013/02/hdfs02.png">
+一个好的架构必然遵循了好的架构原则。HDFS架构有许多值得我们借鉴或参考的设计决策，其中它所遵循的架构原则，对HDFS满足架构目标起到了决定性的作用。这些原则包括：元数据与数据分离；主/从架构；一次写入多次读取；移动计算比移动数据更划算。</p>
+
+<h4>元数据与数据分离</h4>
+
+<p>这主要体现在NameNode与DataNode之分，这种分离是HDFS最关键的架构决策。这两种节点的分离，意味着关注点的分离。对于一个文件系统而言，文件本身的属性（即元数据）与文件所持有的数据属于两个不同的关注点。一个简单的例子是文件名的更改。如果不实现分离，针对一个属性的修改，就可能需要对数据块进行操作，这是不合理的。如果不分离这两种节点，也不利于文件系统的分布式部署，因为我们很难找到一个主入口点。显然，这一原则是与后面提到的主/从架构是一脉相承的。</p>
+
+<p>NameNode负责维护文件系统的名字空间，任何对文件系统名字空间或属性的修改都将被NameNode记录下来。NameNode会负责执行与文件系统命名空间的操作，包括打开、关闭、重命名文件或目录。它同时还要负责决定数据块到DataNode的映射。从某种意义上讲，NameNode是所有HDFS元数据的仲裁者和资源库。</p>
+
+<p>DataNode则负责响应文件系统客户端发出的读写请求，同时还将在NameNode的指导下负责执行数据库的创建、删除以及复制。</p>
+
+<p>因为所有的用户数据都存放在DataNode中，而不会流过NameNode，就使得NameNode的负载变小，且更有利于为NameNode建立副本。</p>
+
+<h4>主/从架构</h4>
+
+<p>主从架构表现的是Component之间的关系，即由主组件控制从组件。在HDFS中，一个HDFS集群是由一个NameNode和一定数目的DataNode组成。NameNode是一个中心服务器，负责管理文件系统的名字空间(namespace)以及客户端对文件的访问。集群中的DataNode一般是一个节点一个，负责管理它所在节点上的存储。</p>
+
+<h4>一次写入多次读写</h4>
+
+<p>一次写入多次读写，即Write Once Read Many，是HDFS针对文件访问采取的访问模型。HDFS中的文件只能写一次，且在任何时间只能有一个Writer。当文件被创建，接着写入数据，最后，一旦文件被关闭，就不能再修改。这种模型可以有效地保证数据一致性，且避免了复杂的并发同步处理，很好地支持了对数据访问的高吞吐量。</p>
+
+<h4>移动计算比移动数据更划算</h4>
+
+<p>移动计算比移动数据更划算，即moving computation is cheaper than moving data。对于数据运算而言，越靠近数据，执行运算的性能就越好，尤其是当数据量非常大的时候，更是如此。由于分布式文件系统的数据并不一定存储在一台机器上，就使得运算的数据常常与执行运算的位置不相同。如果直接去远程访问数据，可能需要发起多次网络请求，且传输数据的成本也相当客观。因此最好的方式是保证数据与运算离得最近。这就带来两种不同的策略。一种是移动数据，另一种是移动运算。显然，移动数据，尤其是大数据的成本非常之高。要让网络的消耗最低，并提高系统的吞吐量，最佳方式是将运算的执行移到离它要处理的数据更近的地方，而不是移动数据。</p>
+
+<p>HDFS在改善吞吐量与数据访问性能上还做出了一个好的设计决策，就是数据块的Staging。当客户端创建文件时，并没有立即将其发送给NameNode，而是将文件数据存储到本地的临时文件中。这个操作是透明的，客户端不会觉察，也不必关心。文件的创建事实上是一个流数据的写，当临时文件累计的数据量超过一个数据块大小时，客户端才会联系NameNode。NameNode将文件名插入文件系统的层次结构中，并且分配一个数据块给它。然后返回Datanode的标识符和目标数据块给客户端。接着，客户端将这块数据从本地临时文件上传到指定的Datanode上。当文件关闭时，在临时文件中剩余的没有上传的数据也会传输到指定的Datanode上。然后客户端告诉Namenode文件已经关闭。此时Namenode才将文件创建操作提交到HDFS的文件系统。这个操作的大致时序图如下所示：
+<img class="center" src="/images/2013/02/hdfs03.png"></p>
+
+<p>采用这种客户端缓存的方式，可以有效地减少网络请求，避免大数据的写入造成网络堵塞，进而提高网络吞吐量。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[软件开发未必等同于盖房子]]></title>
@@ -679,53 +732,6 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 <p>这段代码很简单，当调用者试图根据id获得目标对象时，首先会在Cache中寻找，如果有就直接返回；否则通过create()方法获得目标对象，然后再将它存储到Cache中。create()方法是该类定义的一个非final方法，它执行了DB的查询功能。现在，假设使用该类的用户对它进行了扩展，例如定义RemoteAvailabilityCache类派生该类，并重写create()方法，将原来的本地调用改为远程调用。问题出现了。由于采用create()方法是远程调用，当服务端比较繁忙时，发出的远程调用请求可能会被阻塞。由于get()方法是同步方法，在方法体内，每次只能有一个线程访问它，直到方法执行完毕释放锁。现在create()方法被阻塞，就会导致其他试图调用RemoteAvailabilityCache对象的get()方法的线程随之而被阻塞。进而可能导致系统崩溃。</p>
 
 <p>当然，我们可以认为这种扩展本身是不合理的。但从设计的角度来看，它并没有违背Liskove替换原则。从接口的角度看，它的行为也没有发生任何改变，仅仅是实现发生了变化。如果不是同步方法，则一个调用线程的阻塞并不会影响到其他调用线程，问题就可以避免了。当然，这里的同步方法本身是合理的，因为只有采取同步的方式才能保证对Cache的读取是支持并发的。书中给出这个例子，无非是要说明同步方法潜在的危险，提示我们在编写代码时，需要考虑周全。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计恰如其分的架构]]></title>
-    <link href="http://agiledon.github.com/blog/2011/10/10/design-just-enough-architecture/"/>
-    <updated>2011-10-10T16:35:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2011/10/10/design-just-enough-architecture</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2011/10/justenough01.png"></p>
-
-<p>Thoughtworks的Sam Newman在Mythoughtworks的Software Development小组中给出了Evolutionary Architecture的一些资源。其中一个是Martin Fowler与Rebecca Parsons在QCon SF 2009的一次演讲，题目为<a href="http://www.infoq.com/presentations/agilists-and-architects">Agilists and Architects: Allies not Adversaries Presentation</a>。演讲主要谈到了在敏捷方法中的架构活动（在Martin Fowler的演讲中，播放了黑客帝国中的一个片段，很有意思）。另一个资源则是同样作为thoughtworker的Neal Ford在IBM developerWorks发表的<a href="http://www.ibm.com/developerworks/cn/java/j-eaed1/">Evelutionary Architecture and Emergent Design(演进架构与紧急设计)</a>系列。这是很棒的一个讲解演进架构的系列文章，谈到了TDD、代码复用、连贯接口、DSL、重构、惯用法模式、指标等与演进架构和紧急设计有关的内容。</p>
-
-<!--more-->
-
-
-<p><img class="left" src="/images/2011/10/justenough02.png">
-事实上，关于演进式架构已经是老调重弹。Martin Fowler在2004年发表的文章<a href="http://martinfowler.com/articles/designDead.html">Is Design Dead</a>中谈到了计划式设计与演进式设计之间的区别。在我的书《<a href="http://product.china-pub.com/196623&amp;ref=xilie">软件设计精要与模式</a>》第一章中，也简单阐述了我对二者的理解。书中给出了一个建筑学的隐喻：拙政园与周庄。拙政园是计划式设计的典范，没有详尽的计划，也许就不会有疏朗典雅的拙政园。周庄却并非某人在某一时刻灵感捕捉后的设计成果，而是经历了数百年的历史沧桑，渐进地增添与更替各种建筑，最后形成现在这般灵秀的水乡风貌。在书中，我写道：</p>
-
-<p>演进的设计，同样需要遵循架构设计的基本准则，它与计划的设计唯一的区别是设计的目标。演进的设计提倡满足客户现有的需求；而计划的设计则需要考虑未来的功能扩展。演进的设计推崇尽快地实现，追求快速确定解决方案，快速编码以及快速实现；而计划的设计则需要考虑计划的周密性，架构的完整性并保证开发过程的有条不紊。</p>
-
-<p>最近正在阅读George Fairbanks的著作<a href="http://www.amazon.com/Just-Enough-Software-Architecture-Risk-Driven/dp/0984618104">Just Enough Software Architecture</a>，书中除了计划式设计和演进式设计之外，还提到了第三种设计：Minimal planned design（最小计划设计），这算是一种中庸之道的选择。书中认为，演进式设计需要与一些敏捷实践配合，包括重构、测试驱动设计与持续集成（evolutionary design must be paired with supporting practices like refactoring, test-driven design, and continuous integration.）George认为计划式设计背后隐藏的思想是在构造开始之前，制订的计划可以设计出很好的细节（The general idea behind planned design is that plans are worked out in great detail before construction begins）。他还提到：</p>
-
-<p>当架构为并行的多个团队所共享时，计划式架构设计就具有实践意义，在子团队开始工作之前，这种计划式设计颇有效用（Planned architecture design is also practical when an architecture is shared by many teams working in parallel, and therefore useful to know before the sub-teams start working）。</p>
-
-<p><img class="right" src="/images/2011/10/justenough03.png">
-书中还写道：（对于多团队开发而言）计划式架构定义了高层的组件与连接器，并与局部的设计相匹配，而子团队则设计这些组件与连接器的内部模型。架构常常会保证整体的不变量与设计决策，例如建立并发策略、连接器的标准集、分配高层职责或定义某些局部的质量属性场景（a planned architecture that define the top-level components and connectors can be paired with local designs, where sub-teams design the internal models of the components and connectors. The architecture usually insists on some overall invariants and design decisions, such as setting up a concurrency policy, a standard set of connectors, allocating high-level responsibilities, or defining some localized quality attribute scenarios）。</p>
-
-<p>至于最小计划设计，则介乎于演进式设计与计划式设计之间。支持这种设计的人认为：如果完全采取演进式设计，可能会使得设计走向死胡同；而计划式设计又非常难，因为事先对系统并没有全面的了解，可能导致设计错误。在2002年Bill Venners对Martin Fowler的采访中，Martin Fowler认为，最合理的分配是20%的计划式设计，80%的演进式设计（I think 80 percent of the time evolutionary design works for me as well. ）。在George的书中，作者认为需要权衡计划式与演进式设计。一种做法是在项目初期进行计划式设计，确保架构能够处理最大的风险。之后，就可以通过局部的设计来应对需求的变化，或者采用演进式设计，通过推行重构、测试驱动设计与持续集成对架构进行演化。</p>
-
-<p>整体而言，这三种方式的设计各有优劣，我们应根据具体的场景，具体的项目，具体的团队进行针对性地分析。应该把握“因地制宜”的原则，认识到不同的项目需要不同的设计方式。对于不同的开发团队，做出的选择也会不同。例如，如果开发团队精于重构、测试驱动设计，并能很好地实施持续集成，就可以考虑采用演进式设计或最小计划设计。当然，就我个人的意见，比较倾向于Minimal planned design。至于它在演进式设计与计划式设计之前的权衡，不必完全照搬Martin Fowler给出的比例。</p>
-
-<p>在Sam Newman给出的演进式架构资源中，还有一篇<a href="http://www.codingthearchitecture.com/index.html">coding the architecture</a>的文章<a href="http://www.codingthearchitecture.com/pages/book/just-enough-architecture.html">Just enough architecture</a>。这篇文章则从方法学的角度分析来如何获得恰如其分的架构。这是文章中非常漂亮的一幅图：
-<img class="center" src="/images/2011/10/justenough04.png"></p>
-
-<p>文章以及上图所表达出来的含义是：传统的瀑布式采取事先设计的做法，可以认为是计划式设计；敏捷方法学倾向于演进式设计；处于其中的RUP则更像是前面提到的最小计划设计。文中主要还是关注我们在架构过程中如何做到架构的“just enough”。事实上，这一观点在George Fairbanks的著作Just enough software architecture中被反复提到，要做到这一点，就需要采用风险驱动模型（Risk-Driven Model）。RDM的架构步骤分为三步：</p>
-
-<ol>
-<li><p>识别风险并进行优先级排列</p></li>
-<li><p>选择并应用相关技术</p></li>
-<li><p>评估风险是否降低</p></li>
-</ol>
-
-
-<p>其实风险驱动模型的三个步骤很容易理解，关键是我们应该如何识别风险，如何排列优先级，又该如何确定解决或控制风险的技术，并进行合理地评估，这是风险驱动模型的难点。我认为RDM带来的益处在于它给出了一个非常具有实践意义的驱动原则与方法，它告诉架构师，当我们在对系统进行架构时，需要从一开始就要重视风险，例如系统的安全性、可伸缩性、安全等诸多与质量属性有关的技术风险。个人认为：风险驱动加上场景驱动，以及技术约束，就等于敏捷架构。大体如下图所示：
-<img class="center" src="/images/2011/10/justenough05.png"></p>
-
-<p>风险驱动主要用于处理质量属性相关的架构内容，而场景驱动则用于处理与功能需求相关的架构内容，而技术约束则是架构层面，可能是产品线、环境等能够对系统架构产生直接影响的约束因素。至于敏捷架构的目标，就是设计恰如其分的架构。</p>
 ]]></content>
   </entry>
   
