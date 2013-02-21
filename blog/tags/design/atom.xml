@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Design | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/design/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-19T14:43:48+08:00</updated>
+  <updated>2013-02-20T22:51:35+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,310 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[职责与封装]]></title>
+    <link href="http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation/"/>
+    <updated>2013-02-20T21:49:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation</id>
+    <content type="html"><![CDATA[<p>面向对象设计的关键，我认为是识别职责，封装合理的对象。缺乏合理的封装，就会缺少正确的领域对象，使得属于共同职责的领域信息散乱分布到系统的各个方法中，导致概念不够清晰，职责混乱，以及代码的重复。然而，如果没有正确地识别职责，又可能导致封装无从谈起，因为我们获得的需求可能是散乱的，既难以抽象概念，又缺乏层次。故而，职责与封装是相辅相成的概念。如下图所示：
+<img class="center" src="/images/2013/02/responsibility01.png"></p>
+
+<p>我们不能简单地将封装当做是“信息隐藏”。所谓隐藏信息以及具体行为的细节，确实是封装的本质所在，但面向对象思想中的封装，其目的还在于对领域概念以及设计概念的识别。前者是对业务模型的抽象，如电子商务系统中的Product、Order、OrderItem等概念；后者是对设计模型的改进，如在设计模式中引入策略对象、命令对象，DDD中提倡的Repository、Factory对象。这也是为何许多设计者很容易理解封装的概念，但却始终无法做到合理封装的根本原因。</p>
+
+<!--more-->
+
+
+<p>此时，我们需要运用职责驱动设计，通过对职责的识别来提炼这些概念。概念可以起到分类的作用，根据职责对行为与数据进行分类，找到其应该归属的对象，散乱的逻辑就会变得清晰起来。就好似我们对彩球按照颜色进行分类，并放置到不同的位置：
+<img class="center" src="/images/2013/02/responsibility02.png"></p>
+
+<p>不同的颜色有分明不同的特征，只要不是色盲，分类自然水到渠成。现实中的系统需求自然不如颜色这般泾渭分明，要从纷繁复杂的混沌需求中超脱出来，最好的办法就是按照不同的角度或层次去寻找职责，并用最简单的语言一句话描述这些职责。根据职责的特征，我大致将职责分为三个层次，由外自内分别为：业务价值、业务功能与业务实现，如下图所示：
+<img class="center" src="/images/2013/02/responsibility03.png"></p>
+
+<p>业务价值基本上体现了这个需求用例（或用户故事）存在的目的，即解释了需求的Why。简言之，只有提供了该职责，则此需求对于客户才是有价值的。这也符合用户故事INVEST原则中的V（Valuable）。没有价值的需求，自然是应该放弃的。故而在识别业务价值时，常常从用户的视角来分析，辨别。</p>
+
+<p>业务价值是职责驱动的入口，因为在寻找到了业务价值之后，我们就可以剖析该价值需要哪些支撑功能（它可以解释需求的What），再由功能继续深入分析，找到实现功能的职责（它可以解释需求的How）。因此，这个模型是一个层层推进的过程。</p>
+
+<p>职责驱动不仅仅可以从文字需求入手，同样可以针对已经实现的代码。甚至我们可以将这种职责驱动看做是一种阅读代码的技巧，通过寻找业务价值，进而分析业务功能和业务实现，对代码形成一个整体的感观，进而通过合理地分配职责改善原有代码。如下代码是《修改代码的艺术》一书中给出的例子：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import javax.mail.&lt;em>;
+</span><span class='line'>import javax.mail.internet.&lt;/em>;&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>public class MailingListServer {&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>public static final String SUBJECT_MARKER = "[list]";
+</span><span class='line'>public static final String LOOP_HEADER = "X-LOOP";
+</span><span class='line'>
+</span><span class='line'>public static void main(String[] args) {
+</span><span class='line'>    if (args.length != 8) {
+</span><span class='line'>        System.err.println("Usage: java MailingList &lt;popHost&gt; " + 
+</span><span class='line'>        "&lt;smtpHost&gt; &lt;pop3user&gt; &lt;pop3password&gt; &lt;smtpuser&gt; &lt;smtppassword&gt; &lt;listname&gt; " +
+</span><span class='line'>        "&lt;relayinterval");
+</span><span class='line'>    }
+</span><span class='line'>    return;
+</span><span class='line'>
+</span><span class='line'>    HostInformation host = new HostInformation(arg[0]);
+</span><span class='line'>    String listAddress = args[6];
+</span><span class='line'>    int interval = new Integer(args[7]).intValue();
+</span><span class='line'>    Roster roster = null;
+</span><span class='line'>    try {
+</span><span class='line'>        roster = new FileRoster("roster.txt");
+</span><span class='line'>    }catch(Exception e) {
+</span><span class='line'>
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    try {
+</span><span class='line'>        do {
+</span><span class='line'>            try {
+</span><span class='line'>                Properties properties = System.getProperties();
+</span><span class='line'>                Session session = Session.getDefaultInstance(properties, null);
+</span><span class='line'>                Store store = session.getStore("pop3");
+</span><span class='line'>                store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
+</span><span class='line'>                Folder defaultFolder = store.getDefaultFolder();
+</span><span class='line'>                if (defaultFolder == null) {
+</span><span class='line'>                    return;
+</span><span class='line'>                }
+</span><span class='line'>                Folder folder = defaultFolder.getFolder("INBOX");
+</span><span class='line'>                if (folder == null) {
+</span><span class='line'>                    return;
+</span><span class='line'>                }
+</span><span class='line'>                folder.open(FOLDER.READ_WRITE);
+</span><span class='line'>                process(host, listAddress, roster, session, store, folder);
+</span><span class='line'>            }catch () {
+</span><span class='line'>
+</span><span class='line'>            }
+</span><span class='line'>            try {
+</span><span class='line'>                Thread.sleep(interval * 1000);
+</span><span class='line'>            } catch() {
+</span><span class='line'>
+</span><span class='line'>            }
+</span><span class='line'>
+</span><span class='line'>        } while (true)
+</span><span class='line'>    }catch () {
+</span><span class='line'>
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>private static void process(
+</span><span class='line'>    HostInformation host, String listAddress, Roster roster,
+</span><span class='line'>    Session session, Store store, Folder folder) throws MessagingException {
+</span><span class='line'>    try {
+</span><span class='line'>        if (folder.getMessageCount() != 0) {
+</span><span class='line'>            Message[] messages = folder.getMessages();
+</span><span class='line'>            doMessage(host, listAddress, roster, session, folder, messages);
+</span><span class='line'>        }
+</span><span class='line'>    }catch () {
+</span><span class='line'>
+</span><span class='line'>    }finally {
+</span><span class='line'>        folder.close(true);
+</span><span class='line'>        store.close();
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>private static void doMessage(
+</span><span class='line'>    HostInformation host,
+</span><span class='line'>    String listAddress,
+</span><span class='line'>    Roster roster,
+</span><span class='line'>    Session session,
+</span><span class='line'>    Folder folder,
+</span><span class='line'>    Message[] messages) throws MessageingException {
+</span><span class='line'>    FetchProfile fp = new FetchProfile();
+</span><span class='line'>    fp.add(FetchProfile.Item.ENVELOPE);
+</span><span class='line'>    fp.add(FetchProfile.Item.FLAGS);
+</span><span class='line'>    fp.add("X-Mailer");
+</span><span class='line'>    folder.fetch(messages, fp);
+</span><span class='line'>    for (int i = 0; i &lt; messages.length; i++) {
+</span><span class='line'>        Message message = messages[i];
+</span><span class='line'>        if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
+</span><span class='line'>        System.out.println("message received: " + message.getSubject());
+</span><span class='line'>        if (!roster.constainsOneOf(message.getFrom())) continue;
+</span><span class='line'>        MimeMessage forward = new MimeMessage(session);
+</span><span class='line'>        Address[] fromAddress = message.getFrom();
+</span><span class='line'>        InternetAddress from = null;
+</span><span class='line'>        if (fromAddress != null &amp;&amp; fromAdress.length &gt; 0) {
+</span><span class='line'>            from = new InternetAddress(fromAddress[0].toString());
+</span><span class='line'>        }
+</span><span class='line'>        forward.setFrom(from);
+</span><span class='line'>        forward.setReplyTo(new Address[] {
+</span><span class='line'>            new InternetAddress(listAddress)
+</span><span class='line'>        });
+</span><span class='line'>
+</span><span class='line'>        forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
+</span><span class='line'>        String subject = message.getSubject();
+</span><span class='line'>        if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
+</span><span class='line'>            subject = SUBJECT_MARKER + " " + message.getSubject();
+</span><span class='line'>        }
+</span><span class='line'>        forward.setSubject(subject);
+</span><span class='line'>        forward.setSentDate(message.getSentDate());
+</span><span class='line'>        forward.addHeader(LOOP_HEADER, listAddress);
+</span><span class='line'>        Object content = message.getContent();
+</span><span class='line'>        if (content instanceof Multipart) {
+</span><span class='line'>            forward.setContent((Multipart)content);
+</span><span class='line'>        } else {
+</span><span class='line'>            forward.setText((String)content);
+</span><span class='line'>        }
+</span><span class='line'>
+</span><span class='line'>        Properties props = new Properties();
+</span><span class='line'>        props.put("mail.smtp.host", host.smtpHost);
+</span><span class='line'>
+</span><span class='line'>        Session smtpSession = Session.getDefaultInstance(props, null);
+</span><span class='line'>        Transport transport = smtpSession.getTransport("smtp");
+</span><span class='line'>        transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
+</span><span class='line'>        transport.sendMessage(forward, roster.getAddresses());
+</span><span class='line'>        message.setFlag(Flags.Flag.DELETED, true);
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这段代码集中了所有劣质代码的特性，如可读性差，可测试性差，可重用性差，可扩展性差，也很难体现设计者的意图。</p>
+
+<p>是的，意图！意图就是体现业务价值的关键所在，最好能够通过类的名称直接传达这种业务价值。显然，上述代码完全没有做到这一点。通过仔细阅读这段代码，然后从职责的角度入手，就驱使我们思考它究竟做了什么？显然，这段代码的功能就是侦听邮件服务器，并根据实现给定的邮件名单，将收到的邮件转发给邮件名单的相关人士。所以，它的业务价值就是转发邮件。</p>
+
+<p>要做到转发邮件，基本的功能是要能够侦听邮件服务器。我们可以将侦听看做是业务功能。通常，对于实际的需求而言，职责模型并非简单的三层结构，它可能是一种递归的方式，也即可以对业务价值、业务功能甚至业务实现进行不断深入的分解。例如，对于这里的侦听业务功能而言，还可以分解为下一个业务功能，即接收邮件。同时，要实现邮件的转发，还需要发送邮件的支撑。下面就是我们所能够识别出来的职责：</p>
+
+<pre><code>* 转发邮件
+    ** 侦听邮件
+        *** 接收邮件
+    ** 发送邮件
+</code></pre>
+
+<p>面对如此简短的职责描述，再要识别对象所要封装的概念就变得非常容易了。下图是根据识别出来的职责获得的类图结构：
+<img class="center" src="/images/2013/02/responsibility04.png"></p>
+
+<p>比较这个设计模型与之前的代码，新的模型无疑在职责分配上占了胜场。并且，每个对象的名称都很好地传达了它所能完成的功能。由于封装将职责的实现细节有效地隐藏，并为它们各自划分了空间，形成各自的职责单元，然后再以弱耦合的形式进行协作。因而，我们可以很容易地对它们进行单元测试，或者对参与协作的行为进行Mock。接口的引入则是为了未来的功能扩展，例如我们不再使用javax.mail库来实现邮件收发，就可以提供不同的实现类。可独立封装的MessageReceiver与MessageSender还可以为系统的其他模块所重用。职责与封装相得益彰，有效地改善了整个设计模型。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[HDFS的架构]]></title>
@@ -217,53 +521,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <p>于是绅士开始讲故事给她听。故事倒很精彩，可惜他讲故事的本领，只抵得上他使用他身边那把佩剑的工夫，实在太不高明，时常把一句话颠来倒去的说了又说，甚至说上六七遍，过了一会，忽然又倒过头来说道：“哎呀，我说错啦！”对于故事中的人名地名常常纠缠不清，张冠李戴，弄得别人莫名奇妙。他那说话的声气又跟故事里的人物、情景一点都配不上，真是听得奥丽达太太头晕目眩，冷汗一身，只觉得大祸临头，连命都快要保不住了。到最后，她忍无可忍，又看见那位绅士正愈说愈糊涂，已经迷了路，失了方向，只是在那儿团团打转，再也跑不出来了，就和悦地对他说：“先生，你那匹马跑得太野，请你还是让我下了马吧。”**</p>
 
 <p>在软件设计过程中，最要紧的是思路要清晰，既不能迷失在需求分析中，也不能迷失在复杂的实现细节中。最好能够结合实际的场景，列出我们要达到的目标，需要完成的任务，有序地进行分析和设计。编写代码时，切忌功能之间互相纠缠，虽然体现了对象的协作，但由于职责分配混乱，使得对象之间的协作变得无规律可循，颠三倒四，最后让人忍无可忍，也只能翻身下马了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计恰如其分的架构]]></title>
-    <link href="http://agiledon.github.com/blog/2011/10/10/design-just-enough-architecture/"/>
-    <updated>2011-10-10T16:35:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2011/10/10/design-just-enough-architecture</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2011/10/justenough01.png"></p>
-
-<p>Thoughtworks的Sam Newman在Mythoughtworks的Software Development小组中给出了Evolutionary Architecture的一些资源。其中一个是Martin Fowler与Rebecca Parsons在QCon SF 2009的一次演讲，题目为<a href="http://www.infoq.com/presentations/agilists-and-architects">Agilists and Architects: Allies not Adversaries Presentation</a>。演讲主要谈到了在敏捷方法中的架构活动（在Martin Fowler的演讲中，播放了黑客帝国中的一个片段，很有意思）。另一个资源则是同样作为thoughtworker的Neal Ford在IBM developerWorks发表的<a href="http://www.ibm.com/developerworks/cn/java/j-eaed1/">Evelutionary Architecture and Emergent Design(演进架构与紧急设计)</a>系列。这是很棒的一个讲解演进架构的系列文章，谈到了TDD、代码复用、连贯接口、DSL、重构、惯用法模式、指标等与演进架构和紧急设计有关的内容。</p>
-
-<!--more-->
-
-
-<p><img class="left" src="/images/2011/10/justenough02.png">
-事实上，关于演进式架构已经是老调重弹。Martin Fowler在2004年发表的文章<a href="http://martinfowler.com/articles/designDead.html">Is Design Dead</a>中谈到了计划式设计与演进式设计之间的区别。在我的书《<a href="http://product.china-pub.com/196623&amp;ref=xilie">软件设计精要与模式</a>》第一章中，也简单阐述了我对二者的理解。书中给出了一个建筑学的隐喻：拙政园与周庄。拙政园是计划式设计的典范，没有详尽的计划，也许就不会有疏朗典雅的拙政园。周庄却并非某人在某一时刻灵感捕捉后的设计成果，而是经历了数百年的历史沧桑，渐进地增添与更替各种建筑，最后形成现在这般灵秀的水乡风貌。在书中，我写道：</p>
-
-<p>演进的设计，同样需要遵循架构设计的基本准则，它与计划的设计唯一的区别是设计的目标。演进的设计提倡满足客户现有的需求；而计划的设计则需要考虑未来的功能扩展。演进的设计推崇尽快地实现，追求快速确定解决方案，快速编码以及快速实现；而计划的设计则需要考虑计划的周密性，架构的完整性并保证开发过程的有条不紊。</p>
-
-<p>最近正在阅读George Fairbanks的著作<a href="http://www.amazon.com/Just-Enough-Software-Architecture-Risk-Driven/dp/0984618104">Just Enough Software Architecture</a>，书中除了计划式设计和演进式设计之外，还提到了第三种设计：Minimal planned design（最小计划设计），这算是一种中庸之道的选择。书中认为，演进式设计需要与一些敏捷实践配合，包括重构、测试驱动设计与持续集成（evolutionary design must be paired with supporting practices like refactoring, test-driven design, and continuous integration.）George认为计划式设计背后隐藏的思想是在构造开始之前，制订的计划可以设计出很好的细节（The general idea behind planned design is that plans are worked out in great detail before construction begins）。他还提到：</p>
-
-<p>当架构为并行的多个团队所共享时，计划式架构设计就具有实践意义，在子团队开始工作之前，这种计划式设计颇有效用（Planned architecture design is also practical when an architecture is shared by many teams working in parallel, and therefore useful to know before the sub-teams start working）。</p>
-
-<p><img class="right" src="/images/2011/10/justenough03.png">
-书中还写道：（对于多团队开发而言）计划式架构定义了高层的组件与连接器，并与局部的设计相匹配，而子团队则设计这些组件与连接器的内部模型。架构常常会保证整体的不变量与设计决策，例如建立并发策略、连接器的标准集、分配高层职责或定义某些局部的质量属性场景（a planned architecture that define the top-level components and connectors can be paired with local designs, where sub-teams design the internal models of the components and connectors. The architecture usually insists on some overall invariants and design decisions, such as setting up a concurrency policy, a standard set of connectors, allocating high-level responsibilities, or defining some localized quality attribute scenarios）。</p>
-
-<p>至于最小计划设计，则介乎于演进式设计与计划式设计之间。支持这种设计的人认为：如果完全采取演进式设计，可能会使得设计走向死胡同；而计划式设计又非常难，因为事先对系统并没有全面的了解，可能导致设计错误。在2002年Bill Venners对Martin Fowler的采访中，Martin Fowler认为，最合理的分配是20%的计划式设计，80%的演进式设计（I think 80 percent of the time evolutionary design works for me as well. ）。在George的书中，作者认为需要权衡计划式与演进式设计。一种做法是在项目初期进行计划式设计，确保架构能够处理最大的风险。之后，就可以通过局部的设计来应对需求的变化，或者采用演进式设计，通过推行重构、测试驱动设计与持续集成对架构进行演化。</p>
-
-<p>整体而言，这三种方式的设计各有优劣，我们应根据具体的场景，具体的项目，具体的团队进行针对性地分析。应该把握“因地制宜”的原则，认识到不同的项目需要不同的设计方式。对于不同的开发团队，做出的选择也会不同。例如，如果开发团队精于重构、测试驱动设计，并能很好地实施持续集成，就可以考虑采用演进式设计或最小计划设计。当然，就我个人的意见，比较倾向于Minimal planned design。至于它在演进式设计与计划式设计之前的权衡，不必完全照搬Martin Fowler给出的比例。</p>
-
-<p>在Sam Newman给出的演进式架构资源中，还有一篇<a href="http://www.codingthearchitecture.com/index.html">coding the architecture</a>的文章<a href="http://www.codingthearchitecture.com/pages/book/just-enough-architecture.html">Just enough architecture</a>。这篇文章则从方法学的角度分析来如何获得恰如其分的架构。这是文章中非常漂亮的一幅图：
-<img class="center" src="/images/2011/10/justenough04.png"></p>
-
-<p>文章以及上图所表达出来的含义是：传统的瀑布式采取事先设计的做法，可以认为是计划式设计；敏捷方法学倾向于演进式设计；处于其中的RUP则更像是前面提到的最小计划设计。文中主要还是关注我们在架构过程中如何做到架构的“just enough”。事实上，这一观点在George Fairbanks的著作Just enough software architecture中被反复提到，要做到这一点，就需要采用风险驱动模型（Risk-Driven Model）。RDM的架构步骤分为三步：</p>
-
-<ol>
-<li><p>识别风险并进行优先级排列</p></li>
-<li><p>选择并应用相关技术</p></li>
-<li><p>评估风险是否降低</p></li>
-</ol>
-
-
-<p>其实风险驱动模型的三个步骤很容易理解，关键是我们应该如何识别风险，如何排列优先级，又该如何确定解决或控制风险的技术，并进行合理地评估，这是风险驱动模型的难点。我认为RDM带来的益处在于它给出了一个非常具有实践意义的驱动原则与方法，它告诉架构师，当我们在对系统进行架构时，需要从一开始就要重视风险，例如系统的安全性、可伸缩性、安全等诸多与质量属性有关的技术风险。个人认为：风险驱动加上场景驱动，以及技术约束，就等于敏捷架构。大体如下图所示：
-<img class="center" src="/images/2011/10/justenough05.png"></p>
-
-<p>风险驱动主要用于处理质量属性相关的架构内容，而场景驱动则用于处理与功能需求相关的架构内容，而技术约束则是架构层面，可能是产品线、环境等能够对系统架构产生直接影响的约束因素。至于敏捷架构的目标，就是设计恰如其分的架构。</p>
 ]]></content>
   </entry>
   
