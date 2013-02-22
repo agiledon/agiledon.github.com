@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-20T22:51:35+08:00</updated>
+  <updated>2013-02-22T17:02:12+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,39 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java设计模式译者序]]></title>
+    <link href="http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns/"/>
+    <updated>2013-02-22T16:52:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/02/dpinjava.jpeg">
+如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。</p>
+
+<p>是否设计模式的精妙之处，业已为这些著作所穷尽？然，又未必尽然！以模式而论，若只局限在这23种模式的范围内，几乎每种模式的变化，都可以被悉心推演出来；每种模式的结构，也已被阐述得淋漓尽致。然而，若论及设计，则如大道苍穹，实则是不可穷尽的。基本上，设计的复杂程度已不亚于一个纷繁的世界，而软件，就是我们要构造的这个世界。</p>
+
+<p>因此，再出现一本讲解设计模式的书，就不足为怪了。那么，它值得你去阅读吗？</p>
+
+<!--more-->
+
+
+<p>讨论一本书是否值得阅读，应基于书本身的价值去判断，判断的标准则依据读者的目标而定。从读者而非译者的角度看待本书，个人认为，它确乎是有价值的。这些价值主要体现在三个方面。</p>
+
+<p>GOF对于23种设计模式的分类已经深入人心，即众所周知的创建型模式、结构型模式与行为型模式。这一分类浅显易懂，明白无误的表达了模式的意图与适用场景。但是，这一分类仍有不足之处。例如建造者模式除了关注对象的创建之外，还需处理好对象之间的结构；又例如桥接模式对于抽象与实现的解耦，在一定程度上又体现了对行为的抽象；再比如行为模式中的迭代器模式，其实还涵盖了创建迭代器的职责。本书对于设计模式的分类不落窠臼，根据作者对于设计模式的思考，别出心裁地给出了自己的一种分类，即分为接口型模式、职责型模式、构造型模式、操作型模式与扩展型模式。如果仔细阅读和思考这些模式，你会发现这五类分类很好地抓住了相关模式的设计本质。譬如，扩展型模式关注的是代码功能的扩展，因而很自然地就可以把装饰器模式与访问者模式归入这一类。</p>
+
+<p>彰显本书价值的第二方面在于贯穿本书始终的习题练习，作者将其称之为“挑战”。确实如此，这些挑战仿佛是作者故意为读者设定的“陷阱”，“障碍”，是登堂入室所必须跨过的门槛。最关键的一点是，通过这些“挑战”，就从单方面的灌输知识，变成了一定程度的双向互动。作者就像课堂上的老师，提出问题引人思考；读者就是学生，面对老师“咄咄逼人”的提问，必须打起十二分的精神，分析问题，寻找问题的答案。最后，循循善诱的老师给出了自己的解决方案。学生可以相互对比，以便于发现自己在设计上还存在的问题。因此，本书不适合那些惫懒的读者，不适合那些喜欢被动接收知识输入，不善于思考，不善于总结的程序员。</p>
+
+<p>真正让本书获得赞誉的还是本书给出的案例，不过，也很有可能因此收获负面的批评。本书的案例是一个虚拟的真实项目。Oozinoz公司纯属子虚乌有，完全是由作者杜撰出来的一家虚拟公司；但这个案例又如此的真实，既牵涉到复杂的领域逻辑，又面对客户提出的种种需求变化，与我们工作中需要开发的项目何其相似！可能面临的批评是，为了学习设计模式，可能读者还需要成为一名烟火专家。然而，我谨以最谦卑的态度恳求诸位，在满怀怨气、恶毒诅咒作者（也可能包括躺着中枪的译者）之前，先想想我们平时开发的软件，是否存在相似复杂度的领域需求呢？让我们再仔细想想，倘若作者给出一个纯粹编造出来的玩具项目，贴近生活，浅显易懂，学习起来势如破竹，一路通关，是否真的意味着你已经明白如何在真实项目中运用设计模式？窃以为，学习尤其是技术学习，并不都是舒舒服服寓教于乐，躺着，玩着以及笑着也能学好设计模式。你以为的懂，以为的悟，其实还是一种虚妄。你抓住的是水中央的月影，一旦遇到真实案例，就好似石头打破水面的宁静，一切都会破碎。</p>
+
+<p>本书的原版事实上获得了业界的广泛赞誉，同时也是John Vlissides主编的“软件模式”丛书之一。John Vlissides就是著名的GOF其中之一位，可惜他已在多年前离开人世。本书作者是John Vlissides的生前好友，本书内容曾经得到过他的建议。从书的内容来看，部分Java案例显得有些过时；不过，就设计而言，拥有悠久的历史，有时候意味着它可能成为经典。不错，与经典的GOF《设计模式》相比，本书无疑要失色许多。GOF《设计模式》的光芒在于它的开创性。只要是讲解设计模式，没有哪一本书的光芒可以盖过GOF的著作。它就像是一颗恒星，其他有关设计模式的书籍，是围绕着它公转的一颗颗行星，都是借着恒星的光芒反射出属于自己的光亮。 然而，从光芒的热度与亮度来讲，也许行星才是当前的你最适合的。</p>
+
+<p>阅读本书的读者，除了需要具备一些面向对象与设计模式的基础知识外，还需要有足够的耐心，并保存一份渴望与热情。耐心可以帮助你坚持细读与精读，持之以恒地深入理解本书的案例分析，努力面对作者给出的挑战。而这种耐心则需要提高技术能力的渴望，探求技术奥秘的热情来时刻保鲜。</p>
+
+<p>本书的翻译由我的同事史磊与我共同完成，并最后由我完成审校工作。在翻译本书时，我还参考了由龚波、赵彩琳、陈蓓翻译的前一个版本，在此向他（她）们表示衷心地感谢。因为工作繁忙的缘故，本书的翻译工作一直断断续续持续了近一年的时间，如今交稿，既有卸下重任的轻松畅快，却又因为自己的惫懒使得翻译工作进展缓慢而深感愧疚。这里需要感谢本书编辑符隆美女士给予我的耐心与支持。</p>
+
+<p>在写作这篇译者序时，同事史磊已经远赴ThoughtWorks南非工作，而我则从北京回到了ThoughtWorks成都。非常怀念我们在北京Office一起工作的日子。我们曾经在同一个项目结对编程，本书的翻译也可以说是结对完成，算是一次愉快的翻译体验。鉴于本人能力水平有限，翻译或有疏漏或错误，还请读者不吝赐教，并通过<a href="http://aigledon.github.com">我的博客</a>与我联系。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[职责与封装]]></title>
@@ -2607,87 +2640,6 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 <p>此外，还有许多创新的NoSQL产品的出现，让人眼睛一亮。例如提供不可变数据库服务器的<a href="http://www.datomic.com/">Datomic</a>，具备事务管理和部署的特性，并能在云中将数据库作为服务提供给用户。还有<a href="https://voltdb.com/">VoltDB</a>，它尝试在提供可伸缩性的同时使用SQL范型。或许它们不能完全划归到NoSQL类别中，而应该称之为NewSQL，甚至是MoreSQL。<a href="https://451research.com/">451 Group</a>的高级分析师Matthew Aslett就将NoSQL定义为“旨在满足分布式体系结构的可扩展性需求和/或无模式数据管理需求”，NewSQL则被定义为“旨在满足分布式体系结构的需求，或提高性能以便不必再进行横向扩展”。Alexander Tatiyants撰写的文章《<a href="http://tatiyants.com/nosql-no-more-lets-double-down-with-moresql">NoSQL No More: Let’s double down with MoreSQL</a>》，则掀起了MoreSQL的热潮。个人认为，这些技术事实上还是NoSQL技术的一种发展。</p>
 
 <p>我们还可以预见，在很长一段时间内，会存在关系数据库与NoSQL并存的状态，甚至在同一个系统中出现，这正是Martin Fowler所谓的<a href="http://martinfowler.com/bliki/PolyglotPersistence.html">Polyglot Persistence</a>。这显然是由这两种不同类型的数据库，甚至是不同类别的NoSQL数据库各自适应的场景不同导致的必然结果。无论如何，种种迹象证明，NoSQL技术已经走向成熟，是到了该收获果实的季节了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在MAC的IntelliJ下使用SBT与ScalaTest]]></title>
-    <link href="http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij/"/>
-    <updated>2012-10-11T12:34:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij</id>
-    <content type="html"><![CDATA[<p>正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install sbt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: &#8216;idea&#8217;，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
-
-<!--more-->
-
-
-
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.scalatest&quot;</span> <span class="o">%</span> <span class="s">&quot;scalatest_2.9.1&quot;</span> <span class="o">%</span> <span class="s">&quot;1.8&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意，在sbt文件中一定要有一条空行哦，不然就会报错。现在，转到项目主目录下，运行sbt的命令，就能自动下载scalatest的包了。可惜这样还不够，因为即使下载了scalatest，IntelliJ仍然拒绝认识它，然后很恼人地给出红色错误提示。例如在test目录下写一个scalatest的单元测试：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.junit.runner.RunWith</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.junit.JUnitRunner</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.Suite</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">JUnitRunner</span><span class="o">])</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">MySuiteTest</span> <span class="k">extends</span> <span class="nc">Suite</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">testAddition</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">===</span> <span class="mi">2</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">4</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>它根本就不认识JUnit和ScalaTest，所以类似Suite，@RunWith之类的东西皆为红色，看着让人闹心。当然，我在这里还用了JUnit，所以还需要在build.sbt中添加JUnit的依赖。</p>
-
-<p>要想能够在IntelliJ Idea中更新项目，就像Gradle一样，也需要专门为idea服务的插件，sbt中即为sbt-idea。方法是在mac的用户主目录下，找到.sbt/plugins目录，然后看看有没有build.sbt文件。如果没有，就创建一个。事实上，要是连.sbt/plugins目录也没有找到，没关系，同样可以自己创建。接下来，在build.sbt文件中写入：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;sbt-idea-repo&quot;</span> <span class="n">at</span> <span class="s">&quot;http://mpeltonen.github.com/maven/&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">addSbtPlugin</span><span class="o">(</span><span class="s">&quot;com.github.mpeltonen&quot;</span> <span class="o">%%</span> <span class="s">&quot;sbt-idea&quot;</span> <span class="o">%</span> <span class="s">&quot;1.1.0&quot;</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>添加了这个插件后，就可以回到自己项目的目录下，运行sbt gen-idea，就可以更新IntelliJ Idea中的项目了。再看看Idea中的代码，之前那些恼人的红色应该就会消失了。</p>
-
-<p>在使用ScalaTest时，还碰到一个小问题。我在搜寻scalatest的repository时（在Maven Repository），直接打开了第一个搜索结果，最新的版本是1.4 RC2。它的sbt repository为：libraryDependencies += &#8220;org.scalatest&#8221; % &#8220;scalatest&#8221; % &#8220;1.4.RC2&#8221;</p>
-
-<p>结果就悲剧了，跑测试怎么样也跑不过，抛出的异常为：java.lang.ClassCastException: scala.collection.immutable.Set$EmptySet$ cannot be cast to scala.collection.generic.Addable</p>
-
-<p>最初，我没有想到是scala与scalatest版本不匹配的问题，还以为自己的单元测试语法不对。几经搜寻，在搜到的这个帖子（http://www.scala-lang.org/node/11466）上看到版本不兼容问题，我才如大梦初醒般，想着去查询各自的版本。我使用的scala为最新版本2.9.2，而scalatest的1.4 RC2依赖的是scala 2.8.0版本。而就在这篇帖子中，则提到scala是向前兼容，却不支持向后兼容。我在Maven Repository中又做了一次搜索，结果发现scalatest的第二条搜索结果，才是我需要的，它的最新版本是2.0 M4，最新稳定版本则为1.8，都依赖于Scala 2.9.1。这就是说，与我使用的scala仅有最小版本的区别。在build.sbt中更改为该版本的repository（即前面给出的内容），测试就可以通过了。</p>
 ]]></content>
   </entry>
   
