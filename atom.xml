@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-22T17:02:12+08:00</updated>
+  <updated>2013-02-27T18:08:04+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,115 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[可伸缩系统的架构经验]]></title>
+    <link href="http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons/"/>
+    <updated>2013-02-27T11:37:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/02/scalability.jpg"></p>
+
+<p>最近，阅读了Will Larson的文章<a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting System for Scale</a>，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统，这种面向企业内部的软件系统通常不会有太大的负载量，太多的并发量，因而对于系统的可伸缩性考虑较少。大体而言，只要在系统部署上考虑集群以及负载均衡即可。本文给了我很多启发，现把本文的主要内容摘译出来，并结合自己对此的理解。</p>
+
+<!--more-->
+
+
+<p>Larson首先认为，一个理想的系统，对于容量（Capacity）的增长应该与添加的硬件数是线性的关系。换言之，如果系统只有一台服务器，在增加了另一台同样的机器后，容量应该翻倍。以此类推。这种线性的容量伸缩方式，通常被称之为水平伸缩“Horizontal Scalability”。</p>
+
+<p>在设计一个健壮的系统时，自然必须首要考虑失败的情况。Larson认为，一个理想的系统是当失去其中一台服务器的时候，系统不会崩溃。当然，对应而言，失去一台服务器也会导致容量的响应线性减少。这种情况通常被称为冗余“Redundancy”。</p>
+
+<h3>负载均衡</h3>
+
+<p>无论是水平伸缩还是冗余，都可以通过负载均衡来实现。负载均衡就好似一个协调请求的调停者，它会根据集群中机器的当前负载，合理的分配发往Web服务器的请求，以达到有效利用集群中各台机器资源的目的。显然，这种均衡器应该介于客户端与Web服务器之间，如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2013/02/scalability01.png"></p>
+
+<p>本文提到了实现负载均衡的几种方法。其一是Smart Client，即将负载均衡的功能添加到数据库（以及缓存或服务）的客户端中。这是一种通过软件来实现负载均衡的方式，它的缺点是方案会比较复杂，不够健壮，也很难被重用（因为协调请求的逻辑会混杂在业务系统中）。对此，Larson在文章以排比的方式连续提出问题，以强化自己对此方案的不认可态度：</p>
+
+<blockquote><p>Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it&#8217;ll be easy to reuse? Tragically, no.</p></blockquote>
+
+
+<p>第二种方式是采用硬件负载均衡器，例如<a href="http://www.citrix.com/English/ps2/products/product.asp?contentID=21679">Citrix NetScaler</a>。不过，购买硬件的费用不菲，通常是一些大型公司才会考虑此方案。</p>
+
+<p>如果既不愿意承受Smart Client的痛苦，又不希望花费太多费用去购买硬件，那就可以采用一种混合（Hybird）的方式，称之为软件负载均衡器（Software Load Balancer）。Larson提到了<a href="http://haproxy.1wt.eu/">HAProxy</a>。它会运行在本地，需要负载均衡的服务都会在本地中得到均衡和协调。</p>
+
+<h3>缓存</h3>
+
+<p>为了减轻服务器的负载，还需要引入缓存。文章给出了常见的对缓存的分类，分别包括：预先计算结果（precalculating result，例如针对相关逻辑的前一天的访问量）、预先生成昂贵的索引（pre-generating expensive indexes，例如用户点击历史的推荐）以及在更快的后端存储频繁访问的数据的副本（例如<a href="http://memcached.org/">Memcached</a>）。</p>
+
+<h4>应用缓存</h4>
+
+<p>提供缓存的方式可以分为应用缓存和数据库缓存。此二者各擅胜场。应用缓存通常需要将处理缓存的代码显式地集成到应用代码中。这就有点像使用代理模式来为真实对象提供缓存。首先检查缓存中是否有需要的数据，如果有，就从缓存直接返回，否则再查询数据库。至于哪些值需要放到缓存中呢？有<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">诸多算法</a>，例如根据最近访问的，或者根据访问频率。使用Memcached的代码如下所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&quot;user.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user_id</span>
+</span><span class='line'><span class="n">user_blob</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">user_blob</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT * FROM users WHERE user_id=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">user</span>
+</span><span class='line'><span class="k">else</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">user_blob</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>数据库缓存</h4>
+
+<p>数据库缓存对于应用代码没有污染，一些天才的DBA甚至可以在不修改任何代码的情况下，通过数据库调优来改进系统性能。例如通过配置Cassandra行缓存。</p>
+
+<h4>内存缓存</h4>
+
+<p>为了提高性能，缓存通常是存储在内存中。常见的内存缓存包括Memcached和<a href="http://redis.io/">Redis</a>。不过采用这种方式仍然需要合理的权衡。我们不可能一股脑儿的将所有数据都存放在内存中，虽然这会极大地改善性能，但比较起磁盘存储而言，RAM的代价更昂贵，同时还会影响系统的健壮性，因为内存中的数据没有持久化，容易丢失。正如之前提到的，我们应该将需要的数据放入缓存，通常的算法是<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">least recently used</a>，即LRU。</p>
+
+<h4>CDN</h4>
+
+<p>提高性能，降低Web服务器负载的另一种常见做法是将静态媒体放入CDN（Content Distribution Network）中。如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2013/02/scalability02.png"></p>
+
+<p>CDN可以有效地分担Web服务器的压力，使得应用服务器可以专心致志地处理动态页面；同时，CDN还可以通过地理分布来提高响应请求的性能。在设置了CDN后，当系统接收到请求时，首先会询问CDN以获得请求中需要的静态媒体（通常会通过HTTP Header来配置CDN能够缓存的内容）。如果请求的内容不可用，CDN会查询服务器以获得该文件，并在CDN本地进行缓存，最后再提供给请求者。如果当前网站并不大，引入CDN的效果不明显时，可以考虑暂不使用CDN，在将来可以通过使用一些轻量级的HTTP服务器如<a href="http://nginx.org/">Nginx</a>，为静态媒体分出专门的子域名如static.domain.com来提供服务。</p>
+
+<h4>缓存失效</h4>
+
+<p>引入缓存所带来的问题是如何保证真实数据与缓存数据之间的一致性。这一问题通常被称之为缓存失效（Cache Invalidation）。从高屋建瓴的角度来讲，解决这一问题的办法无非即使更新缓存中的数据。一种做法是直接将新值写入缓存中（通常被称为write-through cache）；另一种做法是简单地删除缓存中的值，在等到下一次读缓存值的时候再生成。</p>
+
+<p>整体而言，要避免缓存实效，可以依赖于数据库缓存，或者为缓存数据添加有效期，又或者在实现应用程序逻辑时，尽量考虑避免此问题。例如不直接使用DELETE FROM a WHERE…来删除数据，而是先查询符合条件的数据，再使得缓存中对应的数据失效，继而根据其主键显式地删除这些行。</p>
+
+<h3>Off-Line处理</h3>
+
+<p>这篇文章还提到了Off-Line的处理方式，即通过引入消息队列的方式来处理请求。事实上，在大多数企业软件系统中，这种方式也是较为常见的做法。在我撰写的文章《<a href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/">案例分析:基于消息的分布式架构</a>》中，较为详细地介绍了这种架构。在引入消息队列后，Web服务器会充当消息的发布者，而在消息队列的另一端可以根据需要提供消费者Consumer。如下图所示。对于Off-Line的任务是否执行完毕，通常可以通过轮询或回调的方式来获知。
+<img class="center" src="http://agiledon.github.com/images/2013/02/scalability03.png"></p>
+
+<p>为了更好地提高代码可读性，可以在公开的接口定义中明确地标示该任务是On-Line还是Off-Line。</p>
+
+<p>引入Message Queue，可以极大地缓解Web服务器的压力，因为它可以将耗时较长的任务转到专门的机器上去执行。</p>
+
+<p>此外，通过引入定时任务，也可以有效地利用Web服务器的空闲时间来处理后台任务。例如，通过Spring Batch Job来执行每日、每周或者每月的定时任务。如果需要多台机器去执行这些定时任务，可以引入Spring提供的<a href="https://puppetlabs.com">Puppet</a>来管理这些服务器。Puppet提供了可读性强的声明性语言来完成对机器的配置。</p>
+
+<h4>Map-Reduce</h4>
+
+<p>对于大数据的处理，自然可以引入Map-Reduce。为整个系统专门引入一个Map-Reduce层来处理数据是有必要的。相对于使用SQL数据库作为数据中心的方式，Map-Reduce对可伸缩性的支持更好。Map-Reduce可以与任务的定时机制结合起来。如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2013/02/scalability04.png"></p>
+
+<h3>平台层</h3>
+
+<p>Larson认为，大多数系统都是Web应用直接与数据库通信，但如果能加入一个平台层（Platform Layer），或许会更好。
+<img class="center" src="http://agiledon.github.com/images/2013/02/scalability05.png"></p>
+
+<p>首先，将平台与Web应用分离，使得它们可以独立地进行伸缩。例如需要添加一个新的API，就可以添加新的平台服务器，而无需增加Web服务器。要知道，在这样一个独立的物理分层架构中，不同层次对服务器的要求是不一样的。例如，对于数据库服务器而言，由于需要频繁地对磁盘进行I/O操作，因此应保证数据库服务器的IO性能，如尽量使用固态硬盘。而对于Web服务器而言，则对CPU的要求比较高，尽可能采用多核CPU。</p>
+
+<p>其次，增加一个额外的平台层，可以有效地提高系统的可重用性。例如我们可以将一些与系统共有特性以及横切关注点的内容（如对缓存的支持，对数据库的访问等功能）抽取到平台层中，作为整个系统的基础设施（Infrastructure）。尤其对于产品线系统而言，这种架构可以更好地为多产品提供服务。</p>
+
+<p>最后，这种架构也可能对跨团队开发带来好处。平台可以抽离出一些与产品无关的接口，从而隐藏其具体实现的细节。如果划分合理，并能设计出相对稳定的接口，就可以使得各个团队可以并行开发。例如可以专门成立平台团队，致力于对平台的实现以及优化。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Java设计模式译者序]]></title>
@@ -2606,40 +2715,6 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 <p>这段代码很简单，当调用者试图根据id获得目标对象时，首先会在Cache中寻找，如果有就直接返回；否则通过create()方法获得目标对象，然后再将它存储到Cache中。create()方法是该类定义的一个非final方法，它执行了DB的查询功能。现在，假设使用该类的用户对它进行了扩展，例如定义RemoteAvailabilityCache类派生该类，并重写create()方法，将原来的本地调用改为远程调用。问题出现了。由于采用create()方法是远程调用，当服务端比较繁忙时，发出的远程调用请求可能会被阻塞。由于get()方法是同步方法，在方法体内，每次只能有一个线程访问它，直到方法执行完毕释放锁。现在create()方法被阻塞，就会导致其他试图调用RemoteAvailabilityCache对象的get()方法的线程随之而被阻塞。进而可能导致系统崩溃。</p>
 
 <p>当然，我们可以认为这种扩展本身是不合理的。但从设计的角度来看，它并没有违背Liskove替换原则。从接口的角度看，它的行为也没有发生任何改变，仅仅是实现发生了变化。如果不是同步方法，则一个调用线程的阻塞并不会影响到其他调用线程，问题就可以避免了。当然，这里的同步方法本身是合理的，因为只有采取同步的方式才能保证对Cache的读取是支持并发的。书中给出这个例子，无非是要说明同步方法潜在的危险，提示我们在编写代码时，需要考虑周全。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NoSQL走向成熟]]></title>
-    <link href="http://agiledon.github.com/blog/2012/12/18/nosql-is-growing-up/"/>
-    <updated>2012-12-18T17:49:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/12/18/nosql-is-growing-up</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://agiledon.github.com/images/2012/12/architect201212.jpg" width="283" height="400"></p>
-
-<p><strong>本文是InfoQ中文站2012年12月《架构师》刊首语。</strong></p>
-
-<p>在玛雅预言中的末世之年，整个IT业界却似乎可以用“波澜不惊”四个字来概括。没有惊天动地的大新闻来攫取眼球，对于媒体人而言，或许是一种不幸；但对于程序员，却可以减少太多技术选择带来的茫然。没有你方唱罢我登场的喧嚣，没有概念经济的浮夸与炒作，许多技术于是从绚烂归于平淡。</p>
-
-<p>技术由绚烂归于平淡，并不意味着它将落伍于时代，退出历史舞台，而是大浪淘沙炼出真金，乃返璞归真的升华。业界颇有几种技术正是沿着这样的发展脉络不屈地前进，例如本期《架构师》专题讨论的技术NoSQL。</p>
-
-<!--more-->
-
-
-<p>编者认为，NoSQL在褪去浮华之后，已经逐渐迈向了成熟。一个标志是用户群的增加。虽然，Martin Fowler在去年<a href="http://www.infoq.com/cn/articles/nosql-distilled-book-review">接受InfoQ的采访</a>时，认为：“关系数据库仍然是大多数情况下的选择，至少未来几年是这样的。毕竟，关系数据库产品很成熟，有丰富的支持工具，而且相对来说人们对它们已经有很好地理解了。”但他同样对采用NoSQL技术的项目表示信心满满。</p>
-
-<p>可以看到，许多NoSQL技术已经在互联网应用以及大数据处理方面露出峥嵘，即使是在企业应用领域，它们也逐渐崭露头角。以文档数据库为例，作为个中翘楚的MongoDB，就被SoureForge、MTV等互联网站广泛使用。而作为全球排名第一的ERP软件开放商SAP，也将MongoDB作为其PaaS平台的核心组件，用以支持企业内容管理（Enterprise Content Management）。Neo4j作为图形数据库的领跑者，目前已有许多财富500强的企业如Adobe，Cisco成为了Neo4j的客户。</p>
-
-<p>提及NoSQL技术，就不能不提到它与关系型数据库之间的关系，尤其是我们在实际运用中，会面临一个棘手的问题，那就是如何实现关系数据库到NoSQL的平滑迁移。很显然，只要支持这一特性，就能更好地将NoSQL运用到遗留系统的技术栈迁移场景，拓宽NoSQL技术的应用范围。MongoDB很好地做到了这一点，例如<a href="http://www.serverdensity.com/">Server Density</a>就选择了从MySQL迁移到MongoDB。</p>
-
-<p>不仅是MongoDB支持这种迁移，Couchbase支持的特性也不让MongoDB专美于前。本期《架构师》的专题文章《<a href="http://www.infoq.com/cn/articles/Transition-RDBMS-NoSQL">从关系数据库向NoSQL迁移：采访Couchbase的产品管理主管Dipti Borkar</a>》介绍了使用Couchbase进行这种迁移的时机、步骤、困难以及选择NoSQL的优点。</p>
-
-<p>NoSQL产品之间的良性竞争也可以从另一个侧面证明NoSQL技术的成熟。例如CouchDB与MongoDB之间的竞争。事实上，CouchDB这种使用JSON作为文档，运用JavaScript完成MapReduce查询的方式，以及侧重于Availability（可用性）与Partition-Tolerance（分区容忍度）的表现（相对而言，MongoDB更侧重于一致性与分区容忍度），使得它迅速成为了诸多互联网站的新宠。本期专题文章《<a href="http://www.infoq.com/cn/articles/warner-couchdb">CouchDB是什么？为什么我们要关注它？</a>》非常详细地介绍了CouchDB。</p>
-
-<p>或许，我们还可以从各种NoSQL产品的版本来判断NoSQL的成熟度，例如MongoDB的版本已经发展到2.2.2，Neo4j的版本发展到了1.9。不过，这种判断未免有些草率。判断成熟度的另一个佐证则是该技术是否产生了大量相关的衍伸产品。Martin Fowler在展望 NoSQL数据库市场的发展趋势时，就认为“现在的一切都是在添加工具和成熟度，使这些数据库更容易很好地使用。”对于 NoSQL技术，我们确实看到了这种趋势，如Apache GORA与Spring Data的出现。Spring Data提供了访问数据库的统一API，因为它既能支持关系型数据库，又能支持REST、大数据以及主流的NoSQL数据库，如MongoDB、Neo4j等。Apache GORA则是NoSQL数据库的ORM框架，提供了各种NoSQL数据存储之上的统一前端。专题文章《<a href="http://www.infoq.com/cn/articles/nioche-apache-nutch2">Julien Nioche谈Apache Nutch 2的特性及产品路线图</a>》在介绍Web搜索框架Nutch时，谈到了它与NoSQL以及ORM框架GORA之间的关系。</p>
-
-<p>此外，还有许多创新的NoSQL产品的出现，让人眼睛一亮。例如提供不可变数据库服务器的<a href="http://www.datomic.com/">Datomic</a>，具备事务管理和部署的特性，并能在云中将数据库作为服务提供给用户。还有<a href="https://voltdb.com/">VoltDB</a>，它尝试在提供可伸缩性的同时使用SQL范型。或许它们不能完全划归到NoSQL类别中，而应该称之为NewSQL，甚至是MoreSQL。<a href="https://451research.com/">451 Group</a>的高级分析师Matthew Aslett就将NoSQL定义为“旨在满足分布式体系结构的可扩展性需求和/或无模式数据管理需求”，NewSQL则被定义为“旨在满足分布式体系结构的需求，或提高性能以便不必再进行横向扩展”。Alexander Tatiyants撰写的文章《<a href="http://tatiyants.com/nosql-no-more-lets-double-down-with-moresql">NoSQL No More: Let’s double down with MoreSQL</a>》，则掀起了MoreSQL的热潮。个人认为，这些技术事实上还是NoSQL技术的一种发展。</p>
-
-<p>我们还可以预见，在很长一段时间内，会存在关系数据库与NoSQL并存的状态，甚至在同一个系统中出现，这正是Martin Fowler所谓的<a href="http://martinfowler.com/bliki/PolyglotPersistence.html">Polyglot Persistence</a>。这显然是由这两种不同类型的数据库，甚至是不同类别的NoSQL数据库各自适应的场景不同导致的必然结果。无论如何，种种迹象证明，NoSQL技术已经走向成熟，是到了该收获果实的季节了。</p>
 ]]></content>
   </entry>
   
