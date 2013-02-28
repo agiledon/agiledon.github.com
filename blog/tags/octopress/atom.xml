@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Octopress | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/octopress/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-27T20:25:47+08:00</updated>
+  <updated>2013-02-28T22:37:30+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -282,10 +282,10 @@ end</p>
 ```</p>
 
 <p>Octopress是将Category写到了blog/categories下，因此我将Tag写到了blog/tags下。这就是上面代码中tag_dir的值。这个值应该配置在_config.yml下：如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>category_dir: blog/categories
-</span><span class='line'>tag_dir: blog/tags</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+category_dir: blog/categories
+tag_dir: blog/tags
+{% endcodeblock %}</p>
 
 <p>同样的，你也可以把custom\asides下的category_cloud.html改为tag_cloud.html。当然，要记住，改名后，还需要到_config.yml的asides设置中做相应修改。</p>
 
@@ -294,7 +294,7 @@ end</p>
 <p>现在，博客右侧的Tag Cloud应该可以工作了。但是，当你去单击某个Tag时，会出现404页面。此外，每篇博客下面仅显示了Category的信息。该怎么解决？</p>
 
 <p>首先，你需要转到source/_layouts/文件夹下，复制category_index.html文件，更名为tag_index.html文件，将div内的内容修改为：
-
+{% raw %}
 ```html tag_index.html</p>
 
 <div id="blog-archives" class="category">
@@ -312,10 +312,10 @@ end</p>
 
 
 <p>```
-</p>
+{% endraw %}</p>
 
 <p>仍然在该文件夹下，打开post.html文件，在footer节对应的Category下方，增加如下内容：
-
+{% raw %}
 ```html post.html</p>
 
 <pre><code>&lt;p class="meta"&gt;
@@ -324,10 +324,10 @@ end</p>
 </code></pre>
 
 <p>```
-</p>
+{% endraw %}</p>
 
 <p>接下来，转到source/_includes/post/目录下，创建tags.html文件，内容为：
-
+{% raw %}
 ```html tags.html
 {% capture tag %}{% if post %}{{ post.tags | tag_links | size }}{% else %}{{ page.tags | tag_links | size }}{% endif %}{% endcapture %}
 {% unless tag == '0' %}
@@ -346,7 +346,7 @@ end</p>
 </span>
 {% endunless %}
 ```
-</p>
+{% endraw %}</p>
 
 <p>若要支持Tag的Feed，还可以在source/_includes/custom目录下模仿category_feed.xml，创建一个tag_feed.xml。这里就不再赘述。</p>
 ]]></content>
@@ -367,29 +367,19 @@ end</p>
 <p>我最初是在octopress的plugin目录下创建了post_weibo.rb文件。后来发现，当我们执行rake generate时，它事实上会去执行jekyll命令。而该命令则会去遍历plugin目录下的ruby文件，并执行之。这显然不是我希望看到的。我希望在发表的新博客完全就绪时，我再考虑发送通知到新浪微博。于是，我单独建立了一个新的文件夹"_custom"，并将post_weibo.rb文件放进去。</p>
 
 <p>post_weibo.rb文件实现了这个插件的所有功能，主要方法为post_weibo()，如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">post_weibo</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;conn = Faraday.new(:url =&amp;gt; &quot;https:/</span><span class="o">/</span><span class="n">api</span><span class="o">.</span><span class="n">weibo</span><span class="o">.</span><span class="n">com</span><span class="s2">&quot;)</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">result = conn.post &#39;/2/statuses/update.json&#39;,</span>
-</span><span class='line'><span class="s2">                   :access_token =&amp;gt; @weibo_config[&#39;access_token&#39;],</span>
-</span><span class='line'><span class="s2">                   :status =&amp;gt; generate_post</span>
-</span><span class='line'><span class="s2">puts &quot;</span><span class="n">post</span> <span class="n">successful</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&lt;p&gt;  end</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:ruby %}
+  def post_weibo</p>
+
+<pre><code>conn = Faraday.new(:url =&gt; "https://api.weibo.com")
+
+result = conn.post '/2/statuses/update.json',
+                   :access_token =&gt; @weibo_config['access_token'],
+                   :status =&gt; generate_post
+puts "post successful"
+</code></pre>
+
+<p>  end
+{% endcodeblock %}</p>
 
 <p>它使用了faraday来发送post请求到新浪api。发送请求时需要获得access_token。该值可以到新浪申请。具体API说明请查阅<a href="http://open.weibo.com/wiki/2/statuses/update">开发文档</a>。</p>
 
@@ -453,7 +443,7 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
     <link href="http://agiledon.github.com/blog/2012/12/25/octopress-issues-solution-and-tips/"/>
     <updated>2012-12-25T09:14:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/25/octopress-issues-solution-and-tips</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2012/12/octopress.jpg" width="259" height="154"></p>
+    <content type="html"><![CDATA[<p>{% img left /images/2012/12/octopress.jpg 259 154 %}</p>
 
 <p>在GitHub上创建了自己的博客后，先后在Jekyll和Octopress之间来回折腾了好一段时间。之前打算直接使用Jekyll提供的博客模板，后来觉得太费神，看到Octopress还不错，且它也是基于Jekyll，并能非常方便地部署到GitHub上。经过最初的安装到对博客的深入改造，目前我的博客需要的功能已经大致完成。在这个过程中，也碰到了许多问题。通过搜索Google以及自己阅读Octopress代码，找到了对应的解决办法。此外，也有一些小技巧的积累。考虑到还有许多正在使用或想要使用Octopress的朋友，因此在这里集中分享一下。</p>
 
@@ -463,101 +453,78 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 <p><strong>不能在ZSH中输入命令的问题</strong></p>
 
 <p>Octopress提供了许多Rake任务，可以方便地完成一些操作。常用的命令是rake new_post["title"]。但是在ZSH下，输入这样的命令，会提示错误：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>zsh: no matches found: new_post[...]</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+zsh: no matches found: new_post[...]
+{% endcodeblock %}</p>
 
 <p>原因是诸如[]之类的不是正确的命令字符。当然，我们也可以使用转义符来解决这一问题。但每次都需要敲入转义符，实在是太麻烦了。解决方案是在~/.zshrc文件下，加入这样一行内容：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>alias rake="noglob rake"</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+alias rake="noglob rake"
+{% endcodeblock %}</p>
 
 <p><strong>解决中文乱码问题</strong></p>
 
 <p>Octopress要创建一篇博客，可以直接运行rake new_post["title"]，它会在source/_post下创建一个markdown文件。同时，它会将你输入的title作为blog的链接URL。我们可以通过一些工具，例如EMacs或者MouApp（在Mac OS下）打开该文件进行编辑。但是，当我将markdown文件打开，修改title为中文，且输入中文博客时，再运行rake generate生成博客页面时，会报告编码错误。信息为：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gems/ruby-1.9.2-p290/gems/jekyll-0.11.0/lib/jekyll/convertible.rb:32:in `read_yaml': invalid byte sequence in US-ASCII (ArgumentError)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+gems/ruby-1.9.2-p290/gems/jekyll-0.11.0/lib/jekyll/convertible.rb:32:in `read_yaml': invalid byte sequence in US-ASCII (ArgumentError)
+{% endcodeblock %}</p>
 
 <p>这是因为jekyll代码没有很好地支持多种编码的缘故。解决办法是找到提示信息中的convertible.rb文件，将第29行的如下代码：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">name</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:ruby %}
+self.content = File.read(File.join(base, name))
+{% endcodeblock %}</p>
 
 <p>修改为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">name</span><span class="p">),</span> <span class="ss">:encoding</span> <span class="o">=&gt;</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:ruby %}
+self.content = File.read(File.join(base, name), :encoding => "utf-8")
+{% endcodeblock %}</p>
 
 <p>有的<a href="http://jokry.com/2012/03/08/octopress/">博客</a>还提到ruby环境的问题。我并没有碰到。我使用的版本是ruby 1.9.3。如果遇到类似问题，根据这篇博客的讲解，可以修改ruby环境下的setup_environment.bat文件，在文件最后加入2行：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>set LC_ALL=en_US.UTF-8
-</span><span class='line'>set LANG=en_US.UTF-8</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+set LC_ALL=en_US.UTF-8
+set LANG=en_US.UTF-8
+{% endcodeblock %}</p>
 
 <p><strong>中文博客名称的问题</strong></p>
 
 <p>前面已经提到，rake new_post[""]命令会将双引号引起来的标题作为blog链接的一部分。这就必然导致一个问题，就是我们无法在new_post[""]命令中直接使用中文作为博客的标题。带来的问题是，我们每次都需要在创建了博客之后，再打开markdown文件，去修改文件前方的title内容为中文。这无疑增加了工作量。解决的办法很简单，因为new_post就是一个rake任务而已，我们可以参照该任务，创建一个自己的任务，添加一个新的参数alias，将它作为我们需要的中文标题。</p>
 
 <p>打开在octopress根目录下的Rakefile文件，在文件末尾增加如下代码：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">desc</span> <span class="s2">&quot;Begin a new post in </span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2"> with Alias&quot;</span>
-</span><span class='line'><span class="n">task</span> <span class="ss">:post</span><span class="p">,</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:title_alias</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
-</span><span class='line'>  <span class="k">raise</span> <span class="s2">&quot;### You haven&#39;t set anything up yet. First run &lt;code&gt;rake install&lt;/code&gt; to set up an Octopress theme.&quot;</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">directory?</span><span class="p">(</span><span class="n">source_dir</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">mkdir_p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="n">args</span><span class="o">.</span><span class="n">with_defaults</span><span class="p">(</span><span class="ss">:title</span> <span class="o">=&gt;</span> <span class="s1">&#39;new-post&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">title</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">title</span>
-</span><span class='line'>  <span class="n">title_alias</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">title_alias</span>
-</span><span class='line'>  <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">to_url</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">new_post_ext</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;abort(&quot;rake aborted!&quot;) if ask(&quot;</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="sr"> already exists. Do you want to overwrite?&quot;, [&#39;y&#39;, &#39;n&#39;]) == &#39;n&#39;</span>
-</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;p&gt;  end</span>
-</span><span class='line'><span class="sr">  puts &quot;Creating new post: </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="sr">&quot;</span>
-</span><span class='line'><span class="sr">  open(filename, &#39;w&#39;) do |post|&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
-</span><span class='line'><span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;layout: post&quot;</span>
-</span><span class='line'><span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;title: </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">title_alias</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;date: </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;comments: true&quot;</span>
-</span><span class='line'><span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;categories: &quot;</span>
-</span><span class='line'><span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:ruby %}
+desc "Begin a new post in #{source_dir}/#{posts_dir} with Alias"
+task :post, :title, :title_alias do |t, args|
+  raise "### You haven't set anything up yet. First run <code>rake install</code> to set up an Octopress theme." unless File.directory?(source_dir)
+  mkdir_p "#{source_dir}/#{posts_dir}"
+  args.with_defaults(:title => 'new-post')
+  title = args.title
+  title_alias = args.title_alias
+  filename = "#{source_dir}/#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.#{new_post_ext}"
+  if File.exist?(filename)</p>
+
+<pre><code>abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
+</code></pre>
+
+<p>  end
+  puts "Creating new post: #{filename}"
+  open(filename, 'w') do |post|</p>
+
+<pre><code>post.puts "---"
+post.puts "layout: post"
+post.puts "title: \"#{title_alias}\""
+post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
+post.puts "comments: true"
+post.puts "categories: "
+post.puts "---"
+</code></pre>
+
+<p>  end
+end
+{% endcodeblock %}</p>
 
 <p>新的post任务接收两个参数，第一个参数与之前的new_post任务需要的参数完全相同，第二个参数alias就可以设置到markdown文件的title:中。例如我们要建立一个博客，标题为“如何建立Octopress博客”，则可以输入命令：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake post["How to create octopress blog","如何建立Octopress博客"]</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+rake post["How to create octopress blog","如何建立Octopress博客"]
+{% endcodeblock %}</p>
 
 <p><strong>注意，除了第二个参数引号内的内容可以用中文外，其他字符包括双引号、逗号和中括号都应该是Utf-8字符。此外，Title和Alias之间用“,”隔开，“,”后不能加空格。</strong></p>
 
@@ -565,18 +532,18 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 
 <p>加入图片在Octopress中，支持的Markdown语法为：</p>
 
-<p>
+<p>{% raw %}
 <code>
 {% img [position] [url] [width] [height] %}
 </code>
-</p>
+{% endraw %}</p>
 
 <p>position可以设置为left，right或center。url可以是网上的图片url。如果是自己博客的图片，通常建议放在source/images目录下。为了将来更好地维护，建议按照年和月建立两层目录，如2012/12。因为rake generate命令会自动生成博客，放在source/images目录下的图片也会被复制过去。因而在markdown的img语法中，图片的url应该是/images/2012/12/picture.jpg。</p>
 
 <p><strong>代码问题</strong></p>
 
 <p>Octopress支持的代码高亮有很多。我个人还是比较喜欢直接用codeblock标签。虽然每次敲入这个codeblock不太方便，但它胜在灵活见解。例如，粘贴的代码为ruby语言，就可以在代码片段前后分别加上：
-
+{% raw %}
 ```
 {% codeblock lang:ruby %}</p>
 
@@ -584,23 +551,17 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 
 <p>{% endcodeblock %}
 ```
-</p>
+{% endraw %}</p>
 
 <p><strong>摘要问题</strong></p>
 
 <p>如果希望在首页只显示一部分内容，例如摘要，也非常简单。只需要在你希望首页显示的内容最后，输入：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;!--more-->
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}</p>
+
+<!--more-->
+
+
+<p>{% endcodeblock %}</p>
 
 <p><strong>插件</strong></p>
 

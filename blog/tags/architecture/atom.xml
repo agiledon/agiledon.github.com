@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Architecture | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-27T20:25:47+08:00</updated>
+  <updated>2013-02-28T22:37:30+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons/"/>
     <updated>2013-02-27T11:37:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/scalability.jpg"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/scalability.jpg %}</p>
 
 <p>最近，阅读了Will Larson的文章<a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting System for Scale</a>，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统，这种面向企业内部的软件系统通常不会有太大的负载量，太多的并发量，因而对于系统的可伸缩性考虑较少。大体而言，只要在系统部署上考虑集群以及负载均衡即可。本文给了我很多启发，现把本文的主要内容摘译出来，并结合自己对此的理解。</p>
 
@@ -32,10 +32,12 @@
 <h3>负载均衡</h3>
 
 <p>无论是水平伸缩还是冗余，都可以通过负载均衡来实现。负载均衡就好似一个协调请求的调停者，它会根据集群中机器的当前负载，合理的分配发往Web服务器的请求，以达到有效利用集群中各台机器资源的目的。显然，这种均衡器应该介于客户端与Web服务器之间，如下图所示：
-<img class="center" src="/images/2013/02/scalability01.png"></p>
+{% img center /images/2013/02/scalability01.png %}</p>
 
 <p>本文提到了实现负载均衡的几种方法。其一是Smart Client，即将负载均衡的功能添加到数据库（以及缓存或服务）的客户端中。这是一种通过软件来实现负载均衡的方式，它的缺点是方案会比较复杂，不够健壮，也很难被重用（因为协调请求的逻辑会混杂在业务系统中）。对此，Larson在文章以排比的方式连续提出问题，以强化自己对此方案的不认可态度：
-<blockquote><p>Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it'll be easy to reuse? Tragically, no.</p></blockquote></p>
+{% blockquote %}
+Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it'll be easy to reuse? Tragically, no.
+{% endblockquote %}</p>
 
 <p>第二种方式是采用硬件负载均衡器，例如<a href="http://www.citrix.com/English/ps2/products/product.asp?contentID=21679">Citrix NetScaler</a>。不过，购买硬件的费用不菲，通常是一些大型公司才会考虑此方案。</p>
 
@@ -48,39 +50,23 @@
 <h4>应用缓存</h4>
 
 <p>提供缓存的方式可以分为应用缓存和数据库缓存。此二者各擅胜场。应用缓存通常需要将处理缓存的代码显式地集成到应用代码中。这就有点像使用代理模式来为真实对象提供缓存。首先检查缓存中是否有需要的数据，如果有，就从缓存直接返回，否则再查询数据库。至于哪些值需要放到缓存中呢？有<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">诸多算法</a>，例如根据最近访问的，或者根据访问频率。使用Memcached的代码如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&quot;user.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user_id</span>
-</span><span class='line'><span class="n">user_blob</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span class='line'><span class="k">if</span> <span class="n">user_blob</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">user</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT * FROM users WHERE user_id=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
-</span><span class='line'><span class="k">if</span> <span class="n">user</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
-</span><span class='line'><span class="k">return</span> <span class="n">user</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">else</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">user_blob</span><span class="p">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:python %}
+key = "user.%s" % user_id
+user_blob = memcache.get(key)
+if user_blob is None:</p>
+
+<pre><code>user = mysql.query("SELECT * FROM users WHERE user_id=\"%s\"", user_id)
+if user:
+    memcache.set(key, json.dumps(user))
+return user
+</code></pre>
+
+<p>else:</p>
+
+<pre><code>return json.loads(user_blob)
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <h4>数据库缓存</h4>
 
@@ -93,7 +79,7 @@
 <h4>CDN</h4>
 
 <p>提高性能，降低Web服务器负载的另一种常见做法是将静态媒体放入CDN（Content Distribution Network）中。如下图所示：
-<img class="center" src="/images/2013/02/scalability02.png"></p>
+{% img center /images/2013/02/scalability02.png %}</p>
 
 <p>CDN可以有效地分担Web服务器的压力，使得应用服务器可以专心致志地处理动态页面；同时，CDN还可以通过地理分布来提高响应请求的性能。在设置了CDN后，当系统接收到请求时，首先会询问CDN以获得请求中需要的静态媒体（通常会通过HTTP Header来配置CDN能够缓存的内容）。如果请求的内容不可用，CDN会查询服务器以获得该文件，并在CDN本地进行缓存，最后再提供给请求者。如果当前网站并不大，引入CDN的效果不明显时，可以考虑暂不使用CDN，在将来可以通过使用一些轻量级的HTTP服务器如<a href="http://nginx.org/">Nginx</a>，为静态媒体分出专门的子域名如static.domain.com来提供服务。</p>
 
@@ -106,7 +92,7 @@
 <h3>Off-Line处理</h3>
 
 <p>这篇文章还提到了Off-Line的处理方式，即通过引入消息队列的方式来处理请求。事实上，在大多数企业软件系统中，这种方式也是较为常见的做法。在我撰写的文章《<a href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/">案例分析:基于消息的分布式架构</a>》中，较为详细地介绍了这种架构。在引入消息队列后，Web服务器会充当消息的发布者，而在消息队列的另一端可以根据需要提供消费者Consumer。如下图所示。对于Off-Line的任务是否执行完毕，通常可以通过轮询或回调的方式来获知。
-<img class="center" src="/images/2013/02/scalability03.png"></p>
+{% img center /images/2013/02/scalability03.png %}</p>
 
 <p>为了更好地提高代码可读性，可以在公开的接口定义中明确地标示该任务是On-Line还是Off-Line。</p>
 
@@ -117,12 +103,12 @@
 <h4>Map-Reduce</h4>
 
 <p>对于大数据的处理，自然可以引入Map-Reduce。为整个系统专门引入一个Map-Reduce层来处理数据是有必要的。相对于使用SQL数据库作为数据中心的方式，Map-Reduce对可伸缩性的支持更好。Map-Reduce可以与任务的定时机制结合起来。如下图所示：
-<img class="center" src="/images/2013/02/scalability04.png"></p>
+{% img center /images/2013/02/scalability04.png %}</p>
 
 <h3>平台层</h3>
 
 <p>Larson认为，大多数系统都是Web应用直接与数据库通信，但如果能加入一个平台层（Platform Layer），或许会更好。
-<img class="center" src="/images/2013/02/scalability05.png"></p>
+{% img center /images/2013/02/scalability05.png %}</p>
 
 <p>首先，将平台与Web应用分离，使得它们可以独立地进行伸缩。例如需要添加一个新的API，就可以添加新的平台服务器，而无需增加Web服务器。要知道，在这样一个独立的物理分层架构中，不同层次对服务器的要求是不一样的。例如，对于数据库服务器而言，由于需要频繁地对磁盘进行I/O操作，因此应保证数据库服务器的IO性能，如尽量使用固态硬盘。而对于Web服务器而言，则对CPU的要求比较高，尽可能采用多核CPU。</p>
 
@@ -137,7 +123,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs/"/>
     <updated>2013-02-16T15:33:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/02/hdfs.jpg">
+    <content type="html"><![CDATA[<p>{% img left /images/2013/02/hdfs.jpg %}
 HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Hadoop</a>下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然，这样的架构设计主要还是满足系统的质量属性，包括如何保证分布式存储的可靠性，如何很好地支持硬件的水平扩展，如何支持对大数据处理的高性能以及客户端请求的高吞吐量。所以，HDFS的架构设计颇有参考价值，在Hadoop的Apache官方网站上也给出了<a href="http://hadoop.apache.org/docs/current/hdfs_design.html">HDFS的架构指南</a>。在<a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>卷I的第8章也详细介绍了HDFS的架构。</p>
 
 <p>HDFS的高层设计看起来很简单，主要包含NameNode与DataNode，它们之间的通信，包括客户端与HDFS NameNode服务器的通信则基于TCP/IP。客户端通过一个可配置的TCP端口连接到NameNode，通过ClientProtocol协议与NameNode交互。而DataNode使用DatanodeProtocol协议与NameNode交互。一个远程过程调用(RPC)模型被抽象出来封装ClientProtocol和Datanodeprotocol协议。</p>
@@ -146,14 +132,14 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
 
 <p>通常，一个HDFS Cluter由一个NameNode和多个DataNode组成，且在大多数情况下，会由一台专门的机器运行NameNode实例。下图是HDFS的High Level Architecture：
-<img class="center" src="/images/2013/02/hdfs01.gif"></p>
+{% img center /images/2013/02/hdfs01.gif %}</p>
 
 <div align="center">本图来自<a href="http://www.ibm.com/developerworks/library/wa-introhdfs/">IBM DeveloperWorks</a></div>
 
 
 <p>注意，在这个架构图中，观察各节点之间的通信，容易造成一个误解是NameNode会直接与DataNode通信。实则不然。虽然，NameNode可以看做是DataNode的管理者甚至是仲裁者，但由于DataNode的数量通常很多，且都是分布式部署在不同的机器上，若NameNode需要主动发起对各个DataNode的请求，会导致NameNode的负载过大，且对于网络的要求也极高。因此，在设计上，NameNode不会主动发起RPC，而是响应来自客户端或Datanode的RPC请求。如果NameNode需要获得指定DataNode的信息，则是通过DataNode调用函数后的一个简单返回值。每个DataNode都会维护一个开放的Socket，以支持客户端代码或其他DataNode的读写请求。NameNode知道该Socket的Host与Port。</p>
 
-<p><img class="left" src="/images/2013/02/hdfs02.png">
+<p>{% img left /images/2013/02/hdfs02.png %}
 一个好的架构必然遵循了好的架构原则。HDFS架构有许多值得我们借鉴或参考的设计决策，其中它所遵循的架构原则，对HDFS满足架构目标起到了决定性的作用。这些原则包括：元数据与数据分离；主/从架构；一次写入多次读取；移动计算比移动数据更划算。</p>
 
 <h4>元数据与数据分离</h4>
@@ -179,7 +165,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <p>移动计算比移动数据更划算，即moving computation is cheaper than moving data。对于数据运算而言，越靠近数据，执行运算的性能就越好，尤其是当数据量非常大的时候，更是如此。由于分布式文件系统的数据并不一定存储在一台机器上，就使得运算的数据常常与执行运算的位置不相同。如果直接去远程访问数据，可能需要发起多次网络请求，且传输数据的成本也相当客观。因此最好的方式是保证数据与运算离得最近。这就带来两种不同的策略。一种是移动数据，另一种是移动运算。显然，移动数据，尤其是大数据的成本非常之高。要让网络的消耗最低，并提高系统的吞吐量，最佳方式是将运算的执行移到离它要处理的数据更近的地方，而不是移动数据。</p>
 
 <p>HDFS在改善吞吐量与数据访问性能上还做出了一个好的设计决策，就是数据块的Staging。当客户端创建文件时，并没有立即将其发送给NameNode，而是将文件数据存储到本地的临时文件中。这个操作是透明的，客户端不会觉察，也不必关心。文件的创建事实上是一个流数据的写，当临时文件累计的数据量超过一个数据块大小时，客户端才会联系NameNode。NameNode将文件名插入文件系统的层次结构中，并且分配一个数据块给它。然后返回Datanode的标识符和目标数据块给客户端。接着，客户端将这块数据从本地临时文件上传到指定的Datanode上。当文件关闭时，在临时文件中剩余的没有上传的数据也会传输到指定的Datanode上。然后客户端告诉Namenode文件已经关闭。此时Namenode才将文件创建操作提交到HDFS的文件系统。这个操作的大致时序图如下所示：
-<img class="center" src="/images/2013/02/hdfs03.png"></p>
+{% img center /images/2013/02/hdfs03.png %}</p>
 
 <p>采用这种客户端缓存的方式，可以有效地减少网络请求，避免大数据的写入造成网络堵塞，进而提高网络吞吐量。</p>
 ]]></content>
@@ -190,7 +176,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     <link href="http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/"/>
     <updated>2013-02-07T15:13:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/sketch.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/sketch.jpg %}
 微软研究院首席研究员Leslie Lamport发表了文章<a href="http://www.wired.com.edgesuite.net/opinion/2013/01/code-bugs-programming-why-we-need-specs/#more-122883">Why We Should Build Software Like We Build Houses</a>，吐槽了对如今程序员不愿意做分析，画草图，而是直接开始编码的现状。看了这篇文章后，我对Lamport的观点有一些想法，觉得不吐不快。</p>
 
 <p>其实从文章标题以及作者开篇名义提出的问题来看，显然基于一个假设，或者说事先设定的隐喻，那就是用建筑业来形容软件开发。作者认为建筑设计师在修建房屋之前都会绘制一幅详尽的计划（或蓝图），而软件开发人员却并不这样。以两个不同的行业做对比，认为一个行业这么做了，另一个行业不这样做就有问题，这个假设合理吗？虽然，软件行业中所谓Architecture以及Build的概念确乎来自于建筑行业，甚至这种隐喻在许多年前为诸多大师认可，因而提出诸如软件工程等思想；虽然，它山之石可以攻玉，借鉴别的领域的最佳实践，确乎可以帮助软件开发收获灵感，避免去走太多弯路；然而，毕竟二者之间并不能完全划等号。</p>
@@ -217,7 +203,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     <link href="http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs/"/>
     <updated>2012-12-31T10:59:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/seperated.jpg" width="500" height="375">
+    <content type="html"><![CDATA[<p>{% img center /images/2012/12/seperated.jpg 500 375 %}
 CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，它甚至可以被称为是一种架构风格，可以取得与MapReduce，REST同等的地位，对软件系统的整体架构产生重要影响。</p>
 
 <p>CQRS即Command Query Responsibility Seperation（命令查询职责分离），其设计思想来源于Mayer提出的CQS（Command Query Seperation）。这种命令与查询的分离方式，可以更好地控制请求者的操作。查询操作不会造成数据的修改，因而它属于一种幂等操作，可以反复地发起，而不用担心会对系统造成影响。基于这种特性，我们还可以为其提供缓存，从而改进查询的性能。命令操作则与之相反，它会直接影响系统信息的改变。查询操作与命令操作对事务的要求也不一样。由于查询操作不会改变系统状态，因而，不会产生最终的数据不一致。从请求响应的角度来看，查询操作常常需要同步请求，实时返回结果；命令操作则不然，因为我们并不期待命令操作必须返回结果，这就可以采用fire-and-forget方式，而这种方式正是运用异步操作的前提。此外，对于大多数软件系统而言，查询操作发起的频率通常要远远高于命令操作。如上种种，都是将命令与查询进行分离的根本原因。</p>
@@ -228,10 +214,10 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
 
 <p>只要充分理解了运用CQRS模式的意图，理解CQRS模式就变得容易了许多。下图是CQRS框架<a href="http://www.axonframework.org">AxonFramework</a>官方文档给出的CQRS架构图。
-<img class="center" src="/images/2012/12/cqrs-arch.png" width="613" height="434"></p>
+{% img center /images/2012/12/cqrs-arch.png 613 434 %}</p>
 
 <p>在这个架构图中，最核心的概念是Command、Event。以我的理解，CQRS模式的风格源头就是基于事件的异步状态机模型。抛开命令查询分离这一核心原则，这才是CQRS的基础内容。CQRS对设计者的影响，是将领域逻辑，尤其是业务流程，皆看做是一种领域对象状态迁移的过程。这一点与REST将HTTP应用协议看做是应用状态迁移的引擎，有着异曲同工之妙。这种观点（或设计视图）引出了Command与Event的概念。Command是系统中会引起状态变化的活动，通常是一种命令语气，例如注册会议RegisterToConference。至于Event，则描述了某种事件的发生，通常是命令的结果（但并不一定是直接结果，但源头一定是因为发送了命令），例如OrderConfirmed。我发现，这种事件更接近于一种事实，即某次数据改变的结果，是一种确定无疑已经发生的事实。这一思想直接引入了Event Source，并带来Audit（审计）的好处。而它更是与<a href="http://www.datomic.com">Datomic数据库</a>的设计哲学一脉相承。Datomic的设计哲学就是：“将数据(Data)看做是事实(Fact)。每个事实都是过去的痕迹，虽然这种过去可以遗忘，但却无法改变。”Event Source可以将这些事件的发生过程记录下来，使得我们可以追溯业务流程。
-<img class="center" src="/images/2012/12/datomic.jpg" width="563" height="274"></p>
+{% img center /images/2012/12/datomic.jpg 563 274 %}</p>
 
 <p>Command和Event都有对应的Handler来处理。它们具有一个共同的特征，即支持异步处理方式。这也是为何在架构中需要引入Command Bus和Event Bus的原因。在UI端执行命令请求，事实上就是将命令（注意，这是一个命令对象，你完全将其理解为Command模式的运用。注意，命令的命名一定要恰如其分地体现业务的意图）发送到Command Bus中。Command Bus更像是一个调停者（Mediator），在接收到Command时，会将其路由到准确的CommandHandler，由CommandHandler来处理该命令。在Axon Framework中，Command Bus提供了dispatch()方法对命令进行分发。也就是说，在它的实现中，并没有对Command提供异步处理，而仅仅是完成路由的功能。不过，在我自己的框架实现中，我却将Command Bus看做是消息通道，而将Command Handler看做是该消息通道的侦听者。因此，我引入了队列来实现Command Bus。很难说明哪种方式更合理，这还要取决于业务模型。整体来看，后一个方案似乎有些重型了。不过，我现在并未引入消息队列，而是使用了Scala的Actor，从多线程的角度来实现CommandBus的异步模型，也可以说得过去。</p>
 
@@ -250,7 +236,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
     <link href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/"/>
     <updated>2012-12-27T11:31:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/messagearchitecture.jpg" width="600" height="450"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2012/12/messagearchitecture.jpg 600 450 %}</p>
 
 <p>美国计算机科学家，LaTex的作者Leslie Lamport说：“分布式系统就是这样一个系统，系统中一个你甚至都不知道的计算机出了故障，却可能导致你自己的计算机不可用。”一语道破了开发分布式系统的玄机，那就是它的复杂与不可控。所以Martin Fowler强调：分布式调用的第一原则就是不要分布式。这句话看似颇具哲理，然而就企业应用系统而言，只要整个系统在不停地演化，并有多个子系统共同存在时，这条原则就会被迫打破。盖因为在当今的企业应用系统中，很难寻找到完全不需要分布式调用的场景。Martin Fowler提出的这条原则，一方面是希望设计者能够审慎地对待分布式调用，另一方面却也是分布式系统自身存在的缺陷所致。无论是CORBA，还是EJB 2；无论是RPC平台，还是Web Service，都因为驻留在不同进程空间的分布式组件，而引入额外的复杂度，并可能对系统的效率、可靠性、可预测性等诸多方面带来负面的影响。</p>
 
@@ -272,7 +258,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <h4>消息通道（Message Channel）模式</h4>
 
 <p>我们常常运用的消息模式是Message Channel（消息通道）模式，如图1所示。
-<img class="center" src="/images/2012/12/message1.png" width="600" height="264"></p>
+{% img center /images/2012/12/message1.png 600 264 %}</p>
 
 <center>图1 Message Channel模式（图片来自[eaipatterns](http://www.eaipatterns.com) ）</center>
 
@@ -286,7 +272,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <h4>发布者-订阅者（Publisher-Subscriber）模式</h4>
 
 <p>一旦消息通道需要支持多个消费者时，就可能面临两种模型的选择：拉模型与推模型。拉模型是由消息的消费者发起的，主动权把握在消费者手中，它会根据自己的情况对生产者发起调用。如图2所示：
-<img class="center" src="/images/2012/12/message2.png" width="600" height="207"></p>
+{% img center /images/2012/12/message2.png 600 207 %}</p>
 
 <center>图2  拉模型</center>
 
@@ -296,7 +282,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <p>在基于消息的分布式系统中，拉模型的消费者通常以Batch Job的形式，根据事先设定的时间间隔，定期侦听通道的情况。一旦发现有消息传递进来，就会转而将消息传递给真正的处理器（也可以看做是消费者）处理消息，执行相关的业务。在本文第二部分介绍的医疗卫生系统，正是通过引入Quartz.NET实现了Batch Job，完成对消息通道中消息的处理。</p>
 
 <p>推模型的主动权常常掌握在生产者手中，消费者被动地等待生产者发出的通知，这就要求生产者必须了解消费者的相关信息。如图3所示：
-<img class="center" src="/images/2012/12/message3.png" width="600" height="187"></p>
+{% img center /images/2012/12/message3.png 600 187 %}</p>
 
 <center>图3 推模型</center>
 
@@ -304,7 +290,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <p>对于推模型而言，消费者无需了解生产者。在生产者通知消费者时，传递的往往是消息（或事件），而非生产者自身。同时，生产者还可以根据不同的情况，注册不同的消费者，又或者在封装的通知逻辑中，根据不同的状态变化，通知不同的消费者。</p>
 
 <p>两种模型各有优势。拉模型的好处在于可以进一步解除消费者对通道的依赖，通过后台任务去定期访问消息通道。坏处是需要引入一个单独的服务进程，以Schedule形式执行。而对于推模型而言，消息通道事实上会作为消费者观察的主体，一旦发现消息进入，就会通知消费者执行对消息的处理。无论推模型，拉模型，对于消息对象而言，都可能采用类似Observer模式的机制，实现消费者对生产者的订阅，因此这种机制通常又被称为Publisher-Subscriber模式，如图4所示：
-<img class="center" src="/images/2012/12/message4.png" width="600" height="393"></p>
+{% img center /images/2012/12/message4.png 600 393 %}</p>
 
 <center>图4 Publisher-Subscriber模式（图片来自[eaipatterns](http://www.eaipatterns.com) ）</center>
 
@@ -320,7 +306,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <p>无论是Message Channel模式，还是Publisher-Subscriber模式，队列在其中都扮演了举足轻重的角色。然而，在企业应用系统中，当系统变得越来越复杂时，对性能的要求也会越来越高，此时对于系统而言，可能就需要支持同时部署多个队列，并可能要求分布式部署不同的队列。这些队列可以根据定义接收不同的消息，例如订单处理的消息，日志信息，查询任务消息等。这时，对于消息的生产者和消费者而言，并不适宜承担决定消息传递路径的职责。事实上，根据S单一职责原则，这种职责分配也是不合理的，它既不利于业务逻辑的重用，也会造成生产者、消费者与消息队列之间的耦合，从而影响系统的扩展。</p>
 
 <p>既然这三种对象（组件）都不宜承担这样的职责，就有必要引入一个新的对象专门负责传递路径选择的功能，这就是所谓的Message Router模式，如图5所示：
-<img class="center" src="/images/2012/12/message5.png" width="600" height="175"></p>
+{% img center /images/2012/12/message5.png 600 175 %}</p>
 
 <center>图5 Message Router模式（图片来自eaipatterns ）</center>
 
@@ -336,92 +322,79 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <h3>场景一：基于消息的统一服务架构</h3>
 
 <p>在制造工业的CIMS系统中，我们尝试将各种业务以服务的形式公开给客户端的调用者，例如定义这样的接口：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IService</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">IMessage</span> <span class="n">Execute</span><span class="p">(</span><span class="n">IMessage</span> <span class="n">aMessage</span><span class="p">);</span>
-</span><span class='line'><span class="k">void</span> <span class="nf">SendRequest</span><span class="p">(</span><span class="n">IMessage</span> <span class="n">aMessage</span><span class="p">);</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:csharp %}
+public interface IService {</p>
+
+<pre><code>IMessage Execute(IMessage aMessage);
+void SendRequest(IMessage aMessage);
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>之所以能够设计这样的服务，原因在于我们对业务信息进行了高度的抽象，以消息的形式在服务之间传递。此时的消息其实是生产者与消费者之间的契约或接口，只要遵循这样的契约，按照规定的格式对消息进行转换与抽取，就能很好地支持系统的分布式处理。</p>
 
 <p>在这个CIMS系统中，我们将消息划分为ID，Name和Body，通过定义如下的接口方法，可以获得消息主体的相关属性：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IMessage</span><span class="p">:</span><span class="n">ICloneable</span>
-</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span> <span class="kt">string</span> <span class="n">MessageID</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'> <span class="kt">string</span> <span class="nf">MessageName</span><span class="p">()</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-</span><span class='line'> <span class="n">IMessageItemSequence</span> <span class="nf">CreateMessageBody</span><span class="p">();</span>
-</span><span class='line'> <span class="n">IMessageItemSequence</span> <span class="nf">GetMessageBody</span><span class="p">();</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:csharp %}
+public interface IMessage:ICloneable
+{</p>
+
+<pre><code> string MessageID { get; set; }
+ string MessageName() { get; set; }
+ IMessageItemSequence CreateMessageBody();
+ IMessageItemSequence GetMessageBody();
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>消息主体类Message实现了IMessage接口。在该类中，消息体Body为IMessageItemSequence类型。这个类型用于获取和设置消息的内容：Value和Item：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IItemValueSetting</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span> <span class="kt">string</span> <span class="n">getSubValue</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">);</span>
-</span><span class='line'> <span class="k">void</span> <span class="nf">setSubValue</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">,</span> <span class="kt">string</span> <span class="k">value</span><span class="p">);</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
-</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IMessageItemSequence</span><span class="p">:</span><span class="n">IItemValueSetting</span><span class="p">,</span> <span class="n">ICloneable</span>
-</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span> <span class="n">IMessageItem</span> <span class="n">GetMessageItem</span><span class="p">(</span><span class="kt">string</span> <span class="n">aName</span><span class="p">);</span>
-</span><span class='line'> <span class="n">IMessageItem</span> <span class="nf">CreateMessageItem</span><span class="p">(</span><span class="kt">string</span> <span class="n">aName</span><span class="p">);</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:csharp %}
+public interface IItemValueSetting {</p>
+
+<pre><code> string getSubValue(string name);
+ void setSubValue(string name, string value);  
+</code></pre>
+
+<p>}
+public interface IMessageItemSequence:IItemValueSetting, ICloneable
+{</p>
+
+<pre><code> IMessageItem GetMessageItem(string aName);
+ IMessageItem CreateMessageItem(string aName);       
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>Value为字符串类型，它利用了HashTable存储Key和Value的键值对。Item则为IMessageItem类型，在IMessageItemSequence的实现类中，同样利用了HashTable存储Key和Item的键值对。</p>
 
 <p>IMessageItem支持消息体的嵌套。它包含了两部分：SubValue和SubItem。实现的方式和IMessageItemSequence相似。通过定义这样的嵌套结构，使得消息的扩展成为可能。一般的消息结构如下所示：</p>
 
 <p>各个消息对象之间的关系如图6所示：
-<img class="center" src="/images/2012/12/message6.png" width="600" height="402"></p>
+{% img center /images/2012/12/message6.png 600 402 %}</p>
 
 <center>图6 消息对象之间的关系</center>
 
 
 <p>在实现服务进程通信之前，我们必须定义好各个服务或各个业务的消息格式。通过消息体的方法在服务的一端设置消息的值，然后发送，并在服务的另一端获得这些值。例如发送消息端定义如下的消息体：
-Liquid error: invalid byte sequence in US-ASCII</p>
+{% codeblock lang:csharp %}
+IMessageFactory factory = new MessageFactory();
+IMessage message = factory.CreateMessage();
+message.SetMessageName("service1");</p>
+
+<p>IMessageItemSequence body = message.CreateMessageBody();
+body.SetSubValue("subname1","subvalue1");
+body.SetSubValue("subname2","subvalue2");</p>
+
+<p>IMessageItem item1 = body.CreateMessageItem(”item1”);
+item1.SetSubValue("subsubname11","subsubvalue11");
+item1.SetSubValue("subsubname12","subsubvalue12");</p>
+
+<p>//Send Request Message
+MyServiceClient service = new MyServiceClient("Client");
+service.SendRequest(message);
+{% endcodeblock %}</p>
 
 <p>我们在客户端引入了一个ServiceLocator对象，它通过MessageQueueListener对消息队列进行侦听，一旦接收到消息，就获取该消息中的name去定位它所对应的服务，然后调用服务的Execute(aMessage)方法，执行相关的业务。</p>
 
@@ -431,7 +404,7 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 
 <p>对于消息的格式和内容，我们考虑引入了Message Translator模式，负责对前面定义的消息结构进行翻译和解析。为了进一步减轻开发人员的负担，我们还可以基于该平台搭建一个消息-对象-关系的映射框架，引入实体引擎（Entity Engine）将消息转换为领域实体，使得服务的开发者能够以完全面向对象的思想开发各个服务组件，并通过调用持久层实现消息数据的持久化。同时，利用消息总线（此时的消息总线可以看做是各个服务组件的连接器）连接不同的服务，并允许异步地传递消息，对消息进行编码。这样一个基于消息的分布式架构如图7所示：</p>
 
-<p><img class="center" src="/images/2012/12/message7.png" width="600" height="449"></p>
+<p>{% img center /images/2012/12/message7.png 600 449 %}</p>
 
 <center>图7 基于Message Bus的CIMS分布式架构</center>
 
@@ -481,7 +454,7 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 <p>我们选择放弃MSMQ，是因为它严重依赖Windows操作系统；它虽然提供了易用的GUI方便管理人员对其进行安装和部署，但若要编写自动化部署脚本，却非常困难。同时，MSMQ的队列容量不能查过4M字节，这也是我们无法接收的。Resque的问题是目前仅支持Ruby的客户端调用，不能很好地与.NET平台集成。此外，Resque对消息持久化的处理方式是写入到Redis中，因而需要在已有RDBMS的前提下，引入新的Storage。我们比较倾心于ActiveMQ与RabbitMQ，但通过编写测试代码，采用循环发送大数据消息以验证消息中间件的性能与稳定性时，我们发现ActiveMQ的表现并不太让人满意。至少，在我们的询证调研过程中，ActiveMQ会因为频繁发送大数据消息而偶尔出现崩溃的情况。相对而言，RabbitMQ在各个方面都比较适合我们的架构要求。</p>
 
 <p>例如在灾备与稳定性方面，RabbitMQ提供了可持久化的队列，能够在队列服务崩溃的时候，将未处理的消息持久化到磁盘上。为了避免因为发送消息到写入消息之间的延迟导致信息丢失，RabbitMQ引入了Publisher Confirm机制以确保消息被真正地写入到磁盘中。它对Cluster的支持提供了Active/Passive与Active/Active两种模式。例如，在Active/Passive模式下，一旦一个节点失败，Passive节点就会马上被激活，并迅速替代失败的Active节点，承担起消息传递的职责。如图8所示：
-<img class="center" src="/images/2012/12/message8.png" width="600" height="430"></p>
+{% img center /images/2012/12/message8.png 600 430 %}</p>
 
 <center>图8 Active/Passive Cluster（图片来自RabbitMQ官方网站）</center>
 
@@ -489,186 +462,98 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 <p>在并发处理方面，RabbitMQ本身是基于erlang编写的消息中间件，作为一门面向并发处理的编程语言，erlang对并发处理的天生优势使得我们对RabbitMQ的并发特性抱有信心。RabbitMQ可以非常容易地部署到Windows、Linux等操作系统下，同时，它也可以很好地部署到服务器集群中。它的队列容量是没有限制的（取决于安装RabbitMQ的磁盘容量），发送与接收信息的性能表现也非常好。RabbitMQ提供了Java、.NET、Erlang以及C语言的客户端API，调用非常简单，并且不会给整个系统引入太多第三方库的依赖。 例如.NET客户端只需要依赖一个程序集。</p>
 
 <p>即使我们选择了RabbitMQ，但仍有必要对系统与具体的消息中间件进行解耦，这就要求我们对消息的生产者与消费者进行抽象，例如定义如下的接口：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">interface</span> <span class="n">IQueueSubscriber</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Action</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">action</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">requeueFailedMessages</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IQueueProvider</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">Pop</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">PopAndAwaitAcknowledgement</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">T</span> <span class="n">PopAndAwaitAcknowledgement</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Predicate</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageProcessedSuccessfully</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">requeueFailedMessages</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">void</span> <span class="nf">Push</span><span class="p">(</span><span class="n">FunctionalArea</span> <span class="n">functionalArea</span><span class="p">,</span> <span class="kt">string</span> <span class="n">routingKey</span><span class="p">,</span> <span class="kt">object</span> <span class="n">payload</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:csharp %}</p>
+
+<pre><code>public interface IQueueSubscriber
+{
+    void ListenTo&lt;T&gt;(string queueName, Action&lt;T&gt; action);
+    void ListenTo&lt;T&gt;(string queueName, Predicate&lt;T&gt; messageProcessedSuccessfully);
+    void ListenTo&lt;T&gt;(string queueName, Predicate&lt;T&gt; messageProcessedSuccessfully, bool requeueFailedMessages);
+}
+
+public interface IQueueProvider
+{
+    T Pop&lt;T&gt;(string queueName);
+    T PopAndAwaitAcknowledgement&lt;T&gt;(string queueName, Predicate&lt;T&gt; messageProcessedSuccessfully);
+    T PopAndAwaitAcknowledgement&lt;T&gt;(string queueName, Predicate&lt;T&gt; messageProcessedSuccessfully, bool requeueFailedMessages);
+    void Push(FunctionalArea functionalArea, string routingKey, object payload);
+}
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>在这两个接口的实现类中，我们封装了RabbitMQ的调用类，例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">class</span> <span class="nc">RabbitMQSubscriber</span> <span class="p">:</span> <span class="n">IQueueSubscriber</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">Action</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">action</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">using</span> <span class="p">(</span><span class="n">IConnection</span> <span class="n">connection</span> <span class="p">=</span> <span class="n">_factory</span><span class="p">.</span><span class="n">OpenConnection</span><span class="p">())</span>
-</span><span class='line'>        <span class="k">using</span> <span class="p">(</span><span class="n">IModel</span> <span class="n">channel</span> <span class="p">=</span> <span class="n">connection</span><span class="p">.</span><span class="n">CreateModel</span><span class="p">())</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">consumer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">QueueingBasicConsumer</span><span class="p">(</span><span class="n">channel</span><span class="p">);</span>
-</span><span class='line'>            <span class="kt">string</span> <span class="n">consumerTag</span> <span class="p">=</span> <span class="n">channel</span><span class="p">.</span><span class="n">BasicConsume</span><span class="p">(</span><span class="n">queueName</span><span class="p">,</span> <span class="n">AcknowledgeImmediately</span><span class="p">,</span> <span class="n">consumer</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="p">(</span><span class="n">BasicDeliverEventArgs</span><span class="p">)</span> <span class="n">consumer</span><span class="p">.</span><span class="n">Queue</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">serializer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">JavaScriptSerializer</span><span class="p">();</span>
-</span><span class='line'>            <span class="kt">string</span> <span class="n">json</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">Body</span><span class="p">);</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">message</span> <span class="p">=</span> <span class="n">serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="n">json</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="n">action</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">RabbitMQProvider</span> <span class="p">:</span> <span class="n">IQueueProvider</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">public</span> <span class="n">T</span> <span class="n">Pop</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="kt">string</span> <span class="n">queueName</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="kt">var</span> <span class="n">returnVal</span> <span class="p">=</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">const</span> <span class="kt">bool</span> <span class="n">acknowledgeImmediately</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">connection</span> <span class="p">=</span> <span class="n">_factory</span><span class="p">.</span><span class="n">OpenConnection</span><span class="p">())</span>
-</span><span class='line'>        <span class="k">using</span> <span class="p">(</span><span class="kt">var</span> <span class="n">channel</span> <span class="p">=</span> <span class="n">connection</span><span class="p">.</span><span class="n">CreateModel</span><span class="p">())</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">channel</span><span class="p">.</span><span class="n">BasicGet</span><span class="p">(</span><span class="n">queueName</span><span class="p">,</span> <span class="n">acknowledgeImmediately</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">response</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">{</span>
-</span><span class='line'>                <span class="kt">var</span> <span class="n">serializer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">JavaScriptSerializer</span><span class="p">();</span>
-</span><span class='line'>                <span class="kt">var</span> <span class="n">json</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">Body</span><span class="p">);</span>
-</span><span class='line'>                <span class="n">returnVal</span> <span class="p">=</span> <span class="n">serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="n">json</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">return</span> <span class="n">returnVal</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+{% codeblock lang:csharp %}</p>
+
+<pre><code>public class RabbitMQSubscriber : IQueueSubscriber
+{
+    public void ListenTo&lt;T&gt;(string queueName, Action&lt;T&gt; action)
+    {
+        using (IConnection connection = _factory.OpenConnection())
+        using (IModel channel = connection.CreateModel())
+        {
+            var consumer = new QueueingBasicConsumer(channel);
+            string consumerTag = channel.BasicConsume(queueName, AcknowledgeImmediately, consumer);
+
+            var response = (BasicDeliverEventArgs) consumer.Queue.Dequeue();
+            var serializer = new JavaScriptSerializer();
+            string json = Encoding.UTF8.GetString(response.Body);
+            var message = serializer.Deserialize&lt;T&gt;(json);
+
+            action(message);
+        }
+    }       
+}
+public class RabbitMQProvider : IQueueProvider
+{
+
+    public T Pop&lt;T&gt;(string queueName)
+    {
+        var returnVal = default(T);
+        const bool acknowledgeImmediately = true;
+
+        using (var connection = _factory.OpenConnection())
+        using (var channel = connection.CreateModel())
+        {
+            var response = channel.BasicGet(queueName, acknowledgeImmediately);
+
+            if (response != null)
+            {
+                var serializer = new JavaScriptSerializer();
+                var json = Encoding.UTF8.GetString(response.Body);
+                returnVal = serializer.Deserialize&lt;T&gt;(json);
+            }
+        }
+
+        return returnVal;
+    }
+}
+{% endcodeblock %}
 </code></pre>
 
 <p>我们用Quartz.Net来实现Batch Job。通过定义一个实现了IStatefulJob接口的Job类，在Execute()方法中完成对队列的侦听。Job中RabbitMQSubscriber类的ListenTo()方法会调用Queue的Dequeue()方法，当接收的消息到达队列时，Job会侦听到消息达到的事件，然后以同步的方式使得消息弹出队列，并将消息作为参数传递给Action委托。因此，在Batch Job的Execute()方法中，可以定义消息处理的方法，并调用RabbitMQSubscriber类的ListenTo()方法，如下所示（注意，这里传递的消息事实上是Job的Id）：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span>    <span class="k">public</span> <span class="k">void</span> <span class="n">Execute</span><span class="p">(</span><span class="n">JobExecutionContext</span> <span class="n">context</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="kt">string</span> <span class="n">queueName</span> <span class="p">=</span> <span class="n">queueConfigurer</span><span class="p">.</span><span class="n">GetQueueProviders</span><span class="p">().</span><span class="n">Queue</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">try</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="n">queueSubscriber</span><span class="p">.</span><span class="n">ListenTo</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">MyJob</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">queueName</span><span class="p">,&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span>                <span class="n">job</span> <span class="p">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">request</span><span class="p">.</span><span class="n">MakeRequest</span><span class="p">(</span><span class="n">job</span><span class="p">.</span><span class="n">Id</span><span class="p">.</span><span class="n">ToString</span><span class="p">()));</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>        <span class="k">catch</span><span class="p">(</span><span class="n">Exception</span> <span class="n">err</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="n">Log</span><span class="p">.</span><span class="n">WarnFormat</span><span class="p">(</span><span class="s">&quot;Unexpected exception while processing queue &#39;{0}&#39;, Details: {1}&quot;</span><span class="p">,</span> <span class="n">queueName</span><span class="p">,</span> <span class="n">err</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:csharp %}</p>
+
+<pre><code>    public void Execute(JobExecutionContext context)
+    {
+        string queueName = queueConfigurer.GetQueueProviders().Queue.Name;
+        try
+        {
+            queueSubscriber.ListenTo&lt;MyJob&gt;(
+</code></pre>
+
+<p>queueName,</p>
+
+<pre><code>                job =&gt; request.MakeRequest(job.Id.ToString()));
+        }
+        catch(Exception err)
+        {
+            Log.WarnFormat("Unexpected exception while processing queue '{0}', Details: {1}", queueName, err);
+        }
+    }
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>队列的相关信息例如队列名都存储在配置文件中。Execute()方法调用了request对象的MakeRequest()方法，并将获得的消息（即JobId）传递给该方法。它会根据JobId到数据库中查询该Job对应的信息，并执行真正的业务处理。</p>
 
@@ -708,7 +593,7 @@ API易用性：处理消息的API必须足够简单、并能够很好地支持�
 <p>对于第一种情况，我们常常会选择消息队列来处理执行时间较长的任务。此时引入的消息队列就成了消息处理的缓冲区。消息队列引入的异步通信机制，使得发送方和接收方都不用等待对方返回成功消息，就可以继续执行下面的代码，从而提高了数据处理的能力。尤其是当访问量和数据流量较大的情况下，就可以结合消息队列与后台任务，通过避开高峰期对大数据进行处理，就可以有效降低数据库处理数据的负荷。前面提到的医疗卫生系统正是这样一种适用场景。</p>
 
 <p>对于不同系统乃至于异构系统的整合，恰恰是消息模式善于处理的场景。只要规定了消息的格式与传递方式，就可以有效地实现不同系统之间的通信。在为某汽车制造商开发一个大型系统时，分销商作为.NET客户端，需要将数据传递到管理中心。这些数据将被Oracle的EBS（E-Business Suite）使用。分销商管理系统（Dealer Management System，DMS）采用了C/S结构，数据库为SQL Server，汽车制造商管理中心的EBS数据库为Oracle 10g。我们需要解决两种不同数据库间数据的传递。解决方案就是利用MSMQ，将数据转换为与数据库无关的消息数据，并在两端部署MSMQ服务器，建立消息队列以便于存储消息数据。实现架构如图9所示。
-<img class="center" src="/images/2012/12/message9.png" width="600" height="448"></p>
+{% img center /images/2012/12/message9.png 600 448 %}</p>
 
 <center>图9 利用MSMQ实现的分布式处理架构</center>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Reading | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/reading/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-27T20:25:47+08:00</updated>
+  <updated>2013-02-28T22:37:30+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns/"/>
     <updated>2013-02-22T16:52:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/dpinjava.jpeg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/dpinjava.jpeg %}
 如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。</p>
 
 <p>是否设计模式的精妙之处，业已为这些著作所穷尽？然，又未必尽然！以模式而论，若只局限在这23种模式的范围内，几乎每种模式的变化，都可以被悉心推演出来；每种模式的结构，也已被阐述得淋漓尽致。然而，若论及设计，则如大道苍穹，实则是不可穷尽的。基本上，设计的复杂程度已不亚于一个纷繁的世界，而软件，就是我们要构造的这个世界。</p>
@@ -51,7 +51,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/"/>
     <updated>2013-02-07T15:13:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/sketch.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/sketch.jpg %}
 微软研究院首席研究员Leslie Lamport发表了文章<a href="http://www.wired.com.edgesuite.net/opinion/2013/01/code-bugs-programming-why-we-need-specs/#more-122883">Why We Should Build Software Like We Build Houses</a>，吐槽了对如今程序员不愿意做分析，画草图，而是直接开始编码的现状。看了这篇文章后，我对Lamport的观点有一些想法，觉得不吐不快。</p>
 
 <p>其实从文章标题以及作者开篇名义提出的问题来看，显然基于一个假设，或者说事先设定的隐喻，那就是用建筑业来形容软件开发。作者认为建筑设计师在修建房屋之前都会绘制一幅详尽的计划（或蓝图），而软件开发人员却并不这样。以两个不同的行业做对比，认为一个行业这么做了，另一个行业不这样做就有问题，这个假设合理吗？虽然，软件行业中所谓Architecture以及Build的概念确乎来自于建筑行业，甚至这种隐喻在许多年前为诸多大师认可，因而提出诸如软件工程等思想；虽然，它山之石可以攻玉，借鉴别的领域的最佳实践，确乎可以帮助软件开发收获灵感，避免去走太多弯路；然而，毕竟二者之间并不能完全划等号。</p>
