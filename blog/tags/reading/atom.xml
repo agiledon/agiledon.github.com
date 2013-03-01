@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Reading | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/reading/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-28T22:37:30+08:00</updated>
+  <updated>2013-03-01T10:09:22+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons/"/>
     <updated>2013-02-27T11:37:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/02/scalability.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/scalability.jpg"></p>
 
 <p>最近，阅读了Will Larson的文章<a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting System for Scale</a>，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统，这种面向企业内部的软件系统通常不会有太大的负载量，太多的并发量，因而对于系统的可伸缩性考虑较少。大体而言，只要在系统部署上考虑集群以及负载均衡即可。本文给了我很多启发，现把本文的主要内容摘译出来，并结合自己对此的理解。</p>
 
@@ -32,12 +32,10 @@
 <h3>负载均衡</h3>
 
 <p>无论是水平伸缩还是冗余，都可以通过负载均衡来实现。负载均衡就好似一个协调请求的调停者，它会根据集群中机器的当前负载，合理的分配发往Web服务器的请求，以达到有效利用集群中各台机器资源的目的。显然，这种均衡器应该介于客户端与Web服务器之间，如下图所示：
-{% img center /images/2013/02/scalability01.png %}</p>
+<img class="center" src="/images/2013/02/scalability01.png"></p>
 
 <p>本文提到了实现负载均衡的几种方法。其一是Smart Client，即将负载均衡的功能添加到数据库（以及缓存或服务）的客户端中。这是一种通过软件来实现负载均衡的方式，它的缺点是方案会比较复杂，不够健壮，也很难被重用（因为协调请求的逻辑会混杂在业务系统中）。对此，Larson在文章以排比的方式连续提出问题，以强化自己对此方案的不认可态度：
-{% blockquote %}
-Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it'll be easy to reuse? Tragically, no.
-{% endblockquote %}</p>
+<blockquote><p>Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it'll be easy to reuse? Tragically, no.</p></blockquote></p>
 
 <p>第二种方式是采用硬件负载均衡器，例如<a href="http://www.citrix.com/English/ps2/products/product.asp?contentID=21679">Citrix NetScaler</a>。不过，购买硬件的费用不菲，通常是一些大型公司才会考虑此方案。</p>
 
@@ -50,23 +48,39 @@ Is it attractive because it is the simplest solution? Usually, no. Is it seducti
 <h4>应用缓存</h4>
 
 <p>提供缓存的方式可以分为应用缓存和数据库缓存。此二者各擅胜场。应用缓存通常需要将处理缓存的代码显式地集成到应用代码中。这就有点像使用代理模式来为真实对象提供缓存。首先检查缓存中是否有需要的数据，如果有，就从缓存直接返回，否则再查询数据库。至于哪些值需要放到缓存中呢？有<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">诸多算法</a>，例如根据最近访问的，或者根据访问频率。使用Memcached的代码如下所示：
-{% codeblock lang:python %}
-key = "user.%s" % user_id
-user_blob = memcache.get(key)
-if user_blob is None:</p>
-
-<pre><code>user = mysql.query("SELECT * FROM users WHERE user_id=\"%s\"", user_id)
-if user:
-    memcache.set(key, json.dumps(user))
-return user
-</code></pre>
-
-<p>else:</p>
-
-<pre><code>return json.loads(user_blob)
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&quot;user.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user_id</span>
+</span><span class='line'><span class="n">user_blob</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">user_blob</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">user</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT * FROM users WHERE user_id=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
+</span><span class='line'><span class="k">return</span> <span class="n">user</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">else</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">user_blob</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h4>数据库缓存</h4>
 
@@ -79,7 +93,7 @@ return user
 <h4>CDN</h4>
 
 <p>提高性能，降低Web服务器负载的另一种常见做法是将静态媒体放入CDN（Content Distribution Network）中。如下图所示：
-{% img center /images/2013/02/scalability02.png %}</p>
+<img class="center" src="/images/2013/02/scalability02.png"></p>
 
 <p>CDN可以有效地分担Web服务器的压力，使得应用服务器可以专心致志地处理动态页面；同时，CDN还可以通过地理分布来提高响应请求的性能。在设置了CDN后，当系统接收到请求时，首先会询问CDN以获得请求中需要的静态媒体（通常会通过HTTP Header来配置CDN能够缓存的内容）。如果请求的内容不可用，CDN会查询服务器以获得该文件，并在CDN本地进行缓存，最后再提供给请求者。如果当前网站并不大，引入CDN的效果不明显时，可以考虑暂不使用CDN，在将来可以通过使用一些轻量级的HTTP服务器如<a href="http://nginx.org/">Nginx</a>，为静态媒体分出专门的子域名如static.domain.com来提供服务。</p>
 
@@ -92,7 +106,7 @@ return user
 <h3>Off-Line处理</h3>
 
 <p>这篇文章还提到了Off-Line的处理方式，即通过引入消息队列的方式来处理请求。事实上，在大多数企业软件系统中，这种方式也是较为常见的做法。在我撰写的文章《<a href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/">案例分析:基于消息的分布式架构</a>》中，较为详细地介绍了这种架构。在引入消息队列后，Web服务器会充当消息的发布者，而在消息队列的另一端可以根据需要提供消费者Consumer。如下图所示。对于Off-Line的任务是否执行完毕，通常可以通过轮询或回调的方式来获知。
-{% img center /images/2013/02/scalability03.png %}</p>
+<img class="center" src="/images/2013/02/scalability03.png"></p>
 
 <p>为了更好地提高代码可读性，可以在公开的接口定义中明确地标示该任务是On-Line还是Off-Line。</p>
 
@@ -103,12 +117,12 @@ return user
 <h4>Map-Reduce</h4>
 
 <p>对于大数据的处理，自然可以引入Map-Reduce。为整个系统专门引入一个Map-Reduce层来处理数据是有必要的。相对于使用SQL数据库作为数据中心的方式，Map-Reduce对可伸缩性的支持更好。Map-Reduce可以与任务的定时机制结合起来。如下图所示：
-{% img center /images/2013/02/scalability04.png %}</p>
+<img class="center" src="/images/2013/02/scalability04.png"></p>
 
 <h3>平台层</h3>
 
 <p>Larson认为，大多数系统都是Web应用直接与数据库通信，但如果能加入一个平台层（Platform Layer），或许会更好。
-{% img center /images/2013/02/scalability05.png %}</p>
+<img class="center" src="/images/2013/02/scalability05.png"></p>
 
 <p>首先，将平台与Web应用分离，使得它们可以独立地进行伸缩。例如需要添加一个新的API，就可以添加新的平台服务器，而无需增加Web服务器。要知道，在这样一个独立的物理分层架构中，不同层次对服务器的要求是不一样的。例如，对于数据库服务器而言，由于需要频繁地对磁盘进行I/O操作，因此应保证数据库服务器的IO性能，如尽量使用固态硬盘。而对于Web服务器而言，则对CPU的要求比较高，尽可能采用多核CPU。</p>
 
@@ -123,7 +137,7 @@ return user
     <link href="http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns/"/>
     <updated>2013-02-22T16:52:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/02/dpinjava.jpeg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/dpinjava.jpeg">
 如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。</p>
 
 <p>是否设计模式的精妙之处，业已为这些著作所穷尽？然，又未必尽然！以模式而论，若只局限在这23种模式的范围内，几乎每种模式的变化，都可以被悉心推演出来；每种模式的结构，也已被阐述得淋漓尽致。然而，若论及设计，则如大道苍穹，实则是不可穷尽的。基本上，设计的复杂程度已不亚于一个纷繁的世界，而软件，就是我们要构造的这个世界。</p>
@@ -156,7 +170,7 @@ return user
     <link href="http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/"/>
     <updated>2013-02-07T15:13:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/02/sketch.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/sketch.jpg">
 微软研究院首席研究员Leslie Lamport发表了文章<a href="http://www.wired.com.edgesuite.net/opinion/2013/01/code-bugs-programming-why-we-need-specs/#more-122883">Why We Should Build Software Like We Build Houses</a>，吐槽了对如今程序员不愿意做分析，画草图，而是直接开始编码的现状。看了这篇文章后，我对Lamport的观点有一些想法，觉得不吐不快。</p>
 
 <p>其实从文章标题以及作者开篇名义提出的问题来看，显然基于一个假设，或者说事先设定的隐喻，那就是用建筑业来形容软件开发。作者认为建筑设计师在修建房屋之前都会绘制一幅详尽的计划（或蓝图），而软件开发人员却并不这样。以两个不同的行业做对比，认为一个行业这么做了，另一个行业不这样做就有问题，这个假设合理吗？虽然，软件行业中所谓Architecture以及Build的概念确乎来自于建筑行业，甚至这种隐喻在许多年前为诸多大师认可，因而提出诸如软件工程等思想；虽然，它山之石可以攻玉，借鉴别的领域的最佳实践，确乎可以帮助软件开发收获灵感，避免去走太多弯路；然而，毕竟二者之间并不能完全划等号。</p>
@@ -183,7 +197,7 @@ return user
     <link href="http://agiledon.github.com/blog/2013/02/03/reading-hrabal/"/>
     <updated>2013-02-03T21:24:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/03/reading-hrabal</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/02/alone.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/alone.jpg"></p>
 
 <p>书的内容其实没有书名那么富有诗意，整本书中，汉嘉都在废纸堆中与老鼠、苍蝇为伍，这种如下水道般的卑微存在，在现实生活中，定然是遭到嘲笑、冷落甚至摒弃的下等人。我在书的一开始，完全欣赏不到那种诗意的美。设身处地，我会选择逃离，即使有黑格尔、康德、加缪与梵高。归根结底，我们大多数人无法做到无视周遭环境的龌龊，优游于精神高尚的深邃星空。从这一点来讲，汉嘉无疑是孤独的。</p>
 
@@ -200,7 +214,7 @@ return user
 
 <p>汉嘉就在这种喧嚣的孤独中体悟自然与天道：“仁慈的大自然创造了一种恐怖，在这种恐怖中一切安全感都已毁灭，它比痛苦更为强烈，在真理出现的时刻笼罩着你。对此我曾感到大惑不解，直到有一天我忽然心头一亮，觉得自己在变得美好起来，因为在经历了所有这一切——在过于喧嚣的孤独中看到的一切，身体和灵魂所感受的一切——之后，我还有足够的勇气使自己没有疯狂，我逐渐惊异地意识到我的工作把我抛进了一个广大无垠、威力无边的领域。”</p>
 
-<p>{% img left /images/2013/02/hrabal.jpg %}</p>
+<p><img class="left" src="/images/2013/02/hrabal.jpg"></p>
 
 <p>阅读《过于喧嚣的孤独》，若要深层理解赫拉巴尔的内心世界，似乎还要从当时布拉格的政治环境入手。不过对于中国的读者而言，没有必要这么麻烦，只需要从过往的历史中随意挑选一段就可以了。托翁说：“幸福的家庭都是相似的,不幸的家庭各有各的不幸。”然而，许多国家之不幸，却又如此之雷同，那就是对知识的漠视，对公民权利的漠视。当汉嘉站在布勃内巨型压力机前，看着社会主义突击队员们“若无其事地干着活儿，继续把书的封皮撕去，扯下书瓤，把惊恐万状、吓得毛发倒竖的书页扔到移动着的传送带上，他们无动于衷，若无其事。”当他看到女教师带领着孩子们学习如何“……把书撕开的，孩子们看明白了，一个接一个地拿起书，扯下包皮纸和封皮，小手抓住书页使劲地撕着，尽管书在负隅顽抗，最后还是孩子的小手胜利了，孩子们眉心舒展了，他们干得像工人一样顺利，工人们一边干活，一边朝他们点头以示鼓励……”这种悲凉忽地沁入骨髓了。老汉嘉的精神世界就此垮塌了。这种冷漠尤甚于这种行为本身。</p>
 
@@ -213,7 +227,7 @@ return user
     <link href="http://agiledon.github.com/blog/2012/05/26/the-happiness-of-thinking/"/>
     <updated>2012-05-26T14:49:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/05/26/the-happiness-of-thinking</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2012/05/Thinking-Man.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/05/Thinking-Man.jpg"></p>
 
 <p>无论诗人的意图是什么，我既不愿意去管窥蠡测，只愿意在诗意的文字中体会自己感悟的诗意就好。这有时候看起来仿佛是文字游戏，尤其是当诗歌经过文字的转换后，这层意思本身隔了一层，可只要我对这些文字产生了某种难以言说的感觉，又引我思考，我就觉得极好。因为这会让我感到自己似乎穿梭在幽玄奥妙的星空之路中，又仿佛是在小径幽深的花园，只有小径，却永远没有尽头，但四周的静谧包裹着我，不绝不尽的奥妙吸引着我，我能体会到自己在思考，并沉迷于这种思考的乐趣之中。</p>
 
@@ -223,45 +237,17 @@ return user
 
 
 <p>我喜欢策兰在《带着来自塔露萨的书》中的这一节诗：
-{% blockquote %}
-来自
-大犬星座，来自
-其中那颗明亮的星，和那
-低矮的光晶，它也一起
-映射在朝向大地的道路上，
-{% endblockquote %}</p>
+<blockquote><p>来自<br/>大犬星座，来自<br/>其中那颗明亮的星，和那<br/>低矮的光晶，它也一起<br/>映射在朝向大地的道路上，</p></blockquote></p>
 
 <p>也许是关于星座的玄奥，以及那种极为鲜明地星光对比，和无论伦比的冲击力量，让我沉思于这一些由简单文字组成的美中。是的，其实我无法感受到策兰隐藏心中的沉郁的痛，因为我无法体会犹太人那种没有家园的痛。我仅仅是从美中去感悟了。而这种美，是因为它包含了无限的遐想空间，使得我能够去思考，且这种思考是能够填充空虚的，它远甚于观察流水、落花那种体味自然幽玄的感伤之美。
-{% blockquote %}
-子夜的射手，在早晨
-穿过叛逆和腐烂的骨髓
-追逐着十二颂歌
-{% endblockquote %}</p>
+<blockquote><p>子夜的射手，在早晨<br/>穿过叛逆和腐烂的骨髓<br/>追逐着十二颂歌</p></blockquote></p>
 
 <p>我依旧不明白诗歌的内涵，但无伤我对文学美的追求。我尝试着体味这种矛盾与碰撞，因为这是我在阅读这诗句的直觉感受。想象那朝晨的生机蓬发，却又充斥了腐烂的骨髓，射手之箭又是如何穿过这种叛逆，去追逐那颂歌呢？这种强烈的对比，带来的是踯躅彷徨，然后是愤怒之后的果断。</p>
 
 <p>“每个名字都是那朝向终极名字的一步，正如打破的每一样东西都指向那不可打破者。”即使是诗人寻常的一句感悟，依旧引人遐思。</p>
 
 <p>似乎策兰尤其热爱那无尽的星空，在他的诗歌中常能看到星座的比喻：
-{% blockquote %}</p>
-
-<pre><code>来自一封信，来自它。
-来自一封信，东方来信。
-</code></pre>
-
-<p>来自坚硬的，</p>
-
-<pre><code>细微的词丛，来自
-这未装备的眼，它传送至
-那三颗
-猎户座腰带之星——雅各的
-手杖，你
-再次行走了起来！——
-行走在
-展开的天体海图上。
-</code></pre>
-
-<p>{% endblockquote %}</p>
+<blockquote><p></p></p><p><pre><code>来自一封信，来自它。<br/>来自一封信，东方来信。<br/></code></pre></p><p><p>来自坚硬的，</p></p><p><pre><code>细微的词丛，来自<br/>这未装备的眼，它传送至<br/>那三颗<br/>猎户座腰带之星——雅各的<br/>手杖，你<br/>再次行走了起来！——<br/>行走在<br/>展开的天体海图上。<br/></code></pre></p><p><p></p></blockquote></p>
 
 <p>这样的诗总是觉得很壮观，虽然不足五十词，然而文字坚硬的力量散发出蓬勃而壮观的天体图像。只是因为这些词语吗？——还是因为诗人的思想吧。阅读这样的诗，让我想起在读卡夫卡的日记，读昆德拉的《不朽》，又或者是读博尔赫斯的小说，总是那种不可看穿的并非黑暗的深邃。就像我们夜看星空，却总也无法读懂宇宙的奥秘一般。</p>
 ]]></content>

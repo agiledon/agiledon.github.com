@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: CQRS | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/cqrs/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-28T22:37:30+08:00</updated>
+  <updated>2013-03-01T10:09:22+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs/"/>
     <updated>2012-12-31T10:59:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2012/12/seperated.jpg 500 375 %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/seperated.jpg" width="500" height="375">
 CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，它甚至可以被称为是一种架构风格，可以取得与MapReduce，REST同等的地位，对软件系统的整体架构产生重要影响。</p>
 
 <p>CQRS即Command Query Responsibility Seperation（命令查询职责分离），其设计思想来源于Mayer提出的CQS（Command Query Seperation）。这种命令与查询的分离方式，可以更好地控制请求者的操作。查询操作不会造成数据的修改，因而它属于一种幂等操作，可以反复地发起，而不用担心会对系统造成影响。基于这种特性，我们还可以为其提供缓存，从而改进查询的性能。命令操作则与之相反，它会直接影响系统信息的改变。查询操作与命令操作对事务的要求也不一样。由于查询操作不会改变系统状态，因而，不会产生最终的数据不一致。从请求响应的角度来看，查询操作常常需要同步请求，实时返回结果；命令操作则不然，因为我们并不期待命令操作必须返回结果，这就可以采用fire-and-forget方式，而这种方式正是运用异步操作的前提。此外，对于大多数软件系统而言，查询操作发起的频率通常要远远高于命令操作。如上种种，都是将命令与查询进行分离的根本原因。</p>
@@ -29,10 +29,10 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
 
 <p>只要充分理解了运用CQRS模式的意图，理解CQRS模式就变得容易了许多。下图是CQRS框架<a href="http://www.axonframework.org">AxonFramework</a>官方文档给出的CQRS架构图。
-{% img center /images/2012/12/cqrs-arch.png 613 434 %}</p>
+<img class="center" src="/images/2012/12/cqrs-arch.png" width="613" height="434"></p>
 
 <p>在这个架构图中，最核心的概念是Command、Event。以我的理解，CQRS模式的风格源头就是基于事件的异步状态机模型。抛开命令查询分离这一核心原则，这才是CQRS的基础内容。CQRS对设计者的影响，是将领域逻辑，尤其是业务流程，皆看做是一种领域对象状态迁移的过程。这一点与REST将HTTP应用协议看做是应用状态迁移的引擎，有着异曲同工之妙。这种观点（或设计视图）引出了Command与Event的概念。Command是系统中会引起状态变化的活动，通常是一种命令语气，例如注册会议RegisterToConference。至于Event，则描述了某种事件的发生，通常是命令的结果（但并不一定是直接结果，但源头一定是因为发送了命令），例如OrderConfirmed。我发现，这种事件更接近于一种事实，即某次数据改变的结果，是一种确定无疑已经发生的事实。这一思想直接引入了Event Source，并带来Audit（审计）的好处。而它更是与<a href="http://www.datomic.com">Datomic数据库</a>的设计哲学一脉相承。Datomic的设计哲学就是：“将数据(Data)看做是事实(Fact)。每个事实都是过去的痕迹，虽然这种过去可以遗忘，但却无法改变。”Event Source可以将这些事件的发生过程记录下来，使得我们可以追溯业务流程。
-{% img center /images/2012/12/datomic.jpg 563 274 %}</p>
+<img class="center" src="/images/2012/12/datomic.jpg" width="563" height="274"></p>
 
 <p>Command和Event都有对应的Handler来处理。它们具有一个共同的特征，即支持异步处理方式。这也是为何在架构中需要引入Command Bus和Event Bus的原因。在UI端执行命令请求，事实上就是将命令（注意，这是一个命令对象，你完全将其理解为Command模式的运用。注意，命令的命名一定要恰如其分地体现业务的意图）发送到Command Bus中。Command Bus更像是一个调停者（Mediator），在接收到Command时，会将其路由到准确的CommandHandler，由CommandHandler来处理该命令。在Axon Framework中，Command Bus提供了dispatch()方法对命令进行分发。也就是说，在它的实现中，并没有对Command提供异步处理，而仅仅是完成路由的功能。不过，在我自己的框架实现中，我却将Command Bus看做是消息通道，而将Command Handler看做是该消息通道的侦听者。因此，我引入了队列来实现Command Bus。很难说明哪种方式更合理，这还要取决于业务模型。整体来看，后一个方案似乎有些重型了。不过，我现在并未引入消息队列，而是使用了Scala的Actor，从多线程的角度来实现CommandBus的异步模型，也可以说得过去。</p>
 

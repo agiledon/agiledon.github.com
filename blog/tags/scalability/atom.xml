@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Scalability | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/scalability/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-28T22:37:30+08:00</updated>
+  <updated>2013-03-01T10:09:22+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons/"/>
     <updated>2013-02-27T11:37:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/02/scalability.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/scalability.jpg"></p>
 
 <p>最近，阅读了Will Larson的文章<a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting System for Scale</a>，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统，这种面向企业内部的软件系统通常不会有太大的负载量，太多的并发量，因而对于系统的可伸缩性考虑较少。大体而言，只要在系统部署上考虑集群以及负载均衡即可。本文给了我很多启发，现把本文的主要内容摘译出来，并结合自己对此的理解。</p>
 
@@ -32,12 +32,10 @@
 <h3>负载均衡</h3>
 
 <p>无论是水平伸缩还是冗余，都可以通过负载均衡来实现。负载均衡就好似一个协调请求的调停者，它会根据集群中机器的当前负载，合理的分配发往Web服务器的请求，以达到有效利用集群中各台机器资源的目的。显然，这种均衡器应该介于客户端与Web服务器之间，如下图所示：
-{% img center /images/2013/02/scalability01.png %}</p>
+<img class="center" src="/images/2013/02/scalability01.png"></p>
 
 <p>本文提到了实现负载均衡的几种方法。其一是Smart Client，即将负载均衡的功能添加到数据库（以及缓存或服务）的客户端中。这是一种通过软件来实现负载均衡的方式，它的缺点是方案会比较复杂，不够健壮，也很难被重用（因为协调请求的逻辑会混杂在业务系统中）。对此，Larson在文章以排比的方式连续提出问题，以强化自己对此方案的不认可态度：
-{% blockquote %}
-Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it'll be easy to reuse? Tragically, no.
-{% endblockquote %}</p>
+<blockquote><p>Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it'll be easy to reuse? Tragically, no.</p></blockquote></p>
 
 <p>第二种方式是采用硬件负载均衡器，例如<a href="http://www.citrix.com/English/ps2/products/product.asp?contentID=21679">Citrix NetScaler</a>。不过，购买硬件的费用不菲，通常是一些大型公司才会考虑此方案。</p>
 
@@ -50,23 +48,39 @@ Is it attractive because it is the simplest solution? Usually, no. Is it seducti
 <h4>应用缓存</h4>
 
 <p>提供缓存的方式可以分为应用缓存和数据库缓存。此二者各擅胜场。应用缓存通常需要将处理缓存的代码显式地集成到应用代码中。这就有点像使用代理模式来为真实对象提供缓存。首先检查缓存中是否有需要的数据，如果有，就从缓存直接返回，否则再查询数据库。至于哪些值需要放到缓存中呢？有<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">诸多算法</a>，例如根据最近访问的，或者根据访问频率。使用Memcached的代码如下所示：
-{% codeblock lang:python %}
-key = "user.%s" % user_id
-user_blob = memcache.get(key)
-if user_blob is None:</p>
-
-<pre><code>user = mysql.query("SELECT * FROM users WHERE user_id=\"%s\"", user_id)
-if user:
-    memcache.set(key, json.dumps(user))
-return user
-</code></pre>
-
-<p>else:</p>
-
-<pre><code>return json.loads(user_blob)
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&quot;user.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user_id</span>
+</span><span class='line'><span class="n">user_blob</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">user_blob</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">user</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT * FROM users WHERE user_id=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
+</span><span class='line'><span class="k">return</span> <span class="n">user</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">else</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">user_blob</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h4>数据库缓存</h4>
 
@@ -79,7 +93,7 @@ return user
 <h4>CDN</h4>
 
 <p>提高性能，降低Web服务器负载的另一种常见做法是将静态媒体放入CDN（Content Distribution Network）中。如下图所示：
-{% img center /images/2013/02/scalability02.png %}</p>
+<img class="center" src="/images/2013/02/scalability02.png"></p>
 
 <p>CDN可以有效地分担Web服务器的压力，使得应用服务器可以专心致志地处理动态页面；同时，CDN还可以通过地理分布来提高响应请求的性能。在设置了CDN后，当系统接收到请求时，首先会询问CDN以获得请求中需要的静态媒体（通常会通过HTTP Header来配置CDN能够缓存的内容）。如果请求的内容不可用，CDN会查询服务器以获得该文件，并在CDN本地进行缓存，最后再提供给请求者。如果当前网站并不大，引入CDN的效果不明显时，可以考虑暂不使用CDN，在将来可以通过使用一些轻量级的HTTP服务器如<a href="http://nginx.org/">Nginx</a>，为静态媒体分出专门的子域名如static.domain.com来提供服务。</p>
 
@@ -92,7 +106,7 @@ return user
 <h3>Off-Line处理</h3>
 
 <p>这篇文章还提到了Off-Line的处理方式，即通过引入消息队列的方式来处理请求。事实上，在大多数企业软件系统中，这种方式也是较为常见的做法。在我撰写的文章《<a href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/">案例分析:基于消息的分布式架构</a>》中，较为详细地介绍了这种架构。在引入消息队列后，Web服务器会充当消息的发布者，而在消息队列的另一端可以根据需要提供消费者Consumer。如下图所示。对于Off-Line的任务是否执行完毕，通常可以通过轮询或回调的方式来获知。
-{% img center /images/2013/02/scalability03.png %}</p>
+<img class="center" src="/images/2013/02/scalability03.png"></p>
 
 <p>为了更好地提高代码可读性，可以在公开的接口定义中明确地标示该任务是On-Line还是Off-Line。</p>
 
@@ -103,12 +117,12 @@ return user
 <h4>Map-Reduce</h4>
 
 <p>对于大数据的处理，自然可以引入Map-Reduce。为整个系统专门引入一个Map-Reduce层来处理数据是有必要的。相对于使用SQL数据库作为数据中心的方式，Map-Reduce对可伸缩性的支持更好。Map-Reduce可以与任务的定时机制结合起来。如下图所示：
-{% img center /images/2013/02/scalability04.png %}</p>
+<img class="center" src="/images/2013/02/scalability04.png"></p>
 
 <h3>平台层</h3>
 
 <p>Larson认为，大多数系统都是Web应用直接与数据库通信，但如果能加入一个平台层（Platform Layer），或许会更好。
-{% img center /images/2013/02/scalability05.png %}</p>
+<img class="center" src="/images/2013/02/scalability05.png"></p>
 
 <p>首先，将平台与Web应用分离，使得它们可以独立地进行伸缩。例如需要添加一个新的API，就可以添加新的平台服务器，而无需增加Web服务器。要知道，在这样一个独立的物理分层架构中，不同层次对服务器的要求是不一样的。例如，对于数据库服务器而言，由于需要频繁地对磁盘进行I/O操作，因此应保证数据库服务器的IO性能，如尽量使用固态硬盘。而对于Web服务器而言，则对CPU的要求比较高，尽可能采用多核CPU。</p>
 

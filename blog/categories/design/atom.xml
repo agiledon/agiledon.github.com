@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Design | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/design/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-02-28T22:37:30+08:00</updated>
+  <updated>2013-03-01T10:09:22+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,7 +19,7 @@
     <updated>2013-02-20T21:49:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation</id>
     <content type="html"><![CDATA[<p>面向对象设计的关键，我认为是识别职责，封装合理的对象。缺乏合理的封装，就会缺少正确的领域对象，使得属于共同职责的领域信息散乱分布到系统的各个方法中，导致概念不够清晰，职责混乱，以及代码的重复。然而，如果没有正确地识别职责，又可能导致封装无从谈起，因为我们获得的需求可能是散乱的，既难以抽象概念，又缺乏层次。故而，职责与封装是相辅相成的概念。如下图所示：
-{% img center /images/2013/02/responsibility01.png %}</p>
+<img class="center" src="/images/2013/02/responsibility01.png"></p>
 
 <p>我们不能简单地将封装当做是“信息隐藏”。所谓隐藏信息以及具体行为的细节，确实是封装的本质所在，但面向对象思想中的封装，其目的还在于对领域概念以及设计概念的识别。前者是对业务模型的抽象，如电子商务系统中的Product、Order、OrderItem等概念；后者是对设计模型的改进，如在设计模式中引入策略对象、命令对象，DDD中提倡的Repository、Factory对象。这也是为何许多设计者很容易理解封装的概念，但却始终无法做到合理封装的根本原因。</p>
 
@@ -27,148 +27,276 @@
 
 
 <p>此时，我们需要运用职责驱动设计，通过对职责的识别来提炼这些概念。概念可以起到分类的作用，根据职责对行为与数据进行分类，找到其应该归属的对象，散乱的逻辑就会变得清晰起来。就好似我们对彩球按照颜色进行分类，并放置到不同的位置：
-{% img center /images/2013/02/responsibility02.png %}</p>
+<img class="center" src="/images/2013/02/responsibility02.png"></p>
 
 <p>不同的颜色有分明不同的特征，只要不是色盲，分类自然水到渠成。现实中的系统需求自然不如颜色这般泾渭分明，要从纷繁复杂的混沌需求中超脱出来，最好的办法就是按照不同的角度或层次去寻找职责，并用最简单的语言一句话描述这些职责。根据职责的特征，我大致将职责分为三个层次，由外自内分别为：业务价值、业务功能与业务实现，如下图所示：
-{% img center /images/2013/02/responsibility03.png %}</p>
+<img class="center" src="/images/2013/02/responsibility03.png"></p>
 
 <p>业务价值基本上体现了这个需求用例（或用户故事）存在的目的，即解释了需求的Why。简言之，只有提供了该职责，则此需求对于客户才是有价值的。这也符合用户故事INVEST原则中的V（Valuable）。没有价值的需求，自然是应该放弃的。故而在识别业务价值时，常常从用户的视角来分析，辨别。</p>
 
 <p>业务价值是职责驱动的入口，因为在寻找到了业务价值之后，我们就可以剖析该价值需要哪些支撑功能（它可以解释需求的What），再由功能继续深入分析，找到实现功能的职责（它可以解释需求的How）。因此，这个模型是一个层层推进的过程。</p>
 
 <p>职责驱动不仅仅可以从文字需求入手，同样可以针对已经实现的代码。甚至我们可以将这种职责驱动看做是一种阅读代码的技巧，通过寻找业务价值，进而分析业务功能和业务实现，对代码形成一个整体的感观，进而通过合理地分配职责改善原有代码。如下代码是《修改代码的艺术》一书中给出的例子：
-{% codeblock %}
-import javax.mail.<em>;
-import javax.mail.internet.</em>;</p>
-
-<p>public class MailingListServer {</p>
-
-<pre><code>public static final String SUBJECT_MARKER = "[list]";
-public static final String LOOP_HEADER = "X-LOOP";
-
-public static void main(String[] args) {
-    if (args.length != 8) {
-        System.err.println("Usage: java MailingList &lt;popHost&gt; " + 
-        "&lt;smtpHost&gt; &lt;pop3user&gt; &lt;pop3password&gt; &lt;smtpuser&gt; &lt;smtppassword&gt; &lt;listname&gt; " +
-        "&lt;relayinterval");
-    }
-    return;
-
-    HostInformation host = new HostInformation(arg[0]);
-    String listAddress = args[6];
-    int interval = new Integer(args[7]).intValue();
-    Roster roster = null;
-    try {
-        roster = new FileRoster("roster.txt");
-    }catch(Exception e) {
-
-    }
-
-    try {
-        do {
-            try {
-                Properties properties = System.getProperties();
-                Session session = Session.getDefaultInstance(properties, null);
-                Store store = session.getStore("pop3");
-                store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
-                Folder defaultFolder = store.getDefaultFolder();
-                if (defaultFolder == null) {
-                    return;
-                }
-                Folder folder = defaultFolder.getFolder("INBOX");
-                if (folder == null) {
-                    return;
-                }
-                folder.open(FOLDER.READ_WRITE);
-                process(host, listAddress, roster, session, store, folder);
-            }catch () {
-
-            }
-            try {
-                Thread.sleep(interval * 1000);
-            } catch() {
-
-            }
-
-        } while (true)
-    }catch () {
-
-    }
-}
-
-private static void process(
-    HostInformation host, String listAddress, Roster roster,
-    Session session, Store store, Folder folder) throws MessagingException {
-    try {
-        if (folder.getMessageCount() != 0) {
-            Message[] messages = folder.getMessages();
-            doMessage(host, listAddress, roster, session, folder, messages);
-        }
-    }catch () {
-
-    }finally {
-        folder.close(true);
-        store.close();
-    }
-}
-
-private static void doMessage(
-    HostInformation host,
-    String listAddress,
-    Roster roster,
-    Session session,
-    Folder folder,
-    Message[] messages) throws MessageingException {
-    FetchProfile fp = new FetchProfile();
-    fp.add(FetchProfile.Item.ENVELOPE);
-    fp.add(FetchProfile.Item.FLAGS);
-    fp.add("X-Mailer");
-    folder.fetch(messages, fp);
-    for (int i = 0; i &lt; messages.length; i++) {
-        Message message = messages[i];
-        if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
-        System.out.println("message received: " + message.getSubject());
-        if (!roster.constainsOneOf(message.getFrom())) continue;
-        MimeMessage forward = new MimeMessage(session);
-        Address[] fromAddress = message.getFrom();
-        InternetAddress from = null;
-        if (fromAddress != null &amp;&amp; fromAdress.length &gt; 0) {
-            from = new InternetAddress(fromAddress[0].toString());
-        }
-        forward.setFrom(from);
-        forward.setReplyTo(new Address[] {
-            new InternetAddress(listAddress)
-        });
-
-        forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
-        String subject = message.getSubject();
-        if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
-            subject = SUBJECT_MARKER + " " + message.getSubject();
-        }
-        forward.setSubject(subject);
-        forward.setSentDate(message.getSentDate());
-        forward.addHeader(LOOP_HEADER, listAddress);
-        Object content = message.getContent();
-        if (content instanceof Multipart) {
-            forward.setContent((Multipart)content);
-        } else {
-            forward.setText((String)content);
-        }
-
-        Properties props = new Properties();
-        props.put("mail.smtp.host", host.smtpHost);
-
-        Session smtpSession = Session.getDefaultInstance(props, null);
-        Transport transport = smtpSession.getTransport("smtp");
-        transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
-        transport.sendMessage(forward, roster.getAddresses());
-        message.setFlag(Flags.Flag.DELETED, true);
-    }
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import javax.mail.&lt;em>;
+</span><span class='line'>import javax.mail.internet.&lt;/em>;&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>public class MailingListServer {&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>public static final String SUBJECT_MARKER = "[list]";
+</span><span class='line'>public static final String LOOP_HEADER = "X-LOOP";
+</span><span class='line'>
+</span><span class='line'>public static void main(String[] args) {
+</span><span class='line'>    if (args.length != 8) {
+</span><span class='line'>        System.err.println("Usage: java MailingList &lt;popHost&gt; " + 
+</span><span class='line'>        "&lt;smtpHost&gt; &lt;pop3user&gt; &lt;pop3password&gt; &lt;smtpuser&gt; &lt;smtppassword&gt; &lt;listname&gt; " +
+</span><span class='line'>        "&lt;relayinterval");
+</span><span class='line'>    }
+</span><span class='line'>    return;
+</span><span class='line'>
+</span><span class='line'>    HostInformation host = new HostInformation(arg[0]);
+</span><span class='line'>    String listAddress = args[6];
+</span><span class='line'>    int interval = new Integer(args[7]).intValue();
+</span><span class='line'>    Roster roster = null;
+</span><span class='line'>    try {
+</span><span class='line'>        roster = new FileRoster("roster.txt");
+</span><span class='line'>    }catch(Exception e) {
+</span><span class='line'>
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    try {
+</span><span class='line'>        do {
+</span><span class='line'>            try {
+</span><span class='line'>                Properties properties = System.getProperties();
+</span><span class='line'>                Session session = Session.getDefaultInstance(properties, null);
+</span><span class='line'>                Store store = session.getStore("pop3");
+</span><span class='line'>                store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
+</span><span class='line'>                Folder defaultFolder = store.getDefaultFolder();
+</span><span class='line'>                if (defaultFolder == null) {
+</span><span class='line'>                    return;
+</span><span class='line'>                }
+</span><span class='line'>                Folder folder = defaultFolder.getFolder("INBOX");
+</span><span class='line'>                if (folder == null) {
+</span><span class='line'>                    return;
+</span><span class='line'>                }
+</span><span class='line'>                folder.open(FOLDER.READ_WRITE);
+</span><span class='line'>                process(host, listAddress, roster, session, store, folder);
+</span><span class='line'>            }catch () {
+</span><span class='line'>
+</span><span class='line'>            }
+</span><span class='line'>            try {
+</span><span class='line'>                Thread.sleep(interval * 1000);
+</span><span class='line'>            } catch() {
+</span><span class='line'>
+</span><span class='line'>            }
+</span><span class='line'>
+</span><span class='line'>        } while (true)
+</span><span class='line'>    }catch () {
+</span><span class='line'>
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>private static void process(
+</span><span class='line'>    HostInformation host, String listAddress, Roster roster,
+</span><span class='line'>    Session session, Store store, Folder folder) throws MessagingException {
+</span><span class='line'>    try {
+</span><span class='line'>        if (folder.getMessageCount() != 0) {
+</span><span class='line'>            Message[] messages = folder.getMessages();
+</span><span class='line'>            doMessage(host, listAddress, roster, session, folder, messages);
+</span><span class='line'>        }
+</span><span class='line'>    }catch () {
+</span><span class='line'>
+</span><span class='line'>    }finally {
+</span><span class='line'>        folder.close(true);
+</span><span class='line'>        store.close();
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>private static void doMessage(
+</span><span class='line'>    HostInformation host,
+</span><span class='line'>    String listAddress,
+</span><span class='line'>    Roster roster,
+</span><span class='line'>    Session session,
+</span><span class='line'>    Folder folder,
+</span><span class='line'>    Message[] messages) throws MessageingException {
+</span><span class='line'>    FetchProfile fp = new FetchProfile();
+</span><span class='line'>    fp.add(FetchProfile.Item.ENVELOPE);
+</span><span class='line'>    fp.add(FetchProfile.Item.FLAGS);
+</span><span class='line'>    fp.add("X-Mailer");
+</span><span class='line'>    folder.fetch(messages, fp);
+</span><span class='line'>    for (int i = 0; i &lt; messages.length; i++) {
+</span><span class='line'>        Message message = messages[i];
+</span><span class='line'>        if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
+</span><span class='line'>        System.out.println("message received: " + message.getSubject());
+</span><span class='line'>        if (!roster.constainsOneOf(message.getFrom())) continue;
+</span><span class='line'>        MimeMessage forward = new MimeMessage(session);
+</span><span class='line'>        Address[] fromAddress = message.getFrom();
+</span><span class='line'>        InternetAddress from = null;
+</span><span class='line'>        if (fromAddress != null &amp;&amp; fromAdress.length &gt; 0) {
+</span><span class='line'>            from = new InternetAddress(fromAddress[0].toString());
+</span><span class='line'>        }
+</span><span class='line'>        forward.setFrom(from);
+</span><span class='line'>        forward.setReplyTo(new Address[] {
+</span><span class='line'>            new InternetAddress(listAddress)
+</span><span class='line'>        });
+</span><span class='line'>
+</span><span class='line'>        forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
+</span><span class='line'>        String subject = message.getSubject();
+</span><span class='line'>        if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
+</span><span class='line'>            subject = SUBJECT_MARKER + " " + message.getSubject();
+</span><span class='line'>        }
+</span><span class='line'>        forward.setSubject(subject);
+</span><span class='line'>        forward.setSentDate(message.getSentDate());
+</span><span class='line'>        forward.addHeader(LOOP_HEADER, listAddress);
+</span><span class='line'>        Object content = message.getContent();
+</span><span class='line'>        if (content instanceof Multipart) {
+</span><span class='line'>            forward.setContent((Multipart)content);
+</span><span class='line'>        } else {
+</span><span class='line'>            forward.setText((String)content);
+</span><span class='line'>        }
+</span><span class='line'>
+</span><span class='line'>        Properties props = new Properties();
+</span><span class='line'>        props.put("mail.smtp.host", host.smtpHost);
+</span><span class='line'>
+</span><span class='line'>        Session smtpSession = Session.getDefaultInstance(props, null);
+</span><span class='line'>        Transport transport = smtpSession.getTransport("smtp");
+</span><span class='line'>        transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
+</span><span class='line'>        transport.sendMessage(forward, roster.getAddresses());
+</span><span class='line'>        message.setFlag(Flags.Flag.DELETED, true);
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这段代码集中了所有劣质代码的特性，如可读性差，可测试性差，可重用性差，可扩展性差，也很难体现设计者的意图。</p>
 
@@ -183,7 +311,7 @@ private static void doMessage(
 </code></pre>
 
 <p>面对如此简短的职责描述，再要识别对象所要封装的概念就变得非常容易了。下图是根据识别出来的职责获得的类图结构：
-{% img center /images/2013/02/responsibility04.png %}</p>
+<img class="center" src="/images/2013/02/responsibility04.png"></p>
 
 <p>比较这个设计模型与之前的代码，新的模型无疑在职责分配上占了胜场。并且，每个对象的名称都很好地传达了它所能完成的功能。由于封装将职责的实现细节有效地隐藏，并为它们各自划分了空间，形成各自的职责单元，然后再以弱耦合的形式进行协作。因而，我们可以很容易地对它们进行单元测试，或者对参与协作的行为进行Mock。接口的引入则是为了未来的功能扩展，例如我们不再使用javax.mail库来实现邮件收发，就可以提供不同的实现类。可独立封装的MessageReceiver与MessageSender还可以为系统的其他模块所重用。职责与封装相得益彰，有效地改善了整个设计模型。</p>
 ]]></content>
@@ -194,7 +322,7 @@ private static void doMessage(
     <link href="http://agiledon.github.com/blog/2013/02/05/role-of-object/"/>
     <updated>2013-02-05T21:55:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/05/role-of-object</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/02/roleofobject.png %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/roleofobject.png"></p>
 
 <p>若要获得良好的对象设计，就必须对职责进行合理的分配。每个对象承担的职责不能太多，也不能太少，恰如其分即可。职责分配如乐谱中对音符的组织，高明的音乐家总是能让不同的音符放在合理的位置，奏成悦耳的心曲，表达音乐家的内心感情。然而，即使设计师明确职责分配的重要性，在面临纷乱复杂的需求时，常常被乱花迷了眼，或者无法识别正确的职责，又或者顾此失彼，将职责放错了位置，变成了对职责混乱的涂鸦。</p>
 
@@ -210,14 +338,14 @@ private static void doMessage(
 <p>首先来看信息持有者。顾名思义，这种角色的对象必然持有相关的信息。不过，俯瞰对象世界，除了某些特殊的行为对象而言，大多数对象都必然持有相关的信息。所以，这里的角色划定，其主要意图在于让设计者明确，与信息相关的行为，如处理信息的方式，信息变化造成的影响等，都应首先考虑是否由该信息的持有者来承担。这近似于Larman在<a href="http://book.360buy.com/10057823.html">Applying UML and Patterns</a>一书中提到的“信息专家模式”。</p>
 
 <p>例如，我们需要设计一个Web服务器，它提供了一个对象HttpProcessor，能够接收由HttpConnector发送来的Socket请求，对Request进行处理，并在处理后将相关信息放入Response中。请求和响应被封装在对应的HttpRequest和HttpResponse对象中。在处理请求和响应信息时，需要对Socket消息进行处理，并为Request和Response对象设置相关属性。我们当然可以在HttpProcessor中处理对这些消息的解析工作，但涉及到Request和Response自身的信息，遵循信息持有者角色的要求，最好还是将这些处理逻辑封装到各自对象中。如下图所示：
-{% img center /images/2013/02/infoholder.png %}</p>
+<img class="center" src="/images/2013/02/infoholder.png"></p>
 
 <p>遵循信息持有者的特征，HttpProcessor、HttpRequest与HttpResponse之间的权责变得更加清晰。此外，这一设计方式还有利于改善性能。某些Http请求解析可能牵涉到系统开销较大的字符串操作，而解析的内容并不是在一开始就需要使用。将解析职责转移到HttpRequest中，就使得HttpProcessor的process()操作可以快速完成，并将相关请求数据流塞到HttpRequest对象中。只有真正需要相关请求信息时，才向HttpRequest对象发出解析的请求消息。这种方式颇像是对象的Lazy Load。</p>
 
 <h4>构造者角色</h4>
 
 <p>构造者角色主要承担对象的创建，以及对复合对象的组装。如果熟悉设计模式，可以发现构造者角色基本上囊括了构造型模式的意图。例如创建对象，组合对象，以及选择对象构造的方式。此外，还有一种特殊的构造者角色对象，即它可能具有双重角色，一方面作为构造者角色，另一方面也作为构造者所创建出来的产品。这种双重角色的构造者角色，常常会形成一条构造链。例如，在JMS中，若要获得Queue对象，就可能由ConnectionFactory对象创建出Connection对象，则通过该对象创建Session对象，最后由Session对象创建的Queue。如下图所示：
-{% img center /images/2013/02/constructor.png %}</p>
+<img class="center" src="/images/2013/02/constructor.png"></p>
 
 <p>为何我们需要构造者角色？毕竟对象自身可以拥有构造函数，以提供给调用者完成对象的创建。通常情况下，之所以引入构造者角色，主要是为了：</p>
 
@@ -232,14 +360,14 @@ private static void doMessage(
 <p>关于服务提供者，一个重要认识是：它能提供具有“业务价值”的行为。所谓“业务价值”，即一定是实现业务逻辑中不可缺少的，且相对独立完整的功能。这就意味着，担任服务提供者角色的对象，常常是一个职责完备地，实现了某个业务关注点的可重用对象。此外，业务价值是有层次之分的。在最外层，可能意味着一个完整的业务流程，此时服务对象暴露给客户端的，是一个封装了服务实现细节的对象（可能是接口）；而为了实现该外层服务，又可能在整个实现中，需要更为细粒度的内层服务对象提供各个实现步骤的支撑。例如系统需要生成税务报表，假设它的业务流程是读取报表数据后，对数据流进行处理，并以HTML格式呈现，然后生成PDF文件。对外而言，税务报表的生成就应该是一个完整的服务，且对于客户端的调用者而言，其实根本不需要了解其实现细节。此时，我们可以定义一个TaxReportGenerator对象，它能够接收报表数据，并生成报表的PDF文件。显然，它具有非常重要的业务价值。</p>
 
 <p>接下来考虑该对象的内部实现。由于报表生成需要执行多个业务步骤，如果将这些职责均交给TaxReportGenerator来处理，无疑会导致该对象承担过重的职责。此外，呈现HTML格式与PDF文件生成对于报表生成而言，不过是整个业务流程中的一环；但从单个职责而言，无疑它们也是独立的。可以设想，倘若系统还有其他业务功能需要生成PDF文件，又或者需要按照规定形式呈现为HTML页面，将这些职责封装到单独的职责中，就可能很好地支持重用。从“业务价值”的角度看，它们无疑具备了服务提供者的能力。整个TaxReportGenerator对象的内部协作如下图所示：
-{% img center /images/2013/02/serviceprovider.png %}</p>
+<img class="center" src="/images/2013/02/serviceprovider.png"></p>
 
 <h4>协调者角色</h4>
 
 <p>协调者有些像设计模式的Mediator模式所要承担的职责，即用于协调对象职责的协作，又或者负责转发或委派请求。协调者是孜孜不倦助人为乐的居委会大妈，既善于也乐于协调邻里之间的纠纷。除了可以以中间人的身份协调对象，从而简化对象之间的协作，以降低复杂的依赖关系外，协调者还能很好地隐藏这些交互细节。这就使得调用者变得简单，还能让这种关系协调的实现集中在一处，即使将来协调关系发生了变化，也可以做到仅修改一处，即可应对变化。从这一点来看，似乎协调者又体现了Facade模式。</p>
 
 <p>在一个大型复杂系统中，提供了许多Web Service。不同的Web Service可能需要支持不同的消费者，而这些服务的部署位置也可能并不相同。消费者需要准确定位到相关服务，然后通过一些相对复杂的实现逻辑，完成对服务的调用。这类逻辑就牵涉到消费者、服务以及服务调用与服务位置之间的协作。如果没有合适的对象去封装，既可能导致细节暴露，增加复杂度，也无法做到有效重用。一旦协作的逻辑发生变化，可能还会导致这种变化蔓延到系统的各个地方。这时，就是体现协调者角色价值所在了。在这个场景下，我们可以引入ServiceLocator对象来负责整个协调逻辑，它能够根据消费者请求的服务类型，定位服务，然后找到服务端口，发送服务请求。下图展示了这种协调逻辑的具体做法，注意不同的服务消费者都经由相同的ServiceLocator角色完成了不同的服务调用：
-{% img center /images/2013/02/colaborator.png %}</p>
+<img class="center" src="/images/2013/02/colaborator.png"></p>
 
 <h4>控制者角色</h4>
 
@@ -248,7 +376,7 @@ private static void doMessage(
 <p>当然，在设计时，有时似乎也很难泾渭分明地界定这二者。这就好似用例中的使用与扩展关系，许多设计者还在孜孜以求，绞尽脑汁地要分辨出二者的不同，以保证正确地运用用例关系，求得完美的设计，孰知早有用例专家给出忠言，不必一定区分使用与扩展，它对用例的编写不会产生直接的重大影响。参考此例，我也希望设计师不必去钻牛角尖，只需明白此两种角色，其本质还在于隐藏对象的协作或交互细节，降低复杂度，保证重用以及对变化的应对。</p>
 
 <p>在软件设计中，我们经常遇到控制者角色。一个常见的例子是由控制者角色承担判断逻辑，根据不同的请求，经由不同的分支，调用不同的对象来应对此请求。例如在一个系统中，我们需要对页面的内容合法性进行验证。不同的内容对验证的要求不尽相同。一个简单的判断是看内容是否只需要对页面头进行验证。我们在设计时，引入了ValidationProcessor来控制这种验证逻辑。站在调用者的角度，验证的事情交给ValidationProcessor去处理就好。管它是否仅是一个控制枢纽，真正的验证却是它要委派的对象呢？
-{% img center /images/2013/02/controller.png %}</p>
+<img class="center" src="/images/2013/02/controller.png"></p>
 
 <p>当然，在这里的ContentController同样属于控制者角色，它事实上就是MVC模式中的Controller，用于控制Content与ContentView之间的交互。ValidatorProcessor与MVC风马牛不相及，但它仍可以看做是控制者角色。</p>
 
@@ -459,7 +587,7 @@ public void setInterceptorChain(Iterator&lt;? extends CommandHandlerInterceptor&
 ```</p>
 
 <p>在InterceptorChain类中，handler对象就是我们要包装（或者说拦截）的命令对象。注意，Interceptor对象的handle()方法，是将InterceptorChain对象作为参数传入的。于是就形成了如下的方法调用时序：
-{% img center /images/2013/02/interceptor.png %}</p>
+<img class="center" src="/images/2013/02/interceptor.png"></p>
 
 <p>只要理解了InterceptorChain起到的委派传递作用，就能很好地理解这个设计。这种方式将之前装饰器模式那种洋葱式的构造转移到列表中，并通过迭代器进行迭代。同时，它将对CommandHandler以及相关拦截器对象的依赖转移到了外面，很好地支持IoC容器对依赖的注入，从而使得代码可以变得更简单，更灵活。</p>
 
@@ -472,7 +600,7 @@ public void setInterceptorChain(Iterator&lt;? extends CommandHandlerInterceptor&
     <link href="http://agiledon.github.com/blog/2012/12/21/literature-and-software/"/>
     <updated>2012-12-21T18:59:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/21/literature-and-software</id>
-    <content type="html"><![CDATA[<p>{% img left /images/2012/12/dafenqi.jpg 182 276 %}</p>
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2012/12/dafenqi.jpg" width="182" height="276"></p>
 
 <p> 卡尔维诺在哈佛大学的文学讲座（即诺顿论坛，是为纪念美国著名学者诺顿开设的，每年邀请世界文化名人作讲座，艾略特、博尔赫斯也曾获邀参加诺顿讲座）被他的妻子编成了一本独立的书《美国讲稿》。这本书展现了卡尔维诺的文学精神，体现了他的文学态度和气质。不过，我在阅读该书时，却发现了一些与编程有关的内容。</p>
 
@@ -509,7 +637,7 @@ public void setInterceptorChain(Iterator&lt;? extends CommandHandlerInterceptor&
 
 <p>皮亚杰观点的哲学蕴含是“从噪音到有序”，即火焰；乔姆斯基观点的哲学蕴含是“自我编制系统”，即晶体。</p>
 
-<p>{% img right /images/2012/12/america.jpg 189 266 %}</p>
+<p><img class="right" src="/images/2012/12/america.jpg" width="189" height="266"></p>
 
 <p>这仿佛让我洞悉了面向对象设计的玄机。火焰代表了接口，无论如何变化，其外部形式总是不变。接口的引入使得软件设计可以从混沌（即皮亚杰所说的“噪音”）走向有序。至于晶体，则是遵循了信息专家模式的对象，因为它封装了数据以及操作该数据的行为，使得它具有了自我判断的意识。它的表面结构仍然是稳定的，却有一套自我约束的规则。晶体看起来是宁静的，而火焰却如此的灵活。融合晶体与火焰的系统，是否代表了对变化的封装，以及对不变概念的抽象呢？</p>
 
@@ -532,7 +660,7 @@ public void setInterceptorChain(Iterator&lt;? extends CommandHandlerInterceptor&
     <link href="http://agiledon.github.com/blog/2012/02/11/the-design-of-gae/"/>
     <updated>2012-02-11T10:55:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/02/11/the-design-of-gae</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2012/02/Google-App-Engine.jpg 537 251 %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/02/Google-App-Engine.jpg" width="537" height="251"></p>
 
 <p>说明：以下获得的设计思考，是阅读《GAE编程指南》时的一些简单体会。主要针对的是一些设计细节（非架构）的考量。</p>
 
@@ -542,47 +670,67 @@ public void setInterceptorChain(Iterator&lt;? extends CommandHandlerInterceptor&
 
 
 <p>如下Python代码：
-{% codeblock lang:python %}
-obj = Book(title='The Grapes of Wrath',</p>
-
-<pre><code>       author='John Steinbeck',
-       copyright_year=1939,
-       author_birthdate=datetime.date(1902,2,27))
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;The Grapes of Wrath&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>       <span class="n">author</span><span class="o">=</span><span class="s">&#39;John Steinbeck&#39;</span><span class="p">,</span>
+</span><span class='line'>       <span class="n">copyright_year</span><span class="o">=</span><span class="mi">1939</span><span class="p">,</span>
+</span><span class='line'>       <span class="n">author_birthdate</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">1902</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">27</span><span class="p">))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>如果需要生成键名，在调用构造函数时，应加上key_name参数：
-{% codeblock lang:python %}
-obj = Book(key_name='0143039431',</p>
-
-<pre><code>       title='The Grapes of Wrath',
-       author='John Steinbeck',
-       copyright_year=1939,
-       author_birthdate=datetime.date(1902,2,27))
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">key_name</span><span class="o">=</span><span class="s">&#39;0143039431&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>       <span class="n">title</span><span class="o">=</span><span class="s">&#39;The Grapes of Wrath&#39;</span><span class="p">,</span>
+</span><span class='line'>       <span class="n">author</span><span class="o">=</span><span class="s">&#39;John Steinbeck&#39;</span><span class="p">,</span>
+</span><span class='line'>       <span class="n">copyright_year</span><span class="o">=</span><span class="mi">1939</span><span class="p">,</span>
+</span><span class='line'>       <span class="n">author_birthdate</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">1902</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">27</span><span class="p">))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我想，之所以需要考虑这种简单性和灵活性的结合，在于API的特征，这种开放平台会面临不同消费者，在不同场景下做出不同的选择。二者的平衡保证了API的调用能够得到最大程度的需求满足。</p>
 
 <p>封装。在设计时，我们应尽量避免使用基本类型。Martin Fowler在《重构》一书中将其称为“基本类型偏执”。例如在GAE中，就对key进行了合理的封装，包含了实体的类型和值。如果希望批量获取多个实体，可以将key放到列表中，作为get()方法的参数，返回实体对象列表。这种批量获取实体的性能比多次执行单次获取要好，或许是因为它能够减少对数据库IO操作的次数。根据key获得实体对象的python代码如下所示：
-{% codeblock lang:python %}
-from google.appengine.ext import db
-k = db.key('Entity', 'alphabeta')
-e = db.get(k)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">google.appengine.ext</span> <span class="kn">import</span> <span class="n">db</span>
+</span><span class='line'><span class="n">k</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="s">&#39;Entity&#39;</span><span class="p">,</span> <span class="s">&#39;alphabeta&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">e</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>在上面的代码中，db.key()方法相当于key的工厂方法，负责创建key。如果需要根据多个key值获得多个实体对象，则代码为：
-{% codeblock lang:python %}
-entities = db.get([k1,k2,k3])
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">entities</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="n">k1</span><span class="p">,</span><span class="n">k2</span><span class="p">,</span><span class="n">k3</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>比较python而言，Java代码略显复杂：
-{% codeblock lang:java %}
-DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-Map&lt;Key, Entity> entities = ds.get(new ArrayList(Arrays.asList(k1,k2,k3)));
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DatastoreService</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DatastoreServiceFactory</span><span class="o">.</span><span class="na">getDatastoreService</span><span class="o">();</span>
+</span><span class='line'><span class="n">Map</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Key</span><span class="o">,</span> <span class="n">Entity</span><span class="o">&gt;</span> <span class="n">entities</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayList</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">k1</span><span class="o">,</span><span class="n">k2</span><span class="o">,</span><span class="n">k3</span><span class="o">)));</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>对于Java的GAE API而言，似乎还可以提供一个类似KeyCollection的对象，用于封装key列表，并为DatastoreService的get()提供接收KeyCollection对象的重载方法。KeyCollection可以封装一些key列表的行为。但这要根据具体的API设计而定。</p>
 
@@ -591,34 +739,36 @@ Map&lt;Key, Entity> entities = ds.get(new ArrayList(Arrays.asList(k1,k2,k3)));
 <p>一致性。在GAE中，创建实体的API与更新实体的API完全一致。数据存储区不会区分创建和更新操作。若保存实体时用到完整的键（例如带有类别kind和键名），而数据存储区恰好有这个实体，就会替换原有的实体。为避免更新有效的数据，可以事先测试该实体是否存在，但这种方式在GAE中，需要使用事务API。</p>
 
 <p>Fluence Interface。GAE提供的查询API在Java和Python两种语言下，有一些细微的差别。比较而言，Python采用了Fluence Interface模式，使得它的调用显得更为流畅和简洁。以下是Python代码：
-{% codeblock lang:python %}
-q = db.Query(player)</p>
-
-<h1>此时，查询不会执行</h1>
-
-<p>q.filter("level>", 5).filter("level&lt;",20).order("-score")</p>
-
-<h1>此时，查询才会执行</h1>
-
-<p>results = q.fetch(10)
-{% endcodeblock %}</p>
+Liquid error: invalid byte sequence in US-ASCII</p>
 
 <p>Java的代码就略显冗长而不够流畅，可读性较低。这一方面与语言自身的特色有关，但倘若运用了fluence interface模式，相信能够比较好地提高代码的可读性：
-{% codeblock lang:java %}
-DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-Query q = new Query("Book");
-q.addFilter("copyright year", Query.FilterOperator.LESS_THAN_OR_EQUAL, 1950);
-q.addSort("title");</p>
-
-<p>PreparedQuery pq = ds.prepare(q);
-for (Entity result : pq.asIterable()){</p>
-
-<pre><code>String title = result.getProperty("title");
-//...
-</code></pre>
-
-<p>}
-{% endcodeblock %}
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DatastoreService</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DatastoreServiceFactory</span><span class="o">.</span><span class="na">getDatastoreService</span><span class="o">();</span>
+</span><span class='line'><span class="n">Query</span> <span class="n">q</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Query</span><span class="o">(</span><span class="s">&quot;Book&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">q</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="s">&quot;copyright year&quot;</span><span class="o">,</span> <span class="n">Query</span><span class="o">.</span><span class="na">FilterOperator</span><span class="o">.</span><span class="na">LESS_THAN_OR_EQUAL</span><span class="o">,</span> <span class="mi">1950</span><span class="o">);</span>
+</span><span class='line'><span class="n">q</span><span class="o">.</span><span class="na">addSort</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">);&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">PreparedQuery</span> <span class="n">pq</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="na">prepare</span><span class="o">(</span><span class="n">q</span><span class="o">);</span>
+</span><span class='line'><span class="k">for</span> <span class="o">(</span><span class="n">Entity</span> <span class="n">result</span> <span class="o">:</span> <span class="n">pq</span><span class="o">.</span><span class="na">asIterable</span><span class="o">()){&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 在使用PreparedQuery对象访问结果之前，查询其实是没有执行的。</p>
 
 <p>根据我对上面这一段python代码的直观感觉，认为fetch()方法似乎是一种命令模式，之前的Query对象作为命令对象，由内部的Builder对象构建起内部的组成部分，这里是由filter()与order()方法来体现。因为没有阅读源代码，所以只能停留在猜测。我认为在Query类的内部，可能会定义一个Builder方法（或者定义一个内部的Builder类，如果要考虑扩展，甚至是一个Builder接口）。它可能会持有一个QueryStatement对象，作为Collection Parameter传递给Builder。这些Builder会修改QueryStatement对象，使其生成符合命令要求的SQL语句。如果Query是针对数据库的查询，则QueryStatement就可以是一个SqlStatement对象。若有时间，希望能阅读一下源代码，以此印证我的揣测是否正确。或许，有更好的解决方案？</p>
