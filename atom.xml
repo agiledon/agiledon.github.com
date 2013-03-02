@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-01T10:11:46+08:00</updated>
+  <updated>2013-03-02T22:16:15+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,43 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[阅读的设计体悟]]></title>
+    <link href="http://agiledon.github.com/blog/2013/03/02/harvest-from-reading/"/>
+    <updated>2013-03-02T21:46:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/03/02/harvest-from-reading</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/03/jsbookcover.jpg">
+不管语言的变化有多大，关于程序设计的基本编程思想和设计本质，应是殊途同归。两年前阅读了Jonathan Snook的著作《Javascript捷径教程Accelerated DOM Scripting with Ajax, APIs, and Libraries》。在书中，他带领读者构建了一个简单的动画对象。简单的例子，轻描淡写的描述，却似乎展现了朴素的基本设计思想。</p>
+
+<!--more-->
+
+
+<p>下面记录了一些阅读感悟。例如，书中这样写道：</p>
+
+<blockquote><p>页面里要用到的动画对象一般都不止一个，所以应该把它定义成一个类。定义一个有5个参数的函数：要加上动画的元素、要改变的属性、属性的起始值、属性的结束值、动画的持续时间。</p><p><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">){}</span><br/></span></code></pre></td></tr></table></div></figure></p><p><br/>不管编写什么代码，都应该先把实现想透彻。每个决定都有正反两方面的后果，你应该想清楚每个决定的原因。</p></blockquote>
+
+
+<p>这代表一个朴素的思想，那就是从实现原理来进行设计决定。注意这里的实现原理，并不是要关注实现的细节，而是要考虑影响实现的因素，并从调用者的角度思考接口或函数的输入与输出值。以本例而言，如果事先不明确动画效果的营造方式，是根据时间的变化动态变更element属性的方式来完成，就无法确定Animation函数。设计不是空中楼阁，抽象固然是重要的，但功能实现的基本原理仍然需要事先思考通透，否则，设计就可能走弯路。拿到一个功能，先要弄清楚它的目标是什么，有没有质量属性的要求，未来的变化如何，还有这一功能的实现原理。例如，我们要提供服务定制的功能，就需要实现明确“服务”的定义，如何完成服务的注册，服务的发布，服务的订阅，谁会订阅这些服务，服务的安全如何保障，如何解决服务与实现的脱耦。只有把这些问题想清楚了，设计才会靠谱。</p>
+
+<blockquote><p>看看前面的代码，元素ID是作为一个字符串传递进来的，那么在动画对象中获取该元素就有两种方法：一是通过DOM方法document.getElementById()；二是采用Javascript库的调用，如${}。……既然我们想让这个动画对象能适合各种情况，那还是用DOM方法比较好，保证它不依赖于任何库。</p><p><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><br/></span><span class='line'>    <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">ducument</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><br/></span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">el</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><br/></span><span class='line'><span class="p">}</span><br/></span></code></pre></td></tr></table></div></figure></p></blockquote>
+
+
+<p>这段话仍然体现了一种设计决策。它的实现目标是不与任何JS库耦合。这就需要保证实现的通用性。</p>
+
+<blockquote><p>要是你打算执行动画的元素没有ID怎么办呢？为了让这个类更灵活，让我们把它改成既可以传入元素引用，又可以传入ID字符串。如果传入的是ID字符串而不是对象引用，程序就会通过DOM方法去获取元素。两全其美！</p><p><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/><span class='line-number'>6</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><br/></span><span class='line'>    <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">element</span><span class="p">;</span><br/></span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">el</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><br/></span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">el</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><br/></span><span class='line'><span class="p">}</span><br/></span></code></pre></td></tr></table></div></figure></p></blockquote>
+
+
+<p>这又是一种编码修炼了。除了要在设计上保证灵活性之外，我们在编码时也需养成保证代码完整性与健壮性的习惯，并体贴地为调用者着想。有这么一条设计原理，就是伯斯塔尔法则(Postel&#8217;s Law)：“发送时要保守；接收时要开放。”这里的实现无疑遵循了这样一个法则。我们在编码时，考虑到这些因素了吗？</p>
+
+<p>Ok，继续我们的阅读。</p>
+
+<blockquote><p>实例化一个对象要用到5个参数，但一眼看上去很难看出参数里的那些数字都代表什么含义。……为此你可以把参数改成字面量对象，键的名称看起来更直观一些。而且如此改动能使API更加灵活，因为即使今后增加了更多的参数，实例化对象的代码也不会变得更复杂。</p><p><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/><span class='line-number'>6</span><br/><span class='line-number'>7</span><br/><span class='line-number'>8</span><br/><span class='line-number'>9</span><br/><span class='line-number'>10</span><br/><span class='line-number'>11</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><br/></span><span class='line'>    <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">element</span><span class="p">;</span><br/></span><span class='line'><span class="p">}</span><br/></span><span class='line'><span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span><br/></span><span class='line'>    <span class="nx">element</span><span class="o">:</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;elementId&#39;</span><span class="p">),</span><br/></span><span class='line'>    <span class="nx">property</span><span class="o">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span><br/></span><span class='line'>    <span class="nx">from</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><br/></span><span class='line'>    <span class="nx">to</span><span class="o">:</span><span class="mi">200</span><span class="p">,</span><br/></span><span class='line'>    <span class="nx">duration</span><span class="o">:</span><span class="mi">1000</span><br/></span><span class='line'><span class="p">};</span><br/></span></code></pre></td></tr></table></div></figure></p></blockquote>
+
+
+<p>无疑，这体现了面向对象的“封装”思想。通过封装既保证了代码的清洁与可读性，同时还有利于未来的扩展。这与OCP（开放-封闭原则）是一脉相承的。代码是有结构的，或者体现为函数，或者体现为对象，事实上都是一种按照属性与职责进行的分类。分类是保持清洁、避免重复的唯一法门。从简朴的角度来说，所有的设计其实都是在做着分类的游戏。分类体现了定义的抽象，职责的分配，结构的划分；如果再加上类别之间的协作，就是设计的全部了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[可伸缩系统的架构经验]]></title>
@@ -2602,119 +2639,6 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 <p><img class="center" src="http://agiledon.github.com/images/2012/12/hudson.jpg" width="567" height="340"></p>
 
 <p><img class="center" src="http://agiledon.github.com/images/2012/12/groovy.jpg" width="425" height="709"></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[软件系统的稳定性]]></title>
-    <link href="http://agiledon.github.com/blog/2012/12/20/stability-of-software-system/"/>
-    <updated>2012-12-20T19:59:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/12/20/stability-of-software-system</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2012/12/stability.jpg" width="290" height="387"></p>
-
-<p>软件系统的稳定性，主要决定于整体的系统架构设计，然而也不可忽略编程的细节，正所谓“千里之堤，溃于蚁穴”，一旦考虑不周，看似无关紧要的代码片段可能会带来整体软件系统的崩溃。这正是我阅读Release It!的直接感受。究其原因，一方面是程序员对代码质量的追求不够，在项目进度的压力下，只考虑了功能实现，而不用过多的追求质量属性；第二则是对编程语言的正确编码方式不够了解，不知如何有效而正确的编码；第三则是知识量的不足，在编程时没有意识到实现会对哪些因素造成影响。</p>
-
-<!--more-->
-
-
-<p>例如在Release It!一书中，给出了如下的Java代码片段：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">cf</span><span class="o">.</span><span class="na">flightsearch</span><span class="o">;</span>
-</span><span class='line'><span class="c1">//...</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlightSearch</span> <span class="kd">implements</span> <span class="n">SessionBean</span> <span class="o">{</span>
-</span><span class='line'>   <span class="kd">private</span> <span class="n">MonitoredDataSource</span> <span class="n">connectionPool</span><span class="o">;</span>
-</span><span class='line'>   <span class="kd">public</span> <span class="n">List</span> <span class="nf">lookupByCity</span><span class="o">(.</span> <span class="o">.</span> <span class="o">.)</span> <span class="kd">throws</span> <span class="n">SQLException</span><span class="o">,</span> <span class="n">RemoteException</span> <span class="o">{</span>
-</span><span class='line'>       <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>       <span class="n">Statement</span> <span class="n">stmt</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>       <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>           <span class="n">conn</span> <span class="o">=</span> <span class="n">connectionPool</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
-</span><span class='line'>           <span class="n">stmt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">createStatement</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>           <span class="c1">// Do the lookup logic</span>
-</span><span class='line'>           <span class="c1">// return a list of results</span>
-</span><span class='line'>       <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-</span><span class='line'>           <span class="k">if</span> <span class="o">(</span><span class="n">stmt</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>               <span class="n">stmt</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>           <span class="o">}</span>
-</span><span class='line'>           <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>               <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>           <span class="o">}</span>
-</span><span class='line'>       <span class="o">}</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>正是这一小段代码，是造成Airline系统崩溃的罪魁祸首。程序员充分地考虑了资源的释放，但在这段代码中他却没有对多个资源的释放给予足够的重视，而是以释放单资源的做法去处理多资源。在finally语句块中，如果释放Statement资源的操作失败了，就可能抛出异常，因为在finally中并没有捕获这种异常，就会导致后面的conn.close()语句没有执行，从而导致Connection资源未能及时释放。最终导致连接池中存放了大量未能及时释放的Connection资源，却不能得到使用，直到连接池满。当后续请求lookupByCity()时，就会在调用connectionPool.getConnection()方法时被阻塞。这些被阻塞的请求会越来越多，最后导致资源耗尽，整个系统崩溃。</p>
-
-<p><img class="center" src="http://agiledon.github.com/images/2012/12/releaseIt.jpg" width="333" height="399"></p>
-
-<p>Release It!的作者对Java中同步方法的使用也提出了警告。同步方法虽然可以较好地解决并发问题，在一定程度上可以避免出现资源抢占、竟态条件和死锁的情况。但它的一个副作用同步锁可能导致线程阻塞。这就要求同步方法的执行时间不能太长。此外，Java的接口方法是不能标记synchronized关键字。当我们在调用封装好的第三方API时，基于“面向接口设计”的原理，可能调用者只知道公开的接口方法，却不知道实现类事实上将其实现为同步方法，这种未知性就可能存在隐患。</p>
-
-<p>假设有这样的一个接口：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">GlobalObjectCache</span> <span class="o">{</span>
-</span><span class='line'>   <span class="kd">public</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果接口方法get()的实现如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">synchronized</span> <span class="n">Object</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">){</span>
-</span><span class='line'>   <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
-</span><span class='line'>   <span class="k">if</span><span class="o">(</span><span class="n">obj</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>       <span class="n">obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
-</span><span class='line'>       <span class="n">items</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">obj</span><span class="o">);</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'>   <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="kd">protected</span> <span class="n">Object</span> <span class="nf">create</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>   <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这段代码很简单，当调用者试图根据id获得目标对象时，首先会在Cache中寻找，如果有就直接返回；否则通过create()方法获得目标对象，然后再将它存储到Cache中。create()方法是该类定义的一个非final方法，它执行了DB的查询功能。现在，假设使用该类的用户对它进行了扩展，例如定义RemoteAvailabilityCache类派生该类，并重写create()方法，将原来的本地调用改为远程调用。问题出现了。由于采用create()方法是远程调用，当服务端比较繁忙时，发出的远程调用请求可能会被阻塞。由于get()方法是同步方法，在方法体内，每次只能有一个线程访问它，直到方法执行完毕释放锁。现在create()方法被阻塞，就会导致其他试图调用RemoteAvailabilityCache对象的get()方法的线程随之而被阻塞。进而可能导致系统崩溃。</p>
-
-<p>当然，我们可以认为这种扩展本身是不合理的。但从设计的角度来看，它并没有违背Liskove替换原则。从接口的角度看，它的行为也没有发生任何改变，仅仅是实现发生了变化。如果不是同步方法，则一个调用线程的阻塞并不会影响到其他调用线程，问题就可以避免了。当然，这里的同步方法本身是合理的，因为只有采取同步的方式才能保证对Cache的读取是支持并发的。书中给出这个例子，无非是要说明同步方法潜在的危险，提示我们在编写代码时，需要考虑周全。</p>
 ]]></content>
   </entry>
   
