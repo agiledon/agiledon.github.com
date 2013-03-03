@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Hadoop | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/hadoop/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-02T22:16:15+08:00</updated>
+  <updated>2013-03-03T15:25:37+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs/"/>
     <updated>2013-02-16T15:33:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/02/hdfs.jpg">
+    <content type="html"><![CDATA[<p>{% img left /images/2013/02/hdfs.jpg %}
 HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Hadoop</a>下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然，这样的架构设计主要还是满足系统的质量属性，包括如何保证分布式存储的可靠性，如何很好地支持硬件的水平扩展，如何支持对大数据处理的高性能以及客户端请求的高吞吐量。所以，HDFS的架构设计颇有参考价值，在Hadoop的Apache官方网站上也给出了<a href="http://hadoop.apache.org/docs/current/hdfs_design.html">HDFS的架构指南</a>。在<a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>卷I的第8章也详细介绍了HDFS的架构。</p>
 
 <p>HDFS的高层设计看起来很简单，主要包含NameNode与DataNode，它们之间的通信，包括客户端与HDFS NameNode服务器的通信则基于TCP/IP。客户端通过一个可配置的TCP端口连接到NameNode，通过ClientProtocol协议与NameNode交互。而DataNode使用DatanodeProtocol协议与NameNode交互。一个远程过程调用(RPC)模型被抽象出来封装ClientProtocol和Datanodeprotocol协议。</p>
@@ -27,14 +27,14 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
 
 <p>通常，一个HDFS Cluter由一个NameNode和多个DataNode组成，且在大多数情况下，会由一台专门的机器运行NameNode实例。下图是HDFS的High Level Architecture：
-<img class="center" src="/images/2013/02/hdfs01.gif"></p>
+{% img center /images/2013/02/hdfs01.gif %}</p>
 
 <div align="center">本图来自<a href="http://www.ibm.com/developerworks/library/wa-introhdfs/">IBM DeveloperWorks</a></div>
 
 
 <p>注意，在这个架构图中，观察各节点之间的通信，容易造成一个误解是NameNode会直接与DataNode通信。实则不然。虽然，NameNode可以看做是DataNode的管理者甚至是仲裁者，但由于DataNode的数量通常很多，且都是分布式部署在不同的机器上，若NameNode需要主动发起对各个DataNode的请求，会导致NameNode的负载过大，且对于网络的要求也极高。因此，在设计上，NameNode不会主动发起RPC，而是响应来自客户端或Datanode的RPC请求。如果NameNode需要获得指定DataNode的信息，则是通过DataNode调用函数后的一个简单返回值。每个DataNode都会维护一个开放的Socket，以支持客户端代码或其他DataNode的读写请求。NameNode知道该Socket的Host与Port。</p>
 
-<p><img class="left" src="/images/2013/02/hdfs02.png">
+<p>{% img left /images/2013/02/hdfs02.png %}
 一个好的架构必然遵循了好的架构原则。HDFS架构有许多值得我们借鉴或参考的设计决策，其中它所遵循的架构原则，对HDFS满足架构目标起到了决定性的作用。这些原则包括：元数据与数据分离；主/从架构；一次写入多次读取；移动计算比移动数据更划算。</p>
 
 <h4>元数据与数据分离</h4>
@@ -60,7 +60,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <p>移动计算比移动数据更划算，即moving computation is cheaper than moving data。对于数据运算而言，越靠近数据，执行运算的性能就越好，尤其是当数据量非常大的时候，更是如此。由于分布式文件系统的数据并不一定存储在一台机器上，就使得运算的数据常常与执行运算的位置不相同。如果直接去远程访问数据，可能需要发起多次网络请求，且传输数据的成本也相当客观。因此最好的方式是保证数据与运算离得最近。这就带来两种不同的策略。一种是移动数据，另一种是移动运算。显然，移动数据，尤其是大数据的成本非常之高。要让网络的消耗最低，并提高系统的吞吐量，最佳方式是将运算的执行移到离它要处理的数据更近的地方，而不是移动数据。</p>
 
 <p>HDFS在改善吞吐量与数据访问性能上还做出了一个好的设计决策，就是数据块的Staging。当客户端创建文件时，并没有立即将其发送给NameNode，而是将文件数据存储到本地的临时文件中。这个操作是透明的，客户端不会觉察，也不必关心。文件的创建事实上是一个流数据的写，当临时文件累计的数据量超过一个数据块大小时，客户端才会联系NameNode。NameNode将文件名插入文件系统的层次结构中，并且分配一个数据块给它。然后返回Datanode的标识符和目标数据块给客户端。接着，客户端将这块数据从本地临时文件上传到指定的Datanode上。当文件关闭时，在临时文件中剩余的没有上传的数据也会传输到指定的Datanode上。然后客户端告诉Namenode文件已经关闭。此时Namenode才将文件创建操作提交到HDFS的文件系统。这个操作的大致时序图如下所示：
-<img class="center" src="/images/2013/02/hdfs03.png"></p>
+{% img center /images/2013/02/hdfs03.png %}</p>
 
 <p>采用这种客户端缓存的方式，可以有效地减少网络请求，避免大数据的写入造成网络堵塞，进而提高网络吞吐量。</p>
 ]]></content>

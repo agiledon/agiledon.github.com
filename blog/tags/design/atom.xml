@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Design | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/design/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-02T22:16:15+08:00</updated>
+  <updated>2013-03-03T15:25:37+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,25 +18,78 @@
     <link href="http://agiledon.github.com/blog/2013/03/02/harvest-from-reading/"/>
     <updated>2013-03-02T21:46:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/03/02/harvest-from-reading</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/jsbookcover.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/03/jsbookcover.jpg %}
 不管语言的变化有多大，关于程序设计的基本编程思想和设计本质，应是殊途同归。两年前阅读了Jonathan Snook的著作《Javascript捷径教程Accelerated DOM Scripting with Ajax, APIs, and Libraries》。在书中，他带领读者构建了一个简单的动画对象。简单的例子，轻描淡写的描述，却似乎展现了朴素的基本设计思想。</p>
 
 <!--more-->
 
 
 <p>下面记录了一些阅读感悟。例如，书中这样写道：
-<blockquote><p>页面里要用到的动画对象一般都不止一个，所以应该把它定义成一个类。定义一个有5个参数的函数：要加上动画的元素、要改变的属性、属性的起始值、属性的结束值、动画的持续时间。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">){}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></p><p><p>不管编写什么代码，都应该先把实现想透彻。每个决定都有正反两方面的后果，你应该想清楚每个决定的原因。</p></blockquote></p>
+{% blockquote %}
+页面里要用到的动画对象一般都不止一个，所以应该把它定义成一个类。定义一个有5个参数的函数：要加上动画的元素、要改变的属性、属性的起始值、属性的结束值、动画的持续时间。
+{% codeblock lang:js %}
+function Animation(element, property, from, to, duration){}
+{% endcodeblock %}</p>
+
+<p>不管编写什么代码，都应该先把实现想透彻。每个决定都有正反两方面的后果，你应该想清楚每个决定的原因。
+{% endblockquote %}</p>
 
 <p>这代表一个朴素的思想，那就是从实现原理来进行设计决定。注意这里的实现原理，并不是要关注实现的细节，而是要考虑影响实现的因素，并从调用者的角度思考接口或函数的输入与输出值。以本例而言，如果事先不明确动画效果的营造方式，是根据时间的变化动态变更element属性的方式来完成，就无法确定Animation函数。设计不是空中楼阁，抽象固然是重要的，但功能实现的基本原理仍然需要事先思考通透，否则，设计就可能走弯路。拿到一个功能，先要弄清楚它的目标是什么，有没有质量属性的要求，未来的变化如何，还有这一功能的实现原理。例如，我们要提供服务定制的功能，就需要实现明确“服务”的定义，如何完成服务的注册，服务的发布，服务的订阅，谁会订阅这些服务，服务的安全如何保障，如何解决服务与实现的脱耦。只有把这些问题想清楚了，设计才会靠谱。
-<blockquote><p>看看前面的代码，元素ID是作为一个字符串传递进来的，那么在动画对象中获取该元素就有两种方法：一是通过DOM方法document.getElementById()；二是采用Javascript库的调用，如${}。……既然我们想让这个动画对象能适合各种情况，那还是用DOM方法比较好，保证它不依赖于任何库。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/><span class='line-number'>6</span><br/><span class='line-number'>7</span><br/><span class='line-number'>8</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">ducument</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">el</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
+{% blockquote %}
+看看前面的代码，元素ID是作为一个字符串传递进来的，那么在动画对象中获取该元素就有两种方法：一是通过DOM方法document.getElementById()；二是采用Javascript库的调用，如${}。……既然我们想让这个动画对象能适合各种情况，那还是用DOM方法比较好，保证它不依赖于任何库。
+{% codeblock lang:js %}
+function Animation(element, property, from, to, duration)
+{</p>
+
+<pre><code>var el = ducument.getElementById(element);
+if (!el) return false;
+</code></pre>
+
+<p>}
+{% endcodeblock %}
+{% endblockquote %}</p>
 
 <p>这段话仍然体现了一种设计决策。它的实现目标是不与任何JS库耦合。这就需要保证实现的通用性。
-<blockquote><p>要是你打算执行动画的元素没有ID怎么办呢？为了让这个类更灵活，让我们把它改成既可以传入元素引用，又可以传入ID字符串。如果传入的是ID字符串而不是对象引用，程序就会通过DOM方法去获取元素。两全其美！<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/><span class='line-number'>6</span><br/><span class='line-number'>7</span><br/><span class='line-number'>8</span><br/><span class='line-number'>9</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">element</span><span class="p">;</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">el</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">el</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
+{% blockquote %}
+要是你打算执行动画的元素没有ID怎么办呢？为了让这个类更灵活，让我们把它改成既可以传入元素引用，又可以传入ID字符串。如果传入的是ID字符串而不是对象引用，程序就会通过DOM方法去获取元素。两全其美！
+{% codeblock lang:js %}
+function Animation(element, property, from, to, duration)
+{</p>
+
+<pre><code>var el = element;
+if (typeof el == 'string') el = document.getElementById(element);
+if (!el) return false;
+</code></pre>
+
+<p>}
+{% endcodeblock %}
+{% endblockquote %}</p>
 
 <p>这又是一种编码修炼了。除了要在设计上保证灵活性之外，我们在编码时也需养成保证代码完整性与健壮性的习惯，并体贴地为调用者着想。有这么一条设计原理，就是伯斯塔尔法则(Postel's Law)：“发送时要保守；接收时要开放。”这里的实现无疑遵循了这样一个法则。我们在编码时，考虑到这些因素了吗？</p>
 
 <p>Ok，继续我们的阅读。
-<blockquote><p>实例化一个对象要用到5个参数，但一眼看上去很难看出参数里的那些数字都代表什么含义。……为此你可以把参数改成字面量对象，键的名称看起来更直观一些。而且如此改动能使API更加灵活，因为即使今后增加了更多的参数，实例化对象的代码也不会变得更复杂。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/><span class='line-number'>6</span><br/><span class='line-number'>7</span><br/><span class='line-number'>8</span><br/><span class='line-number'>9</span><br/><span class='line-number'>10</span><br/><span class='line-number'>11</span><br/><span class='line-number'>12</span><br/><span class='line-number'>13</span><br/><span class='line-number'>14</span><br/><span class='line-number'>15</span><br/><span class='line-number'>16</span><br/><span class='line-number'>17</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">element</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span><span class='line'><span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">element</span><span class="o">:</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;elementId&#39;</span><span class="p">),</span><br/></span><span class='line'><span class="nx">property</span><span class="o">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span><br/></span><span class='line'><span class="nx">from</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><br/></span><span class='line'><span class="nx">to</span><span class="o">:</span><span class="mi">200</span><span class="p">,</span><br/></span><span class='line'><span class="nx">duration</span><span class="o">:</span><span class="mi">1000</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">};</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
+{% blockquote %}
+实例化一个对象要用到5个参数，但一眼看上去很难看出参数里的那些数字都代表什么含义。……为此你可以把参数改成字面量对象，键的名称看起来更直观一些。而且如此改动能使API更加灵活，因为即使今后增加了更多的参数，实例化对象的代码也不会变得更复杂。
+{% codeblock lang:js %}
+function Animation(options)
+{</p>
+
+<pre><code>var el = options.element;
+</code></pre>
+
+<p>}
+var options = {</p>
+
+<pre><code>element:document.getElementById('elementId'),
+property: 'left',
+from:0,
+to:200,
+duration:1000
+</code></pre>
+
+<p>};
+{% endcodeblock %}
+{% endblockquote %}</p>
 
 <p>无疑，这体现了面向对象的“封装”思想。通过封装既保证了代码的清洁与可读性，同时还有利于未来的扩展。这与OCP（开放-封闭原则）是一脉相承的。代码是有结构的，或者体现为函数，或者体现为对象，事实上都是一种按照属性与职责进行的分类。分类是保持清洁、避免重复的唯一法门。从简朴的角度来说，所有的设计其实都是在做着分类的游戏。分类体现了定义的抽象，职责的分配，结构的划分；如果再加上类别之间的协作，就是设计的全部了。</p>
 ]]></content>
@@ -48,7 +101,7 @@
     <updated>2013-02-20T21:49:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation</id>
     <content type="html"><![CDATA[<p>面向对象设计的关键，我认为是识别职责，封装合理的对象。缺乏合理的封装，就会缺少正确的领域对象，使得属于共同职责的领域信息散乱分布到系统的各个方法中，导致概念不够清晰，职责混乱，以及代码的重复。然而，如果没有正确地识别职责，又可能导致封装无从谈起，因为我们获得的需求可能是散乱的，既难以抽象概念，又缺乏层次。故而，职责与封装是相辅相成的概念。如下图所示：
-<img class="center" src="/images/2013/02/responsibility01.png"></p>
+{% img center /images/2013/02/responsibility01.png %}</p>
 
 <p>我们不能简单地将封装当做是“信息隐藏”。所谓隐藏信息以及具体行为的细节，确实是封装的本质所在，但面向对象思想中的封装，其目的还在于对领域概念以及设计概念的识别。前者是对业务模型的抽象，如电子商务系统中的Product、Order、OrderItem等概念；后者是对设计模型的改进，如在设计模式中引入策略对象、命令对象，DDD中提倡的Repository、Factory对象。这也是为何许多设计者很容易理解封装的概念，但却始终无法做到合理封装的根本原因。</p>
 
@@ -56,276 +109,148 @@
 
 
 <p>此时，我们需要运用职责驱动设计，通过对职责的识别来提炼这些概念。概念可以起到分类的作用，根据职责对行为与数据进行分类，找到其应该归属的对象，散乱的逻辑就会变得清晰起来。就好似我们对彩球按照颜色进行分类，并放置到不同的位置：
-<img class="center" src="/images/2013/02/responsibility02.png"></p>
+{% img center /images/2013/02/responsibility02.png %}</p>
 
 <p>不同的颜色有分明不同的特征，只要不是色盲，分类自然水到渠成。现实中的系统需求自然不如颜色这般泾渭分明，要从纷繁复杂的混沌需求中超脱出来，最好的办法就是按照不同的角度或层次去寻找职责，并用最简单的语言一句话描述这些职责。根据职责的特征，我大致将职责分为三个层次，由外自内分别为：业务价值、业务功能与业务实现，如下图所示：
-<img class="center" src="/images/2013/02/responsibility03.png"></p>
+{% img center /images/2013/02/responsibility03.png %}</p>
 
 <p>业务价值基本上体现了这个需求用例（或用户故事）存在的目的，即解释了需求的Why。简言之，只有提供了该职责，则此需求对于客户才是有价值的。这也符合用户故事INVEST原则中的V（Valuable）。没有价值的需求，自然是应该放弃的。故而在识别业务价值时，常常从用户的视角来分析，辨别。</p>
 
 <p>业务价值是职责驱动的入口，因为在寻找到了业务价值之后，我们就可以剖析该价值需要哪些支撑功能（它可以解释需求的What），再由功能继续深入分析，找到实现功能的职责（它可以解释需求的How）。因此，这个模型是一个层层推进的过程。</p>
 
 <p>职责驱动不仅仅可以从文字需求入手，同样可以针对已经实现的代码。甚至我们可以将这种职责驱动看做是一种阅读代码的技巧，通过寻找业务价值，进而分析业务功能和业务实现，对代码形成一个整体的感观，进而通过合理地分配职责改善原有代码。如下代码是《修改代码的艺术》一书中给出的例子：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import javax.mail.&lt;em>;
-</span><span class='line'>import javax.mail.internet.&lt;/em>;&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>public class MailingListServer {&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>public static final String SUBJECT_MARKER = "[list]";
-</span><span class='line'>public static final String LOOP_HEADER = "X-LOOP";
-</span><span class='line'>
-</span><span class='line'>public static void main(String[] args) {
-</span><span class='line'>    if (args.length != 8) {
-</span><span class='line'>        System.err.println("Usage: java MailingList &lt;popHost&gt; " + 
-</span><span class='line'>        "&lt;smtpHost&gt; &lt;pop3user&gt; &lt;pop3password&gt; &lt;smtpuser&gt; &lt;smtppassword&gt; &lt;listname&gt; " +
-</span><span class='line'>        "&lt;relayinterval");
-</span><span class='line'>    }
-</span><span class='line'>    return;
-</span><span class='line'>
-</span><span class='line'>    HostInformation host = new HostInformation(arg[0]);
-</span><span class='line'>    String listAddress = args[6];
-</span><span class='line'>    int interval = new Integer(args[7]).intValue();
-</span><span class='line'>    Roster roster = null;
-</span><span class='line'>    try {
-</span><span class='line'>        roster = new FileRoster("roster.txt");
-</span><span class='line'>    }catch(Exception e) {
-</span><span class='line'>
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    try {
-</span><span class='line'>        do {
-</span><span class='line'>            try {
-</span><span class='line'>                Properties properties = System.getProperties();
-</span><span class='line'>                Session session = Session.getDefaultInstance(properties, null);
-</span><span class='line'>                Store store = session.getStore("pop3");
-</span><span class='line'>                store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
-</span><span class='line'>                Folder defaultFolder = store.getDefaultFolder();
-</span><span class='line'>                if (defaultFolder == null) {
-</span><span class='line'>                    return;
-</span><span class='line'>                }
-</span><span class='line'>                Folder folder = defaultFolder.getFolder("INBOX");
-</span><span class='line'>                if (folder == null) {
-</span><span class='line'>                    return;
-</span><span class='line'>                }
-</span><span class='line'>                folder.open(FOLDER.READ_WRITE);
-</span><span class='line'>                process(host, listAddress, roster, session, store, folder);
-</span><span class='line'>            }catch () {
-</span><span class='line'>
-</span><span class='line'>            }
-</span><span class='line'>            try {
-</span><span class='line'>                Thread.sleep(interval * 1000);
-</span><span class='line'>            } catch() {
-</span><span class='line'>
-</span><span class='line'>            }
-</span><span class='line'>
-</span><span class='line'>        } while (true)
-</span><span class='line'>    }catch () {
-</span><span class='line'>
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static void process(
-</span><span class='line'>    HostInformation host, String listAddress, Roster roster,
-</span><span class='line'>    Session session, Store store, Folder folder) throws MessagingException {
-</span><span class='line'>    try {
-</span><span class='line'>        if (folder.getMessageCount() != 0) {
-</span><span class='line'>            Message[] messages = folder.getMessages();
-</span><span class='line'>            doMessage(host, listAddress, roster, session, folder, messages);
-</span><span class='line'>        }
-</span><span class='line'>    }catch () {
-</span><span class='line'>
-</span><span class='line'>    }finally {
-</span><span class='line'>        folder.close(true);
-</span><span class='line'>        store.close();
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static void doMessage(
-</span><span class='line'>    HostInformation host,
-</span><span class='line'>    String listAddress,
-</span><span class='line'>    Roster roster,
-</span><span class='line'>    Session session,
-</span><span class='line'>    Folder folder,
-</span><span class='line'>    Message[] messages) throws MessageingException {
-</span><span class='line'>    FetchProfile fp = new FetchProfile();
-</span><span class='line'>    fp.add(FetchProfile.Item.ENVELOPE);
-</span><span class='line'>    fp.add(FetchProfile.Item.FLAGS);
-</span><span class='line'>    fp.add("X-Mailer");
-</span><span class='line'>    folder.fetch(messages, fp);
-</span><span class='line'>    for (int i = 0; i &lt; messages.length; i++) {
-</span><span class='line'>        Message message = messages[i];
-</span><span class='line'>        if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
-</span><span class='line'>        System.out.println("message received: " + message.getSubject());
-</span><span class='line'>        if (!roster.constainsOneOf(message.getFrom())) continue;
-</span><span class='line'>        MimeMessage forward = new MimeMessage(session);
-</span><span class='line'>        Address[] fromAddress = message.getFrom();
-</span><span class='line'>        InternetAddress from = null;
-</span><span class='line'>        if (fromAddress != null &amp;&amp; fromAdress.length &gt; 0) {
-</span><span class='line'>            from = new InternetAddress(fromAddress[0].toString());
-</span><span class='line'>        }
-</span><span class='line'>        forward.setFrom(from);
-</span><span class='line'>        forward.setReplyTo(new Address[] {
-</span><span class='line'>            new InternetAddress(listAddress)
-</span><span class='line'>        });
-</span><span class='line'>
-</span><span class='line'>        forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
-</span><span class='line'>        String subject = message.getSubject();
-</span><span class='line'>        if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
-</span><span class='line'>            subject = SUBJECT_MARKER + " " + message.getSubject();
-</span><span class='line'>        }
-</span><span class='line'>        forward.setSubject(subject);
-</span><span class='line'>        forward.setSentDate(message.getSentDate());
-</span><span class='line'>        forward.addHeader(LOOP_HEADER, listAddress);
-</span><span class='line'>        Object content = message.getContent();
-</span><span class='line'>        if (content instanceof Multipart) {
-</span><span class='line'>            forward.setContent((Multipart)content);
-</span><span class='line'>        } else {
-</span><span class='line'>            forward.setText((String)content);
-</span><span class='line'>        }
-</span><span class='line'>
-</span><span class='line'>        Properties props = new Properties();
-</span><span class='line'>        props.put("mail.smtp.host", host.smtpHost);
-</span><span class='line'>
-</span><span class='line'>        Session smtpSession = Session.getDefaultInstance(props, null);
-</span><span class='line'>        Transport transport = smtpSession.getTransport("smtp");
-</span><span class='line'>        transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
-</span><span class='line'>        transport.sendMessage(forward, roster.getAddresses());
-</span><span class='line'>        message.setFlag(Flags.Flag.DELETED, true);
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+import javax.mail.<em>;
+import javax.mail.internet.</em>;</p>
+
+<p>public class MailingListServer {</p>
+
+<pre><code>public static final String SUBJECT_MARKER = "[list]";
+public static final String LOOP_HEADER = "X-LOOP";
+
+public static void main(String[] args) {
+    if (args.length != 8) {
+        System.err.println("Usage: java MailingList &lt;popHost&gt; " + 
+        "&lt;smtpHost&gt; &lt;pop3user&gt; &lt;pop3password&gt; &lt;smtpuser&gt; &lt;smtppassword&gt; &lt;listname&gt; " +
+        "&lt;relayinterval");
+    }
+    return;
+
+    HostInformation host = new HostInformation(arg[0]);
+    String listAddress = args[6];
+    int interval = new Integer(args[7]).intValue();
+    Roster roster = null;
+    try {
+        roster = new FileRoster("roster.txt");
+    }catch(Exception e) {
+
+    }
+
+    try {
+        do {
+            try {
+                Properties properties = System.getProperties();
+                Session session = Session.getDefaultInstance(properties, null);
+                Store store = session.getStore("pop3");
+                store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
+                Folder defaultFolder = store.getDefaultFolder();
+                if (defaultFolder == null) {
+                    return;
+                }
+                Folder folder = defaultFolder.getFolder("INBOX");
+                if (folder == null) {
+                    return;
+                }
+                folder.open(FOLDER.READ_WRITE);
+                process(host, listAddress, roster, session, store, folder);
+            }catch () {
+
+            }
+            try {
+                Thread.sleep(interval * 1000);
+            } catch() {
+
+            }
+
+        } while (true)
+    }catch () {
+
+    }
+}
+
+private static void process(
+    HostInformation host, String listAddress, Roster roster,
+    Session session, Store store, Folder folder) throws MessagingException {
+    try {
+        if (folder.getMessageCount() != 0) {
+            Message[] messages = folder.getMessages();
+            doMessage(host, listAddress, roster, session, folder, messages);
+        }
+    }catch () {
+
+    }finally {
+        folder.close(true);
+        store.close();
+    }
+}
+
+private static void doMessage(
+    HostInformation host,
+    String listAddress,
+    Roster roster,
+    Session session,
+    Folder folder,
+    Message[] messages) throws MessageingException {
+    FetchProfile fp = new FetchProfile();
+    fp.add(FetchProfile.Item.ENVELOPE);
+    fp.add(FetchProfile.Item.FLAGS);
+    fp.add("X-Mailer");
+    folder.fetch(messages, fp);
+    for (int i = 0; i &lt; messages.length; i++) {
+        Message message = messages[i];
+        if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
+        System.out.println("message received: " + message.getSubject());
+        if (!roster.constainsOneOf(message.getFrom())) continue;
+        MimeMessage forward = new MimeMessage(session);
+        Address[] fromAddress = message.getFrom();
+        InternetAddress from = null;
+        if (fromAddress != null &amp;&amp; fromAdress.length &gt; 0) {
+            from = new InternetAddress(fromAddress[0].toString());
+        }
+        forward.setFrom(from);
+        forward.setReplyTo(new Address[] {
+            new InternetAddress(listAddress)
+        });
+
+        forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
+        String subject = message.getSubject();
+        if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
+            subject = SUBJECT_MARKER + " " + message.getSubject();
+        }
+        forward.setSubject(subject);
+        forward.setSentDate(message.getSentDate());
+        forward.addHeader(LOOP_HEADER, listAddress);
+        Object content = message.getContent();
+        if (content instanceof Multipart) {
+            forward.setContent((Multipart)content);
+        } else {
+            forward.setText((String)content);
+        }
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", host.smtpHost);
+
+        Session smtpSession = Session.getDefaultInstance(props, null);
+        Transport transport = smtpSession.getTransport("smtp");
+        transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
+        transport.sendMessage(forward, roster.getAddresses());
+        message.setFlag(Flags.Flag.DELETED, true);
+    }
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>这段代码集中了所有劣质代码的特性，如可读性差，可测试性差，可重用性差，可扩展性差，也很难体现设计者的意图。</p>
 
@@ -340,7 +265,7 @@
 </code></pre>
 
 <p>面对如此简短的职责描述，再要识别对象所要封装的概念就变得非常容易了。下图是根据识别出来的职责获得的类图结构：
-<img class="center" src="/images/2013/02/responsibility04.png"></p>
+{% img center /images/2013/02/responsibility04.png %}</p>
 
 <p>比较这个设计模型与之前的代码，新的模型无疑在职责分配上占了胜场。并且，每个对象的名称都很好地传达了它所能完成的功能。由于封装将职责的实现细节有效地隐藏，并为它们各自划分了空间，形成各自的职责单元，然后再以弱耦合的形式进行协作。因而，我们可以很容易地对它们进行单元测试，或者对参与协作的行为进行Mock。接口的引入则是为了未来的功能扩展，例如我们不再使用javax.mail库来实现邮件收发，就可以提供不同的实现类。可独立封装的MessageReceiver与MessageSender还可以为系统的其他模块所重用。职责与封装相得益彰，有效地改善了整个设计模型。</p>
 ]]></content>
@@ -351,7 +276,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs/"/>
     <updated>2013-02-16T15:33:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/02/hdfs.jpg">
+    <content type="html"><![CDATA[<p>{% img left /images/2013/02/hdfs.jpg %}
 HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Hadoop</a>下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然，这样的架构设计主要还是满足系统的质量属性，包括如何保证分布式存储的可靠性，如何很好地支持硬件的水平扩展，如何支持对大数据处理的高性能以及客户端请求的高吞吐量。所以，HDFS的架构设计颇有参考价值，在Hadoop的Apache官方网站上也给出了<a href="http://hadoop.apache.org/docs/current/hdfs_design.html">HDFS的架构指南</a>。在<a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>卷I的第8章也详细介绍了HDFS的架构。</p>
 
 <p>HDFS的高层设计看起来很简单，主要包含NameNode与DataNode，它们之间的通信，包括客户端与HDFS NameNode服务器的通信则基于TCP/IP。客户端通过一个可配置的TCP端口连接到NameNode，通过ClientProtocol协议与NameNode交互。而DataNode使用DatanodeProtocol协议与NameNode交互。一个远程过程调用(RPC)模型被抽象出来封装ClientProtocol和Datanodeprotocol协议。</p>
@@ -360,14 +285,14 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
 
 <p>通常，一个HDFS Cluter由一个NameNode和多个DataNode组成，且在大多数情况下，会由一台专门的机器运行NameNode实例。下图是HDFS的High Level Architecture：
-<img class="center" src="/images/2013/02/hdfs01.gif"></p>
+{% img center /images/2013/02/hdfs01.gif %}</p>
 
 <div align="center">本图来自<a href="http://www.ibm.com/developerworks/library/wa-introhdfs/">IBM DeveloperWorks</a></div>
 
 
 <p>注意，在这个架构图中，观察各节点之间的通信，容易造成一个误解是NameNode会直接与DataNode通信。实则不然。虽然，NameNode可以看做是DataNode的管理者甚至是仲裁者，但由于DataNode的数量通常很多，且都是分布式部署在不同的机器上，若NameNode需要主动发起对各个DataNode的请求，会导致NameNode的负载过大，且对于网络的要求也极高。因此，在设计上，NameNode不会主动发起RPC，而是响应来自客户端或Datanode的RPC请求。如果NameNode需要获得指定DataNode的信息，则是通过DataNode调用函数后的一个简单返回值。每个DataNode都会维护一个开放的Socket，以支持客户端代码或其他DataNode的读写请求。NameNode知道该Socket的Host与Port。</p>
 
-<p><img class="left" src="/images/2013/02/hdfs02.png">
+<p>{% img left /images/2013/02/hdfs02.png %}
 一个好的架构必然遵循了好的架构原则。HDFS架构有许多值得我们借鉴或参考的设计决策，其中它所遵循的架构原则，对HDFS满足架构目标起到了决定性的作用。这些原则包括：元数据与数据分离；主/从架构；一次写入多次读取；移动计算比移动数据更划算。</p>
 
 <h4>元数据与数据分离</h4>
@@ -393,7 +318,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <p>移动计算比移动数据更划算，即moving computation is cheaper than moving data。对于数据运算而言，越靠近数据，执行运算的性能就越好，尤其是当数据量非常大的时候，更是如此。由于分布式文件系统的数据并不一定存储在一台机器上，就使得运算的数据常常与执行运算的位置不相同。如果直接去远程访问数据，可能需要发起多次网络请求，且传输数据的成本也相当客观。因此最好的方式是保证数据与运算离得最近。这就带来两种不同的策略。一种是移动数据，另一种是移动运算。显然，移动数据，尤其是大数据的成本非常之高。要让网络的消耗最低，并提高系统的吞吐量，最佳方式是将运算的执行移到离它要处理的数据更近的地方，而不是移动数据。</p>
 
 <p>HDFS在改善吞吐量与数据访问性能上还做出了一个好的设计决策，就是数据块的Staging。当客户端创建文件时，并没有立即将其发送给NameNode，而是将文件数据存储到本地的临时文件中。这个操作是透明的，客户端不会觉察，也不必关心。文件的创建事实上是一个流数据的写，当临时文件累计的数据量超过一个数据块大小时，客户端才会联系NameNode。NameNode将文件名插入文件系统的层次结构中，并且分配一个数据块给它。然后返回Datanode的标识符和目标数据块给客户端。接着，客户端将这块数据从本地临时文件上传到指定的Datanode上。当文件关闭时，在临时文件中剩余的没有上传的数据也会传输到指定的Datanode上。然后客户端告诉Namenode文件已经关闭。此时Namenode才将文件创建操作提交到HDFS的文件系统。这个操作的大致时序图如下所示：
-<img class="center" src="/images/2013/02/hdfs03.png"></p>
+{% img center /images/2013/02/hdfs03.png %}</p>
 
 <p>采用这种客户端缓存的方式，可以有效地减少网络请求，避免大数据的写入造成网络堵塞，进而提高网络吞吐量。</p>
 ]]></content>
@@ -404,7 +329,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     <link href="http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software/"/>
     <updated>2013-02-07T15:13:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/07/comments-on-why-we-should-build-software</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/sketch.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/sketch.jpg %}
 微软研究院首席研究员Leslie Lamport发表了文章<a href="http://www.wired.com.edgesuite.net/opinion/2013/01/code-bugs-programming-why-we-need-specs/#more-122883">Why We Should Build Software Like We Build Houses</a>，吐槽了对如今程序员不愿意做分析，画草图，而是直接开始编码的现状。看了这篇文章后，我对Lamport的观点有一些想法，觉得不吐不快。</p>
 
 <p>其实从文章标题以及作者开篇名义提出的问题来看，显然基于一个假设，或者说事先设定的隐喻，那就是用建筑业来形容软件开发。作者认为建筑设计师在修建房屋之前都会绘制一幅详尽的计划（或蓝图），而软件开发人员却并不这样。以两个不同的行业做对比，认为一个行业这么做了，另一个行业不这样做就有问题，这个假设合理吗？虽然，软件行业中所谓Architecture以及Build的概念确乎来自于建筑行业，甚至这种隐喻在许多年前为诸多大师认可，因而提出诸如软件工程等思想；虽然，它山之石可以攻玉，借鉴别的领域的最佳实践，确乎可以帮助软件开发收获灵感，避免去走太多弯路；然而，毕竟二者之间并不能完全划等号。</p>
@@ -431,7 +356,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     <link href="http://agiledon.github.com/blog/2013/02/05/role-of-object/"/>
     <updated>2013-02-05T21:55:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/05/role-of-object</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/roleofobject.png"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/roleofobject.png %}</p>
 
 <p>若要获得良好的对象设计，就必须对职责进行合理的分配。每个对象承担的职责不能太多，也不能太少，恰如其分即可。职责分配如乐谱中对音符的组织，高明的音乐家总是能让不同的音符放在合理的位置，奏成悦耳的心曲，表达音乐家的内心感情。然而，即使设计师明确职责分配的重要性，在面临纷乱复杂的需求时，常常被乱花迷了眼，或者无法识别正确的职责，又或者顾此失彼，将职责放错了位置，变成了对职责混乱的涂鸦。</p>
 
@@ -447,14 +372,14 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <p>首先来看信息持有者。顾名思义，这种角色的对象必然持有相关的信息。不过，俯瞰对象世界，除了某些特殊的行为对象而言，大多数对象都必然持有相关的信息。所以，这里的角色划定，其主要意图在于让设计者明确，与信息相关的行为，如处理信息的方式，信息变化造成的影响等，都应首先考虑是否由该信息的持有者来承担。这近似于Larman在<a href="http://book.360buy.com/10057823.html">Applying UML and Patterns</a>一书中提到的“信息专家模式”。</p>
 
 <p>例如，我们需要设计一个Web服务器，它提供了一个对象HttpProcessor，能够接收由HttpConnector发送来的Socket请求，对Request进行处理，并在处理后将相关信息放入Response中。请求和响应被封装在对应的HttpRequest和HttpResponse对象中。在处理请求和响应信息时，需要对Socket消息进行处理，并为Request和Response对象设置相关属性。我们当然可以在HttpProcessor中处理对这些消息的解析工作，但涉及到Request和Response自身的信息，遵循信息持有者角色的要求，最好还是将这些处理逻辑封装到各自对象中。如下图所示：
-<img class="center" src="/images/2013/02/infoholder.png"></p>
+{% img center /images/2013/02/infoholder.png %}</p>
 
 <p>遵循信息持有者的特征，HttpProcessor、HttpRequest与HttpResponse之间的权责变得更加清晰。此外，这一设计方式还有利于改善性能。某些Http请求解析可能牵涉到系统开销较大的字符串操作，而解析的内容并不是在一开始就需要使用。将解析职责转移到HttpRequest中，就使得HttpProcessor的process()操作可以快速完成，并将相关请求数据流塞到HttpRequest对象中。只有真正需要相关请求信息时，才向HttpRequest对象发出解析的请求消息。这种方式颇像是对象的Lazy Load。</p>
 
 <h4>构造者角色</h4>
 
 <p>构造者角色主要承担对象的创建，以及对复合对象的组装。如果熟悉设计模式，可以发现构造者角色基本上囊括了构造型模式的意图。例如创建对象，组合对象，以及选择对象构造的方式。此外，还有一种特殊的构造者角色对象，即它可能具有双重角色，一方面作为构造者角色，另一方面也作为构造者所创建出来的产品。这种双重角色的构造者角色，常常会形成一条构造链。例如，在JMS中，若要获得Queue对象，就可能由ConnectionFactory对象创建出Connection对象，则通过该对象创建Session对象，最后由Session对象创建的Queue。如下图所示：
-<img class="center" src="/images/2013/02/constructor.png"></p>
+{% img center /images/2013/02/constructor.png %}</p>
 
 <p>为何我们需要构造者角色？毕竟对象自身可以拥有构造函数，以提供给调用者完成对象的创建。通常情况下，之所以引入构造者角色，主要是为了：</p>
 
@@ -469,14 +394,14 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <p>关于服务提供者，一个重要认识是：它能提供具有“业务价值”的行为。所谓“业务价值”，即一定是实现业务逻辑中不可缺少的，且相对独立完整的功能。这就意味着，担任服务提供者角色的对象，常常是一个职责完备地，实现了某个业务关注点的可重用对象。此外，业务价值是有层次之分的。在最外层，可能意味着一个完整的业务流程，此时服务对象暴露给客户端的，是一个封装了服务实现细节的对象（可能是接口）；而为了实现该外层服务，又可能在整个实现中，需要更为细粒度的内层服务对象提供各个实现步骤的支撑。例如系统需要生成税务报表，假设它的业务流程是读取报表数据后，对数据流进行处理，并以HTML格式呈现，然后生成PDF文件。对外而言，税务报表的生成就应该是一个完整的服务，且对于客户端的调用者而言，其实根本不需要了解其实现细节。此时，我们可以定义一个TaxReportGenerator对象，它能够接收报表数据，并生成报表的PDF文件。显然，它具有非常重要的业务价值。</p>
 
 <p>接下来考虑该对象的内部实现。由于报表生成需要执行多个业务步骤，如果将这些职责均交给TaxReportGenerator来处理，无疑会导致该对象承担过重的职责。此外，呈现HTML格式与PDF文件生成对于报表生成而言，不过是整个业务流程中的一环；但从单个职责而言，无疑它们也是独立的。可以设想，倘若系统还有其他业务功能需要生成PDF文件，又或者需要按照规定形式呈现为HTML页面，将这些职责封装到单独的职责中，就可能很好地支持重用。从“业务价值”的角度看，它们无疑具备了服务提供者的能力。整个TaxReportGenerator对象的内部协作如下图所示：
-<img class="center" src="/images/2013/02/serviceprovider.png"></p>
+{% img center /images/2013/02/serviceprovider.png %}</p>
 
 <h4>协调者角色</h4>
 
 <p>协调者有些像设计模式的Mediator模式所要承担的职责，即用于协调对象职责的协作，又或者负责转发或委派请求。协调者是孜孜不倦助人为乐的居委会大妈，既善于也乐于协调邻里之间的纠纷。除了可以以中间人的身份协调对象，从而简化对象之间的协作，以降低复杂的依赖关系外，协调者还能很好地隐藏这些交互细节。这就使得调用者变得简单，还能让这种关系协调的实现集中在一处，即使将来协调关系发生了变化，也可以做到仅修改一处，即可应对变化。从这一点来看，似乎协调者又体现了Facade模式。</p>
 
 <p>在一个大型复杂系统中，提供了许多Web Service。不同的Web Service可能需要支持不同的消费者，而这些服务的部署位置也可能并不相同。消费者需要准确定位到相关服务，然后通过一些相对复杂的实现逻辑，完成对服务的调用。这类逻辑就牵涉到消费者、服务以及服务调用与服务位置之间的协作。如果没有合适的对象去封装，既可能导致细节暴露，增加复杂度，也无法做到有效重用。一旦协作的逻辑发生变化，可能还会导致这种变化蔓延到系统的各个地方。这时，就是体现协调者角色价值所在了。在这个场景下，我们可以引入ServiceLocator对象来负责整个协调逻辑，它能够根据消费者请求的服务类型，定位服务，然后找到服务端口，发送服务请求。下图展示了这种协调逻辑的具体做法，注意不同的服务消费者都经由相同的ServiceLocator角色完成了不同的服务调用：
-<img class="center" src="/images/2013/02/colaborator.png"></p>
+{% img center /images/2013/02/colaborator.png %}</p>
 
 <h4>控制者角色</h4>
 
@@ -485,7 +410,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <p>当然，在设计时，有时似乎也很难泾渭分明地界定这二者。这就好似用例中的使用与扩展关系，许多设计者还在孜孜以求，绞尽脑汁地要分辨出二者的不同，以保证正确地运用用例关系，求得完美的设计，孰知早有用例专家给出忠言，不必一定区分使用与扩展，它对用例的编写不会产生直接的重大影响。参考此例，我也希望设计师不必去钻牛角尖，只需明白此两种角色，其本质还在于隐藏对象的协作或交互细节，降低复杂度，保证重用以及对变化的应对。</p>
 
 <p>在软件设计中，我们经常遇到控制者角色。一个常见的例子是由控制者角色承担判断逻辑，根据不同的请求，经由不同的分支，调用不同的对象来应对此请求。例如在一个系统中，我们需要对页面的内容合法性进行验证。不同的内容对验证的要求不尽相同。一个简单的判断是看内容是否只需要对页面头进行验证。我们在设计时，引入了ValidationProcessor来控制这种验证逻辑。站在调用者的角度，验证的事情交给ValidationProcessor去处理就好。管它是否仅是一个控制枢纽，真正的验证却是它要委派的对象呢？
-<img class="center" src="/images/2013/02/controller.png"></p>
+{% img center /images/2013/02/controller.png %}</p>
 
 <p>当然，在这里的ContentController同样属于控制者角色，它事实上就是MVC模式中的Controller，用于控制Content与ContentView之间的交互。ValidatorProcessor与MVC风马牛不相及，但它仍可以看做是控制者角色。</p>
 
