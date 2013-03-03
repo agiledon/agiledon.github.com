@@ -6,11 +6,11 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>Tag: HDFS - 简单文本</title>
+  <title>模块间的职责分配 - 简单文本</title>
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Tag: HDFS">
+  <meta name="description" content="职责分配不仅限于对象之间。如果将对象看做是细粒度的封装，则模块作为组合多个对象的设计元素，可以看做是粗粒度的封装。倘若在模块之间分配职责失当，带来的影响会比对象职责分配不合理更大。这是因为只要在OO设计中进行了适度的封装，在一定程度上体现了隐藏细节的设计理念，对象的职责分配失当就不会溢出边界， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.comblog/tags/hdfs/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/03/03/assigning-responsibility-between-modules/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -66,36 +66,134 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Tag: HDFS</h1>
+    
+      <h1 class="entry-title">模块间的职责分配</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-03T20:19:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p><img class="center" src="/images/2013/03/module.png"></p>
 
-  
-  <h2>2013</h2>
+<p>职责分配不仅限于对象之间。如果将对象看做是细粒度的封装，则模块作为组合多个对象的设计元素，可以看做是粗粒度的封装。倘若在模块之间分配职责失当，带来的影响会比对象职责分配不合理更大。这是因为只要在OO设计中进行了适度的封装，在一定程度上体现了隐藏细节的设计理念，对象的职责分配失当就不会溢出边界，对其余对象不会产生太大的影响。</p>
 
-<article>
-  
-<h1><a href="/blog/2013/02/16/architecture-of-hdfs/">HDFS的架构</a></h1>
-<time datetime="2013-02-16T15:33:00+08:00" pubdate><span class='month'>Feb</span> <span class='day'>16</span> <span class='year'>2013</span></time>
+<p>模块间的职责分配好似对对象进行一种归类，只有属于同一类别的对象才能被分配到一个模块中。这可以说是对“高内聚”原则的简单理解。注意，模块常常是对架构层次结构的横向切割，不同的模块可能处于不同的逻辑层。因此，大的设计问题可能牵涉到分层问题。从架构层面来讲，或许我们有必要在获得模块的详细设计之前，审慎地给出一个系统逻辑架构，会有助于模块间的职责分配。</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/architecture/'>Architecture</a></span>
-</footer>
+<!--more-->
 
 
-</article>
+<p>与对象职责分配一样，模块间的职责分配也有“坏味道”存在。常见的坏味道就是“循环依赖”，即模块A依赖模块B，模块B依赖模块C，模块C又依赖模块A。这有点像三角恋爱关系，扯不清，理还乱，让人头疼。所以我的一个设计实践，就是从设计一开初，就要绘制软件系统的包图，通过直观的图形来帮助我们识别这种依赖的乱麻。</p>
 
+<p>另一种坏味道我称之为“爱屋及乌”，简单说来，其实就是违背了Robert Martin提出的“包复用原则”，即一个包为了使用另一个包的某一个特性，必须把整个包都放进来，哪怕这个包中的其他特性对于使用的包而言完全无用。这就好像我贪恋钱财，娶了一个垂垂老矣的富婆，为了钱，也不在乎丑陋的容颜和高我数倍的年龄了。</p>
+
+<p>例如在我之前设计的一个系统中，出现了这样的包图：
+<img class="center" src="/images/2013/03/module01.png"></p>
+
+<p>该系统属于基于元数据的报表系统，engine.report包负责读取定义在配置文件中的报表模板，并在运行时绑定数据，最终输出报表。报表的数据则由engine.data包来承担，它会根据配置的元数据生成SQL语句，访问数据库，动态得到报表所需的数据。engine.entity是在之后引入的一个包，它承担了类似ORM的功能，能够将engine.data包返回的数据，通过配置的映射信息，生成Entity对象。而该Entity对象则作为报表数据绑定的基本元素。至于tool.reportdesigner，则是一个Swing界面的报表设计器应用程序，用户通过界面的设计操作，可以生成我们需要的报表模板。</p>
+
+<p>倘若没有绘制这个包图，而是直接阅读代码，或许很难发现这其中蕴含的设计问题。包图清晰直观，首先我们看到了engine.report与engine.entity之间存在双向依赖（它是循环依赖的特殊形式），并在engine.report、engine.entity与engine.data三者之间发现了循环依赖。其次，我们发现tool.reportdesigner依赖于engine.report，但由于它只负责报表模板的设计，并不需要engine.report包中的运行时数据绑定，以及报表导出功能。显然，前者违背了“循环依赖”，后者违背了“爱屋及乌”。</p>
+
+<p>究其原因，我们发现罪魁祸首就在于engine.report包中的xml组件。该组件的功能与配置相关，其中还包含了许多配置在xsd文件中自动生成的jaxb对象。它并不仅仅是Report独有的功能，相反，这个包图的所有包事实上都需要用到这个功能。换言之，这些包均需要依赖于xml。最简洁的改进方案就是将它抽离出来，放到一个单独的包中。改进后的包图如下：
+<img class="center" src="/images/2013/03/module02.png"></p>
+
+<p>为何我将xml设计为infrastructure.xml包？这完全是因为依赖的关系。假设我们将每个依赖都设置其权值为1，则一个包被依赖得越多，其依赖权值就越大。假设这些权值就等同于重量，然后我们设想将这些包都丢到一湖秋水中，分次浮沉。显然，权值越多的包就会慢慢沉淀下去，而权值越少的包最后会浮在上面。我称这种现象为“依赖沉淀”。通过这种方式，可以在一定程度上帮助我们对软件系统的层进行有效划分。
+<img class="center" src="/images/2013/03/module03.png"></p>
+
+<p>依赖管理是开发者可能面临的地狱。如果还加上对各种版本包的依赖，这个地狱就可能处于十八层的水深火热中了。依赖管理是一个大课题，但如果模块间的职责分配合理，或许会是一个不错的开始。</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-03T20:19:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/design/'>Design</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/design/'>Design</a>, <a class='category' href='/blog/tags/oo/'>OO</a>, <a class='category' href='/blog/tags/responsibility/'>Responsibility</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2013/03/03/assigning-responsibility-between-modules/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2013/03/03/assigning-responsibility-between-modules/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/02/harvest-from-reading/" title="Previous Post: 阅读的设计体悟">&laquo; 阅读的设计体悟</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -224,7 +322,10 @@
       var disqus_shortname = 'agiledon';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/03/03/assigning-responsibility-between-modules/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/03/03/assigning-responsibility-between-modules/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Geek | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/geek/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-03T15:25:37+08:00</updated>
+  <updated>2013-03-03T21:29:42+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,17 +18,17 @@
     <link href="http://agiledon.github.com/blog/2012/12/21/geek-pictures-in-brisbane/"/>
     <updated>2012-12-21T17:01:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/21/geek-pictures-in-brisbane</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2012/12/spring.jpg 567 340 %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/spring.jpg" width="567" height="340">
 这是我在今年四月到澳洲Brisbane街头拍到的一组照片，Geek们，看到这些名称，是否有些熟悉的感觉呢？</p>
 
 <!--more-->
 
 
-<p>{% img center /images/2012/12/fitness.jpg 567 340 %}</p>
+<p><img class="center" src="/images/2012/12/fitness.jpg" width="567" height="340"></p>
 
-<p>{% img center /images/2012/12/hudson.jpg 567 340 %}</p>
+<p><img class="center" src="/images/2012/12/hudson.jpg" width="567" height="340"></p>
 
-<p>{% img center /images/2012/12/groovy.jpg 425 709 %}</p>
+<p><img class="center" src="/images/2012/12/groovy.jpg" width="425" height="709"></p>
 ]]></content>
   </entry>
   

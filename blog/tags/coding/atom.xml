@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-03T15:25:37+08:00</updated>
+  <updated>2013-03-03T21:29:42+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2012/12/21/literature-and-software/"/>
     <updated>2012-12-21T18:59:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/21/literature-and-software</id>
-    <content type="html"><![CDATA[<p>{% img left /images/2012/12/dafenqi.jpg 182 276 %}</p>
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2012/12/dafenqi.jpg" width="182" height="276"></p>
 
 <p> 卡尔维诺在哈佛大学的文学讲座（即诺顿论坛，是为纪念美国著名学者诺顿开设的，每年邀请世界文化名人作讲座，艾略特、博尔赫斯也曾获邀参加诺顿讲座）被他的妻子编成了一本独立的书《美国讲稿》。这本书展现了卡尔维诺的文学精神，体现了他的文学态度和气质。不过，我在阅读该书时，却发现了一些与编程有关的内容。</p>
 
@@ -55,7 +55,7 @@
 
 <p>皮亚杰观点的哲学蕴含是“从噪音到有序”，即火焰；乔姆斯基观点的哲学蕴含是“自我编制系统”，即晶体。</p>
 
-<p>{% img right /images/2012/12/america.jpg 189 266 %}</p>
+<p><img class="right" src="/images/2012/12/america.jpg" width="189" height="266"></p>
 
 <p>这仿佛让我洞悉了面向对象设计的玄机。火焰代表了接口，无论如何变化，其外部形式总是不变。接口的引入使得软件设计可以从混沌（即皮亚杰所说的“噪音”）走向有序。至于晶体，则是遵循了信息专家模式的对象，因为它封装了数据以及操作该数据的行为，使得它具有了自我判断的意识。它的表面结构仍然是稳定的，却有一套自我约束的规则。晶体看起来是宁静的，而火焰却如此的灵活。融合晶体与火焰的系统，是否代表了对变化的封装，以及对不变概念的抽象呢？</p>
 
