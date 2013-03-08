@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-03T21:29:42+08:00</updated>
+  <updated>2013-03-08T08:55:15+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,369 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Nutch Crawler抓取数据并存储到MySQL]]></title>
+    <link href="http://agiledon.github.com/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql/"/>
+    <updated>2013-03-07T22:17:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql</id>
+    <content type="html"><![CDATA[<p>Apache Nutch是在Java平台上开发的开源网络爬虫工具。按照<a href="http://wiki.apache.org/nutch/NutchTutorial">Nutch官方网站</a>给出的向导，通过使用Nutch命令，可以比较容易地抓取指定种子网站的数据。不过，若是要通过它提供的Java API，以编程方式抓取数据，并存储到指定的数据存储，如MySQL，则有一些技巧或者说秘诀需要注意。经过这几天抽空进行的试验，并查询了相关资料，完成了指定网站数据的抓取。</p>
+
+<p>首先，需要准备好Nutch。目前Nutch的最新版本是2.1，在官方网站可以下载到2.1版本的源代码。奇怪的是，网站并未提供该版本的Bin下载。我们若是要通过Java API调用，则需要依赖于Nutch需要的Jar包。我们可以直接在自己的Java项目中导入这些Jar包，也可以在项目的pom.xml文件中指定Maven的Repository。</p>
+
+<!--more-->
+
+
+<p>要直接导入Jar包，对于2.1版本而言，因为仅提供了源代码，所以在下载了Nutch之后，需要使用ant命令编译。编译后的Jar包会放在${NUTCH_HOME}下的runtime/local/lib下。如果想在pom.xml下管理依赖，而非直接导入，则需要查看Nutch 2.1究竟依赖了哪些Java库，并要了解这些库的版本。这个依赖管理还是比较麻烦的。所以，我在这里直接给出pom.xml文件。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span>
+</span><span class='line'>         <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+</span><span class='line'>         <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;groupId&gt;</span>NutchSample<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>NutchSample<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;repositories&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;repository&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;id&gt;</span>maven-restlet<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;name&gt;</span>Public online Restlet repository<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;url&gt;</span>http://maven.restlet.org<span class="nt">&lt;/url&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/repository&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/repositories&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>4.11<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.apache.nutch<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>nutch<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>2.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.hsqldb<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>hsqldb<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>2.2.8<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.apache.solr<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>solr-core<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>3.4.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.apache.hadoop<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>hadoop-core<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.0.3<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.apache.hadoop<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>hadoop-test<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.0.3<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.slf4j<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>slf4j-log4j12<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.6.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.apache.gora<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>gora-core<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>0.2.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.apache.gora<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>gora-sql<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>0.1.1-incubating<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.jdom<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>jdom<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.elasticsearch<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>elasticsearch<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>0.19.4<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.restlet.jse<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>org.restlet<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>2.0.5<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.restlet.jse<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>org.restlet.ext.jackson<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>2.0.5<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>mysql<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>mysql-connector-java<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>5.1.18<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'><span class="nt">&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，其中的mysql是后面存储抓取的数据时使用。pom.xml文件前面的maven-restlet的repository是restlet以及restlet.ext.jackson是独有的。因为这两个库必须在这个Repository下才能下载Jar包。</p>
+
+<p>现在，假设我们已经通过maven建立了一个空白的Java项目，并且已经导入了依赖包，或者通过pom.xml下载了这些Jar包。接下来需要执行以下步骤：</p>
+
+<h4>建立种子文件</h4>
+
+<p>在项目的根目录下，建立urls目录，然后在目录下建立一个文本文件，文件名为seed.txt。内容是你要爬取的网站域名，例如：http://agiledon.github.com。如果要抓取多个网站，可以每行放一个网站域名。</p>
+
+<h4>复制配置文件</h4>
+
+<p>在项目main\resources目录下，创建文件夹nutchconf（文件夹名其实无关紧要，只要保证其下的文件都在classpath下即可。一个简单的做法是将resource目录设置为source root），然后到${NUTCH_HOME}\runtime\local\conf目录下，将里面所有的文件拷贝到你刚刚创建的文件夹下。</p>
+
+<h4>修改配置文件</h4>
+
+<p>首先，修改nutch-site.xml文件，将其设置为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;name&gt;</span>http.agent.name<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;value&gt;</span>my nutch spider<span class="nt">&lt;/value&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/property&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;name&gt;</span>parser.character.encoding.default<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;value&gt;</span>utf-8<span class="nt">&lt;/value&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;description&gt;</span>The character encoding to fall back to when no other information
+</span><span class='line'>is available<span class="nt">&lt;/description&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/property&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;name&gt;</span>storage.data.store.class<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;value&gt;</span>org.apache.gora.sql.store.SqlStore<span class="nt">&lt;/value&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;description&gt;</span>Default class for storing data<span class="nt">&lt;/description&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/property&gt;</span>
+</span><span class='line'><span class="nt">&lt;/configuration&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改gora.properties，增加mysql的设置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gora.sqlstore.jdbc.driver=com.mysql.jdbc.Driver
+</span><span class='line'>gora.sqlstore.jdbc.url=jdbc:mysql://localhost:3306/nutch?createDatabaseIfNotExist=true
+</span><span class='line'>gora.sqlstore.jdbc.user=root
+</span><span class='line'>gora.sqlstore.jdbc.password=</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，jdbc.url值中的nutch为MySQL中数据库的名字，你可以根据自己的需要设置数据库名。前提是你要在MySQL中创建数据库。url值的createDatabaseIfNotExist=true，指代的是如果数据库中不存在该数据库，在运行Crawler时会自动创建。但是，对于MySQL而言，由于编码问题，可能会导致一些问题出现。因此，还是建议由自己创建。创建脚本在后面的链接提供。</p>
+
+<p>接下来，打开gora-sql-mapping.xml，将WebPage映射文件的primarykey的length修改为767。</p>
+
+<h4>准备MySQL数据库</h4>
+
+<p>这里不再介绍如何安装MySQL数据库，如果是Mac Moutain Lion下安装MySQL，请参考我的博文《<a href="http://agiledon.github.com/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/">使用HomeBrew在Moutain Lion上安装MySQL</a>》。</p>
+
+<p>因为编码的问题，要准备MySQL数据库还是一件麻烦事。在网上找到一篇文章<a href="http://nlp.solutions.asia/?p=180">Setting up Nutch 2.1 with MySQL to handle UTF-8</a>，很好地讲解了相关注意事项，并提供了脚本。我这里就不再赘述了。事实上，我们完全可以按照这篇文章来实现运用Nutch命令的方式抓取数据，并存储到MySQL。</p>
+
+<h4>调用Nutch Java API</h4>
+
+<p>Nutch本身提供了Crawler类来执行数据爬虫的命令。我们可以使用Hadoop的ToolRunner来运行Crawl工具。代码如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCrawler</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">crawlArg</span> <span class="o">=</span> <span class="s">&quot;urls -depth 3 -topN 5&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="c1">// Run Crawl tool</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">ToolRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">NutchConfiguration</span><span class="o">.</span><span class="na">create</span><span class="o">(),</span> <span class="k">new</span> <span class="n">Crawler</span><span class="o">(),</span>
+</span><span class='line'>                    <span class="n">tokenize</span><span class="o">(</span><span class="n">crawlArg</span><span class="o">));</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>            <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">tokenize</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">StringTokenizer</span> <span class="n">tok</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">tokens</span><span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">tok</span><span class="o">.</span><span class="na">countTokens</span><span class="o">()];</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">tok</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">tokens</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">tok</span><span class="o">.</span><span class="na">nextToken</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">tokens</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>复制插件</h4>
+
+<p>因为Nutch在抓取数据时，需要对数据进行解析。解析过程中要调用插件urlnormalizer-basic的UrlNormalizer。所以，我们还需要将对应版本Nutch下的插件复制到我们的项目中来。你可以直接在项目的根目录下创建plugins目录，并将其设置为source root，然后将${NUTCH_HOME}\runtime\local\plugins下的插件复制到这个目录中。</p>
+
+<p>接下来就可以运行MyCrawler应用了。注意，在运行该程序时，你一定要启动你的MySQL数据库。在Mac下，可以输入命令mysql.server start来启动。你可能会发现项目无法编译成功，因为某些插件依赖的对象无法找到。我猜测在运行ant时，并没有编译这些插件，使得这些插件的依赖库并没有完全获得。我采取了一种粗暴的做法，就是直接将这些无法编译通过的插件直接删除。至少，对于我们这个简单的抓取工作而言，事实上用不了这么多插件。</p>
+
+<p>运行完成后，你可以到MySQL数据库下查询webpage数据表。如果运行成功，可以查询到表中的数据记录。如果运行失败，一方面可以在IDE工具的控制台上看到一些信息。另一方面也可以查询日志。日志记录会更详细，该文件可以在当前项目的根目录下找到，即hadoop.log日志文件。我在之前碰到的一个问题就是内存不够的异常，控制台上并未显示该信息，但在hadoop.log中能够找到，帮助我定位了问题。运行这样一个普通任务，把内存设置为512M就足够了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[模块间的职责分配]]></title>
@@ -2595,66 +2958,6 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 <p><strong>插件</strong></p>
 
 <p>在<a href="http://octopress.org/docs/">Octopress官方网站</a>提供了一些插件说明和相关链接，但还有一些第三方的插件是放在这个<a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">网站链接</a>下的。我自己也写了一个针对新浪微博的插件，会在<a href="http://agiledon.github.com/blog/2012/12/26/weibo-plugin-for-octopress/">下一篇博客</a>中详细介绍。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[文学与软件]]></title>
-    <link href="http://agiledon.github.com/blog/2012/12/21/literature-and-software/"/>
-    <updated>2012-12-21T18:59:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/12/21/literature-and-software</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://agiledon.github.com/images/2012/12/dafenqi.jpg" width="182" height="276"></p>
-
-<p> 卡尔维诺在哈佛大学的文学讲座（即诺顿论坛，是为纪念美国著名学者诺顿开设的，每年邀请世界文化名人作讲座，艾略特、博尔赫斯也曾获邀参加诺顿讲座）被他的妻子编成了一本独立的书《美国讲稿》。这本书展现了卡尔维诺的文学精神，体现了他的文学态度和气质。不过，我在阅读该书时，却发现了一些与编程有关的内容。</p>
-
-<p>1、文学中的重构</p>
-
-<p> 达芬奇在《大西洋草图》中记述了他幻想中海怪的形象，进行了前后三次重构。最初的描述是：</p>
-
-<p><strong>啊，人们多次在波浪翻滚的广阔海洋之中看到你，看到你那长满鬃毛的黑色背脊，你像一座大山，傲慢地徐徐前进！</strong></p>
-
-<!--more-->
-
-
-<p>然后，他试图使海怪的行动生动些，加了个动词“翻转”：</p>
-
-<p><strong>啊，人们多次在波浪翻滚的广阔海洋之中看到你，看到你在海水中傲慢地徐徐翻转身躯，看见你那长满鬃毛的黑色背脊。你像一座大山屹立在海浪之上！</strong></p>
-
-<p>然而，他觉得“翻转”这个词削弱了他想留给人们的那种雄伟与庄严的印象，于是选择了“分开”这个动词，并改变了句子结构，使句子变得更紧凑，更有节奏。</p>
-
-<p><strong>啊，人们多次在波浪翻滚的广阔海洋中看到你！你像一座山屹立在海浪之上。你傲慢地徐徐前进，用那长满鬃毛的黑色背脊把海水分成两半!</strong></p>
-
-<p>在文学创作中，重构其实会经常发生，这源于作家对文学作品高质量追求的精益求精，他们常常通过修改句式，修辞手法或改变词语来改善文字，使之体现恰如其分的美。编码艺术同样如此，即使是代码的结构，以及变量、方法和类的命名，排版样式，只要给予足够的重视，锤炼这方面的技能，坚持重构，就能改善编码质量。</p>
-
-<p>2、封装与接口</p>
-
-<p>卡尔维诺在“精确”一章中引述了哲学家们对语言和外部世界关系的思考：</p>
-
-<p><strong>使用语言是对事物的不断追求，不是渐渐接近事物的本质而是接近事物那无休止的变化，接近事物那多种多样的、无穷无尽的表面。正如霍夫曼斯塔尔所说：“深层应该掩盖起来。掩盖在哪里？掩盖在表层下面。” 维特根斯坦走得更远，他说：“凡被掩盖的东西，我们都没有兴趣。”</strong></p>
-
-<p>在软件开发中，我们常常运用封装来隐藏内部的实现细节。它带来的好处是使得调用变得简单，重用成为可能，很好地隔离了内部实现的变化。当然，文学更善于挖掘内部的玄奥，却常常使用抽象的语言描述出一种晦涩，试图掩盖这种玄奥，以此追求一种寻找“高山流水”知音般心灵激荡的玄妙与浃肌沦髓。</p>
-
-<p>文学也尝试用变化去处理变化，这似乎矛盾，却恰好是文学艺术让人着迷的地方。软件又何尝不是如此。卡尔维诺看到了两种变与不变的模式：</p>
-
-<p>最近我偶然读到生物形成过程的模式：“一边是晶体（象征表面结构稳定而规则），一边是火焰（虽然它的内部在不停地激荡，但外部形式不变）。”……火焰与晶体这两种形象代表了生物学上的两种选择。</p>
-
-<p>皮亚杰观点的哲学蕴含是“从噪音到有序”，即火焰；乔姆斯基观点的哲学蕴含是“自我编制系统”，即晶体。</p>
-
-<p><img class="right" src="http://agiledon.github.com/images/2012/12/america.jpg" width="189" height="266"></p>
-
-<p>这仿佛让我洞悉了面向对象设计的玄机。火焰代表了接口，无论如何变化，其外部形式总是不变。接口的引入使得软件设计可以从混沌（即皮亚杰所说的“噪音”）走向有序。至于晶体，则是遵循了信息专家模式的对象，因为它封装了数据以及操作该数据的行为，使得它具有了自我判断的意识。它的表面结构仍然是稳定的，却有一套自我约束的规则。晶体看起来是宁静的，而火焰却如此的灵活。融合晶体与火焰的系统，是否代表了对变化的封装，以及对不变概念的抽象呢？</p>
-
-<p>3、纠缠的细节</p>
-
-<p>薄伽丘在一篇故事中（《十日谈》第六天第一个故事）谈到讲故事的艺术，正好回顾了这种感觉。</p>
-
-<p>**“奥丽达太太，要是你不讨厌的话，我想讲一个世界上最大的故事给你听，叫你听得津津有味，就像骑了一匹马一样，往了路途的遥远。”</p>
-
-<p>“啊，再好没有了，先生，”那位太太说，“请你快给我讲一个故事吧。”</p>
-
-<p>于是绅士开始讲故事给她听。故事倒很精彩，可惜他讲故事的本领，只抵得上他使用他身边那把佩剑的工夫，实在太不高明，时常把一句话颠来倒去的说了又说，甚至说上六七遍，过了一会，忽然又倒过头来说道：“哎呀，我说错啦！”对于故事中的人名地名常常纠缠不清，张冠李戴，弄得别人莫名奇妙。他那说话的声气又跟故事里的人物、情景一点都配不上，真是听得奥丽达太太头晕目眩，冷汗一身，只觉得大祸临头，连命都快要保不住了。到最后，她忍无可忍，又看见那位绅士正愈说愈糊涂，已经迷了路，失了方向，只是在那儿团团打转，再也跑不出来了，就和悦地对他说：“先生，你那匹马跑得太野，请你还是让我下了马吧。”**</p>
-
-<p>在软件设计过程中，最要紧的是思路要清晰，既不能迷失在需求分析中，也不能迷失在复杂的实现细节中。最好能够结合实际的场景，列出我们要达到的目标，需要完成的任务，有序地进行分析和设计。编写代码时，切忌功能之间互相纠缠，虽然体现了对象的协作，但由于职责分配混乱，使得对象之间的协作变得无规律可循，颠三倒四，最后让人忍无可忍，也只能翻身下马了。</p>
 ]]></content>
   </entry>
   
