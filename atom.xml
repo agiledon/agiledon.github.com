@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-08T08:55:15+08:00</updated>
+  <updated>2013-03-14T21:37:37+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,243 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[新人培养日记(一)]]></title>
+    <link href="http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man/"/>
+    <updated>2013-03-14T20:37:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/03/growup.jpg">
+我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。它要求创建一个电子银行系统，提供银行的一些基本功能，例如客户管理、存取款等业务逻辑。</p>
+
+<p>最初我并不知道新手的真实水平，不过，可以假设他只具备基础的Java编程知识，对TDD、Refactoring以及OO有最初步的了解，但处于懵懵懂懂之间。我最初希望新手仅仅针对业务层进行设计与编码，但新手坚持要加上数据库访问以及Web页面。我认为这种做法有利于新手学习到更多的Java框架和库，便同意了这种请求。</p>
+
+<!--more-->
+
+
+<p>我给新人简单地讲了前面两个Story的需求，就将这个项目扔给新手，一周后，我再去Review他提交的代码。结果发现了一大堆问题。</p>
+
+<p>首先，项目没有使用任何构建工具，例如Maven或者Gradle。项目依赖的一些Java包，例如JUnit和Mockito，使用了直接依赖的方式。没有构建工具来创建构建脚本，就无法使用最快捷的方式来编译、构建以及运行测试，从而使得开发者懒于在提交前进行构建，以确保代码没有引入问题。没有自动化构建，更谈不上持续集成了（我打算在项目中期要求新手搭建CI环境）。</p>
+
+<p><img class="center" src="http://agiledon.github.com/images/2013/03/coach01.png">
+新手对代码包的划分，以及相关类的命名，有些惨不忍睹。上图是对该项目包结构以及相关类分布的截图。infoTracker包的命名让人觉得莫名其妙，打开其中的类查看代码，发现它事实上是调用DBTransaction类，执行对数据表的CRUD操作。例如代码：</p>
+
+<figure class='code'><figcaption><span>infoTracker.CustomerAccountUpdater.java </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerAccountUpdater</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">DBTransaction</span> <span class="n">transaction</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DBTransaction</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">addBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">transaction</span><span class="o">.</span><span class="na">addBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerBalanceInvalid</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">transaction</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>database包的DBTransaction类的命名更是容易引起歧义，以为是对事务的处理，实则是DAO对象：</p>
+
+<figure class='code'><figcaption><span>database.DBTransaction.java </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBTransaction</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">connection</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">PreparedStatement</span> <span class="n">pstmt</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">DBTransaction</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">connection</span> <span class="o">=</span> <span class="n">DBConnection</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">nickname</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">Date</span> <span class="n">dateOfBirth</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">properName</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getProperName</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">Date</span> <span class="n">joiningDate</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getJoiningDate</span><span class="o">();</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">();</span>
+</span><span class='line'>        <span class="kt">boolean</span> <span class="n">isBonusAdded</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">isBonusAdded</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;insert into userinfo values (?, ?, ?, ?, ?, ?)&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nickname</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">dateOfBirth</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">properName</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">joiningDate</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setDouble</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">balance</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setBoolean</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">isBonusAdded</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>新手并没有使用我建议的Spring JDBC Template，而是直接使用了JDBC，因而充斥了大量的冗余代码。再看他实现的DBConnection，居然将连接的相关属性硬编码到Java类中了：</p>
+
+<figure class='code'><figcaption><span>database.DBConnection.java </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBConnection</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">conn</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="nf">getConnection</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">driver</span> <span class="o">=</span> <span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;jdbc:mysql://127.0.0.1:3306/test_01&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">driver</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">disconnect</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再看测试，没有单元测试和集成测试的概念。一些本来可以进行单元测试的逻辑，例如针对Customer Nickname的验证逻辑，并没有得到足够的测试覆盖。由于没有构建脚本帮助搭建本地测试环境，在获得系统源代码后，根本无法运行集成测试。</p>
+
+<p>整体来看，新手对一个项目如何进行分层以及分包缺乏基本的概念，没有自动化构建的意识。对于如何编写数据库访问的类也缺乏足够的知识。不了解单元测试与集成测试之间的区别，没有开发环境和测试环境的基本认识。</p>
+
+<p>我首先考虑引入gradle实现基本的自动化构建，它可以通过引入一些插件就可以比较容易地实现java编译、测试以及自动化打包的功能，还能比较容易地运行Jetty。</p>
+
+<figure class='code'><figcaption><span>build.gradle </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;idea&#39;</span>
+</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;java&#39;</span>
+</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;war&#39;</span>
+</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;jetty&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">repositories</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mavenCentral</span><span class="o">()</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">compile</span> <span class="o">(</span>
+</span><span class='line'>            <span class="s1">&#39;joda-time:joda-time:2.1&#39;</span>
+</span><span class='line'>    <span class="o">)</span>
+</span><span class='line'>    <span class="n">testCompile</span> <span class="o">(</span>
+</span><span class='line'>            <span class="s1">&#39;junit:junit:4.11&#39;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s1">&#39;org.mockito:mockito-all:1.9.5&#39;</span>
+</span><span class='line'>    <span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我修改了之前定义的infoTracker包，将其重命名为repository包，并放到domain包下，并对其下的类也同样进行了重命名。修改后的包结构如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2013/03/coach02.png"></p>
+
+<p>我没有修改数据库访问层的代码，而是要求新手使用JDBC Template，并着重给他讲解了数据库访问的基础知识，并要求他将数据库属性放置到配置文件中。我想，到了下一周，他又会提交一份什么样的代码呢？</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Nutch Crawler抓取数据并存储到MySQL]]></title>
@@ -2805,159 +3042,6 @@ post_template: 我在agiledon.github.com上发表了最新博客《%{blog_title}
 </code></pre>
 
 <p>它就会自动将最新博客的标题与URL按照你事先设定的模板内容，发布到你的新浪微博中。一旦发布成功，在控制台下会显示“post successful!”</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Octopress博客问题解决方案与技巧]]></title>
-    <link href="http://agiledon.github.com/blog/2012/12/25/octopress-issues-solution-and-tips/"/>
-    <updated>2012-12-25T09:14:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/12/25/octopress-issues-solution-and-tips</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://agiledon.github.com/images/2012/12/octopress.jpg" width="259" height="154"></p>
-
-<p>在GitHub上创建了自己的博客后，先后在Jekyll和Octopress之间来回折腾了好一段时间。之前打算直接使用Jekyll提供的博客模板，后来觉得太费神，看到Octopress还不错，且它也是基于Jekyll，并能非常方便地部署到GitHub上。经过最初的安装到对博客的深入改造，目前我的博客需要的功能已经大致完成。在这个过程中，也碰到了许多问题。通过搜索Google以及自己阅读Octopress代码，找到了对应的解决办法。此外，也有一些小技巧的积累。考虑到还有许多正在使用或想要使用Octopress的朋友，因此在这里集中分享一下。</p>
-
-<!--more-->
-
-
-<p><strong>不能在ZSH中输入命令的问题</strong></p>
-
-<p>Octopress提供了许多Rake任务，可以方便地完成一些操作。常用的命令是rake new_post[&#8220;title&#8221;]。但是在ZSH下，输入这样的命令，会提示错误：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>zsh: no matches found: new_post[...]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>原因是诸如[]之类的不是正确的命令字符。当然，我们也可以使用转义符来解决这一问题。但每次都需要敲入转义符，实在是太麻烦了。解决方案是在~/.zshrc文件下，加入这样一行内容：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>alias rake="noglob rake"</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>解决中文乱码问题</strong></p>
-
-<p>Octopress要创建一篇博客，可以直接运行rake new_post[&#8220;title&#8221;]，它会在source/_post下创建一个markdown文件。同时，它会将你输入的title作为blog的链接URL。我们可以通过一些工具，例如EMacs或者MouApp（在Mac OS下）打开该文件进行编辑。但是，当我将markdown文件打开，修改title为中文，且输入中文博客时，再运行rake generate生成博客页面时，会报告编码错误。信息为：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gems/ruby-1.9.2-p290/gems/jekyll-0.11.0/lib/jekyll/convertible.rb:32:in `read_yaml': invalid byte sequence in US-ASCII (ArgumentError)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这是因为jekyll代码没有很好地支持多种编码的缘故。解决办法是找到提示信息中的convertible.rb文件，将第29行的如下代码：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">name</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>修改为：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">name</span><span class="p">),</span> <span class="ss">:encoding</span> <span class="o">=&gt;</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有的<a href="http://jokry.com/2012/03/08/octopress/">博客</a>还提到ruby环境的问题。我并没有碰到。我使用的版本是ruby 1.9.3。如果遇到类似问题，根据这篇博客的讲解，可以修改ruby环境下的setup_environment.bat文件，在文件最后加入2行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>set LC_ALL=en_US.UTF-8
-</span><span class='line'>set LANG=en_US.UTF-8</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>中文博客名称的问题</strong></p>
-
-<p>前面已经提到，rake new_post[&#8220;&#8221;]命令会将双引号引起来的标题作为blog链接的一部分。这就必然导致一个问题，就是我们无法在new_post[&#8220;&#8221;]命令中直接使用中文作为博客的标题。带来的问题是，我们每次都需要在创建了博客之后，再打开markdown文件，去修改文件前方的title内容为中文。这无疑增加了工作量。解决的办法很简单，因为new_post就是一个rake任务而已，我们可以参照该任务，创建一个自己的任务，添加一个新的参数alias，将它作为我们需要的中文标题。</p>
-
-<p>打开在octopress根目录下的Rakefile文件，在文件末尾增加如下代码：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">desc</span> <span class="s2">&quot;Begin a new post in </span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2"> with Alias&quot;</span>
-</span><span class='line'><span class="n">task</span> <span class="ss">:post</span><span class="p">,</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:title_alias</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
-</span><span class='line'>  <span class="k">raise</span> <span class="s2">&quot;### You haven&#39;t set anything up yet. First run `rake install` to set up an Octopress theme.&quot;</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">directory?</span><span class="p">(</span><span class="n">source_dir</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">mkdir_p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="n">args</span><span class="o">.</span><span class="n">with_defaults</span><span class="p">(</span><span class="ss">:title</span> <span class="o">=&gt;</span> <span class="s1">&#39;new-post&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">title</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">title</span>
-</span><span class='line'>  <span class="n">title_alias</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">title_alias</span>
-</span><span class='line'>  <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">to_url</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">new_post_ext</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-</span><span class='line'>    <span class="nb">abort</span><span class="p">(</span><span class="s2">&quot;rake aborted!&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">ask</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. Do you want to overwrite?&quot;</span><span class="p">,</span> <span class="o">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="o">]</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Creating new post: </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">post</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
-</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;layout: post&quot;</span>
-</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;title: </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">title_alias</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
-</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;date: </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;comments: true&quot;</span>
-</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;categories: &quot;</span>
-</span><span class='line'>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>新的post任务接收两个参数，第一个参数与之前的new_post任务需要的参数完全相同，第二个参数alias就可以设置到markdown文件的title:中。例如我们要建立一个博客，标题为“如何建立Octopress博客”，则可以输入命令：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake post["How to create octopress blog","如何建立Octopress博客"]</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注意，除了第二个参数引号内的内容可以用中文外，其他字符包括双引号、逗号和中括号都应该是Utf-8字符。此外，Title和Alias之间用“,”隔开，“,”后不能加空格。</strong></p>
-
-<p><strong>图片问题</strong></p>
-
-<p>加入图片在Octopress中，支持的Markdown语法为：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{% img [position] [url] [width] [height] %}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>position可以设置为left，right或center。url可以是网上的图片url。如果是自己博客的图片，通常建议放在source/images目录下。为了将来更好地维护，建议按照年和月建立两层目录，如2012/12。因为rake generate命令会自动生成博客，放在source/images目录下的图片也会被复制过去。因而在markdown的img语法中，图片的url应该是/images/2012/12/picture.jpg。</p>
-
-<p><strong>代码问题</strong></p>
-
-<p>Octopress支持的代码高亮有很多。我个人还是比较喜欢直接用codeblock标签。虽然每次敲入这个codeblock不太方便，但它胜在灵活见解。例如，粘贴的代码为ruby语言，就可以在代码片段前后分别加上：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{% codeblock lang:ruby %}
-</span><span class='line'># Here is ruby source code
-</span><span class='line'>{% endcodeblock %}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>摘要问题</strong></p>
-
-<p>如果希望在首页只显示一部分内容，例如摘要，也非常简单。只需要在你希望首页显示的内容最后，输入：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;!--more--></span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>插件</strong></p>
-
-<p>在<a href="http://octopress.org/docs/">Octopress官方网站</a>提供了一些插件说明和相关链接，但还有一些第三方的插件是放在这个<a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">网站链接</a>下的。我自己也写了一个针对新浪微博的插件，会在<a href="http://agiledon.github.com/blog/2012/12/26/weibo-plugin-for-octopress/">下一篇博客</a>中详细介绍。</p>
 ]]></content>
   </entry>
   
