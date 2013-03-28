@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>简单文本</title>
+  <title>新手培养日记(二) - 简单文本</title>
   <meta name="author" content="张逸">
 
   
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.com/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -65,15 +65,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/03/28/diary-2-for-coaching-fresh-man/">新手培养日记(二)</a></h1>
+      <h1 class="entry-title">新手培养日记(二)</h1>
     
     
       <p class="meta">
@@ -91,14 +88,14 @@
 
 <time datetime="2013-03-28T20:30:00+08:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
         
-         | <a href="/blog/2013/03/28/diary-2-for-coaching-fresh-man/#disqus_thread">Comments</a>
+         | <a href="#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p><img class="center" src="/images/2013/03/learning_perception.jpg">
+<div class="entry-content"><p><img class="center" src="/images/2013/03/learning_perception.jpg">
 几天后，新手又一次提交了一份代码。由于改动较大，新手重新创建了一个项目。在这份代码中，新手接受了我的建议，改为使用Spring提供的JdbcTemplate。包的结构也得到了一定程度的改善。这充分说明他认识到了问题所在，并能够快速准确地采取行动去纠正这些问题。但或许是我提出的问题太多，给出的建议不够具体，在新提交的这份代码中，我还是看到了一些问题，且某些问题在上一次Review代码时，我曾经提及。</p>
 
 <p>来看看如下两段代码。首先，是CustomerService，它定义了目前Story要求的基本业务：</p>
@@ -301,70 +298,16 @@
 
 <p>对于许多OO初学者而言，职责不清是最容易犯下的毛病。要么就是恨不得把所有内容都塞给一个类；要么就是张冠李戴，随着性子乱分配职责，全然不考虑每个对象的感受。我常常说，对象是有意识的生物，这样不尊重对象搞乱分配，迟早这些对象会造反。</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/19/hadoop-mapreduce-skillset/">Hadoop MapReduce技巧</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
 
-<time datetime="2013-03-19T13:19:00+08:00" pubdate data-updated="true">Mar 19<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/19/hadoop-mapreduce-skillset/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/2013/03/mapreduce.jpg">
-我在使用Hadoop编写MapReduce程序时，遇到了一些问题，通过在Google上查询资料，并结合自己对Hadoop的理解，逐一解决了这些问题。</p>
-
-<h4>自定义Writable</h4>
-
-<p>Hadoop对MapReduce中Key与Value的类型是有要求的，简单说来，这些类型必须支持Hadoop的序列化。为了提高序列化的性能，Hadoop还为Java中常见的基本类型提供了相应地支持序列化的类型，如IntWritable，LongWritable，并为String类型提供了Text类型。不过，这些Hadoop内建的类型并不足以支持真实遇到的业务。此时，就需要自定义Writable类，使得它既能够作为Job的Key或者Value，又能体现业务逻辑。</p>
-
-<p>假设我已经从豆瓣抓取了书籍的数据，包括书籍的Title以及读者定义的Tag，并以Json格式存储在文本文件中。现在我希望提取这些数据中我感兴趣的内容，例如指定书籍的Tag列表，包括Tag被标记的次数。这些数据可以作为向量，为后面的数据分析提供基础数据。对于Map，我希望读取Json文件，然后得到每本书的Title，以及对应的单个Tag信息。作为Map的输出，我希望是我自己定义的类型BookTag。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/19/hadoop-mapreduce-skillset/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/16/old-and-reclusion-and-fight/">苍老与隐居以及战斗</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -376,380 +319,59 @@
   
 
 
-<time datetime="2013-03-16T21:47:00+08:00" pubdate data-updated="true">Mar 16<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/16/old-and-reclusion-and-fight/#disqus_thread">Comments</a>
-        
-      </p>
+<time datetime="2013-03-28T20:30:00+08:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/coach/'>Coach</a>, <a class='category' href='/blog/tags/coding/'>Coding</a>, <a class='category' href='/blog/tags/java/'>Java</a>, <a class='category' href='/blog/tags/refactoring/'>Refactoring</a>, <a class='category' href='/blog/tags/tdd/'>TDD</a>
+  
+</span>
+
+
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/03/old.jpeg">
-杜拉斯在《情人》里劈头就是这么一段话：“我已经老了，有一天，在一处公共场所的大厅里，有一个男人向我走来。他主动介绍自己，他对我说：‘我认识你，永远记得你。那时候，你还很年轻，人人都说你美，现在，我是特为来告诉你，对我来说，我觉得现在你比年轻的时候更美，那时你是年轻女人，与你那时的面貌相比，我更爱你现在备受摧残的面容。’”</p>
-
-<p>人的沧桑如年代悠远的古董一般让人怀念，如侵蚀后的青铜器斑驳的美。每位老人都是讲不完的长篇故事，刻在皱纹里的是曾经拥有的回忆。似乎什么都经历过，似乎什么都未曾经历得完全，孤独与衰老慢慢侵袭而来，正如皱纹慢慢爬上额头。时光开始变得急促，可惜步子越发的蹒跚，再也无法追赶光阴的影子了。这或许是一种无奈；然而，真正的苍老总是懂得生命的哲理，毋须哀叹这不可追回的韶光。沧桑的历练足以让老人在回忆中度过另一个鲜活的生命。这是一种睿智。这种睿智仿佛一把金刚刀，岁月之美如钻石一般被切割出来，拥有那玲珑剔透的切面，折射出璀璨的辉光。</p>
-
-<blockquote><p>然而，面对苍老，我总不免低低咏叹：<br/>你饱经沧桑的双眼，<br/>为何总饱含着忧伤的泪水？</p></blockquote>
-
-
-<p>想到人的日渐衰老，我总是无法抑制地哀伤。“夕阳无限好，只是近黄昏”，李商隐的一句诗，道尽了这其中的无奈，甚至是凄楚。或许，自私的人们总是可以欣赏别人备受摧残的面容，却无法容忍自己的老去，最后走向阴冷的坟墓。对苍老的诵咏，就变成一曲对凄美的哀歌了。</p>
-
-<p>“不要老去！”我在心里呐喊。可是，我终究是要老去的。</p>
-
-<p>其实，我已经老了。我变得渴望隐居的生活。我变得害怕喧嚣，甚至不愿有太多感情的牵绊。这是否是衰老的征兆？</p>
-
-<p>我的厌世之情，或许源于我执著于醉意孤独？我的思想没有任何人能够理解，因为，连我自己都不理解我自己。或许，无所不知的全能的神是一个例外，可是，作为高高在上的神灵，哪里会关注我这样一个卑微如蝼蚁一般的生命呢？更何况在这世上，神灵究竟存在与否，我仍然保持着足够谨慎的怀疑。</p>
-
-<p>这是否是我渴望隐居的原因之一呢？</p>
-
-<p>我从来不明白玄学的意义，但我却开始变得眷恋虚空的思索，就像卢梭一个孤独漫步者的遐想那般，思索道德与人生，抑或是自主意识地从内心识别自己，而无需那些澹妄的敌人为自己做出盖棺论定。在这个世界，我们面对的每一个人都是敌人，他们试图戴上伪装的面具，靠近我，或者疏远我。我希望逃离，无奈人生的樊笼早已锁住了我，我无法逃离，甚至我不能逃离。</p>
-
-<p>这就是我渴望隐居的原因之一吧！</p>
-
-<p>约翰·汤姆逊造访晚清时的中国，在广东乡村的游历中，访谒清远县的飞来寺，留下了两位僧人的存影。汤姆逊说：“和尚们隐居那里，远离尘世，他们认为什么时候能从宇宙万物中认识了抽象的自我，什么时候就会忘记存在，忘记喜怒哀乐，从而达到绝对的清静，进而修成正果——涅槃。”</p>
-
-<p>若真能够隐居的我，断然做不到这样枯守住内心的寂寞与安宁。我骨子里希望自己能是一个脱俗的人，然而，我的灵魂却总是甘于在尘世中堕落。灵与肉的分离，使我彻底沦为矛盾的共同体，我始终陷入挣扎中。愈是挣扎，绳索捆缚得愈紧，这令我感到悲哀，进而是苦闷。</p>
-
-<p>厨川白村在其著述《苦闷的象征》中写道：“……无非说是‘活着’这事，就是反复着这战斗的苦难。我们的生活愈不肤浅，愈深，便比照着这深，生命力愈盛，便比照着盛，这苦恼也不得不愈加其烈。在伏在心的深处的内底生活，即无意识心理的底里，是蓄积着极痛烈而且深刻的许多伤害的。一面经验着这样的苦闷，一面参与着悲惨的战斗，向人生的道路进行的时候，我们就或呻，或叫，或怨嗟，或号泣，而同时也常有自己陶醉在奏凯的欢乐和赞美的事。这发出来的声音，就是文艺。对于人生，有着极强的爱慕和执着，至于虽然负了重伤，流着血，苦闷着，悲哀着，然而放不下，忘不掉的时候，在这时候，人类发出来的诅咒，愤激，赞叹，企慕，欢呼的声音，不就是文艺么？在这样的意义上，文艺就是朝着真善美的理想，追赶向上的一路的生命的进行曲，也是进军的喇叭。响亮的闳远的那声音，有着贯天地动百世的伟力的所以就在此。”</p>
-
-<p>若能在苦闷中不停地战斗，即使暴风骤雨满路荆棘，鲜血淋漓狼狈不堪，总还能印证自己的存在。战斗是一种精神，一种态度。它或许仅仅是一种象征意义，然而我们在战斗中会变得饱满而鲜活——暮然回首，我们发现，生活多么的畅快淋漓！此时，苍老其实是一种壮美；毋宁说，隐居也变成了一种战斗！</p>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
 </div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/">新人培养日记(一)</a></h1>
-    
-    
-      <p class="meta">
-        
+        <a class="basic-alignment left" href="/blog/2013/03/19/hadoop-mapreduce-skillset/" title="Previous Post: Hadoop MapReduce技巧">&laquo; Hadoop MapReduce技巧</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-14T20:37:00+08:00" pubdate data-updated="true">Mar 14<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/03/growup.jpg">
-我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。它要求创建一个电子银行系统，提供银行的一些基本功能，例如客户管理、存取款等业务逻辑。</p>
-
-<p>最初我并不知道新手的真实水平，不过，可以假设他只具备基础的Java编程知识，对TDD、Refactoring以及OO有最初步的了解，但处于懵懵懂懂之间。我最初希望新手仅仅针对业务层进行设计与编码，但新手坚持要加上数据库访问以及Web页面。我认为这种做法有利于新手学习到更多的Java框架和库，便同意了这种请求。</p>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/">阅读全文 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql/">Nutch Crawler抓取数据并存储到MySQL</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-07T22:17:00+08:00" pubdate data-updated="true">Mar 7<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Apache Nutch是在Java平台上开发的开源网络爬虫工具。按照<a href="http://wiki.apache.org/nutch/NutchTutorial">Nutch官方网站</a>给出的向导，通过使用Nutch命令，可以比较容易地抓取指定种子网站的数据。不过，若是要通过它提供的Java API，以编程方式抓取数据，并存储到指定的数据存储，如MySQL，则有一些技巧或者说秘诀需要注意。经过这几天抽空进行的试验，并查询了相关资料，完成了指定网站数据的抓取。</p>
-
-<p>首先，需要准备好Nutch。目前Nutch的最新版本是2.1，在官方网站可以下载到2.1版本的源代码。奇怪的是，网站并未提供该版本的Bin下载。我们若是要通过Java API调用，则需要依赖于Nutch需要的Jar包。我们可以直接在自己的Java项目中导入这些Jar包，也可以在项目的pom.xml文件中指定Maven的Repository。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/03/assigning-responsibility-between-modules/">模块间的职责分配</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-03T20:19:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/03/assigning-responsibility-between-modules/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/03/module.png"></p>
-
-<p>职责分配不仅限于对象之间。如果将对象看做是细粒度的封装，则模块作为组合多个对象的设计元素，可以看做是粗粒度的封装。倘若在模块之间分配职责失当，带来的影响会比对象职责分配不合理更大。这是因为只要在OO设计中进行了适度的封装，在一定程度上体现了隐藏细节的设计理念，对象的职责分配失当就不会溢出边界，对其余对象不会产生太大的影响。</p>
-
-<p>模块间的职责分配好似对对象进行一种归类，只有属于同一类别的对象才能被分配到一个模块中。这可以说是对“高内聚”原则的简单理解。注意，模块常常是对架构层次结构的横向切割，不同的模块可能处于不同的逻辑层。因此，大的设计问题可能牵涉到分层问题。从架构层面来讲，或许我们有必要在获得模块的详细设计之前，审慎地给出一个系统逻辑架构，会有助于模块间的职责分配。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/03/assigning-responsibility-between-modules/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/02/harvest-from-reading/">阅读的设计体悟</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-02T21:46:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/02/harvest-from-reading/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/03/jsbookcover.jpg">
-不管语言的变化有多大，关于程序设计的基本编程思想和设计本质，应是殊途同归。两年前阅读了Jonathan Snook的著作《Javascript捷径教程Accelerated DOM Scripting with Ajax, APIs, and Libraries》。在书中，他带领读者构建了一个简单的动画对象。简单的例子，轻描淡写的描述，却似乎展现了朴素的基本设计思想。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/02/harvest-from-reading/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/27/scalability-system-architecture-lessons/">可伸缩系统的架构经验</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-27T11:37:00+08:00" pubdate data-updated="true">Feb 27<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/27/scalability-system-architecture-lessons/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/02/scalability.jpg"></p>
-
-<p>最近，阅读了Will Larson的文章<a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting System for Scale</a>，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统，这种面向企业内部的软件系统通常不会有太大的负载量，太多的并发量，因而对于系统的可伸缩性考虑较少。大体而言，只要在系统部署上考虑集群以及负载均衡即可。本文给了我很多启发，现把本文的主要内容摘译出来，并结合自己对此的理解。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/27/scalability-system-architecture-lessons/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/22/preface-of-java-design-patterns/">Java设计模式译者序</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-22T16:52:00+08:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/22/preface-of-java-design-patterns/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/02/dpinjava.jpeg">
-如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。</p>
-
-<p>是否设计模式的精妙之处，业已为这些著作所穷尽？然，又未必尽然！以模式而论，若只局限在这23种模式的范围内，几乎每种模式的变化，都可以被悉心推演出来；每种模式的结构，也已被阐述得淋漓尽致。然而，若论及设计，则如大道苍穹，实则是不可穷尽的。基本上，设计的复杂程度已不亚于一个纷繁的世界，而软件，就是我们要构造的这个世界。</p>
-
-<p>因此，再出现一本讲解设计模式的书，就不足为怪了。那么，它值得你去阅读吗？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/22/preface-of-java-design-patterns/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/20/responsibility-and-encapsulation/">职责与封装</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-20T21:49:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/20/responsibility-and-encapsulation/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>面向对象设计的关键，我认为是识别职责，封装合理的对象。缺乏合理的封装，就会缺少正确的领域对象，使得属于共同职责的领域信息散乱分布到系统的各个方法中，导致概念不够清晰，职责混乱，以及代码的重复。然而，如果没有正确地识别职责，又可能导致封装无从谈起，因为我们获得的需求可能是散乱的，既难以抽象概念，又缺乏层次。故而，职责与封装是相辅相成的概念。如下图所示：
-<img class="center" src="/images/2013/02/responsibility01.png"></p>
-
-<p>我们不能简单地将封装当做是“信息隐藏”。所谓隐藏信息以及具体行为的细节，确实是封装的本质所在，但面向对象思想中的封装，其目的还在于对领域概念以及设计概念的识别。前者是对业务模型的抽象，如电子商务系统中的Product、Order、OrderItem等概念；后者是对设计模型的改进，如在设计模式中引入策略对象、命令对象，DDD中提倡的Repository、Factory对象。这也是为何许多设计者很容易理解封装的概念，但却始终无法做到合理封装的根本原因。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/20/responsibility-and-encapsulation/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -802,7 +424,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/agiledon">@agiledon</a> on GitHub
@@ -860,6 +482,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -874,7 +497,10 @@
       var disqus_shortname = 'agiledon';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

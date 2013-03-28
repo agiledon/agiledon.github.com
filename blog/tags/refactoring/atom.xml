@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Refactoring | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/refactoring/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-19T14:17:02+08:00</updated>
+  <updated>2013-03-28T21:02:59+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,220 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[新手培养日记(二)]]></title>
+    <link href="http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/"/>
+    <updated>2013-03-28T20:30:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/learning_perception.jpg">
+几天后，新手又一次提交了一份代码。由于改动较大，新手重新创建了一个项目。在这份代码中，新手接受了我的建议，改为使用Spring提供的JdbcTemplate。包的结构也得到了一定程度的改善。这充分说明他认识到了问题所在，并能够快速准确地采取行动去纠正这些问题。但或许是我提出的问题太多，给出的建议不够具体，在新提交的这份代码中，我还是看到了一些问题，且某些问题在上一次Review代码时，我曾经提及。</p>
+
+<p>来看看如下两段代码。首先，是CustomerService，它定义了目前Story要求的基本业务：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Service</span><span class="o">(</span><span class="s">&quot;customerService&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerService</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Autowired</span>
+</span><span class='line'><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">CustomerDAO</span> <span class="n">customerDAO</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">defaultTableNameForCustomer</span> <span class="o">=</span> <span class="s">&quot;customer&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="n">defaultTableNameForCustomer</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTableName</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">tableName</span> <span class="o">=</span> <span class="n">tableName</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Transactional</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">addCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">customerDAO</span><span class="o">.</span><span class="na">getCustomer</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdraw</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balance</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">deposit</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balance</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>在CustomerService类中，调用了CustomerDAO类的相关方法：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span>
+</span><span class='line'><span class="nd">@Repository</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDAO</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Autowired</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">JdbcTemplate</span> <span class="n">jdbcTemplate</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">createTable</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;DROP TABLE IF EXISTS &quot;</span> <span class="o">+</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;CREATE TABLE &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="s">&quot;nickname VARCHAR(45) NOT NULL ,&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;dateOfBirth DATETIME NOT NULL,&quot;</span> <span class="o">+</span> <span class="s">&quot;balance DOUBLE NOT NULL, &quot;</span> <span class="o">+</span> <span class="s">&quot;PRIMARY KEY(nickname)&quot;</span> <span class="o">+</span> <span class="s">&quot;);&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;insert into &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(nickname, dateOfBirth, balance) values (?, ?, ?)&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">()});</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">DuplicateKeyException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">DuplicateCustomerException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; has already existed&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select * from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">Customer</span> <span class="n">customer</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customer</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="k">new</span> <span class="n">CustomerMapper</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">EmptyResultDataAccessException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">CustomerNotFoundException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">nickname</span> <span class="o">+</span> <span class="s">&quot; is not found&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">customer</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Double</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select balance from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="n">Double</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">balance</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">-</span> <span class="n">balanceToWithdraw</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">balanceAfter</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">BalanceOverdrawException</span><span class="o">(</span><span class="s">&quot;You have only &quot;</span> <span class="o">+</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="s">&quot;$. You can not withdraw &quot;</span> <span class="o">+</span> <span class="n">balanceToWithdraw</span> <span class="o">+</span> <span class="s">&quot;$&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToDeposit</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="n">balanceToDeposit</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这两段代码存在什么问题？</p>
+
+<p>显然，我们看到CustomerService履行的职责仅仅是对调用的委派，另外还添加了事务功能，除此之外，它什么事情都没有做，接到了请求，转手就递给CustomerDAO了。再看CustomerDAO，特别关注withdrawBalance()方法，你会发现这个方法的实现其实体现了较多的业务逻辑。事实上，我们看到这个方法的名称，体现的就是业务的概念。显然，这里的职责分配是不合理的。新手明显没有深刻体会Service与Dao之间的区别。无论是传统的分层架构模型，还是DDD提出的领域层与基础设施层的分离，都表达了业务与数据访问关注点分离的原则。事实上，新手还错误地将Service类放到了database.service包中。</p>
+
+<p>正确的做法应该是保证每个对象的纯洁性与单一性，让每个对象只做一件事情，只做它应该关心的事情，遵循单一职责原则。Dao是数据访问对象，那么它就应该只处理数据访问的逻辑，而对具体业务应该是“一无所知”的。一个简单的识别办法，就是不要在这个类中出现任何业务概念，它做的事情就是CRUD。</p>
+
+<p>对于许多OO初学者而言，职责不清是最容易犯下的毛病。要么就是恨不得把所有内容都塞给一个类；要么就是张冠李戴，随着性子乱分配职责，全然不考虑每个对象的感受。我常常说，对象是有意识的生物，这样不尊重对象搞乱分配，迟早这些对象会造反。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[新人培养日记(一)]]></title>
