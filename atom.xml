@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-03-28T21:02:59+08:00</updated>
+  <updated>2013-04-05T21:47:37+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,91 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[阅读Scala代码之一]]></title>
+    <link href="http://agiledon.github.com/blog/2013/04/04/reading-scala-code-1/"/>
+    <updated>2013-04-04T22:17:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/04/04/reading-scala-code-1</id>
+    <content type="html"><![CDATA[<p><img class="left" src="http://agiledon.github.com/images/2013/04/scala.jpg">
+学习一门语言，固然需要了解这门语言的语法，但针对一些完全属于不同范式的语言，即使通过阅读书籍可以理解一些特殊的语法，若不能付诸实践，总有隔靴搔痒之感。其实，要能通过运用这门新语言开发一个项目，或能快速并深刻地了解甚至吃透这门语言。我正是这样尝试着运用Scala来开发我的一个开源框架。可是，在开发过程中，我总感觉自己像是被捆绑了一只手的程序员一般，开发过程磕磕碰碰，不够顺畅。仔细想来，还是因为缺乏对这门语言的足够了解，尤其是那些迥异于Java却又在Scala中是极为常见的惯用法，总不能做到在合适的场景信手拈来。</p>
+
+<p>关键在于，自己阅读Scala的代码太少，编写Scala的代码更少。找到症结，那就尝试去解决。当然，我可以选择一些著名的Scala开源框架，例如<a href="http://www.playframework.com/">Play Framework</a>，Kestrel或者<a href="http://kafka.apache.org/">Kafka</a>，对其进行深入阅读。可是，我发现这些框架对于目前的我而言，似乎显得困难了一点。那么，就从一些短小的代码段开始着手吧。<!--more--></p>
+
+<p>今天阅读的这段代码来自Twitter团队编写的<a href="http://twitter.github.com/effectivescala/">Effective Scala</a>。这段代码对一个Seq对象的值进行了分类汇总，然后进行了排序。代码内容如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
+</span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">votes</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">groupBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_1</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="k">case</span> <span class="o">(</span><span class="n">which</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">which</span><span class="o">,</span> <span class="n">counts</span><span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span>
+</span><span class='line'>    <span class="o">}.</span><span class="n">toSeq</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">sortBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">reverse</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先，它针对Seq对象votes进行了分组，调用了Seq集合的groupBy方法。该方法的定义为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">groupBy</span><span class="o">[</span><span class="kt">K</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="o">(</span><span class="kt">A</span><span class="o">)</span> <span class="o">=&gt;</span> <span class="n">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">immutable.Map</span><span class="o">[</span><span class="kt">K</span>, <span class="kt">Sequ</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该函数的输入参数实际上是一个函数，该函数的参数为A，这个泛型参数在这里指代Seq元素的类型，即一个tuple；返回值为K，为key对应的类型。groupBy函数的返回值是一个不变类型的Map。对于此例而言，就是根据语言进行分类，由此可以得到三个类别，每个类别又包含一个Seq或者List。结果为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Map</span><span class="o">(</span><span class="n">scala</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">10</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">)),</span> <span class="n">java</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">java</span><span class="o">,</span><span class="mi">4</span><span class="o">)),</span> <span class="n">phthon</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">phthon</span><span class="o">,</span><span class="mi">10</span><span class="o">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在这段代码中，用到了Scala的特殊语法，例如groupBy(_._1)。括号中的_代表了一个类型为A的参数，在这里就是tuple对象；而_1则是方法名，对于tuple而言，_1方法能够返回tuple的第一个元素，即语言的名称。（与之类似，_2则会返回tuple的第二个元素。）因此，_._1恰好能够满足groupBy()函数需要传入的函数，从而根据语言的名称对votes进行分组。</p>
+
+<p>紧跟着groupBy函数后面的是一个map函数，它可以通过运用一个函数为Map的所有元素建立一个新的集合。简单地理解，可以将其看做是一种转换操作。在上面给出的代码中，map函数中的case (which, counts) => …是一个模式匹配的匿名函数（Pattern Matching Anonymous Functions）。在《The Scala Language Specification》中对此的定义为：</p>
+
+<blockquote><p>which appear as an expression without a prior match. The expected type of such an expression must in part be defined. It must be either scala.Functionk[S1, &#8230;, Sk, R] for some k > 0, or scala.PartialFunction[S1, R], where the argument type(s) S1, &#8230;, Sk must be fully determined, but the result type R may be undetermined.</p></blockquote>
+
+
+<p>在文章《<a href="http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html">Scala Partial Functions Without Phd</a>》中，Erik认为这是一种特殊方式的匿名函数定义，采用这种方式会更加安全，使用更自由。文章给出了一些Partial Function的例子，例如通过Partial Function可以忽略多余的参数，忽略因为除0抛出的异常。这比直接使用匿名函数会更加安全。</p>
+
+<p>在这段代码中，map函数接受which参数就是lang，counts则是lang对应的List。在这个匿名函数中，会对counts这个List类型进行求和操作（通过foldLeft函数）。返回的结果仍然是一个包含了Tuple元素的Map类型。</p>
+
+<p>接下来的方法就比较容易理解了，即调用toSeq将Map转换为Seq，并根据tuple的第二个元素进行排序，此时，排序的关键字为统计的语言次数。soryBy函数的默认排序为升序，因此需要调用reverse颠倒顺序。</p>
+
+<p>如果弄懂了Scala与此相关的语法，要理解这段代码还是比较容易的。然而，在Twitter给出的Effective Scala文章中，提到了关于编程意图的问题。因为上述代码通过一种类似流水线转换的方式完成整个操作，操作过程中的一些中间值被隐藏在一系列的函数调用中，并没有很好地展现其意图。文章提出的解决办法就是声明中间结果和参数。上述代码可以改写为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
+</span><span class='line'><span class="k">val</span> <span class="n">votesByLang</span> <span class="k">=</span> <span class="n">votes</span> <span class="n">groupBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">lang</span> <span class="o">}</span>
+</span><span class='line'><span class="k">val</span> <span class="n">sumByLang</span> <span class="k">=</span> <span class="n">votesByLang</span> <span class="n">map</span> <span class="o">{</span> <span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">countsOnly</span> <span class="k">=</span> <span class="n">counts</span> <span class="n">map</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">count</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">count</span><span class="o">}</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">countsOnly</span><span class="o">.</span><span class="n">sum</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">sumByLang</span><span class="o">.</span><span class="n">toSeq</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">sortBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">count</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">count</span> <span class="o">}</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">reverse</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为有了中间值的变量声明，意图会变得更清晰一些。我同意这样的观点，特别是针对一些函数式语言或动态语言而言，代码变得简洁了，但有时候会用到一些比较tricky的花招，影响了代码的可读性。但要注意，这种可读性一定是基于该语言的特色而言。我们千万不能将Scala程序写成Java命令式的方式，以为这样适合Java程序员的阅读习惯，这无疑误解了所谓“可读性”的含义。当然，就这段代码而言，由于groupBy函数的名称已经非常清晰，我并不太赞成提取出votesByLang的中间变量。这类似fluent interface的方式，只要API的设计是有意义的，这种流水线的处理方式仍然非常清楚，前提是我们要有合理的排版。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[新手培养日记(二)]]></title>
@@ -3000,39 +3085,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
 
 <p>现在，你就可以运行mysql命令使用MySQL了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[对CQRS的基础理解]]></title>
-    <link href="http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs/"/>
-    <updated>2012-12-31T10:59:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2012/12/seperated.jpg" width="500" height="375">
-CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，它甚至可以被称为是一种架构风格，可以取得与MapReduce，REST同等的地位，对软件系统的整体架构产生重要影响。</p>
-
-<p>CQRS即Command Query Responsibility Seperation（命令查询职责分离），其设计思想来源于Mayer提出的CQS（Command Query Seperation）。这种命令与查询的分离方式，可以更好地控制请求者的操作。查询操作不会造成数据的修改，因而它属于一种幂等操作，可以反复地发起，而不用担心会对系统造成影响。基于这种特性，我们还可以为其提供缓存，从而改进查询的性能。命令操作则与之相反，它会直接影响系统信息的改变。查询操作与命令操作对事务的要求也不一样。由于查询操作不会改变系统状态，因而，不会产生最终的数据不一致。从请求响应的角度来看，查询操作常常需要同步请求，实时返回结果；命令操作则不然，因为我们并不期待命令操作必须返回结果，这就可以采用fire-and-forget方式，而这种方式正是运用异步操作的前提。此外，对于大多数软件系统而言，查询操作发起的频率通常要远远高于命令操作。如上种种，都是将命令与查询进行分离的根本原因。</p>
-
-<p>这就很好地阐释了我们为何需要运用CQRS模式，同时也说明了CQRS的适用场景。</p>
-
-<!--more-->
-
-
-<p>只要充分理解了运用CQRS模式的意图，理解CQRS模式就变得容易了许多。下图是CQRS框架<a href="http://www.axonframework.org">AxonFramework</a>官方文档给出的CQRS架构图。
-<img class="center" src="http://agiledon.github.com/images/2012/12/cqrs-arch.png" width="613" height="434"></p>
-
-<p>在这个架构图中，最核心的概念是Command、Event。以我的理解，CQRS模式的风格源头就是基于事件的异步状态机模型。抛开命令查询分离这一核心原则，这才是CQRS的基础内容。CQRS对设计者的影响，是将领域逻辑，尤其是业务流程，皆看做是一种领域对象状态迁移的过程。这一点与REST将HTTP应用协议看做是应用状态迁移的引擎，有着异曲同工之妙。这种观点（或设计视图）引出了Command与Event的概念。Command是系统中会引起状态变化的活动，通常是一种命令语气，例如注册会议RegisterToConference。至于Event，则描述了某种事件的发生，通常是命令的结果（但并不一定是直接结果，但源头一定是因为发送了命令），例如OrderConfirmed。我发现，这种事件更接近于一种事实，即某次数据改变的结果，是一种确定无疑已经发生的事实。这一思想直接引入了Event Source，并带来Audit（审计）的好处。而它更是与<a href="http://www.datomic.com">Datomic数据库</a>的设计哲学一脉相承。Datomic的设计哲学就是：“将数据(Data)看做是事实(Fact)。每个事实都是过去的痕迹，虽然这种过去可以遗忘，但却无法改变。”Event Source可以将这些事件的发生过程记录下来，使得我们可以追溯业务流程。
-<img class="center" src="http://agiledon.github.com/images/2012/12/datomic.jpg" width="563" height="274"></p>
-
-<p>Command和Event都有对应的Handler来处理。它们具有一个共同的特征，即支持异步处理方式。这也是为何在架构中需要引入Command Bus和Event Bus的原因。在UI端执行命令请求，事实上就是将命令（注意，这是一个命令对象，你完全将其理解为Command模式的运用。注意，命令的命名一定要恰如其分地体现业务的意图）发送到Command Bus中。Command Bus更像是一个调停者（Mediator），在接收到Command时，会将其路由到准确的CommandHandler，由CommandHandler来处理该命令。在Axon Framework中，Command Bus提供了dispatch()方法对命令进行分发。也就是说，在它的实现中，并没有对Command提供异步处理，而仅仅是完成路由的功能。不过，在我自己的框架实现中，我却将Command Bus看做是消息通道，而将Command Handler看做是该消息通道的侦听者。因此，我引入了队列来实现Command Bus。很难说明哪种方式更合理，这还要取决于业务模型。整体来看，后一个方案似乎有些重型了。不过，我现在并未引入消息队列，而是使用了Scala的Actor，从多线程的角度来实现CommandBus的异步模型，也可以说得过去。</p>
-
-<p>Event的处理与之相似。Axon Framework同时支持同步和异步方式。从框架角度讲，提供更多的选择是一件好事。但基于CQRS模式的核心思想来看，如果对Command(包括Event)的处理未采用异步模型，它就没有发挥出足够的优势，此时采用CQRS，反而会增加设计难度，有些得不偿失。</p>
-
-<p>在Command端，基本的处理流程是由UI发起命令请求，发送到CommandBus，并由它分发给对应的Command Handler来处理命令。Command Handler会与领域对象，特别是与Aggregation Root对象通信。在处理了相关的业务逻辑后，会触发Event。一方面，它会将Event放到Event Store中；另一方面，同时会将Event发送到Event Bus，再由Event Handler处理事件。根据Axon Framework的官方文档，Event Handler会负责更新数据源，从而保证查询端能够得到最新的数据。</p>
-
-<p>然而，这一过程并不是这样简单。因为整个过程可能体现的是一个状态机。Command会导致状态的迁移，并在执行Aggregate的逻辑时，触发对应的Event。Event Handler在处理事件时，并不一定是这个业务过程的终点，它可能会发送引起下一个状态迁移的命令，从而形成一个不断迁移的过程，直至业务完全结束。这就需要我们在引入CQRS时，需要改变之前的设计思路，尽量从状态迁移的角度去理解业务逻辑。UML中的状态图是一个很好的分析工具。另外，它也带来一个挑战，就是事务。因为整个过程都涉及到数据状态的变化，当某个状态迁移出现问题时，要保证数据的最终结果是一致的。Axon Framework的解决方案是引入<a href="http://martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work模式</a>。此外，在真正实现时，究竟是由Event Handler去更新数据源，还是交由Aggregate去完成，还有待考量。我倾向于由Aggregate委派给Repository来完成。从职责分配的角度来看，这种方式更为合理。因为与数据源打交道的逻辑绝对不能太过于分散，以免数据源的改变影响到整个领域层。在DDD中，持久逻辑都是被封装到Repository（在其内部，又会委派给基础设施层中提供数据访问的对象）。换言之，这种实践是符合DDD的设计思想的。</p>
-
-<p>本文没有详细讨论Repository、Aggregate Root在引入CQRS后，二者会产生什么样的变化？此外，命令查询职责分离模式对数据源的要求，在Command端与Query端的范式已经产生了根本的区别，在设计时我们应该如何考虑？这些内容，我将在以后的博客深入分析。</p>
 ]]></content>
   </entry>
   
