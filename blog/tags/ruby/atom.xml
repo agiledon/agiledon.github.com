@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Ruby | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/ruby/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-04-05T21:47:37+08:00</updated>
+  <updated>2013-04-08T12:40:48+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -282,9 +282,7 @@ end</p>
 ```</p>
 
 <p>Octopress是将Category写到了blog/categories下，因此我将Tag写到了blog/tags下。这就是上面代码中tag_dir的值。这个值应该配置在_config.yml下：如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>category_dir: blog/categories
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>category_dir: blog/categories
 </span><span class='line'>tag_dir: blog/tags</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>同样的，你也可以把custom\asides下的category_cloud.html改为tag_cloud.html。当然，要记住，改名后，还需要到_config.yml的asides设置中做相应修改。</p>
@@ -367,18 +365,7 @@ end</p>
 <p>我最初是在octopress的plugin目录下创建了post_weibo.rb文件。后来发现，当我们执行rake generate时，它事实上会去执行jekyll命令。而该命令则会去遍历plugin目录下的ruby文件，并执行之。这显然不是我希望看到的。我希望在发表的新博客完全就绪时，我再考虑发送通知到新浪微博。于是，我单独建立了一个新的文件夹"_custom"，并将post_weibo.rb文件放进去。</p>
 
 <p>post_weibo.rb文件实现了这个插件的所有功能，主要方法为post_weibo()，如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">post_weibo</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">post_weibo</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;conn = Faraday.new(:url =&amp;gt; &quot;https:/</span><span class="o">/</span><span class="n">api</span><span class="o">.</span><span class="n">weibo</span><span class="o">.</span><span class="n">com</span><span class="s2">&quot;)</span>
 </span><span class='line'>

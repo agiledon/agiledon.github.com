@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: API | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/api/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-04-05T21:47:37+08:00</updated>
+  <updated>2013-04-08T12:40:48+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -28,15 +28,7 @@
 
 
 <p>如下Python代码：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;The Grapes of Wrath&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;The Grapes of Wrath&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>       <span class="n">author</span><span class="o">=</span><span class="s">&#39;John Steinbeck&#39;</span><span class="p">,</span>
 </span><span class='line'>       <span class="n">copyright_year</span><span class="o">=</span><span class="mi">1939</span><span class="p">,</span>
@@ -47,16 +39,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>如果需要生成键名，在调用构造函数时，应加上key_name参数：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">key_name</span><span class="o">=</span><span class="s">&#39;0143039431&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">key_name</span><span class="o">=</span><span class="s">&#39;0143039431&#39;</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>       <span class="n">title</span><span class="o">=</span><span class="s">&#39;The Grapes of Wrath&#39;</span><span class="p">,</span>
 </span><span class='line'>       <span class="n">author</span><span class="o">=</span><span class="s">&#39;John Steinbeck&#39;</span><span class="p">,</span>
@@ -70,23 +53,17 @@
 <p>我想，之所以需要考虑这种简单性和灵活性的结合，在于API的特征，这种开放平台会面临不同消费者，在不同场景下做出不同的选择。二者的平衡保证了API的调用能够得到最大程度的需求满足。</p>
 
 <p>封装。在设计时，我们应尽量避免使用基本类型。Martin Fowler在《重构》一书中将其称为“基本类型偏执”。例如在GAE中，就对key进行了合理的封装，包含了实体的类型和值。如果希望批量获取多个实体，可以将key放到列表中，作为get()方法的参数，返回实体对象列表。这种批量获取实体的性能比多次执行单次获取要好，或许是因为它能够减少对数据库IO操作的次数。根据key获得实体对象的python代码如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">google.appengine.ext</span> <span class="kn">import</span> <span class="n">db</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">google.appengine.ext</span> <span class="kn">import</span> <span class="n">db</span>
 </span><span class='line'><span class="n">k</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="s">&#39;Entity&#39;</span><span class="p">,</span> <span class="s">&#39;alphabeta&#39;</span><span class="p">)</span>
 </span><span class='line'><span class="n">e</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>在上面的代码中，db.key()方法相当于key的工厂方法，负责创建key。如果需要根据多个key值获得多个实体对象，则代码为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">entities</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="n">k1</span><span class="p">,</span><span class="n">k2</span><span class="p">,</span><span class="n">k3</span><span class="p">])</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="n">entities</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="n">k1</span><span class="p">,</span><span class="n">k2</span><span class="p">,</span><span class="n">k3</span><span class="p">])</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>比较python而言，Java代码略显复杂：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DatastoreService</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DatastoreServiceFactory</span><span class="o">.</span><span class="na">getDatastoreService</span><span class="o">();</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DatastoreService</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DatastoreServiceFactory</span><span class="o">.</span><span class="na">getDatastoreService</span><span class="o">();</span>
 </span><span class='line'><span class="n">Map</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Key</span><span class="o">,</span> <span class="n">Entity</span><span class="o">&gt;</span> <span class="n">entities</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayList</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">k1</span><span class="o">,</span><span class="n">k2</span><span class="o">,</span><span class="n">k3</span><span class="o">)));</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
@@ -100,20 +77,7 @@
 Liquid error: invalid byte sequence in US-ASCII</p>
 
 <p>Java的代码就略显冗长而不够流畅，可读性较低。这一方面与语言自身的特色有关，但倘若运用了fluence interface模式，相信能够比较好地提高代码的可读性：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DatastoreService</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DatastoreServiceFactory</span><span class="o">.</span><span class="na">getDatastoreService</span><span class="o">();</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DatastoreService</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DatastoreServiceFactory</span><span class="o">.</span><span class="na">getDatastoreService</span><span class="o">();</span>
 </span><span class='line'><span class="n">Query</span> <span class="n">q</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Query</span><span class="o">(</span><span class="s">&quot;Book&quot;</span><span class="o">);</span>
 </span><span class='line'><span class="n">q</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="s">&quot;copyright year&quot;</span><span class="o">,</span> <span class="n">Query</span><span class="o">.</span><span class="na">FilterOperator</span><span class="o">.</span><span class="na">LESS_THAN_OR_EQUAL</span><span class="o">,</span> <span class="mi">1950</span><span class="o">);</span>
 </span><span class='line'><span class="n">q</span><span class="o">.</span><span class="na">addSort</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">);&lt;/</span><span class="n">p</span><span class="o">&gt;</span>

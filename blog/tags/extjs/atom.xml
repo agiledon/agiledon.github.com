@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: ExtJS | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/extjs/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-04-05T21:47:37+08:00</updated>
+  <updated>2013-04-08T12:40:48+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,24 +19,7 @@
     <updated>2012-02-10T11:27:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/02/10/post-data-to-server-side-to-generate-file</id>
     <content type="html"><![CDATA[<p>我们希望将客户端（ExtJS 4.0）浏览器中选择的记录post到服务端（ASP.NET MVC 3.0），然后在服务端将这些数据导出到CSV文件中，并传到客户端进行保存。最初，我们希望在客户端采用AJAX请求，将json数据post到服务端。例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">postSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">postSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 </span><span class='line'><span class="nx">Ext</span><span class="p">.</span><span class="nx">Ajax</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
@@ -63,30 +46,7 @@
 <p>然而，这种AJAX异步请求的方式是不工作的。因为发起者是AJAX，这种异步方式会导致浏览器无法收到处理后的Stream。我们在网上搜索了许多资料，都没有很好地解决这种异步方式对json数据的处理，完成文件下载。经过分析，我们大致想到有两种解决思路。</p>
 
 <p>一是方案将导出文件的请求分为两步：一步是异步post数据，让服务端获得客户端传来的json数据，并将其存放到Session中；第二步则是在post成功之后，在异步回调中再次发出一个同步的Get请求，并定义对应的控制器Action响应该Get请求。例如，我们在ExtJS中的postSelectedItems()函数的success()回调中，执行downloadFile()函数，由该函数发出Get请求。同时，在服务端的Controller中定义DownloadFile()方法响应该请求。例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[AcceptVerbs(HttpVerbs.Post)]</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[AcceptVerbs(HttpVerbs.Post)]</span>
 </span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Export</span><span class="p">(</span><span class="kt">int</span> <span class="n">environmentId</span><span class="p">,</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">SearchResult</span><span class="p">&gt;</span> <span class="n">selectedItems</span><span class="p">)</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Session</span><span class="p">[</span><span class="s">&quot;SelectedItems&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="n">selectedItems</span><span class="p">;</span>
@@ -111,36 +71,13 @@
 </span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 比较理想的一点是，由于我们在Global.asax.cs的Application_Start()方法中已经添加了如下代码：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">ValueProviderFactories</span><span class="p">.</span><span class="nx">Factories</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="k">new</span> <span class="nx">JsonValueProviderFactory</span><span class="p">());</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">ValueProviderFactories</span><span class="p">.</span><span class="nx">Factories</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="k">new</span> <span class="nx">JsonValueProviderFactory</span><span class="p">());</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>所以，客户端发过来的json数据可以转换为Export()方法接收的List<SearchResult>对象。但是，这种方式将数据存放到了Session中，可能存在隐患。一方面，如果需要导出的数据较多，就可能占用过多的内存空间。一旦访问量增长，就会影响到服务器的稳定性和性能。如果服务端采用集群，则Session还要共享，否则二次请求的时候，可能会被Load Balancer路由到其他服务器。倘若同一个用户连续两次Post，也可能导致导出功能出现问题。整体而言，这种方案并不稳定。</p>
 
 <p>第二种解决思路就是放弃AJAX异步请求的方式，而转用Form表单的Post请求。我们采用了临时编写表单的方式，将post的数据塞到Input的Value中，然后Submit表单。例如在ExtJS的Controller中，我们定义了这样的函数：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">exportSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">exportSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">exportWindow</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
 </span><span class='line'><span class="kd">var</span> <span class="nx">exportDocument</span> <span class="o">=</span> <span class="nx">exportWindow</span><span class="p">.</span><span class="nb">document</span><span class="p">;</span>
@@ -165,24 +102,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>现在就可以在服务端的Controller中，只定义一个Export()方法了。此时的Export()方法不再需要List<SearchResult>参数，因为客户端Post过来的数据是放在Request的Form中。我们可以根据设定的name值获得该数据。这个数据是json数组的字符串。现在，有另外一个问题又钻出来了。我们必须将该字符串转换为我们需要的List<SearchResult>对象，然后就可以重用该对象的扩展方法ExportCsvData()方法，将其再转换为CsvActionResult可以接受的类型。回顾之前异步post的方式，在该种方式下，客户端post过来的json数据并没有进行转换，其原因在于我们在Global中，我们向ValueProviderFactories的Factories中注册了JsonValueProviderFactory对象，转换的执行过程事实上是一种反序列化。在JsonValueProviderFactory的私有静态方法GetDeserializedObject()方法中，调用了JavaScriptSerializer对象的DeserializeObject()方法。就是在这个类中，同时还定义了Deserialize<T>泛型方法，而它正是我们所需要的：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[AcceptVerbs(HttpVerbs.Post)]</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[AcceptVerbs(HttpVerbs.Post)]</span>
 </span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Export</span><span class="p">(</span><span class="kt">int</span> <span class="n">environmentId</span><span class="p">)</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Form</span><span class="p">.</span><span class="n">Get</span><span class="p">(</span><span class="s">&quot;selectedItems&quot;</span><span class="p">);</span>

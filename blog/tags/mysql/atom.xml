@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: MySQL | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/mysql/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-04-05T21:47:37+08:00</updated>
+  <updated>2013-04-08T12:40:48+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -23,21 +23,10 @@
 <p>使用Homebrew在Max OS下安装，一切都变得容易了许多。你只需要知道你要安装的软件或工具的名称，然后输入一条命令行即可。不过安装MySQL就有点不一样，在输入命令行安装了MySQL之后，还需要做一些配置。</p>
 
 <p>首先运行命令：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install mysql</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>$ brew install mysql</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>Homebrew确实安装了MySQL，但是运行mysql命令，却并不能进入MySQL。通过在Google上查询解决方案，找到博客<a href="http://madebyhoundstooth.com/blog/install-mysql-on-mountain-lion-with-homebrew/">Install MySQL on Mountain Lion with Homebrew</a>，给出了如下的步骤：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p ~/Library/LaunchAgents
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p ~/Library/LaunchAgents
 </span><span class='line'>$ cp /usr/local/Cellar/mysql/5.5.25a/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
 </span><span class='line'>$ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist&lt;/p>
 </span><span class='line'>

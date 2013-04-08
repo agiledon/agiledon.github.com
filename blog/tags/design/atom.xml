@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Design | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/design/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-04-05T21:47:37+08:00</updated>
+  <updated>2013-04-08T12:40:48+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -60,18 +60,18 @@
 
 
 <p>下面记录了一些阅读感悟。例如，书中这样写道：
-<blockquote><p>页面里要用到的动画对象一般都不止一个，所以应该把它定义成一个类。定义一个有5个参数的函数：要加上动画的元素、要改变的属性、属性的起始值、属性的结束值、动画的持续时间。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">){}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></p><p><p>不管编写什么代码，都应该先把实现想透彻。每个决定都有正反两方面的后果，你应该想清楚每个决定的原因。</p></blockquote></p>
+<blockquote><p>页面里要用到的动画对象一般都不止一个，所以应该把它定义成一个类。定义一个有5个参数的函数：要加上动画的元素、要改变的属性、属性的起始值、属性的结束值、动画的持续时间。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">){}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></p><p><p>不管编写什么代码，都应该先把实现想透彻。每个决定都有正反两方面的后果，你应该想清楚每个决定的原因。</p></blockquote></p>
 
 <p>这代表一个朴素的思想，那就是从实现原理来进行设计决定。注意这里的实现原理，并不是要关注实现的细节，而是要考虑影响实现的因素，并从调用者的角度思考接口或函数的输入与输出值。以本例而言，如果事先不明确动画效果的营造方式，是根据时间的变化动态变更element属性的方式来完成，就无法确定Animation函数。设计不是空中楼阁，抽象固然是重要的，但功能实现的基本原理仍然需要事先思考通透，否则，设计就可能走弯路。拿到一个功能，先要弄清楚它的目标是什么，有没有质量属性的要求，未来的变化如何，还有这一功能的实现原理。例如，我们要提供服务定制的功能，就需要实现明确“服务”的定义，如何完成服务的注册，服务的发布，服务的订阅，谁会订阅这些服务，服务的安全如何保障，如何解决服务与实现的脱耦。只有把这些问题想清楚了，设计才会靠谱。
-<blockquote><p>看看前面的代码，元素ID是作为一个字符串传递进来的，那么在动画对象中获取该元素就有两种方法：一是通过DOM方法document.getElementById()；二是采用Javascript库的调用，如${}。……既然我们想让这个动画对象能适合各种情况，那还是用DOM方法比较好，保证它不依赖于任何库。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/><span class='line-number'>6</span><br/><span class='line-number'>7</span><br/><span class='line-number'>8</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">ducument</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">el</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
+<blockquote><p>看看前面的代码，元素ID是作为一个字符串传递进来的，那么在动画对象中获取该元素就有两种方法：一是通过DOM方法document.getElementById()；二是采用Javascript库的调用，如${}。……既然我们想让这个动画对象能适合各种情况，那还是用DOM方法比较好，保证它不依赖于任何库。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">ducument</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">el</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
 
 <p>这段话仍然体现了一种设计决策。它的实现目标是不与任何JS库耦合。这就需要保证实现的通用性。
-<blockquote><p>要是你打算执行动画的元素没有ID怎么办呢？为了让这个类更灵活，让我们把它改成既可以传入元素引用，又可以传入ID字符串。如果传入的是ID字符串而不是对象引用，程序就会通过DOM方法去获取元素。两全其美！<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/><span class='line-number'>6</span><br/><span class='line-number'>7</span><br/><span class='line-number'>8</span><br/><span class='line-number'>9</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">element</span><span class="p">;</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">el</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">el</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
+<blockquote><p>要是你打算执行动画的元素没有ID怎么办呢？为了让这个类更灵活，让我们把它改成既可以传入元素引用，又可以传入ID字符串。如果传入的是ID字符串而不是对象引用，程序就会通过DOM方法去获取元素。两全其美！<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nx">property</span><span class="p">,</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">duration</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">element</span><span class="p">;</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">el</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span><br/></span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">el</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
 
 <p>这又是一种编码修炼了。除了要在设计上保证灵活性之外，我们在编码时也需养成保证代码完整性与健壮性的习惯，并体贴地为调用者着想。有这么一条设计原理，就是伯斯塔尔法则(Postel's Law)：“发送时要保守；接收时要开放。”这里的实现无疑遵循了这样一个法则。我们在编码时，考虑到这些因素了吗？</p>
 
 <p>Ok，继续我们的阅读。
-<blockquote><p>实例化一个对象要用到5个参数，但一眼看上去很难看出参数里的那些数字都代表什么含义。……为此你可以把参数改成字面量对象，键的名称看起来更直观一些。而且如此改动能使API更加灵活，因为即使今后增加了更多的参数，实例化对象的代码也不会变得更复杂。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span><br/><span class='line-number'>2</span><br/><span class='line-number'>3</span><br/><span class='line-number'>4</span><br/><span class='line-number'>5</span><br/><span class='line-number'>6</span><br/><span class='line-number'>7</span><br/><span class='line-number'>8</span><br/><span class='line-number'>9</span><br/><span class='line-number'>10</span><br/><span class='line-number'>11</span><br/><span class='line-number'>12</span><br/><span class='line-number'>13</span><br/><span class='line-number'>14</span><br/><span class='line-number'>15</span><br/><span class='line-number'>16</span><br/><span class='line-number'>17</span><br/></pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">element</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span><span class='line'><span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">element</span><span class="o">:</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;elementId&#39;</span><span class="p">),</span><br/></span><span class='line'><span class="nx">property</span><span class="o">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span><br/></span><span class='line'><span class="nx">from</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><br/></span><span class='line'><span class="nx">to</span><span class="o">:</span><span class="mi">200</span><span class="p">,</span><br/></span><span class='line'><span class="nx">duration</span><span class="o">:</span><span class="mi">1000</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">};</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
+<blockquote><p>实例化一个对象要用到5个参数，但一眼看上去很难看出参数里的那些数字都代表什么含义。……为此你可以把参数改成字面量对象，键的名称看起来更直观一些。而且如此改动能使API更加灵活，因为即使今后增加了更多的参数，实例化对象的代码也不会变得更复杂。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">element</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span><span class='line'><span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">element</span><span class="o">:</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;elementId&#39;</span><span class="p">),</span><br/></span><span class='line'><span class="nx">property</span><span class="o">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span><br/></span><span class='line'><span class="nx">from</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><br/></span><span class='line'><span class="nx">to</span><span class="o">:</span><span class="mi">200</span><span class="p">,</span><br/></span><span class='line'><span class="nx">duration</span><span class="o">:</span><span class="mi">1000</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">};</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
 
 <p>无疑，这体现了面向对象的“封装”思想。通过封装既保证了代码的清洁与可读性，同时还有利于未来的扩展。这与OCP（开放-封闭原则）是一脉相承的。代码是有结构的，或者体现为函数，或者体现为对象，事实上都是一种按照属性与职责进行的分类。分类是保持清洁、避免重复的唯一法门。从简朴的角度来说，所有的设计其实都是在做着分类的游戏。分类体现了定义的抽象，职责的分配，结构的划分；如果再加上类别之间的协作，就是设计的全部了。</p>
 ]]></content>
@@ -101,137 +101,7 @@
 <p>业务价值是职责驱动的入口，因为在寻找到了业务价值之后，我们就可以剖析该价值需要哪些支撑功能（它可以解释需求的What），再由功能继续深入分析，找到实现功能的职责（它可以解释需求的How）。因此，这个模型是一个层层推进的过程。</p>
 
 <p>职责驱动不仅仅可以从文字需求入手，同样可以针对已经实现的代码。甚至我们可以将这种职责驱动看做是一种阅读代码的技巧，通过寻找业务价值，进而分析业务功能和业务实现，对代码形成一个整体的感观，进而通过合理地分配职责改善原有代码。如下代码是《修改代码的艺术》一书中给出的例子：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import javax.mail.&lt;em>;
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>import javax.mail.&lt;em>;
 </span><span class='line'>import javax.mail.internet.&lt;/em>;&lt;/p>
 </span><span class='line'>
 </span><span class='line'>&lt;p>public class MailingListServer {&lt;/p>

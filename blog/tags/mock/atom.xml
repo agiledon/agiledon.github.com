@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Mock | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/mock/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-04-05T21:47:37+08:00</updated>
+  <updated>2013-04-08T12:40:48+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,27 +19,7 @@
     <updated>2012-12-28T11:13:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/28/mock-log</id>
     <content type="html"><![CDATA[<p>在我们进行的一个项目中，需要测试是否按照要求正确写入到日志中。例如，我们定义了这样的类和方法：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClient</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClient</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">S</span><span class="o">,</span> <span class="n">D</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">D</span> <span class="n">sendRequest</span><span class="o">(</span><span class="n">S</span> <span class="n">request</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">D</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">responseType</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>      <span class="n">Source</span> <span class="n">source</span> <span class="o">=</span> <span class="n">jaxbUtil</span><span class="o">.</span><span class="na">marshall</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
@@ -62,28 +42,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>现在，我们要测试在Debug被enable的情况下，是否真正写了日志。我们不可能在单元测试中去访问日志文件，然后判断日志是否写入。一方面，这影响了单元测试的速度，另一方面也会造成对日志文件的依赖。我们的做法是在测试时，获得该日志，然后将该日志的所有Appenders去掉，然后加入属于内存中的Appender，即WriterAppender，然后获得该Appender写入的日志内容，对这个内容进行断言。<!--more-->我们定义了一个Fixture：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Log4jFixture</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Log4jFixture</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="nd">@BeforeClass</span>
 </span><span class='line'> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">clearLog4JAllApenders</span><span class="o">()</span> <span class="o">{</span>
@@ -107,45 +66,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>若要测试Log的测试用例，则需要继承Log4jFixture。BeforeClass方法保证了每个继承该类的测试用例，在运行测试用例之前都会事先清除Log的appender。然后，再需要记录日志时，例如调用前面ServiceClient的sendRequest()方法前，先调用attachInMemoryLogAppender()方法，最后得到的StringWriter就会包含日志的内容。例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClientTest</span> <span class="kd">extends</span> <span class="n">Log4jFixture</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClientTest</span> <span class="kd">extends</span> <span class="n">Log4jFixture</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">JaxbUtil</span> <span class="n">jaxbUtil</span><span class="o">;</span>
 </span><span class='line'><span class="kd">private</span> <span class="n">WebServiceTemplate</span> <span class="n">webServiceTemplate</span><span class="o">;</span>

@@ -6,11 +6,11 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>GAE的设计 - 简单文本</title>
+  <title>阅读Scala代码之二 - 简单文本</title>
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="说明：以下获得的设计思考，是阅读《GAE编程指南》时的一些简单体会。主要针对的是一些设计细节（非架构）的考量。 简单与灵活。在对API进行设计决策时，需充分考虑API的简单性和全面性。此二者都是站在调用者的角度来思考，即需要提供一种默认的简单调用形式，也可以根据实际情况提供可选的方式。 &hellip;">
+  <meta name="description" content="今天要阅读的代码来自《Scala By Example》一书的第一个例子。这两段代码通过实现一个快速排序算法体现了命令式与函数式之间的区别。这种直观的对比无疑很好地展现了函数式编程的优雅与简洁。让我们来看看这两段代码，首先是命令式的实现方式： def sort(xs: Array[Int]) { &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.com/blog/2012/02/11/the-design-of-gae/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -70,7 +70,7 @@
   
   <header>
     
-      <h1 class="entry-title">GAE的设计</h1>
+      <h1 class="entry-title">阅读Scala代码之二</h1>
     
     
       <p class="meta">
@@ -86,7 +86,7 @@
   
 
 
-<time datetime="2012-02-11T10:55:00+08:00" pubdate data-updated="true">Feb 11<span>th</span>, 2012</time>
+<time datetime="2013-04-07T22:37:00+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -95,84 +95,77 @@
   </header>
 
 
-<div class="entry-content"><p><img class="center" src="/images/2012/02/Google-App-Engine.jpg" width="537" height="251"></p>
+<div class="entry-content"><p>今天要阅读的代码来自《Scala By Example》一书的第一个例子。这两段代码通过实现一个快速排序算法体现了命令式与函数式之间的区别。这种直观的对比无疑很好地展现了函数式编程的优雅与简洁。让我们来看看这两段代码，首先是命令式的实现方式：</p>
 
-<p>说明：以下获得的设计思考，是阅读《GAE编程指南》时的一些简单体会。主要针对的是一些设计细节（非架构）的考量。</p>
-
-<p>简单与灵活。在对API进行设计决策时，需充分考虑API的简单性和全面性。此二者都是站在调用者的角度来思考，即需要提供一种默认的简单调用形式，也可以根据实际情况提供可选的方式。这是简单性和灵活性的共同体现。在Google App Engine中，对数据存储区的实体存储，可以在创建实体对象时指定主键；如果不指定主键，就会生成唯一的ID。</p>
-
-<!-- more -->
-
-
-<p>如下Python代码：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;The Grapes of Wrath&#39;</span><span class="p">,</span>
-</span><span class='line'>           <span class="n">author</span><span class="o">=</span><span class="s">&#39;John Steinbeck&#39;</span><span class="p">,</span>
-</span><span class='line'>           <span class="n">copyright_year</span><span class="o">=</span><span class="mi">1939</span><span class="p">,</span>
-</span><span class='line'>           <span class="n">author_birthdate</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">1902</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">27</span><span class="p">))</span>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">j</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="n">t</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">r</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">((</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">var</span> <span class="n">i</span> <span class="k">=</span> <span class="n">l</span><span class="o">;</span> <span class="k">var</span> <span class="n">j</span> <span class="k">=</span> <span class="n">r</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>          <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">j</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">r</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">r</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">sort1</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>如果需要生成键名，在调用构造函数时，应加上key_name参数：</p>
+<p>下面是函数式的方式：</p>
 
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">Book</span><span class="p">(</span><span class="n">key_name</span><span class="o">=</span><span class="s">&#39;0143039431&#39;</span><span class="p">,</span>
-</span><span class='line'>           <span class="n">title</span><span class="o">=</span><span class="s">&#39;The Grapes of Wrath&#39;</span><span class="p">,</span>
-</span><span class='line'>           <span class="n">author</span><span class="o">=</span><span class="s">&#39;John Steinbeck&#39;</span><span class="p">,</span>
-</span><span class='line'>           <span class="n">copyright_year</span><span class="o">=</span><span class="mi">1939</span><span class="p">,</span>
-</span><span class='line'>           <span class="n">author_birthdate</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">1902</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">27</span><span class="p">))</span>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="n">xs</span>
+</span><span class='line'>    <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
+</span><span class='line'>      <span class="nc">Array</span><span class="o">.</span><span class="n">concat</span><span class="o">(</span>
+</span><span class='line'>        <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&gt;)),</span>
+</span><span class='line'>             <span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">==),</span>
+</span><span class='line'>        <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&lt;)))</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>我想，之所以需要考虑这种简单性和灵活性的结合，在于API的特征，这种开放平台会面临不同消费者，在不同场景下做出不同的选择。二者的平衡保证了API的调用能够得到最大程度的需求满足。</p>
+<p>后者的简洁不言而喻，感觉实在太强烈了。它还展露出一种优雅的从容，因为没有嵌套的while循环，清扫了许多阅读障碍，没有繁文缛节，直指问题本质，显得游刃有余，挥洒自如。究其根由，在于这种函数式的编程方式，完全匹配快速排序的算法原则与过程，就像是那种斩钉截铁的证明，没有多余的啰嗦，结果如同“清水出芙蓉，天然来雕饰”。</p>
 
-<p>封装。在设计时，我们应尽量避免使用基本类型。Martin Fowler在《重构》一书中将其称为“基本类型偏执”。例如在GAE中，就对key进行了合理的封装，包含了实体的类型和值。如果希望批量获取多个实体，可以将key放到列表中，作为get()方法的参数，返回实体对象列表。这种批量获取实体的性能比多次执行单次获取要好，或许是因为它能够减少对数据库IO操作的次数。根据key获得实体对象的python代码如下所示：</p>
+<p>不提这种感觉的美感，函数式编程带来的实实在在好处在于它的无副作用特质。这就好似你寻找的药方，不仅能够药到病除，服用后还没有不良反应，真可以说得上奢望了。阅读第二段代码，我们可以非常直观地看到没有任何操作修改了传入的xs数组。从外向内看，返回的数组是通过Array.concat将三段数组给串联了起来，返回了一个新的数组对象。表面看来，这段代码对xs做了filter操作，根据传入的Predicate对数组元素进行筛选。事实上，filter同样是函数，它并没有直接更改被操作的数组，而是返回了一个新的筛选后的数组对象。这意味着，即使我们传入一个val的数组对象，这个sort函数也是不会抱怨的。例如：</p>
 
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">google.appengine.ext</span> <span class="kn">import</span> <span class="n">db</span>
-</span><span class='line'><span class="n">k</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="s">&#39;Entity&#39;</span><span class="p">,</span> <span class="s">&#39;alphabeta&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">e</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">target</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">7</span><span class="o">)</span>
+</span><span class='line'><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">sort</span><span class="o">(</span><span class="n">target</span><span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>在上面的代码中，db.key()方法相当于key的工厂方法，负责创建key。如果需要根据多个key值获得多个实体对象，则代码为：</p>
+<p>这两种方案皆使用了递归，时间复杂度皆为O(N log(N))，但就简洁性和易读性而言，却不可同日而语。而这种无副作用特性则体现了函数式的不变特质，从而可以极大地简化并发编程模型。当然，这种方法必然会造成空间的浪费；不过，有JVM提供的GC负责内存管理，我们也无需关心这些对象在何时需要被释放。只要系统对内存的要求没有特别的限制，这一问题几乎可以忽略不计。</p>
 
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="n">entities</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">([</span><span class="n">k1</span><span class="p">,</span><span class="n">k2</span><span class="p">,</span><span class="n">k3</span><span class="p">])</span>
+<p>好吧，让我们再转到Scala语言层面的特性上来。看第一段代码，除了个别关键字与语法不同之外，它几乎与Java代码没有太大的区别，最大的不同还在于Scala将函数（或者说方法）提升到了一等公民。第二段代码中，比较特殊的用法是调用Array的filter函数。该函数的签名为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">filter</span><span class="o">(</span><span class="n">p</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="nc">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>比较python而言，Java代码略显复杂：</p>
+<p>调用时，这段代码传入的表达式比较奇怪。严格意义上，filter显然需要传入一个函数，这个函数要求一个输入参数，返回为Boolean型。如果采用匿名函数的方式，调用方式应该为：</p>
 
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DatastoreService</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DatastoreServiceFactory</span><span class="o">.</span><span class="na">getDatastoreService</span><span class="o">();</span>
-</span><span class='line'><span class="n">Map</span><span class="o">&lt;</span><span class="n">Key</span><span class="o">,</span> <span class="n">Entity</span><span class="o">&gt;</span> <span class="n">entities</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayList</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">k1</span><span class="o">,</span><span class="n">k2</span><span class="o">,</span><span class="n">k3</span><span class="o">)));</span>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>对于Java的GAE API而言，似乎还可以提供一个类似KeyCollection的对象，用于封装key列表，并为DatastoreService的get()提供接收KeyCollection对象的重载方法。KeyCollection可以封装一些key列表的行为。但这要根据具体的API设计而定。</p>
+<p>如果使用变量的placeholder，则可以表示为：</p>
 
-<p>GAE为查询还提供了get_by_id()与get_by_key_name()方法。为何提供这两个方法呢？我想，首先因为它们满足最常见的查询要求；同时，这是一种高层次的抽象，无论实体属于什么类型，无论业务有何差异，数据结构有何区别，都需要这两种查询方式。此时，还能够充分体会到封装key的好处，因为这种封装能够在一定程度上消除不同实体（尤其是遗留代码实体）在key之间的差异。</p>
-
-<p>一致性。在GAE中，创建实体的API与更新实体的API完全一致。数据存储区不会区分创建和更新操作。若保存实体时用到完整的键（例如带有类别kind和键名），而数据存储区恰好有这个实体，就会替换原有的实体。为避免更新有效的数据，可以事先测试该实体是否存在，但这种方式在GAE中，需要使用事务API。</p>
-
-<p>Fluence Interface。GAE提供的查询API在Java和Python两种语言下，有一些细微的差别。比较而言，Python采用了Fluence Interface模式，使得它的调用显得更为流畅和简洁。以下是Python代码：
-Liquid error: invalid byte sequence in US-ASCII</p>
-
-<p>Java的代码就略显冗长而不够流畅，可读性较低。这一方面与语言自身的特色有关，但倘若运用了fluence interface模式，相信能够比较好地提高代码的可读性：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DatastoreService</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">DatastoreServiceFactory</span><span class="o">.</span><span class="na">getDatastoreService</span><span class="o">();</span>
-</span><span class='line'><span class="n">Query</span> <span class="n">q</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Query</span><span class="o">(</span><span class="s">&quot;Book&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">q</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="s">&quot;copyright year&quot;</span><span class="o">,</span> <span class="n">Query</span><span class="o">.</span><span class="na">FilterOperator</span><span class="o">.</span><span class="na">LESS_THAN_OR_EQUAL</span><span class="o">,</span> <span class="mi">1950</span><span class="o">);</span>
-</span><span class='line'><span class="n">q</span><span class="o">.</span><span class="na">addSort</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">PreparedQuery</span> <span class="n">pq</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="na">prepare</span><span class="o">(</span><span class="n">q</span><span class="o">);</span>
-</span><span class='line'><span class="k">for</span> <span class="o">(</span><span class="n">Entity</span> <span class="n">result</span> <span class="o">:</span> <span class="n">pq</span><span class="o">.</span><span class="na">asIterable</span><span class="o">()){</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="k">_</span><span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>在使用PreparedQuery对象访问结果之前，查询其实是没有执行的。</p>
-
-<p>根据我对上面这一段python代码的直观感觉，认为fetch()方法似乎是一种命令模式，之前的Query对象作为命令对象，由内部的Builder对象构建起内部的组成部分，这里是由filter()与order()方法来体现。因为没有阅读源代码，所以只能停留在猜测。我认为在Query类的内部，可能会定义一个Builder方法（或者定义一个内部的Builder类，如果要考虑扩展，甚至是一个Builder接口）。它可能会持有一个QueryStatement对象，作为Collection Parameter传递给Builder。这些Builder会修改QueryStatement对象，使其生成符合命令要求的SQL语句。如果Query是针对数据库的查询，则QueryStatement就可以是一个SqlStatement对象。若有时间，希望能阅读一下源代码，以此印证我的揣测是否正确。或许，有更好的解决方案？</p>
+<p>而这里使用的则是一种称为partially applied function的方式，它支持我们在不会引起歧义的情况下（主要是指只有一个参数的情形），直接省略该参数变量。只要明白这种语法，这样的代码仍然是可读的。</p>
 </div>
 
 
@@ -195,12 +188,12 @@ Liquid error: invalid byte sequence in US-ASCII</p>
   
 
 
-<time datetime="2012-02-11T10:55:00+08:00" pubdate data-updated="true">Feb 11<span>th</span>, 2012</time>
+<time datetime="2013-04-07T22:37:00+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/design/'>Design</a>
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
   
 </span>
 
@@ -211,7 +204,7 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 
 <span class="categories">
   
-    <a class='category' href='/blog/tags/api/'>API</a>, <a class='category' href='/blog/tags/gae/'>GAE</a>
+    <a class='category' href='/blog/tags/scala/'>Scala</a>
   
 </span>
 
@@ -220,7 +213,7 @@ Liquid error: invalid byte sequence in US-ASCII</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2012/02/11/the-design-of-gae/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2012/02/11/the-design-of-gae/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -233,10 +226,8 @@ Liquid error: invalid byte sequence in US-ASCII</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/" title="Previous Post: Post数据到服务端生成文件">&laquo; Post数据到服务端生成文件</a>
+        <a class="basic-alignment left" href="/blog/2013/04/04/reading-scala-code-1/" title="Previous Post: 阅读Scala代码之一">&laquo; 阅读Scala代码之一</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/05/26/the-happiness-of-thinking/" title="Next Post: 思考的乐趣">思考的乐趣 &raquo;</a>
       
     </p>
   </footer>
@@ -376,8 +367,8 @@ Liquid error: invalid byte sequence in US-ASCII</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://agiledon.github.com/blog/2012/02/11/the-design-of-gae/';
-        var disqus_url = 'http://agiledon.github.com/blog/2012/02/11/the-design-of-gae/';
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2/';
         var disqus_script = 'embed.js';
       
     (function () {

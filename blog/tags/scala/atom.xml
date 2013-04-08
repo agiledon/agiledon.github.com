@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Scala | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/scala/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-04-05T21:47:37+08:00</updated>
+  <updated>2013-04-08T12:40:48+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,79 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[阅读Scala代码之二]]></title>
+    <link href="http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2/"/>
+    <updated>2013-04-07T22:37:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2</id>
+    <content type="html"><![CDATA[<p>今天要阅读的代码来自《Scala By Example》一书的第一个例子。这两段代码通过实现一个快速排序算法体现了命令式与函数式之间的区别。这种直观的对比无疑很好地展现了函数式编程的优雅与简洁。让我们来看看这两段代码，首先是命令式的实现方式：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">j</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="n">t</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="k">def</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">r</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">((</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">var</span> <span class="n">i</span> <span class="k">=</span> <span class="n">l</span><span class="o">;</span> <span class="k">var</span> <span class="n">j</span> <span class="k">=</span> <span class="n">r</span>
+</span><span class='line'>  <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">l</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">j</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">r</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">r</span><span class="o">)</span>
+</span><span class='line'><span class="n">sort1</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>下面是函数式的方式：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="mi">1</span><span class="o">)</span> <span class="n">xs</span>
+</span><span class='line'><span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
+</span><span class='line'>  <span class="nc">Array</span><span class="o">.</span><span class="n">concat</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;)),</span>
+</span><span class='line'>         <span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">==),</span>
+</span><span class='line'>    <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;)))</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>后者的简洁不言而喻，感觉实在太强烈了。它还展露出一种优雅的从容，因为没有嵌套的while循环，清扫了许多阅读障碍，没有繁文缛节，直指问题本质，显得游刃有余，挥洒自如。究其根由，在于这种函数式的编程方式，完全匹配快速排序的算法原则与过程，就像是那种斩钉截铁的证明，没有多余的啰嗦，结果如同“清水出芙蓉，天然来雕饰”。</p>
+
+<p>不提这种感觉的美感，函数式编程带来的实实在在好处在于它的无副作用特质。这就好似你寻找的药方，不仅能够药到病除，服用后还没有不良反应，真可以说得上奢望了。阅读第二段代码，我们可以非常直观地看到没有任何操作修改了传入的xs数组。从外向内看，返回的数组是通过Array.concat将三段数组给串联了起来，返回了一个新的数组对象。表面看来，这段代码对xs做了filter操作，根据传入的Predicate对数组元素进行筛选。事实上，filter同样是函数，它并没有直接更改被操作的数组，而是返回了一个新的筛选后的数组对象。这意味着，即使我们传入一个val的数组对象，这个sort函数也是不会抱怨的。例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">target</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">7</span><span class="o">)</span>
+</span><span class='line'><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">sort</span><span class="o">(</span><span class="n">target</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这两种方案皆使用了递归，时间复杂度皆为O(N log(N))，但就简洁性和易读性而言，却不可同日而语。而这种无副作用特性则体现了函数式的不变特质，从而可以极大地简化并发编程模型。当然，这种方法必然会造成空间的浪费；不过，有JVM提供的GC负责内存管理，我们也无需关心这些对象在何时需要被释放。只要系统对内存的要求没有特别的限制，这一问题几乎可以忽略不计。</p>
+
+<p>好吧，让我们再转到Scala语言层面的特性上来。看第一段代码，除了个别关键字与语法不同之外，它几乎与Java代码没有太大的区别，最大的不同还在于Scala将函数（或者说方法）提升到了一等公民。第二段代码中，比较特殊的用法是调用Array的filter函数。该函数的签名为：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">filter</span><span class="o">(</span><span class="n">p</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="nc">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>调用时，这段代码传入的表达式比较奇怪。严格意义上，filter显然需要传入一个函数，这个函数要求一个输入参数，返回为Boolean型。如果采用匿名函数的方式，调用方式应该为：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>如果使用变量的placeholder，则可以表示为：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(&lt;</span><span class="n">em</span><span class="o">&gt;</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>而这里使用的则是一种称为partially applied function的方式，它支持我们在不会引起歧义的情况下（主要是指只有一个参数的情形），直接省略该参数变量。只要明白这种语法，这样的代码仍然是可读的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[阅读Scala代码之一]]></title>
@@ -24,19 +97,7 @@
 <p>关键在于，自己阅读Scala的代码太少，编写Scala的代码更少。找到症结，那就尝试去解决。当然，我可以选择一些著名的Scala开源框架，例如<a href="http://www.playframework.com/">Play Framework</a>，Kestrel或者<a href="http://kafka.apache.org/">Kafka</a>，对其进行深入阅读。可是，我发现这些框架对于目前的我而言，似乎显得困难了一点。那么，就从一些短小的代码段开始着手吧。<!--more--></p>
 
 <p>今天阅读的这段代码来自Twitter团队编写的<a href="http://twitter.github.com/effectivescala/">Effective Scala</a>。这段代码对一个Seq对象的值进行了分类汇总，然后进行了排序。代码内容如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
 </span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">votes</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">groupBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_1</span><span class="o">)</span>
@@ -51,13 +112,11 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>首先，它针对Seq对象votes进行了分组，调用了Seq集合的groupBy方法。该方法的定义为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">groupBy</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20(A&quot;</span><span class="o">&gt;</span><span class="n">K</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">=&gt;</span> <span class="n">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">immutable.Map</span><span class="o">[</span><span class="kt">K</span>, <span class="kt">Sequ</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">groupBy</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20(A&quot;</span><span class="o">&gt;</span><span class="n">K</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">=&gt;</span> <span class="n">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">immutable.Map</span><span class="o">[</span><span class="kt">K</span>, <span class="kt">Sequ</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>该函数的输入参数实际上是一个函数，该函数的参数为A，这个泛型参数在这里指代Seq元素的类型，即一个tuple；返回值为K，为key对应的类型。groupBy函数的返回值是一个不变类型的Map。对于此例而言，就是根据语言进行分类，由此可以得到三个类别，每个类别又包含一个Seq或者List。结果为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Map</span><span class="o">(</span><span class="n">scala</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">10</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">)),</span> <span class="n">java</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">java</span><span class="o">,</span><span class="mi">4</span><span class="o">)),</span> <span class="n">phthon</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">phthon</span><span class="o">,</span><span class="mi">10</span><span class="o">)))</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Map</span><span class="o">(</span><span class="n">scala</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">10</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">)),</span> <span class="n">java</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">java</span><span class="o">,</span><span class="mi">4</span><span class="o">)),</span> <span class="n">phthon</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">phthon</span><span class="o">,</span><span class="mi">10</span><span class="o">)))</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>在这段代码中，用到了Scala的特殊语法，例如groupBy(_._1)。括号中的_代表了一个类型为A的参数，在这里就是tuple对象；而_1则是方法名，对于tuple而言，_1方法能够返回tuple的第一个元素，即语言的名称。（与之类似，_2则会返回tuple的第二个元素。）因此，_._1恰好能够满足groupBy()函数需要传入的函数，从而根据语言的名称对votes进行分组。</p>
@@ -72,23 +131,7 @@
 <p>接下来的方法就比较容易理解了，即调用toSeq将Map转换为Seq，并根据tuple的第二个元素进行排序，此时，排序的关键字为统计的语言次数。soryBy函数的默认排序为升序，因此需要调用reverse颠倒顺序。</p>
 
 <p>如果弄懂了Scala与此相关的语法，要理解这段代码还是比较容易的。然而，在Twitter给出的Effective Scala文章中，提到了关于编程意图的问题。因为上述代码通过一种类似流水线转换的方式完成整个操作，操作过程中的一些中间值被隐藏在一系列的函数调用中，并没有很好地展现其意图。文章提出的解决办法就是声明中间结果和参数。上述代码可以改写为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
 </span><span class='line'><span class="k">val</span> <span class="n">votesByLang</span> <span class="k">=</span> <span class="n">votes</span> <span class="n">groupBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">lang</span> <span class="o">}</span>
 </span><span class='line'><span class="k">val</span> <span class="n">sumByLang</span> <span class="k">=</span> <span class="n">votesByLang</span> <span class="n">map</span> <span class="o">{</span> <span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="o">=&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
@@ -116,38 +159,20 @@
     <updated>2012-10-11T12:34:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/10/11/use-sbt-in-intellij</id>
     <content type="html"><![CDATA[<p>正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure></notextile></div>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure></notextile></div>
 或者：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install sbt</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>brew install sbt</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: 'idea'，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
 
 <!--more-->
 
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.scalatest&quot;</span> <span class="o">%</span> <span class="s">&quot;scalatest_2.9.1&quot;</span> <span class="o">%</span> <span class="s">&quot;1.8&quot;</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;org.scalatest&quot;</span> <span class="o">%</span> <span class="s">&quot;scalatest_2.9.1&quot;</span> <span class="o">%</span> <span class="s">&quot;1.8&quot;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意，在sbt文件中一定要有一条空行哦，不然就会报错。现在，转到项目主目录下，运行sbt的命令，就能自动下载scalatest的包了。可惜这样还不够，因为即使下载了scalatest，IntelliJ仍然拒绝认识它，然后很恼人地给出红色错误提示。例如在test目录下写一个scalatest的单元测试：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.junit.runner.RunWith</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.junit.runner.RunWith</span>
 </span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.junit.JUnitRunner</span>
 </span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.Suite</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
@@ -167,12 +192,7 @@
 <p>它根本就不认识JUnit和ScalaTest，所以类似Suite，@RunWith之类的东西皆为红色，看着让人闹心。当然，我在这里还用了JUnit，所以还需要在build.sbt中添加JUnit的依赖。</p>
 
 <p>要想能够在IntelliJ Idea中更新项目，就像Gradle一样，也需要专门为idea服务的插件，sbt中即为sbt-idea。方法是在mac的用户主目录下，找到.sbt/plugins目录，然后看看有没有build.sbt文件。如果没有，就创建一个。事实上，要是连.sbt/plugins目录也没有找到，没关系，同样可以自己创建。接下来，在build.sbt文件中写入：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;sbt-idea-repo&quot;</span> <span class="n">at</span> <span class="s">&quot;http://mpeltonen.github.com/maven/&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;sbt-idea-repo&quot;</span> <span class="n">at</span> <span class="s">&quot;http://mpeltonen.github.com/maven/&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">addSbtPlugin</span><span class="o">(</span><span class="s">&quot;com.github.mpeltonen&quot;</span> <span class="o">%%</span> <span class="s">&quot;sbt-idea&quot;</span> <span class="o">%</span> <span class="s">&quot;1.1.0&quot;</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>

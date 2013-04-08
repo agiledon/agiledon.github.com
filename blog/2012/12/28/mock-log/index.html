@@ -10,24 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="在我们进行的一个项目中，需要测试是否按照要求正确写入到日志中。例如，我们定义了这样的类和方法： 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-public class ServiceClient { public &lt;S, D&gt; D &hellip;">
+  <meta name="description" content="在我们进行的一个项目中，需要测试是否按照要求正确写入到日志中。例如，我们定义了这样的类和方法： public class ServiceClient { public &lt;S, D&gt; D sendRequest(S request, final Class&lt;D&gt; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -114,24 +97,7 @@ public class ServiceClient { public &lt;S, D&gt; D &hellip;">
 
 <div class="entry-content"><p>在我们进行的一个项目中，需要测试是否按照要求正确写入到日志中。例如，我们定义了这样的类和方法：</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClient</span> <span class="o">{</span>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClient</span> <span class="o">{</span>
 </span><span class='line'>     <span class="kd">public</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">,</span> <span class="n">D</span><span class="o">&gt;</span> <span class="n">D</span> <span class="n">sendRequest</span><span class="o">(</span><span class="n">S</span> <span class="n">request</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">responseType</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>          <span class="n">Source</span> <span class="n">source</span> <span class="o">=</span> <span class="n">jaxbUtil</span><span class="o">.</span><span class="na">marshall</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
 </span><span class='line'>          <span class="k">return</span> <span class="nf">sendRequest</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">responseType</span><span class="o">);</span>
@@ -153,25 +119,7 @@ public class ServiceClient { public &lt;S, D&gt; D &hellip;">
 
 <p>现在，我们要测试在Debug被enable的情况下，是否真正写了日志。我们不可能在单元测试中去访问日志文件，然后判断日志是否写入。一方面，这影响了单元测试的速度，另一方面也会造成对日志文件的依赖。我们的做法是在测试时，获得该日志，然后将该日志的所有Appenders去掉，然后加入属于内存中的Appender，即WriterAppender，然后获得该Appender写入的日志内容，对这个内容进行断言。<!--more-->我们定义了一个Fixture：</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Log4jFixture</span> <span class="o">{</span>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Log4jFixture</span> <span class="o">{</span>
 </span><span class='line'>     <span class="nd">@BeforeClass</span>
 </span><span class='line'>     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">clearLog4JAllApenders</span><span class="o">()</span> <span class="o">{</span>
 </span><span class='line'>          <span class="n">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllApenders</span><span class="o">();</span>
@@ -194,42 +142,7 @@ public class ServiceClient { public &lt;S, D&gt; D &hellip;">
 
 <p>若要测试Log的测试用例，则需要继承Log4jFixture。BeforeClass方法保证了每个继承该类的测试用例，在运行测试用例之前都会事先清除Log的appender。然后，再需要记录日志时，例如调用前面ServiceClient的sendRequest()方法前，先调用attachInMemoryLogAppender()方法，最后得到的StringWriter就会包含日志的内容。例如：</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClientTest</span> <span class="kd">extends</span> <span class="n">Log4jFixture</span> <span class="o">{</span>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClientTest</span> <span class="kd">extends</span> <span class="n">Log4jFixture</span> <span class="o">{</span>
 </span><span class='line'>  <span class="kd">private</span> <span class="n">JaxbUtil</span> <span class="n">jaxbUtil</span><span class="o">;</span>
 </span><span class='line'>  <span class="kd">private</span> <span class="n">WebServiceTemplate</span> <span class="n">webServiceTemplate</span><span class="o">;</span>
 </span><span class='line'>  <span class="kd">private</span> <span class="n">ServiceClient</span> <span class="n">serviceClient</span><span class="o">;</span>
@@ -372,6 +285,10 @@ public class ServiceClient { public &lt;S, D&gt; D &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/04/07/reading-scala-code-2/">阅读Scala代码之二</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/04/04/reading-scala-code-1/">阅读Scala代码之一</a>
       </li>
     
@@ -385,10 +302,6 @@ public class ServiceClient { public &lt;S, D&gt; D &hellip;">
     
       <li class="post">
         <a href="/blog/2013/03/16/old-and-reclusion-and-fight/">苍老与隐居以及战斗</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/">新人培养日记(一)</a>
       </li>
     
   </ul>
@@ -426,7 +339,7 @@ public class ServiceClient { public &lt;S, D&gt; D &hellip;">
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fapi%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EAPI%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Farchitecture%27+style%3D%27font-size%3A+50.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fbig-data%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EBig+Data%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoach%27+style%3D%27font-size%3A+18.88888888888889%25%27%3ECoach%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoding%27+style%3D%27font-size%3A+23.333333333333336%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcqrs%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ECQRS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcsharp%27+style%3D%27font-size%3A+18.88888888888889%25%27%3ECSharp%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign%27+style%3D%27font-size%3A+50.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-pattern%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EDesign+Pattern%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-patterns%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EDesign+Patterns%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+18.88888888888889%25%27%3EDotNet%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EDotNET%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fextjs%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EExtJS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgae%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EGAE%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgeek%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fhadoop%27+style%3D%27font-size%3A+18.88888888888889%25%27%3EHadoop%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fhdfs%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EHDFS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Finfoq%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjava%27+style%3D%27font-size%3A+27.77777777777778%25%27%3EJava%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjavascript%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EJavaScript%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fliterature%27+style%3D%27font-size%3A+23.333333333333336%25%27%3ELiterature%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmapreduce%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EMapReduce%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmock%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EMock%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmvc%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EMVC%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmysql%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EMySQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnosql%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnovel%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ENovel%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnutch%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ENutch%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foctopress%27+style%3D%27font-size%3A+23.333333333333336%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foo%27+style%3D%27font-size%3A+27.77777777777778%25%27%3EOO%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fpoem%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EPoem%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Freading%27+style%3D%27font-size%3A+41.111111111111114%25%27%3EReading%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Frefactoring%27+style%3D%27font-size%3A+27.77777777777778%25%27%3ERefactoring%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fresponsibility%27+style%3D%27font-size%3A+23.333333333333336%25%27%3EResponsibility%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fruby%27+style%3D%27font-size%3A+18.88888888888889%25%27%3ERuby%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscala%27+style%3D%27font-size%3A+18.88888888888889%25%27%3EScala%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscalability%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EScalability%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftdd%27+style%3D%27font-size%3A+23.333333333333336%25%27%3ETDD%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthinking%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EThinking%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthought%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EThought%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthoughtworks%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EThoughtWorks%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftransaltion%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ETransaltion%3C%2Fa%3E+%3C%2Ftags%3E"></span>
+    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fapi%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EAPI%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Farchitecture%27+style%3D%27font-size%3A+50.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fbig-data%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EBig+Data%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoach%27+style%3D%27font-size%3A+18.88888888888889%25%27%3ECoach%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoding%27+style%3D%27font-size%3A+23.333333333333336%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcqrs%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ECQRS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcsharp%27+style%3D%27font-size%3A+18.88888888888889%25%27%3ECSharp%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign%27+style%3D%27font-size%3A+50.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-pattern%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EDesign+Pattern%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-patterns%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EDesign+Patterns%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+18.88888888888889%25%27%3EDotNet%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EDotNET%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fextjs%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EExtJS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgae%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EGAE%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgeek%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fhadoop%27+style%3D%27font-size%3A+18.88888888888889%25%27%3EHadoop%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fhdfs%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EHDFS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Finfoq%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjava%27+style%3D%27font-size%3A+27.77777777777778%25%27%3EJava%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjavascript%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EJavaScript%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fliterature%27+style%3D%27font-size%3A+23.333333333333336%25%27%3ELiterature%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmapreduce%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EMapReduce%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmock%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EMock%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmvc%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EMVC%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmysql%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EMySQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnosql%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnovel%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ENovel%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnutch%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ENutch%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foctopress%27+style%3D%27font-size%3A+23.333333333333336%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foo%27+style%3D%27font-size%3A+27.77777777777778%25%27%3EOO%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fpoem%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EPoem%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Freading%27+style%3D%27font-size%3A+41.111111111111114%25%27%3EReading%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Frefactoring%27+style%3D%27font-size%3A+27.77777777777778%25%27%3ERefactoring%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fresponsibility%27+style%3D%27font-size%3A+23.333333333333336%25%27%3EResponsibility%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fruby%27+style%3D%27font-size%3A+18.88888888888889%25%27%3ERuby%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscala%27+style%3D%27font-size%3A+23.333333333333336%25%27%3EScala%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscalability%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EScalability%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftdd%27+style%3D%27font-size%3A+23.333333333333336%25%27%3ETDD%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthinking%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EThinking%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthought%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EThought%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthoughtworks%27+style%3D%27font-size%3A+14.444444444444445%25%27%3EThoughtWorks%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftransaltion%27+style%3D%27font-size%3A+14.444444444444445%25%27%3ETransaltion%3C%2Fa%3E+%3C%2Ftags%3E"></span>
 </section>
 
 <section>

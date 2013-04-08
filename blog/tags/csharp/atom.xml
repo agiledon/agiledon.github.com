@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: CSharp | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/csharp/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-04-05T21:47:37+08:00</updated>
+  <updated>2013-04-08T12:40:48+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,25 +19,10 @@
     <updated>2011-10-11T17:06:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2011/10/11/Issue-of-isdefined</id>
     <content type="html"><![CDATA[<p>在.NET 4.0(当然也包括4.0以前的版本)下，用反射判断某个方法是否运用了自定义Attribute时，可以通过调用MethodInfo的IsDefined()方法进行确认。当然，IsDefined()方法事实上定义在MethodInfo的父类MemberInfo中，但它仅仅被定义为抽象方法，真正的实现是在MethodInfo的子类DynamicMethod中。调用方式如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">methodInfo</span><span class="p">.</span><span class="n">IsDefined</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MyAttribute</span><span class="p">),</span> <span class="k">false</span><span class="p">)</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">methodInfo</span><span class="p">.</span><span class="n">IsDefined</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MyAttribute</span><span class="p">),</span> <span class="k">false</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 然而，在实际开发中，我发现该方法有一个问题。如果获得MethodInfo的方式是通过加载程序集，然后利用反射方式获得的MethodInfo对象，即使该方法运用了自定义Attribute，返回的结果仍然是false。例如，我们将需要判断的方法所在的类定义到一个单独的Project中，并编译为单独的dll文件，然后，利用Assembly的LoadFile()方式获得程序集：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="kt">var</span> <span class="n">assembly</span> <span class="p">=</span> <span class="n">Assembly</span><span class="p">.</span><span class="n">LoadFile</span><span class="p">(</span><span class="n">assemblyPath</span><span class="p">);</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="kt">var</span> <span class="n">assembly</span> <span class="p">=</span> <span class="n">Assembly</span><span class="p">.</span><span class="n">LoadFile</span><span class="p">(</span><span class="n">assemblyPath</span><span class="p">);</span>
 </span><span class='line'>  <span class="kt">var</span> <span class="n">types</span> <span class="p">=</span> <span class="n">assembly</span><span class="p">.</span><span class="n">GetExportedTypes</span><span class="p">();</span>
 </span><span class='line'>  <span class="n">types</span><span class="p">.</span><span class="n">ToList</span><span class="p">().</span><span class="n">ForEach</span><span class="p">(&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
@@ -61,17 +46,7 @@
 <p>反之，如果不是通过加载程序集，而是直接通过typeof()获得的Type，并调用其下MethodInfo.IsDefined()方法，只要该方法被运用了指定的Attribute，返回的结果则为true。</p>
 
 <p>分析原因，大约是获得Type的方式不同所造成的。Assembly类的GetExportedType()实现如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[SecuritySafeCritical]</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[SecuritySafeCritical]</span>
 </span><span class='line'><span class="k">public</span> <span class="k">override</span> <span class="n">Type</span><span class="p">[]</span> <span class="nf">GetExportedTypes</span><span class="p">()</span>
 </span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
@@ -84,16 +59,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意，这里返回的Type[]事实上是通过引用方式传递给了JitHelpers的GetObjectHandleOnStack&lt;Type[]>方法中：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TargetedPatchingOptOut(&quot;Performance critical to inline across NGen image boundaries&quot;), SecurityCritical]</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TargetedPatchingOptOut(&quot;Performance critical to inline across NGen image boundaries&quot;), SecurityCritical]</span>
 </span><span class='line'><span class="k">internal</span> <span class="k">static</span> <span class="n">ObjectHandleOnStack</span> <span class="n">GetObjectHandleOnStack</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">ref</span> <span class="n">T</span> <span class="n">o</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">class</span>
 </span><span class='line'><span class="err">{&lt;/</span><span class="nc">p</span><span class="p">&gt;</span>
 </span><span class='line'>
@@ -106,14 +72,7 @@
 这里将Type转换成了TypedReference。关键大约就是这里，可惜我无法找到typeof()的具体实现方式。代码追踪到这里，就无法判断这里发生的真实原因了。若要了解.NET底层机制的同学，可以告诉我。</p>
 
 <p>若要解决反射方式无法通过IsDefined()判断的问题，可以调用MethodInfo的GetCustomAttribute()方法。例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">IsAppliedWith</span><span class="p">(</span><span class="k">this</span> <span class="n">MethodInfo</span> <span class="n">methodInfo</span><span class="p">,</span> <span class="n">Type</span> <span class="n">attributeType</span><span class="p">,</span> <span class="kt">string</span> <span class="n">attributeName</span><span class="p">)</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">IsAppliedWith</span><span class="p">(</span><span class="k">this</span> <span class="n">MethodInfo</span> <span class="n">methodInfo</span><span class="p">,</span> <span class="n">Type</span> <span class="n">attributeType</span><span class="p">,</span> <span class="kt">string</span> <span class="n">attributeName</span><span class="p">)</span>
 </span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">return</span> <span class="n">methodInfo</span><span class="p">.</span><span class="n">GetCustomAttributes</span><span class="p">(</span><span class="n">attributeType</span><span class="p">,</span> <span class="k">false</span><span class="p">).</span><span class="n">ToString</span><span class="p">().</span><span class="n">Contains</span><span class="p">(</span><span class="n">attributeName</span><span class="p">);</span>
@@ -140,16 +99,7 @@
 <!--more-->
 
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">PlatformResponseHelper</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">PlatformResponseHelper</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">private</span> <span class="k">static</span> <span class="n">HashTable</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">String</span><span class="p">,</span><span class="n">String</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageMapping</span> <span class="p">=</span> <span class="c1">//ignore;</span>
 </span><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Output</span><span class="p">(</span><span class="k">this</span> <span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
@@ -169,8 +119,7 @@
 <p>在面向对象设计中，最常见的解除依赖的方法是职责分离以及抽象，或者利用反射或IOC容器来解除具体依赖。由于要解除与ServiceLocator的耦合关系，再加上调用PlatformResponse相关方法的Controller也是通过依赖注入ServiceLocator对象的，所以我首先想到将ServiceLocator转移到扩展方法的外部，通过传入参数的方式注入依赖。由于这个对象是单例的，因此Controller获得的ServiceLocator也就是PlatformResponse需要的对象。当我们调用PlatformResponse的Output()方法时，可以将Controller获得的ServiceLocator对象作为方法参数传给PlatformResponse。在Controller层，我们利用依赖注入注入Mock对象，就可以达到较好的可测试性了。</p>
 
 <p>然而，倘若要这样做，就需要将调用代码改为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">businessService</span><span class="p">.</span><span class="n">Response</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="n">serviceLocator</span><span class="p">);</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">businessService</span><span class="p">.</span><span class="n">Response</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="n">serviceLocator</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>同事觉得在调用Output()方法时，还需要传入ServiceLocator对象，实在不够优雅而简洁。</p>
@@ -178,32 +127,7 @@
 <p>由于C#的扩展方法有很多限制，例如它要求必须是静态类和静态方法，很难利用OO的一些特性，所以我想到的第二个方案是不采用扩展方法，而是将之前的逻辑直接封装到PlatformResponse中。我们可以将Output()方法定义为虚方法，然后再为测试定义PlatformResponse的子类，它将作为测试使用的Mock类，重写Output()方法。遗憾的是，系统基本上都是在调用外部服务的时候才获得的PlatformResponse对象。我们不可能去修改服务对象，使其在单元测试时返回该类的子类对象。</p>
 
 <p>第三条路是转移职责，将扩展方法Output()转移到一个专门的类，例如OutputMessage，由它来负责管理StatusCode与提示（出错）消息之间的映射关系，以及消息的输出，然后由子类重写消息处理的逻辑，完成模拟。例如代码：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">OutputMessage</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">OutputMessage</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">private</span> <span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">;</span>
 </span><span class='line'><span class="k">private</span> <span class="n">HashTable</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">String</span><span class="p">,</span> <span class="n">String</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageMapping</span> <span class="p">=</span> <span class="c1">//ignore;</span>
