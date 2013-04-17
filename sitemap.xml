@@ -175,12 +175,18 @@
         <lastmod>2013-04-08T12:40:21+08:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar/
+        </loc>
+        <lastmod>2013-04-18T00:08:06+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2013-02-05T20:08:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-04-08T12:40:21+08:00</lastmod>
+        <lastmod>2013-04-18T00:08:06+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -188,6 +194,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-04-08T12:40:21+08:00</lastmod>
+        <lastmod>2013-04-18T00:08:06+08:00</lastmod>
     </url>
 </urlset>
