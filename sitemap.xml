@@ -178,13 +178,17 @@
         <loc>
             http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar/
         </loc>
-        <lastmod>2013-04-23T17:01:10+08:00</lastmod>
+        <lastmod>2013-04-25T11:37:17+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://agiledon.github.com/blog/2013/04/24/technical-stack-migration-for-legacy-system/
         </loc>
-        <lastmod>2013-04-24T19:15:58+08:00</lastmod>
+        <lastmod>2013-04-24T19:17:46+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://agiledon.github.com/blog/2013/04/27/coding-practice-of-reading-radar/</loc>
+        <lastmod>2013-04-28T13:42:11+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/about/</loc>
@@ -192,7 +196,7 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-04-24T19:15:58+08:00</lastmod>
+        <lastmod>2013-04-28T13:42:11+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -200,6 +204,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-04-24T19:15:58+08:00</lastmod>
+        <lastmod>2013-04-28T13:42:11+08:00</lastmod>
     </url>
 </urlset>
