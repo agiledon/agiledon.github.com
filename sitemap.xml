@@ -191,12 +191,16 @@
         <lastmod>2013-05-03T09:11:02+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2013/05/04/design-decision-learning-from-go/</loc>
+        <lastmod>2013-05-04T23:13:03+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2013-02-05T20:08:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-05-03T09:11:02+08:00</lastmod>
+        <lastmod>2013-05-04T23:13:03+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -204,6 +208,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-05-03T09:11:02+08:00</lastmod>
+        <lastmod>2013-05-04T23:13:03+08:00</lastmod>
     </url>
 </urlset>
