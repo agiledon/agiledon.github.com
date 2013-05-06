@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Architecture | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-05-04T23:13:29+08:00</updated>
+  <updated>2013-05-06T22:19:34+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -482,7 +482,20 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
 <p>Value为字符串类型，它利用了HashTable存储Key和Value的键值对。Item则为IMessageItem类型，在IMessageItemSequence的实现类中，同样利用了HashTable存储Key和Item的键值对。</p>
 
-<p>IMessageItem支持消息体的嵌套。它包含了两部分：SubValue和SubItem。实现的方式和IMessageItemSequence相似。通过定义这样的嵌套结构，使得消息的扩展成为可能。一般的消息结构如下所示：</p>
+<p>IMessageItem支持消息体的嵌套。它包含了两部分：SubValue和SubItem。实现的方式和IMessageItemSequence相似。通过定义这样的嵌套结构，使得消息的扩展成为可能。一般的消息结构如下所示：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>   IMessage——Name
+</span><span class='line'>        ——ID
+</span><span class='line'>        ——Body（IMessageItemSequence）
+</span><span class='line'>              ——Value
+</span><span class='line'>              ——Item（IMessageItem）
+</span><span class='line'>                    ——SubValue
+</span><span class='line'>                    ——SubItem（IMessageItem）
+</span><span class='line'>                          ——……
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>各个消息对象之间的关系如图6所示：
 <img class="center" src="/images/2012/12/message6.png" width="600" height="402"></p>
@@ -491,7 +504,21 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
 
 <p>在实现服务进程通信之前，我们必须定义好各个服务或各个业务的消息格式。通过消息体的方法在服务的一端设置消息的值，然后发送，并在服务的另一端获得这些值。例如发送消息端定义如下的消息体：
-Liquid error: invalid byte sequence in US-ASCII</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">IMessageFactory</span> <span class="n">factory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MessageFactory</span><span class="p">();</span>
+</span><span class='line'><span class="n">IMessage</span> <span class="n">message</span> <span class="p">=</span> <span class="n">factory</span><span class="p">.</span><span class="n">CreateMessage</span><span class="p">();</span>
+</span><span class='line'><span class="n">message</span><span class="p">.</span><span class="n">SetMessageName</span><span class="p">(</span><span class="s">&quot;service1&quot;</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">IMessageItemSequence</span> <span class="n">body</span> <span class="p">=</span> <span class="n">message</span><span class="p">.</span><span class="n">CreateMessageBody</span><span class="p">();</span>
+</span><span class='line'><span class="n">body</span><span class="p">.</span><span class="n">SetSubValue</span><span class="p">(</span><span class="s">&quot;subname1&quot;</span><span class="p">,</span><span class="s">&quot;subvalue1&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">body</span><span class="p">.</span><span class="n">SetSubValue</span><span class="p">(</span><span class="s">&quot;subname2&quot;</span><span class="p">,</span><span class="s">&quot;subvalue2&quot;</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">IMessageItem</span> <span class="n">item1</span> <span class="p">=</span> <span class="n">body</span><span class="p">.</span><span class="n">CreateMessageItem</span><span class="p">(</span><span class="s">&quot;item1&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">item1</span><span class="p">.</span><span class="n">SetSubValue</span><span class="p">(</span><span class="s">&quot;subsubname11&quot;</span><span class="p">,</span><span class="s">&quot;subsubvalue11&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">item1</span><span class="p">.</span><span class="n">SetSubValue</span><span class="p">(</span><span class="s">&quot;subsubname12&quot;</span><span class="p">,</span><span class="s">&quot;subsubvalue12&quot;</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">MyServiceClient</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MyServiceClient</span><span class="p">(</span><span class="s">&quot;Client&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">service</span><span class="p">.</span><span class="n">SendRequest</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我们在客户端引入了一个ServiceLocator对象，它通过MessageQueueListener对消息队列进行侦听，一旦接收到消息，就获取该消息中的name去定位它所对应的服务，然后调用服务的Execute(aMessage)方法，执行相关的业务。</p>
 
