@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: MVC | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/mvc/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-05-07T22:36:47+08:00</updated>
+  <updated>2013-05-08T22:58:49+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,40 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Struts 1.x一路走好]]></title>
+    <link href="http://agiledon.github.com/blog/2013/05/08/farewell-struts-1-dot-x/"/>
+    <updated>2013-05-08T22:38:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/05/08/farewell-struts-1-dot-x</id>
+    <content type="html"><![CDATA[<p>因为Struts 1.x宣布退出了历史舞台，于是InfoQ组织了一次虚拟访谈。恰好在我现在的项目中，仍然能够看到Struts 1.x的身影，以我这浅薄的Web开发经验，也能有幸被丁雪丰邀请参加了这次虚拟访谈，和李锟、张龙就这一事件畅谈了各自的感受和想法。这篇<a href="http://www.infoq.com/cn/articles/virtual-panel-struts1?utm_source=infoq&amp;utm_medium=popular_links_homepage">虚拟访谈</a>发表在了InfoQ上。这里发布的则是我自己就主持人提出的问题给出的回答。</p>
+
+<p><strong>1. Struts是最早的MVC框架之一，影响了很多人，你是否还记得最早接触到它时，给你留下的印象是什么？</strong></p>
+
+<p><strong>张逸：</strong>从业15年来，我主要参与的开发工作除了早期的Windows Form应用开发外，主要还是集中在后端。用分层的角度来说，即工作在数据层、领域层以及服务层。虽然早已知道Struts的大名，甚至了解到所谓Struts+Spring+Hibernate几乎成为了Java企业开发的标配，却一直没有机会使用Struts。我当时工作的项目主要还是在微软的.NET平台上，经历了从ASP到ASP.NET，再到ASP.NET MVC的过程。在使用ASP时，我很质疑那种业务代码与表现代码混杂在一起的开发方式；而在最初拥抱ASP.NET时，我认为这种Code-Behind会是一种良好的职责分离。然而，ASP.NET在灵活性或扩展性方面带来的约束，使得它越来越不适合富客户端的开发了。于是，才有了借鉴Ruby On Rails思想的ASP.NET MVC出现。或许我的回答偏题了，但我想借ASP的这种发展来看待此次Struts 1.x退出历史舞台的事件，那就是任何产品都会步入晚年的衰落期，跟不上技术的发展，必然会被淘汰，没有什么好奇怪的。</p>
+
+<!--more-->
+
+
+<p><strong>2. Struts 1.x即将走完最后的历程，对于那些仍在使用它的系统，你有什么建议？如果要升级，有几个备选方案，例如Struts 2.x、Spring MVC等等，你会如何选择？</strong></p>
+
+<p><strong>张逸：</strong>奇怪的是，虽然在早期我不曾有机会使用Struts 1.x，然而我现在正在工作的一个大型项目，因为其漫长的历史，一部分Web前端使用的正好是Struts 1.x。对于这种正在使用它的系统，若要说有何建议，简言之，还是需要在决策时视情况而定。在我们当前项目的一个子系统中，Struts 1.x是与Spring MVC 2.0共存的；而在另一个子系统中，又存在Struts 2.x与Spring MVC 3.x共存的情况。从架构的一致性来看，这是很不合理的；然而就项目的真实情况，我又认为这种现象未尝不可。迁移的成本往往是昂贵的，尤其对于遗留系统而言，若没有覆盖率极高的验收测试，盲目地为了追求架构一致性进行迁移，反而会引入新的问题。这就需要权衡迁移的成本和迁移得到的好处。在Java平台下，可供选择的成熟Web框架并不多，Struts 2.x以及Spring MVC相较于Struts 1.x而言，主要还是体现在模式上的区别，属于侵入性更小、架构更为简单的框架。相对于升级，我更倾向于保留原有框架，对于新增的功能则可以引入更新的框架。若因为种种原因硬要升级，我更倾向于选择Spring MVC，一方面它与Spring框架的集成度更好，学习曲线低；同时它对于Struts 1.x实现方式的固有支持，会使得迁移的成本会降低。最重要的一点是Spring MVC目前还保有一定程度的活力，它的版本还在演化中；相对而言，Struts似乎已经失去活力了。</p>
+
+<p>若抛开这些成熟的Web框架不谈，我的建议是不妨试试Java平台下的其他框架，例如jRails，Spring Roo、Apach Wicket或者Play。若想继续工作在Spring的技术栈下，Spring Roo会是一个有趣的选择。事实上，你可以认为它是Spring所要力推的下一代Web框架，如果你不想重蹈Struts 1.x的覆辙，可以在决策时冒着风险给予提前尝鲜的机会。Play框架是基于Java和Scala开发的Web框架，它似乎更偏重于建造可伸缩性的Web框架。此外，它的安全模块、持久化支持(包括对NoSQL与Big Data的支持)、RESTful以及Mobile的支持，使得它更适合开发当今的Web应用程序。</p>
+
+<p><strong>3. 经常会有框架或软件结束生命周期，不再进行维护，这对使用它的用户多多少少带来了一些困扰，能否聊聊您在项目最初进行选择时的一些经验之谈。</strong></p>
+
+<p><strong>张逸：</strong>对于框架的选择，我比较偏重于框架的简单性和无侵入性这两个特点。简单性可以保证我们快速地理解框架的架构，并能够正确地使用它；无侵入性则使得我们可以避免所谓“供应商锁定”的反模式，在需要迁移框架时，可以尽快摆脱原有框架的约束。当然，这种选择总要结合项目需求，根据风险对各种质量属性进行综合权衡，方能做出合理的设计决策。因此，我会将这两个特点看做是重要的衡量指标，但并非绝对。在一定程度上，我们还可以通过更好的架构设计来规避对框架的依赖，例如通过好的分层设计，或者引入防腐层隔离对框架的依赖。以Struts 1.x而言，只要我们避免在Action中引入业务逻辑，选用新Web框架的成本就会更低一些。同时，保证足够的测试覆盖率是必要的，尤其是足够覆盖率的单元测试与集成测试，它常常可以放缓系统衰老的脚步。对于旧系统的维护或重构而言，测试覆盖率是进行改造的良好基石。</p>
+
+<p><strong>4. 随着像Backbone.js这样的前端MVC框架的流行，Struts这样的服务器端MVC的作用似乎有所减弱，您觉得MVC逻辑“前移”会是今后的发展趋势么？</strong></p>
+
+<p><strong>张逸：</strong>我完全赞同这一点。在我参与的上一个项目中，对于服务端的Web层而言，几乎就成为了一个Controller+JSON+REST的组合，MVC中的M被JSON或资源所替代，V则干脆消失了，由Controller来负责必要的服务端验证，并完成HTTP请求的路由功能，其余的前端逻辑都交由我们当初选择的ExtJS了。</p>
+
+<p>这种设计是完全合理的。但我仍然要说明一点的是，这种设计由于加大了前端的复杂度，因而需要我们更加关注前端的代码质量。传统开发要求的关注点分离、松耦合与高内聚原则同样适用于这样的前端代码。虽然不一定要提倡前端代码的测试驱动开发，但至少要保证这些代码具有足够的测试覆盖率。例如，我们可以为Javascript（或者jQuery)引入Jasmine，QUnit等测试框架。在我的同事曾经参与的一个项目中，由最初只支持一个品牌，增强到支持多个品牌的需求变化，这其中需要涉及到对大量前端代码的复用。由于之前的设计并未考虑到多品牌的支持，因而需要重构前端代码，以达成复用的目的。如果没有足够的测试覆盖率，以及良好的职责分离，要做到这一点的难度不言而喻。</p>
+
+<p>我还提到，前端的许多模式事实上都是从MVC模式衍生而来，例如MVP，MVVM等。此时，MVC可以作为核心模式的一个名词。应该为那些变种的模式命名，并给出最佳实践，从而表达特定的含义。对于这种服务端与客户端结合起来共同协作的模式，可以命名为MC2MVC，或者RC2MVC。有个“2”，就表示从服务端到客户端的意思。至于RC2MVC，则是为了强调服务端提供的“资源”，而非传统意义上的模型。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Post数据到服务端生成文件]]></title>

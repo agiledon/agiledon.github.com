@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="在.NET 4.0(当然也包括4.0以前的版本)下，用反射判断某个方法是否运用了自定义Attribute时，可以通过调用MethodInfo的IsDefined()方法进行确认。当然，IsDefined()方法事实上定义在MethodInfo的父类MemberInfo中，但它仅仅被定义为抽象方法， &hellip;">
+  <meta name="description" content="我们希望将客户端（ExtJS 4.0）浏览器中选择的记录post到服务端（ASP.NET MVC 3.0），然后在服务端将这些数据导出到CSV文件中，并传到客户端进行保存。最初，我们希望在客户端采用AJAX请求，将json数据post到服务端。例如： postSelectedItems: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,68 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/">Post数据到服务端生成文件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-10T11:27:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我们希望将客户端（ExtJS 4.0）浏览器中选择的记录post到服务端（ASP.NET MVC 3.0），然后在服务端将这些数据导出到CSV文件中，并传到客户端进行保存。最初，我们希望在客户端采用AJAX请求，将json数据post到服务端。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">postSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">Ext</span><span class="p">.</span><span class="nx">Ajax</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">jsonData</span><span class="o">:</span> <span class="nx">Ext</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span>
+</span><span class='line'>            <span class="nx">Ext</span><span class="p">.</span><span class="nx">getCmp</span><span class="p">(</span><span class="nx">gridId</span><span class="p">).</span><span class="nx">getSelectedRecords</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">item</span><span class="p">){</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">})</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>            <span class="nx">callback</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在服务端，Controller中的Action可以处理post过来的json数据，然后以FileResult的方式返回。为了更好地处理CSV文件，我们定义了一个CsvActionResult，它继承自FileResult，并重写了它的WriteFile()方法。浏览器就可以获得CsvActionResult返回的Stream，从而就可以完成文件的下载和保存了。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -307,6 +369,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/05/08/farewell-struts-1-dot-x/">Struts 1.x一路走好</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/05/04/design-decision-learning-from-go/">从Go语言的设计学习设计决策</a>
       </li>
     
@@ -320,10 +386,6 @@
     
       <li class="post">
         <a href="/blog/2013/04/17/thoughtworks-developer-reading-radar/">ThoughtWorks(中国)程序员读书雷达</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/04/07/reading-scala-code-2/">阅读Scala代码之二</a>
       </li>
     
   </ul>
@@ -361,7 +423,7 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fapi%27+style%3D%27font-size%3A+14.0%25%27%3EAPI%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Farchitecture%27+style%3D%27font-size%3A+46.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fbig-data%27+style%3D%27font-size%3A+14.0%25%27%3EBig+Data%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fbook%27+style%3D%27font-size%3A+14.0%25%27%3EBook%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoach%27+style%3D%27font-size%3A+18.0%25%27%3ECoach%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoding%27+style%3D%27font-size%3A+26.0%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcqrs%27+style%3D%27font-size%3A+14.0%25%27%3ECQRS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcsharp%27+style%3D%27font-size%3A+18.0%25%27%3ECSharp%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign%27+style%3D%27font-size%3A+50.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-pattern%27+style%3D%27font-size%3A+14.0%25%27%3EDesign+Pattern%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-patterns%27+style%3D%27font-size%3A+14.0%25%27%3EDesign+Patterns%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+18.0%25%27%3EDotNet%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+14.0%25%27%3EDotNET%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fextjs%27+style%3D%27font-size%3A+14.0%25%27%3EExtJS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgae%27+style%3D%27font-size%3A+14.0%25%27%3EGAE%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgeek%27+style%3D%27font-size%3A+14.0%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgo%27+style%3D%27font-size%3A+14.0%25%27%3EGO%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fhadoop%27+style%3D%27font-size%3A+18.0%25%27%3EHadoop%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fhdfs%27+style%3D%27font-size%3A+14.0%25%27%3EHDFS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Finfoq%27+style%3D%27font-size%3A+14.0%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjava%27+style%3D%27font-size%3A+26.0%25%27%3EJava%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjavascript%27+style%3D%27font-size%3A+14.0%25%27%3EJavaScript%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Flanguage%27+style%3D%27font-size%3A+14.0%25%27%3ELanguage%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fliterature%27+style%3D%27font-size%3A+22.0%25%27%3ELiterature%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmapreduce%27+style%3D%27font-size%3A+14.0%25%27%3EMapReduce%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmock%27+style%3D%27font-size%3A+14.0%25%27%3EMock%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmvc%27+style%3D%27font-size%3A+14.0%25%27%3EMVC%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmysql%27+style%3D%27font-size%3A+14.0%25%27%3EMySQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnosql%27+style%3D%27font-size%3A+14.0%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnovel%27+style%3D%27font-size%3A+14.0%25%27%3ENovel%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnutch%27+style%3D%27font-size%3A+14.0%25%27%3ENutch%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foctopress%27+style%3D%27font-size%3A+22.0%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foo%27+style%3D%27font-size%3A+26.0%25%27%3EOO%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fpoem%27+style%3D%27font-size%3A+14.0%25%27%3EPoem%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Freading%27+style%3D%27font-size%3A+42.0%25%27%3EReading%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Freading-radar%27+style%3D%27font-size%3A+14.0%25%27%3EReading+Radar%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Frefactoring%27+style%3D%27font-size%3A+26.0%25%27%3ERefactoring%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fresponsibility%27+style%3D%27font-size%3A+22.0%25%27%3EResponsibility%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fruby%27+style%3D%27font-size%3A+18.0%25%27%3ERuby%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscala%27+style%3D%27font-size%3A+22.0%25%27%3EScala%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscalability%27+style%3D%27font-size%3A+14.0%25%27%3EScalability%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftdd%27+style%3D%27font-size%3A+22.0%25%27%3ETDD%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthinking%27+style%3D%27font-size%3A+14.0%25%27%3EThinking%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthought%27+style%3D%27font-size%3A+14.0%25%27%3EThought%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthoughtworks%27+style%3D%27font-size%3A+22.0%25%27%3EThoughtWorks%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftransaltion%27+style%3D%27font-size%3A+14.0%25%27%3ETransaltion%3C%2Fa%3E+%3C%2Ftags%3E"></span>
+    <span id="tag-cloud"><embed type='application/x-shockwave-flash' src='/javascripts/tagcloud.swf'width='100%' height='250' bgcolor='#f2f2f2' id='tagcloudflash' name='tagcloudflash' quality='high' allowscriptaccess='always'flashvars="tcolor=0x333333&amp;tcolor2=0x333333&amp;hicolor=0x000000&amp;tspeed=100&amp;distr=true&amp;mode=tags&amp;tagcloud=%3Ctags%3E%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fapi%27+style%3D%27font-size%3A+14.0%25%27%3EAPI%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Farchitecture%27+style%3D%27font-size%3A+46.0%25%27%3EArchitecture%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fbig-data%27+style%3D%27font-size%3A+14.0%25%27%3EBig+Data%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fbook%27+style%3D%27font-size%3A+14.0%25%27%3EBook%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoach%27+style%3D%27font-size%3A+18.0%25%27%3ECoach%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcoding%27+style%3D%27font-size%3A+26.0%25%27%3ECoding%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcqrs%27+style%3D%27font-size%3A+14.0%25%27%3ECQRS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fcsharp%27+style%3D%27font-size%3A+18.0%25%27%3ECSharp%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign%27+style%3D%27font-size%3A+50.0%25%27%3EDesign%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-pattern%27+style%3D%27font-size%3A+14.0%25%27%3EDesign+Pattern%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdesign-patterns%27+style%3D%27font-size%3A+14.0%25%27%3EDesign+Patterns%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+14.0%25%27%3EDotNET%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fdotnet%27+style%3D%27font-size%3A+18.0%25%27%3EDotNet%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fextjs%27+style%3D%27font-size%3A+14.0%25%27%3EExtJS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgae%27+style%3D%27font-size%3A+14.0%25%27%3EGAE%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgeek%27+style%3D%27font-size%3A+14.0%25%27%3EGeek%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fgo%27+style%3D%27font-size%3A+14.0%25%27%3EGO%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fhadoop%27+style%3D%27font-size%3A+18.0%25%27%3EHadoop%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fhdfs%27+style%3D%27font-size%3A+14.0%25%27%3EHDFS%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Finfoq%27+style%3D%27font-size%3A+18.0%25%27%3EInfoQ%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjava%27+style%3D%27font-size%3A+26.0%25%27%3EJava%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fjavascript%27+style%3D%27font-size%3A+14.0%25%27%3EJavaScript%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Flanguage%27+style%3D%27font-size%3A+14.0%25%27%3ELanguage%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fliterature%27+style%3D%27font-size%3A+22.0%25%27%3ELiterature%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmapreduce%27+style%3D%27font-size%3A+14.0%25%27%3EMapReduce%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmock%27+style%3D%27font-size%3A+14.0%25%27%3EMock%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmvc%27+style%3D%27font-size%3A+18.0%25%27%3EMVC%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fmysql%27+style%3D%27font-size%3A+14.0%25%27%3EMySQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnosql%27+style%3D%27font-size%3A+14.0%25%27%3ENoSQL%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnovel%27+style%3D%27font-size%3A+14.0%25%27%3ENovel%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fnutch%27+style%3D%27font-size%3A+14.0%25%27%3ENutch%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foctopress%27+style%3D%27font-size%3A+22.0%25%27%3EOctopress%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Foo%27+style%3D%27font-size%3A+26.0%25%27%3EOO%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fpoem%27+style%3D%27font-size%3A+14.0%25%27%3EPoem%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Freading%27+style%3D%27font-size%3A+42.0%25%27%3EReading%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Freading-radar%27+style%3D%27font-size%3A+14.0%25%27%3EReading+Radar%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Frefactoring%27+style%3D%27font-size%3A+26.0%25%27%3ERefactoring%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fresponsibility%27+style%3D%27font-size%3A+22.0%25%27%3EResponsibility%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fruby%27+style%3D%27font-size%3A+18.0%25%27%3ERuby%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscala%27+style%3D%27font-size%3A+22.0%25%27%3EScala%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fscalability%27+style%3D%27font-size%3A+14.0%25%27%3EScalability%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fstruts%27+style%3D%27font-size%3A+14.0%25%27%3EStruts%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftdd%27+style%3D%27font-size%3A+22.0%25%27%3ETDD%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthinking%27+style%3D%27font-size%3A+14.0%25%27%3EThinking%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthought%27+style%3D%27font-size%3A+14.0%25%27%3EThought%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Fthoughtworks%27+style%3D%27font-size%3A+22.0%25%27%3EThoughtWorks%3C%2Fa%3E+%3Ca+href%3D%27http%3A%2F%2Fagiledon.github.com%2Fblog%2Ftags%2Ftransaltion%27+style%3D%27font-size%3A+14.0%25%27%3ETransaltion%3C%2Fa%3E+%3C%2Ftags%3E"></span>
 </section>
 
 <section>
