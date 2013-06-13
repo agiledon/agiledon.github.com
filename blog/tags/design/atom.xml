@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Design | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/design/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-05-18T23:49:27+08:00</updated>
+  <updated>2013-06-13T22:51:04+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[处理文件请求限制]]></title>
+    <link href="http://agiledon.github.com/blog/2013/06/13/handle-the-limitation-of-requesting-file/"/>
+    <updated>2013-06-13T21:29:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/06/13/handle-the-limitation-of-requesting-file</id>
+    <content type="html"><![CDATA[<p>在我参与的一个项目中，遇见了一个结合功能性需求与非功能性需求，并要求同时满足的场景。它的功能其实很简单，就是需要向系统发出处理文件的请求。文件的处理则涉及到多个数据表的查询，对相关数据的解析，并依照事先设定好的模板填充数据，最后生成PDF文件。一旦文件处理完毕，就可以返回处理后的文件。由于该系统的业务特殊性，这一功能需求会在某个特定时间，迎来数以万计的客户请求。同时，文件处理功能是一个相对漫长的处理过程，且生成的文件较大。在系统的最初版本中，经历过数千人次的并发数，在只有一台服务器的情况下，导致了大量请求的阻塞。同时，由于加载文件和文件读写需要耗费内存，在请求较为频繁的情况下，多次抛出OutOfMemory异常。即使在最好的情况下，服务端响应了客户端请求，也可能花费大量的时间，严重影响了用户体验。</p>
+
+<p>我们希望在后续版本中解决这一问题。然而，现实总是这么残酷。真正处理文件并提供下载功能的系统并不在我们的掌控之中。它是第三方Vendor提供的Web Service，我们开发的系统仅仅涉及到请求的转发，完成对该Web Service的调用；并在获得结果后，将响应（包含了文件流数据）返回给客户端。换言之，我们既不能改善文件处理的实现逻辑，以提高处理的速度；也无法对该Web Service进行水平伸缩，例如通过引入多台服务器建立集群和负载均衡的方式。</p>
+
+<p>遭遇如此场景实属无奈，要得出好的设计决策就好似戴着镣铐跳舞，只有在自己的服务端下功夫。我们首先想到的是限流（throttle）的方式，通过引入一个类似Controller角色的对象RequestHandlerPool，对客户端的请求进行控制。我们可以设定一个阈值，一旦超过该阈值，就将后续的请求放入队列进行排队。这个限流可以采用简单地在内存实现请求池全局对象。当然，也可以考虑引入消息队列中间件。改进后的时序图如下所示：
+<img class="center" src="/images/2013/06/filehandling.png"></p>
+
+<p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
+
+<p>纵观整个场景，存在太多制肘，我们也没有太多好的解决方案。而且，我们还应该保证这个解决方案足够简单，因为我们需要在尽量短的周期内对原有方案进行改善，以迎接新一期的业务高峰。这些限制不同于架构约束，它常常迫使我们在逼仄的空间中闪转腾挪。我们还必须尽快地实现方案的原型，并营造与真实业务场景相当的数据，对其进行压力测试和性能测试。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ThoughtWorks读书雷达-架构设计篇]]></title>
@@ -152,180 +170,6 @@
 <blockquote><p>实例化一个对象要用到5个参数，但一眼看上去很难看出参数里的那些数字都代表什么含义。……为此你可以把参数改成字面量对象，键的名称看起来更直观一些。而且如此改动能使API更加灵活，因为即使今后增加了更多的参数，实例化对象的代码也不会变得更复杂。<br/><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">Animation</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span><br/></span><span class='line'><span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">element</span><span class="p">;</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span><br/></span><span class='line'><span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="nx">element</span><span class="o">:</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;elementId&#39;</span><span class="p">),</span><br/></span><span class='line'><span class="nx">property</span><span class="o">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span><br/></span><span class='line'><span class="nx">from</span><span class="o">:</span><span class="mi">0</span><span class="p">,</span><br/></span><span class='line'><span class="nx">to</span><span class="o">:</span><span class="mi">200</span><span class="p">,</span><br/></span><span class='line'><span class="nx">duration</span><span class="o">:</span><span class="mi">1000</span><br/></span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span><br/></span><span class='line'><br/></span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">};</span><br/></span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote></p>
 
 <p>无疑，这体现了面向对象的“封装”思想。通过封装既保证了代码的清洁与可读性，同时还有利于未来的扩展。这与OCP（开放-封闭原则）是一脉相承的。代码是有结构的，或者体现为函数，或者体现为对象，事实上都是一种按照属性与职责进行的分类。分类是保持清洁、避免重复的唯一法门。从简朴的角度来说，所有的设计其实都是在做着分类的游戏。分类体现了定义的抽象，职责的分配，结构的划分；如果再加上类别之间的协作，就是设计的全部了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[职责与封装]]></title>
-    <link href="http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation/"/>
-    <updated>2013-02-20T21:49:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation</id>
-    <content type="html"><![CDATA[<p>面向对象设计的关键，我认为是识别职责，封装合理的对象。缺乏合理的封装，就会缺少正确的领域对象，使得属于共同职责的领域信息散乱分布到系统的各个方法中，导致概念不够清晰，职责混乱，以及代码的重复。然而，如果没有正确地识别职责，又可能导致封装无从谈起，因为我们获得的需求可能是散乱的，既难以抽象概念，又缺乏层次。故而，职责与封装是相辅相成的概念。如下图所示：
-<img class="center" src="/images/2013/02/responsibility01.png"></p>
-
-<p>我们不能简单地将封装当做是“信息隐藏”。所谓隐藏信息以及具体行为的细节，确实是封装的本质所在，但面向对象思想中的封装，其目的还在于对领域概念以及设计概念的识别。前者是对业务模型的抽象，如电子商务系统中的Product、Order、OrderItem等概念；后者是对设计模型的改进，如在设计模式中引入策略对象、命令对象，DDD中提倡的Repository、Factory对象。这也是为何许多设计者很容易理解封装的概念，但却始终无法做到合理封装的根本原因。</p>
-
-<!--more-->
-
-
-<p>此时，我们需要运用职责驱动设计，通过对职责的识别来提炼这些概念。概念可以起到分类的作用，根据职责对行为与数据进行分类，找到其应该归属的对象，散乱的逻辑就会变得清晰起来。就好似我们对彩球按照颜色进行分类，并放置到不同的位置：
-<img class="center" src="/images/2013/02/responsibility02.png"></p>
-
-<p>不同的颜色有分明不同的特征，只要不是色盲，分类自然水到渠成。现实中的系统需求自然不如颜色这般泾渭分明，要从纷繁复杂的混沌需求中超脱出来，最好的办法就是按照不同的角度或层次去寻找职责，并用最简单的语言一句话描述这些职责。根据职责的特征，我大致将职责分为三个层次，由外自内分别为：业务价值、业务功能与业务实现，如下图所示：
-<img class="center" src="/images/2013/02/responsibility03.png"></p>
-
-<p>业务价值基本上体现了这个需求用例（或用户故事）存在的目的，即解释了需求的Why。简言之，只有提供了该职责，则此需求对于客户才是有价值的。这也符合用户故事INVEST原则中的V（Valuable）。没有价值的需求，自然是应该放弃的。故而在识别业务价值时，常常从用户的视角来分析，辨别。</p>
-
-<p>业务价值是职责驱动的入口，因为在寻找到了业务价值之后，我们就可以剖析该价值需要哪些支撑功能（它可以解释需求的What），再由功能继续深入分析，找到实现功能的职责（它可以解释需求的How）。因此，这个模型是一个层层推进的过程。</p>
-
-<p>职责驱动不仅仅可以从文字需求入手，同样可以针对已经实现的代码。甚至我们可以将这种职责驱动看做是一种阅读代码的技巧，通过寻找业务价值，进而分析业务功能和业务实现，对代码形成一个整体的感观，进而通过合理地分配职责改善原有代码。如下代码是《修改代码的艺术》一书中给出的例子：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>import javax.mail.&lt;em>;
-</span><span class='line'>import javax.mail.internet.&lt;/em>;&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>public class MailingListServer {&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>public static final String SUBJECT_MARKER = "[list]";
-</span><span class='line'>public static final String LOOP_HEADER = "X-LOOP";
-</span><span class='line'>
-</span><span class='line'>public static void main(String[] args) {
-</span><span class='line'>    if (args.length != 8) {
-</span><span class='line'>        System.err.println("Usage: java MailingList &lt;popHost&gt; " + 
-</span><span class='line'>        "&lt;smtpHost&gt; &lt;pop3user&gt; &lt;pop3password&gt; &lt;smtpuser&gt; &lt;smtppassword&gt; &lt;listname&gt; " +
-</span><span class='line'>        "&lt;relayinterval");
-</span><span class='line'>    }
-</span><span class='line'>    return;
-</span><span class='line'>
-</span><span class='line'>    HostInformation host = new HostInformation(arg[0]);
-</span><span class='line'>    String listAddress = args[6];
-</span><span class='line'>    int interval = new Integer(args[7]).intValue();
-</span><span class='line'>    Roster roster = null;
-</span><span class='line'>    try {
-</span><span class='line'>        roster = new FileRoster("roster.txt");
-</span><span class='line'>    }catch(Exception e) {
-</span><span class='line'>
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    try {
-</span><span class='line'>        do {
-</span><span class='line'>            try {
-</span><span class='line'>                Properties properties = System.getProperties();
-</span><span class='line'>                Session session = Session.getDefaultInstance(properties, null);
-</span><span class='line'>                Store store = session.getStore("pop3");
-</span><span class='line'>                store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
-</span><span class='line'>                Folder defaultFolder = store.getDefaultFolder();
-</span><span class='line'>                if (defaultFolder == null) {
-</span><span class='line'>                    return;
-</span><span class='line'>                }
-</span><span class='line'>                Folder folder = defaultFolder.getFolder("INBOX");
-</span><span class='line'>                if (folder == null) {
-</span><span class='line'>                    return;
-</span><span class='line'>                }
-</span><span class='line'>                folder.open(FOLDER.READ_WRITE);
-</span><span class='line'>                process(host, listAddress, roster, session, store, folder);
-</span><span class='line'>            }catch () {
-</span><span class='line'>
-</span><span class='line'>            }
-</span><span class='line'>            try {
-</span><span class='line'>                Thread.sleep(interval * 1000);
-</span><span class='line'>            } catch() {
-</span><span class='line'>
-</span><span class='line'>            }
-</span><span class='line'>
-</span><span class='line'>        } while (true)
-</span><span class='line'>    }catch () {
-</span><span class='line'>
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static void process(
-</span><span class='line'>    HostInformation host, String listAddress, Roster roster,
-</span><span class='line'>    Session session, Store store, Folder folder) throws MessagingException {
-</span><span class='line'>    try {
-</span><span class='line'>        if (folder.getMessageCount() != 0) {
-</span><span class='line'>            Message[] messages = folder.getMessages();
-</span><span class='line'>            doMessage(host, listAddress, roster, session, folder, messages);
-</span><span class='line'>        }
-</span><span class='line'>    }catch () {
-</span><span class='line'>
-</span><span class='line'>    }finally {
-</span><span class='line'>        folder.close(true);
-</span><span class='line'>        store.close();
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static void doMessage(
-</span><span class='line'>    HostInformation host,
-</span><span class='line'>    String listAddress,
-</span><span class='line'>    Roster roster,
-</span><span class='line'>    Session session,
-</span><span class='line'>    Folder folder,
-</span><span class='line'>    Message[] messages) throws MessageingException {
-</span><span class='line'>    FetchProfile fp = new FetchProfile();
-</span><span class='line'>    fp.add(FetchProfile.Item.ENVELOPE);
-</span><span class='line'>    fp.add(FetchProfile.Item.FLAGS);
-</span><span class='line'>    fp.add("X-Mailer");
-</span><span class='line'>    folder.fetch(messages, fp);
-</span><span class='line'>    for (int i = 0; i &lt; messages.length; i++) {
-</span><span class='line'>        Message message = messages[i];
-</span><span class='line'>        if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
-</span><span class='line'>        System.out.println("message received: " + message.getSubject());
-</span><span class='line'>        if (!roster.constainsOneOf(message.getFrom())) continue;
-</span><span class='line'>        MimeMessage forward = new MimeMessage(session);
-</span><span class='line'>        Address[] fromAddress = message.getFrom();
-</span><span class='line'>        InternetAddress from = null;
-</span><span class='line'>        if (fromAddress != null &amp;&amp; fromAdress.length &gt; 0) {
-</span><span class='line'>            from = new InternetAddress(fromAddress[0].toString());
-</span><span class='line'>        }
-</span><span class='line'>        forward.setFrom(from);
-</span><span class='line'>        forward.setReplyTo(new Address[] {
-</span><span class='line'>            new InternetAddress(listAddress)
-</span><span class='line'>        });
-</span><span class='line'>
-</span><span class='line'>        forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
-</span><span class='line'>        String subject = message.getSubject();
-</span><span class='line'>        if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
-</span><span class='line'>            subject = SUBJECT_MARKER + " " + message.getSubject();
-</span><span class='line'>        }
-</span><span class='line'>        forward.setSubject(subject);
-</span><span class='line'>        forward.setSentDate(message.getSentDate());
-</span><span class='line'>        forward.addHeader(LOOP_HEADER, listAddress);
-</span><span class='line'>        Object content = message.getContent();
-</span><span class='line'>        if (content instanceof Multipart) {
-</span><span class='line'>            forward.setContent((Multipart)content);
-</span><span class='line'>        } else {
-</span><span class='line'>            forward.setText((String)content);
-</span><span class='line'>        }
-</span><span class='line'>
-</span><span class='line'>        Properties props = new Properties();
-</span><span class='line'>        props.put("mail.smtp.host", host.smtpHost);
-</span><span class='line'>
-</span><span class='line'>        Session smtpSession = Session.getDefaultInstance(props, null);
-</span><span class='line'>        Transport transport = smtpSession.getTransport("smtp");
-</span><span class='line'>        transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
-</span><span class='line'>        transport.sendMessage(forward, roster.getAddresses());
-</span><span class='line'>        message.setFlag(Flags.Flag.DELETED, true);
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>这段代码集中了所有劣质代码的特性，如可读性差，可测试性差，可重用性差，可扩展性差，也很难体现设计者的意图。</p>
-
-<p>是的，意图！意图就是体现业务价值的关键所在，最好能够通过类的名称直接传达这种业务价值。显然，上述代码完全没有做到这一点。通过仔细阅读这段代码，然后从职责的角度入手，就驱使我们思考它究竟做了什么？显然，这段代码的功能就是侦听邮件服务器，并根据实现给定的邮件名单，将收到的邮件转发给邮件名单的相关人士。所以，它的业务价值就是转发邮件。</p>
-
-<p>要做到转发邮件，基本的功能是要能够侦听邮件服务器。我们可以将侦听看做是业务功能。通常，对于实际的需求而言，职责模型并非简单的三层结构，它可能是一种递归的方式，也即可以对业务价值、业务功能甚至业务实现进行不断深入的分解。例如，对于这里的侦听业务功能而言，还可以分解为下一个业务功能，即接收邮件。同时，要实现邮件的转发，还需要发送邮件的支撑。下面就是我们所能够识别出来的职责：</p>
-
-<pre><code>* 转发邮件
-    ** 侦听邮件
-        *** 接收邮件
-    ** 发送邮件
-</code></pre>
-
-<p>面对如此简短的职责描述，再要识别对象所要封装的概念就变得非常容易了。下图是根据识别出来的职责获得的类图结构：
-<img class="center" src="/images/2013/02/responsibility04.png"></p>
-
-<p>比较这个设计模型与之前的代码，新的模型无疑在职责分配上占了胜场。并且，每个对象的名称都很好地传达了它所能完成的功能。由于封装将职责的实现细节有效地隐藏，并为它们各自划分了空间，形成各自的职责单元，然后再以弱耦合的形式进行协作。因而，我们可以很容易地对它们进行单元测试，或者对参与协作的行为进行Mock。接口的引入则是为了未来的功能扩展，例如我们不再使用javax.mail库来实现邮件收发，就可以提供不同的实现类。可独立封装的MessageReceiver与MessageSender还可以为系统的其他模块所重用。职责与封装相得益彰，有效地改善了整个设计模型。</p>
 ]]></content>
   </entry>
   
