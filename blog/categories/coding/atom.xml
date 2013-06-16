@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-06-15T22:17:23+08:00</updated>
+  <updated>2013-06-16T21:00:58+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用扩展方法实现重用]]></title>
+    <link href="http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method/"/>
+    <updated>2013-06-16T20:06:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method</id>
+    <content type="html"><![CDATA[<p>我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。
+<img class="center" src="/images/2013/06/IRepository.png"></p>
+
+<p>对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave()的区别仅在于它要接收的参数只是一个实体对象。事实上，我们可以调用IRepository接口本身提供的BatchSave()来实现Save()方法。Save()方法的实现对于所有实现了IRepository接口的类而言，完全是一样的。那么，我们该如何为IRepository接口增加一个Save()方法，同时又能避免代码做出太多修改？由于接口自身并不能提供实现，因此唯一可以容纳这个方法实现的就是实现了IRepository接口的类。一个办法是为所有这些实现类定义一个公共的抽象父类，并让它再实现IRepository接口，于是将Save()的实现放到这个抽象父类中，就可以使得所有子类共享Save()方法的实现了。可是，为了这个Save()方法的实现与重用，专门引入一个抽象父类，是否值得呢？除非在现有的Repository继承体系中，已经存在了这样的抽象父类，否则该类的引入会导致整个继承体系发生较大的变化。</p>
+
+<p>在.NET中，我们可以巧妙地借助扩展方法来完成对Save()方法的重用，同时又能保证现有的继承体系不变。方法就是为IRepository接口提供扩展方法：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RepositoryExtensions</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">Save</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="k">this</span> <span class="n">IRepository</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">repository</span><span class="p">,</span> <span class="n">T</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">repo</span><span class="p">.</span><span class="n">BatchSave</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="n">entity</span><span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[阅读Scala代码之二]]></title>
@@ -525,157 +548,6 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>不知道什么时候这种机制能够很好地支持新版的API。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[新人培养日记(一)]]></title>
-    <link href="http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man/"/>
-    <updated>2013-03-14T20:37:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/growup.jpg">
-我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。它要求创建一个电子银行系统，提供银行的一些基本功能，例如客户管理、存取款等业务逻辑。</p>
-
-<p>最初我并不知道新手的真实水平，不过，可以假设他只具备基础的Java编程知识，对TDD、Refactoring以及OO有最初步的了解，但处于懵懵懂懂之间。我最初希望新手仅仅针对业务层进行设计与编码，但新手坚持要加上数据库访问以及Web页面。我认为这种做法有利于新手学习到更多的Java框架和库，便同意了这种请求。</p>
-
-<!--more-->
-
-
-<p>我给新人简单地讲了前面两个Story的需求，就将这个项目扔给新手，一周后，我再去Review他提交的代码。结果发现了一大堆问题。</p>
-
-<p>首先，项目没有使用任何构建工具，例如Maven或者Gradle。项目依赖的一些Java包，例如JUnit和Mockito，使用了直接依赖的方式。没有构建工具来创建构建脚本，就无法使用最快捷的方式来编译、构建以及运行测试，从而使得开发者懒于在提交前进行构建，以确保代码没有引入问题。没有自动化构建，更谈不上持续集成了（我打算在项目中期要求新手搭建CI环境）。</p>
-
-<p><img class="center" src="/images/2013/03/coach01.png">
-新手对代码包的划分，以及相关类的命名，有些惨不忍睹。上图是对该项目包结构以及相关类分布的截图。infoTracker包的命名让人觉得莫名其妙，打开其中的类查看代码，发现它事实上是调用DBTransaction类，执行对数据表的CRUD操作。例如代码：
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>infoTracker.CustomerAccountUpdater.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerAccountUpdater</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="n">DBTransaction</span> <span class="n">transaction</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DBTransaction</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">addBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">transaction</span><span class="o">.</span><span class="na">addBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerBalanceInvalid</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">transaction</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>database包的DBTransaction类的命名更是容易引起歧义，以为是对事务的处理，实则是DAO对象：
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>database.DBTransaction.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBTransaction</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">connection</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">PreparedStatement</span> <span class="n">pstmt</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="nf">DBTransaction</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">connection</span> <span class="o">=</span> <span class="n">DBConnection</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">nickname</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">Date</span> <span class="n">dateOfBirth</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">properName</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getProperName</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">Date</span> <span class="n">joiningDate</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getJoiningDate</span><span class="o">();</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">();</span>
-</span><span class='line'>    <span class="kt">boolean</span> <span class="n">isBonusAdded</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">isBonusAdded</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;insert into userinfo values (?, ?, ?, ?, ?, ?)&quot;</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nickname</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">dateOfBirth</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">properName</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">joiningDate</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setDouble</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">balance</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setBoolean</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">isBonusAdded</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>新手并没有使用我建议的Spring JDBC Template，而是直接使用了JDBC，因而充斥了大量的冗余代码。再看他实现的DBConnection，居然将连接的相关属性硬编码到Java类中了：
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>database.DBConnection.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBConnection</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">conn</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="nf">getConnection</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">driver</span> <span class="o">=</span> <span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;jdbc:mysql://127.0.0.1:3306/test_01&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">driver</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">disconnect</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>再看测试，没有单元测试和集成测试的概念。一些本来可以进行单元测试的逻辑，例如针对Customer Nickname的验证逻辑，并没有得到足够的测试覆盖。由于没有构建脚本帮助搭建本地测试环境，在获得系统源代码后，根本无法运行集成测试。</p>
-
-<p>整体来看，新手对一个项目如何进行分层以及分包缺乏基本的概念，没有自动化构建的意识。对于如何编写数据库访问的类也缺乏足够的知识。不了解单元测试与集成测试之间的区别，没有开发环境和测试环境的基本认识。</p>
-
-<p>我首先考虑引入gradle实现基本的自动化构建，它可以通过引入一些插件就可以比较容易地实现java编译、测试以及自动化打包的功能，还能比较容易地运行Jetty。
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>build.gradle </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;idea&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;java&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;war&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;jetty&#39;</span><span class="o">&lt;</span><span class="s">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s">&lt;p&gt;repositories {&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">mavenCentral</span><span class="o">()</span>
-</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="s">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s">&lt;p&gt;dependencies {&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">compile</span> <span class="o">(</span>
-</span><span class='line'>        <span class="s1">&#39;joda-time:joda-time:2.1&#39;</span>
-</span><span class='line'><span class="o">)</span>
-</span><span class='line'><span class="n">testCompile</span> <span class="o">(</span>
-</span><span class='line'>        <span class="s1">&#39;junit:junit:4.11&#39;</span><span class="o">,</span>
-</span><span class='line'>        <span class="s1">&#39;org.mockito:mockito-all:1.9.5&#39;</span>
-</span><span class='line'><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>我修改了之前定义的infoTracker包，将其重命名为repository包，并放到domain包下，并对其下的类也同样进行了重命名。修改后的包结构如下图所示：
-<img class="center" src="/images/2013/03/coach02.png"></p>
-
-<p>我没有修改数据库访问层的代码，而是要求新手使用JDBC Template，并着重给他讲解了数据库访问的基础知识，并要求他将数据库属性放置到配置文件中。我想，到了下一周，他又会提交一份什么样的代码呢？</p>
 ]]></content>
   </entry>
   

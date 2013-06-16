@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: CSharp | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/csharp/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-06-15T22:17:23+08:00</updated>
+  <updated>2013-06-16T21:00:58+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用扩展方法实现重用]]></title>
+    <link href="http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method/"/>
+    <updated>2013-06-16T20:06:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method</id>
+    <content type="html"><![CDATA[<p>我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。
+<img class="center" src="/images/2013/06/IRepository.png"></p>
+
+<p>对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave()的区别仅在于它要接收的参数只是一个实体对象。事实上，我们可以调用IRepository接口本身提供的BatchSave()来实现Save()方法。Save()方法的实现对于所有实现了IRepository接口的类而言，完全是一样的。那么，我们该如何为IRepository接口增加一个Save()方法，同时又能避免代码做出太多修改？由于接口自身并不能提供实现，因此唯一可以容纳这个方法实现的就是实现了IRepository接口的类。一个办法是为所有这些实现类定义一个公共的抽象父类，并让它再实现IRepository接口，于是将Save()的实现放到这个抽象父类中，就可以使得所有子类共享Save()方法的实现了。可是，为了这个Save()方法的实现与重用，专门引入一个抽象父类，是否值得呢？除非在现有的Repository继承体系中，已经存在了这样的抽象父类，否则该类的引入会导致整个继承体系发生较大的变化。</p>
+
+<p>在.NET中，我们可以巧妙地借助扩展方法来完成对Save()方法的重用，同时又能保证现有的继承体系不变。方法就是为IRepository接口提供扩展方法：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RepositoryExtensions</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">Save</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="k">this</span> <span class="n">IRepository</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">repository</span><span class="p">,</span> <span class="n">T</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">repo</span><span class="p">.</span><span class="n">BatchSave</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="n">entity</span><span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[IsDefined的问题]]></title>

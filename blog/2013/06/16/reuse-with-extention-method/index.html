@@ -6,11 +6,11 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>Tag: API - 简单文本</title>
+  <title>使用扩展方法实现重用 - 简单文本</title>
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Tag: API">
+  <meta name="description" content="我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。 对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave() &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.comblog/tags/api/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -66,36 +66,121 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Tag: API</h1>
+    
+      <h1 class="entry-title">使用扩展方法实现重用</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-16T20:06:00+08:00" pubdate data-updated="true">Jun 16<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。
+<img class="center" src="/images/2013/06/IRepository.png"></p>
 
-  
-  <h2>2012</h2>
+<p>对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave()的区别仅在于它要接收的参数只是一个实体对象。事实上，我们可以调用IRepository接口本身提供的BatchSave()来实现Save()方法。Save()方法的实现对于所有实现了IRepository接口的类而言，完全是一样的。那么，我们该如何为IRepository接口增加一个Save()方法，同时又能避免代码做出太多修改？由于接口自身并不能提供实现，因此唯一可以容纳这个方法实现的就是实现了IRepository接口的类。一个办法是为所有这些实现类定义一个公共的抽象父类，并让它再实现IRepository接口，于是将Save()的实现放到这个抽象父类中，就可以使得所有子类共享Save()方法的实现了。可是，为了这个Save()方法的实现与重用，专门引入一个抽象父类，是否值得呢？除非在现有的Repository继承体系中，已经存在了这样的抽象父类，否则该类的引入会导致整个继承体系发生较大的变化。</p>
 
-<article>
-  
-<h1><a href="/blog/2012/02/11/the-design-of-gae/">GAE的设计</a></h1>
-<time datetime="2012-02-11T10:55:00+08:00" pubdate><span class='month'>Feb</span> <span class='day'>11</span> <span class='year'>2012</span></time>
+<p>在.NET中，我们可以巧妙地借助扩展方法来完成对Save()方法的重用，同时又能保证现有的继承体系不变。方法就是为IRepository接口提供扩展方法：</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/design/'>Design</a></span>
-</footer>
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RepositoryExtensions</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">Save</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">repository</span><span class="p">,</span> <span class="n">T</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">repo</span><span class="p">.</span><span class="n">BatchSave</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="n">entity</span><span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-</article>
 
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-16T20:06:00+08:00" pubdate data-updated="true">Jun 16<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/csharp/'>CSharp</a>, <a class='category' href='/blog/tags/dotnet/'>DotNET</a>, <a class='category' href='/blog/tags/notes/'>Notes</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/13/handle-the-limitation-of-requesting-file/" title="Previous Post: 处理文件请求限制">&laquo; 处理文件请求限制</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -222,7 +307,10 @@
       var disqus_shortname = 'agiledon';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
