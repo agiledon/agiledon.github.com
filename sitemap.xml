@@ -178,7 +178,7 @@
         <loc>
             http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar/
         </loc>
-        <lastmod>2013-05-13T20:42:55+08:00</lastmod>
+        <lastmod>2013-06-19T13:22:07+08:00</lastmod>
     </url>
     <url>
         <loc>
@@ -215,12 +215,16 @@
         <lastmod>2013-06-16T20:59:13+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2013/07/05/corrupt-code/</loc>
+        <lastmod>2013-07-06T11:20:13+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2013-02-05T20:08:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-06-16T20:59:13+08:00</lastmod>
+        <lastmod>2013-07-06T11:20:13+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -228,6 +232,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-06-16T20:59:13+08:00</lastmod>
+        <lastmod>2013-07-06T11:20:13+08:00</lastmod>
     </url>
 </urlset>

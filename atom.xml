@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-06-16T21:07:53+08:00</updated>
+  <updated>2013-07-06T11:22:22+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,121 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[代码是如何腐化的]]></title>
+    <link href="http://agiledon.github.com/blog/2013/07/05/corrupt-code/"/>
+    <updated>2013-07-05T14:26:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/07/05/corrupt-code</id>
+    <content type="html"><![CDATA[<p>代码是如何腐化的？这是一个很大的话题，因为这种腐化的代码样本可能会体现不同的特征，若要彻底总结，可能会又是一本《重构》。我自然没有这个能力和知识。好在有一个简便的说法，即可以诉诸于“破窗理论”的威力。无论多少坏味道识别，重构手法运用，提高代码质量的最佳实践，以及运用诸多甄别代码质量体征的工具，都仅仅限于“术”的运用而已。若未能在开发人员内心树立整洁代码的习惯，时时刻刻对各种代码臭味保持敏感，且具有一颗期待卓越代码之心，那么，随着项目的演进，时间的推移，代码最终还是会慢慢腐烂。</p>
+
+<p>这几日在开发一个User Story时，从诸多测试代码（包括集成测试与验收测试）中，观察到了一些接近腐烂的代码坏味。这些代码虽然不是产品代码，但同样是我们交付工件的一部分。最关键之处在于：它让我察觉到一种危险的趋势，若不能及时扭转，可能会让代码陷入腐烂的泥沼。若能及时解决这些糟糕代码，其实仅仅需要一些简单的重构手法，付出几个小时时间即可。</p>
+
+<p>首先是针对集成测试的数据准备。我们要编写的集成测试针对Spring Batch Job，这些Job需要访问数据库，以验证Job的执行是否符合期望。我们发现在之前已有与Spring Batch Job相关的集成测试存在，并提供了访问数据库，以及启动、访问和停止Ftp服务器的功能。其中，与数据准备有关的功能放到单独定义的Fixture类中。这些Fixture是为特定目的编写的数据准备，可是，随着越来越多的Batch Job出现，有诸多集成测试都需要准备数据，于是开始慢慢产生了测试数据的重叠，逐步浮现出违背DRY原则的征兆了。</p>
+
+<!--more-->
+
+
+<p>对于多数程序员而言，并非不重视重用，但多数却不愿意为了重用付出一些代价。例如针对一些具备差异性的功能，一些程序员更愿意使用Copy And Paste，然后再针对自己的需求对实现进行修改或调整。观察目前的一些集成测试，正是这样一些陋习导致的。</p>
+
+<p>在这些集成测试中，使用了继承的方式来重用数据准备的功能。如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2013/07/datafixture.png"></p>
+
+<p>在CustomerIntegratedDataFixture中，提供了相关方法实现了对Customer数据的创建。由于需要提供访问FtpServer的功能，因此又定义了CustomerIntegratedDataAndFtpPrepareFixture类，使其继承CustomerIntegratedDataFixture。它定义了startFtpServer()和stopFtpServer()方法，并在JUnit中，运用了@BeforeClass与@AfterClass标记，使其避免为每个测试启动和停止专有的FtpServer。现在，我们编写的集成测试同样需要与Customer有关的数据，但并不需要Ftp功能。换言之，我们希望重用CustomerIntegratedDataFixture。现在看来，似乎并没有问题。例如，我们可以让新增的测试直接继承CustomerIntegratedDataFixture。然而，就在同样的集成测试模块中，我们还发现了其他集成测试同样编写了自己的数据准备类。这些数据准备与Spring Batch Job无关，却同样提供了准备Customer数据的功能。存在的差异是它除了提供Customer数据外，还提供了依赖Customer的Consent数据。</p>
+
+<p>我们没有着急去重用CustomerIntegratedDataFixture，因为我们察觉到代码会随着这种继承体系的延伸，会变得越来越难以重用。如上图的继承体系，使得数据准备与Spring Batch Job紧耦合了，同时又在CustomerIntegratedDataAndFtpPrepareFixture子类中引入了与Ftp有关的耦合，明显违背了单一职责原则。我们需要单独剥离出数据准备的类，它即可以作为超类被集成测试类继承，也可以通过组合的方式被继承了JobLauncherTestUtils的测试子类所调用。这符合Bridge模式的设计原则。因此，我们运用了“Replace Inheritance with Delegation”手法，对其进行了简单重构：
+<img class="center" src="http://agiledon.github.com/images/2013/07/datafixtureafterrefactor.png"></p>
+
+<p>之后，我们对Customer和Consent对应的数据准备类进行了相应的重构与修改，使得这些数据的准备更为内聚，并去除一些不必要的重复，使之更容易被重用。
+<img class="center" src="http://agiledon.github.com/images/2013/07/customerfixture.png"></p>
+
+<p>第二个例子是在JBehave的Story中，我看到了这样的Steps类的组织，如图：
+<img class="center" src="http://agiledon.github.com/images/2013/07/steps.png"></p>
+
+<p>我们看到了什么？——一个“扁平组织”的Steps类。显然，促成这样的结果是一个渐进的过程。由于在之前编写相关的Steps类时，还看不到分类的概念，因此，只是简单地将自己的Steps类放到step之下即可。然后，不断有开发人员增加自己的Steps类，他们找到了step位置，却没有仔细思考是否需要更好地对Steps类进行组织。这就使得Steps类略显零乱，没有展现出好的结构。我们重新组织了这些Steps类：
+<img class="center" src="http://agiledon.github.com/images/2013/07/stepsafterrefactor.png"></p>
+
+<p>只需要简单地归类，调整结构，整个Steps类就变得更加清晰了。于是，我们发现了可以重用的可能。观察重新组织之后的batch包，这里面包含的UpdateCustomerTypeSteps，ProductSystemLinkLoaderSteps与DeleteOrphanedRecordsSteps，都是与Btach Job有关的Steps类。MaintainProspectsSteps类则是我们新增的类，它同样需要用到启动Batch Job的方法。在之前存在的Steps类中，已经存在相似的代码了。例如在UpdateCustomerTypeSteps类中：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">waitAndGetSatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">params</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">db2JdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;and jobParam.KEY_NAME = &#39;retry&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;retry&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再看DeleteOrphanedRecordsSteps类：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">waitAndGetSatus</span><span class="o">(</span><span class="n">String</span> <span class="n">currentTime</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">currentTime</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">String</span> <span class="n">currentTime</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;and jobParam.KEY_NAME = &#39;time&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">currentTime</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比较这些方法，除了jobParam的key与value存在细微区别，其余实现完全相同。若按照这样一个态势发展，随着与Batch Job有关的Story逐渐增多，不发现这种代码的臭味并即刻解决，这些代码就会逐渐蔓延，最后变得“无法自拔”。想要修改，已经变得极为困难了。</p>
+
+<p>我们为这些Steps类提供了一个抽象的超类AbstractBatchJobSteps，并将这些可能重用的方法提取到这个超类中：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AbstractBatchJobSteps</span> <span class="kd">extends</span> <span class="n">AbstractSteps</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">WAIT_INTERVAL</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">MAX_TRY_TIME</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">protected</span> <span class="n">String</span> <span class="nf">waitAndGetSatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">,</span> <span class="n">String</span> <span class="n">paraKey</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">params</span><span class="o">,</span> <span class="n">paraKey</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">,</span> <span class="n">String</span> <span class="n">paraKey</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;and jobParam.KEY_NAME = &#39;&quot;</span> <span class="o">+</span> <span class="n">paraKey</span> <span class="o">+</span> <span class="s">&quot;&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">paraKey</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上的例子都可以通过一些细小的重构手法改进代码，使得代码的结构更加清晰，并有利于代码的重用。我深信大多数开发人员都具备这样的技能，且只需要稍加思索，即能发现这些代码的坏味。然而，我们总是因为种种原因，对这种还不太严重的“破窗”风景视而不见。殊不知当我们开始对这种不够整洁的代码采取纵容态度时，就可能会是代码腐化之始。一旦真正腐化，就将积重难返，到了那时，我们就可能真正无能为力了。</p>
+
+<p>你是否遭遇过这样的情形？面对一个承担了无数职责似乎无所不能的上帝类，它被无数多的Client调用，且又没有足够覆盖率的测试，你是否会产生心有余而力不足的感慨。这时的你，是否像一位奋战沙场，出生入死却无力挽回败局的将军，面对那汹涌而来占据压倒性优势的敌军，唯有对天长叹：“某有心杀贼，却无力回天啊！”</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用扩展方法实现重用]]></title>
@@ -1557,179 +1672,6 @@
 <p>本书的翻译由我的同事史磊与我共同完成，并最后由我完成审校工作。在翻译本书时，我还参考了由龚波、赵彩琳、陈蓓翻译的前一个版本，在此向他（她）们表示衷心地感谢。因为工作繁忙的缘故，本书的翻译工作一直断断续续持续了近一年的时间，如今交稿，既有卸下重任的轻松畅快，却又因为自己的惫懒使得翻译工作进展缓慢而深感愧疚。这里需要感谢本书编辑符隆美女士给予我的耐心与支持。</p>
 
 <p>在写作这篇译者序时，同事史磊已经远赴ThoughtWorks南非工作，而我则从北京回到了ThoughtWorks成都。非常怀念我们在北京Office一起工作的日子。我们曾经在同一个项目结对编程，本书的翻译也可以说是结对完成，算是一次愉快的翻译体验。鉴于本人能力水平有限，翻译或有疏漏或错误，还请读者不吝赐教，并通过<a href="http://aigledon.github.com">我的博客</a>与我联系。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[职责与封装]]></title>
-    <link href="http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation/"/>
-    <updated>2013-02-20T21:49:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation</id>
-    <content type="html"><![CDATA[<p>面向对象设计的关键，我认为是识别职责，封装合理的对象。缺乏合理的封装，就会缺少正确的领域对象，使得属于共同职责的领域信息散乱分布到系统的各个方法中，导致概念不够清晰，职责混乱，以及代码的重复。然而，如果没有正确地识别职责，又可能导致封装无从谈起，因为我们获得的需求可能是散乱的，既难以抽象概念，又缺乏层次。故而，职责与封装是相辅相成的概念。如下图所示：
-<img class="center" src="http://agiledon.github.com/images/2013/02/responsibility01.png"></p>
-
-<p>我们不能简单地将封装当做是“信息隐藏”。所谓隐藏信息以及具体行为的细节，确实是封装的本质所在，但面向对象思想中的封装，其目的还在于对领域概念以及设计概念的识别。前者是对业务模型的抽象，如电子商务系统中的Product、Order、OrderItem等概念；后者是对设计模型的改进，如在设计模式中引入策略对象、命令对象，DDD中提倡的Repository、Factory对象。这也是为何许多设计者很容易理解封装的概念，但却始终无法做到合理封装的根本原因。</p>
-
-<!--more-->
-
-
-<p>此时，我们需要运用职责驱动设计，通过对职责的识别来提炼这些概念。概念可以起到分类的作用，根据职责对行为与数据进行分类，找到其应该归属的对象，散乱的逻辑就会变得清晰起来。就好似我们对彩球按照颜色进行分类，并放置到不同的位置：
-<img class="center" src="http://agiledon.github.com/images/2013/02/responsibility02.png"></p>
-
-<p>不同的颜色有分明不同的特征，只要不是色盲，分类自然水到渠成。现实中的系统需求自然不如颜色这般泾渭分明，要从纷繁复杂的混沌需求中超脱出来，最好的办法就是按照不同的角度或层次去寻找职责，并用最简单的语言一句话描述这些职责。根据职责的特征，我大致将职责分为三个层次，由外自内分别为：业务价值、业务功能与业务实现，如下图所示：
-<img class="center" src="http://agiledon.github.com/images/2013/02/responsibility03.png"></p>
-
-<p>业务价值基本上体现了这个需求用例（或用户故事）存在的目的，即解释了需求的Why。简言之，只有提供了该职责，则此需求对于客户才是有价值的。这也符合用户故事INVEST原则中的V（Valuable）。没有价值的需求，自然是应该放弃的。故而在识别业务价值时，常常从用户的视角来分析，辨别。</p>
-
-<p>业务价值是职责驱动的入口，因为在寻找到了业务价值之后，我们就可以剖析该价值需要哪些支撑功能（它可以解释需求的What），再由功能继续深入分析，找到实现功能的职责（它可以解释需求的How）。因此，这个模型是一个层层推进的过程。</p>
-
-<p>职责驱动不仅仅可以从文字需求入手，同样可以针对已经实现的代码。甚至我们可以将这种职责驱动看做是一种阅读代码的技巧，通过寻找业务价值，进而分析业务功能和业务实现，对代码形成一个整体的感观，进而通过合理地分配职责改善原有代码。如下代码是《修改代码的艺术》一书中给出的例子：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>import javax.mail.*;
-</span><span class='line'>import javax.mail.internet.*;
-</span><span class='line'>
-</span><span class='line'>public class MailingListServer {
-</span><span class='line'>  public static final String SUBJECT_MARKER = "[list]";
-</span><span class='line'>  public static final String LOOP_HEADER = "X-LOOP";
-</span><span class='line'>
-</span><span class='line'>  public static void main(String[] args) {
-</span><span class='line'>      if (args.length != 8) {
-</span><span class='line'>          System.err.println("Usage: java MailingList &lt;popHost> " + 
-</span><span class='line'>          "&lt;smtpHost> &lt;pop3user> &lt;pop3password> &lt;smtpuser> &lt;smtppassword> &lt;listname> " +
-</span><span class='line'>          "&lt;relayinterval");
-</span><span class='line'>      }
-</span><span class='line'>      return;
-</span><span class='line'>
-</span><span class='line'>      HostInformation host = new HostInformation(arg[0]);
-</span><span class='line'>      String listAddress = args[6];
-</span><span class='line'>      int interval = new Integer(args[7]).intValue();
-</span><span class='line'>      Roster roster = null;
-</span><span class='line'>      try {
-</span><span class='line'>          roster = new FileRoster("roster.txt");
-</span><span class='line'>      }catch(Exception e) {
-</span><span class='line'>          
-</span><span class='line'>      }
-</span><span class='line'>
-</span><span class='line'>      try {
-</span><span class='line'>          do {
-</span><span class='line'>              try {
-</span><span class='line'>                  Properties properties = System.getProperties();
-</span><span class='line'>                  Session session = Session.getDefaultInstance(properties, null);
-</span><span class='line'>                  Store store = session.getStore("pop3");
-</span><span class='line'>                  store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
-</span><span class='line'>                  Folder defaultFolder = store.getDefaultFolder();
-</span><span class='line'>                  if (defaultFolder == null) {
-</span><span class='line'>                      return;
-</span><span class='line'>                  }
-</span><span class='line'>                  Folder folder = defaultFolder.getFolder("INBOX");
-</span><span class='line'>                  if (folder == null) {
-</span><span class='line'>                      return;
-</span><span class='line'>                  }
-</span><span class='line'>                  folder.open(FOLDER.READ_WRITE);
-</span><span class='line'>                  process(host, listAddress, roster, session, store, folder);
-</span><span class='line'>              }catch () {
-</span><span class='line'>                  
-</span><span class='line'>              }
-</span><span class='line'>              try {
-</span><span class='line'>                  Thread.sleep(interval * 1000);
-</span><span class='line'>              } catch() {
-</span><span class='line'>                      
-</span><span class='line'>              }
-</span><span class='line'>
-</span><span class='line'>          } while (true)
-</span><span class='line'>      }catch () {
-</span><span class='line'>          
-</span><span class='line'>      }
-</span><span class='line'>  }
-</span><span class='line'>
-</span><span class='line'>  private static void process(
-</span><span class='line'>      HostInformation host, String listAddress, Roster roster,
-</span><span class='line'>      Session session, Store store, Folder folder) throws MessagingException {
-</span><span class='line'>      try {
-</span><span class='line'>          if (folder.getMessageCount() != 0) {
-</span><span class='line'>              Message[] messages = folder.getMessages();
-</span><span class='line'>              doMessage(host, listAddress, roster, session, folder, messages);
-</span><span class='line'>          }
-</span><span class='line'>      }catch () {
-</span><span class='line'>              
-</span><span class='line'>      }finally {
-</span><span class='line'>          folder.close(true);
-</span><span class='line'>          store.close();
-</span><span class='line'>      }
-</span><span class='line'>  }
-</span><span class='line'>
-</span><span class='line'>  private static void doMessage(
-</span><span class='line'>      HostInformation host,
-</span><span class='line'>      String listAddress,
-</span><span class='line'>      Roster roster,
-</span><span class='line'>      Session session,
-</span><span class='line'>      Folder folder,
-</span><span class='line'>      Message[] messages) throws MessageingException {
-</span><span class='line'>      FetchProfile fp = new FetchProfile();
-</span><span class='line'>      fp.add(FetchProfile.Item.ENVELOPE);
-</span><span class='line'>      fp.add(FetchProfile.Item.FLAGS);
-</span><span class='line'>      fp.add("X-Mailer");
-</span><span class='line'>      folder.fetch(messages, fp);
-</span><span class='line'>      for (int i = 0; i &lt; messages.length; i++) {
-</span><span class='line'>          Message message = messages[i];
-</span><span class='line'>          if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
-</span><span class='line'>          System.out.println("message received: " + message.getSubject());
-</span><span class='line'>          if (!roster.constainsOneOf(message.getFrom())) continue;
-</span><span class='line'>          MimeMessage forward = new MimeMessage(session);
-</span><span class='line'>          Address[] fromAddress = message.getFrom();
-</span><span class='line'>          InternetAddress from = null;
-</span><span class='line'>          if (fromAddress != null && fromAdress.length > 0) {
-</span><span class='line'>              from = new InternetAddress(fromAddress[0].toString());
-</span><span class='line'>          }
-</span><span class='line'>          forward.setFrom(from);
-</span><span class='line'>          forward.setReplyTo(new Address[] {
-</span><span class='line'>              new InternetAddress(listAddress)
-</span><span class='line'>          });
-</span><span class='line'>
-</span><span class='line'>          forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
-</span><span class='line'>          String subject = message.getSubject();
-</span><span class='line'>          if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
-</span><span class='line'>              subject = SUBJECT_MARKER + " " + message.getSubject();
-</span><span class='line'>          }
-</span><span class='line'>          forward.setSubject(subject);
-</span><span class='line'>          forward.setSentDate(message.getSentDate());
-</span><span class='line'>          forward.addHeader(LOOP_HEADER, listAddress);
-</span><span class='line'>          Object content = message.getContent();
-</span><span class='line'>          if (content instanceof Multipart) {
-</span><span class='line'>              forward.setContent((Multipart)content);
-</span><span class='line'>          } else {
-</span><span class='line'>              forward.setText((String)content);
-</span><span class='line'>          }
-</span><span class='line'>
-</span><span class='line'>          Properties props = new Properties();
-</span><span class='line'>          props.put("mail.smtp.host", host.smtpHost);
-</span><span class='line'>
-</span><span class='line'>          Session smtpSession = Session.getDefaultInstance(props, null);
-</span><span class='line'>          Transport transport = smtpSession.getTransport("smtp");
-</span><span class='line'>          transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
-</span><span class='line'>          transport.sendMessage(forward, roster.getAddresses());
-</span><span class='line'>          message.setFlag(Flags.Flag.DELETED, true);
-</span><span class='line'>      }
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这段代码集中了所有劣质代码的特性，如可读性差，可测试性差，可重用性差，可扩展性差，也很难体现设计者的意图。</p>
-
-<p>是的，意图！意图就是体现业务价值的关键所在，最好能够通过类的名称直接传达这种业务价值。显然，上述代码完全没有做到这一点。通过仔细阅读这段代码，然后从职责的角度入手，就驱使我们思考它究竟做了什么？显然，这段代码的功能就是侦听邮件服务器，并根据实现给定的邮件名单，将收到的邮件转发给邮件名单的相关人士。所以，它的业务价值就是转发邮件。</p>
-
-<p>要做到转发邮件，基本的功能是要能够侦听邮件服务器。我们可以将侦听看做是业务功能。通常，对于实际的需求而言，职责模型并非简单的三层结构，它可能是一种递归的方式，也即可以对业务价值、业务功能甚至业务实现进行不断深入的分解。例如，对于这里的侦听业务功能而言，还可以分解为下一个业务功能，即接收邮件。同时，要实现邮件的转发，还需要发送邮件的支撑。下面就是我们所能够识别出来的职责：</p>
-
-<pre><code>* 转发邮件
-    ** 侦听邮件
-        *** 接收邮件
-    ** 发送邮件
-</code></pre>
-
-<p>面对如此简短的职责描述，再要识别对象所要封装的概念就变得非常容易了。下图是根据识别出来的职责获得的类图结构：
-<img class="center" src="http://agiledon.github.com/images/2013/02/responsibility04.png"></p>
-
-<p>比较这个设计模型与之前的代码，新的模型无疑在职责分配上占了胜场。并且，每个对象的名称都很好地传达了它所能完成的功能。由于封装将职责的实现细节有效地隐藏，并为它们各自划分了空间，形成各自的职责单元，然后再以弱耦合的形式进行协作。因而，我们可以很容易地对它们进行单元测试，或者对参与协作的行为进行Mock。接口的引入则是为了未来的功能扩展，例如我们不再使用javax.mail库来实现邮件收发，就可以提供不同的实现类。可独立封装的MessageReceiver与MessageSender还可以为系统的其他模块所重用。职责与封装相得益彰，有效地改善了整个设计模型。</p>
 ]]></content>
   </entry>
   
