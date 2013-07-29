@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Architecture | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-07-06T11:22:22+08:00</updated>
+  <updated>2013-07-29T22:40:42+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,80 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[AgileChina2003架构演进杂志]]></title>
+    <link href="http://agiledon.github.com/blog/2013/07/29/agilechina-magazine/"/>
+    <updated>2013-07-29T22:06:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/07/29/agilechina-magazine</id>
+    <content type="html"><![CDATA[<h3>“架构演进”介绍</h3>
+
+<p>软件系统的架构从来都不是一蹴而就的，它需要在不断的演化中改进设计，甚至做出重要的架构迁移。尤其对于大型软件系统而言，组织管理、软件过程、需求变化、规模扩张、技术迁移、遗留系统等诸多因素都决定着架构的发展，甚至可能是诸多力量的博弈与权衡。</p>
+
+<h3>技术文章</h3>
+
+<h4>演化架构与紧急设计系列</h4>
+
+<p>本系列文章旨在从全新的视角来介绍经常讨论但是又难以理解的软件架构和设计概念。作者 Neal Ford 将通过介绍一些具体示例来帮助您在演化架构和紧急设计的灵活实践中打下坚实的基础。通过将重要的架构和设计决定推迟到最后责任时刻，您可以防止由于不必要的复杂度而降低软件项目质量的问题。点击<a href="http://www.ibm.com/developerworks/cn/java/j-eaed/">链接</a>。</p>
+
+<h4>遗留系统的技术栈迁移</h4>
+
+<p>遗留系统是一个还在运行和使用，但已步入软件生命周期衰老期的软件系统。它可能会因为无法满足新的质量需求，又或者是出于企业战略决策的考虑等诸多原因，需要对其进行技术栈迁移。然而，在迁移过程中，我们既需要满足迁移后的需求，又必须保证原有的系统功能不会受到破坏，这就为技术栈迁移制造了障碍。本文提出运用“风险驱动模型”来完成这一工作。风险驱动模型就是通过识别风险，对风险排定优先级；然后根据风险选定相关技术，再对风险是否得到缓解进行评估的一种架构方法。点击<a href="http://www.infoq.com/cn/articles/legacy-system-migration">链接</a>。</p>
+
+<h4>注重实效的架构师——大胆行前人未行之路</h4>
+
+<p>是什么让架构师们精通自己的技艺？熟练的架构师是如何进行设计的？一次次，有人问起我这些问题，而我也不止一遍的问我自己。很明显，这并不只是软件工程过程、设计方法、技术或是编程的专业程度所决定的。很多架构师具备令人钦佩且完备的技术知识，这确实是使设计成功的必要条件。但是，还是有很多的软件项目失败了，或是在项目的架构中遭受到了严峻的挑战。掌握此道的关键在于架构师是以什么方式实现设计，他们重视什么，他们关注哪些方面以及在这些方面努力着。点击<a href="http://www.infoq.com/cn/articles/pragmatic-architect">链接</a>。</p>
+
+<!--more-->
+
+
+<h4>可扩展Web架构与分布式系统</h4>
+
+<p>开放源代码已经成为一些大型网站的基本原则。而在这些网站成长的过程中，一些优秀的实践经验和规则也出现在他们的结构中。本文旨在介绍一些在大型网站结构设计的过程中需要注意的关键问题以及实现目标的基础工作。本文侧重于介绍网络系统，尽管一些准则在其他分布式系统中也是适用的。点击<a href="http://www.oschina.net/translate/scalable-web-architecture-and-distributed-systems">链接</a>。</p>
+
+<h4>架构师</h4>
+
+<p><img class="left" src="/images/2013/07/nealford.png"></p>
+
+<h5>Neal Ford</h5>
+
+<p>Neal Ford是全球IT咨询公司ThoughtWorks的软件架构师。除了常规工作，他做的事情还包括设计和开发应用程序、教学材料、杂志文章、课件和视频/DVD演示，同时还是各种技术书籍的作者或者编辑，其中包括著作The Productive Programmer。他专注于设计和开发大规模企业应用程序，同时，他也是世界开发人员会议的国际知名演说家。
+<img class="right" src="/images/2013/07/ericevans.png"></p>
+
+<h5>Eric Evans</h5>
+
+<p>大型业务系统方面的领域建模和设计专家。早20世纪90年代，他就参与了很多项目，基于对象（Object）开发出许多大型的业务系统，并致力于将敏捷过程应用到现实项目中。
+此外，Eric Evans还是《领域驱动设计——软件核心复杂性应对之道》一书的作者。在书中他总结了构建上述业务系统相关的经验、原则和技术等。并介绍了一个建模和设计技术的系统，成功的团队应用这一系统可以组装有业务需求的复杂软件系统，并使系统在增大时仍然保持敏捷。
+Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。<img class="left" src="/images/2013/07/buschmann.png"></p>
+
+<h5>FranK Buschmann</h5>
+
+<p>德国慕尼黑西门子技术公司资深技术专家及负责人。Wiley软件设计模式系列图书主编。他的研究领域包括对象技术、软件架构、产品线、模型驱动软件开发和模式。他曾是ANSI C++标准化委员会x3J16的成员，于1996年发起了首届EuroPLoP会议。Frank Buschmann是Pattern-Oriented Software Architecture系列书籍的主要作者。
+<img class="right" src="/images/2013/07/george.png"></p>
+
+<h5>Fred George</h5>
+
+<p>Fred George先生在敏捷开发领域颇有声望，在业界有将近40年的开发经验，是国际敏捷领域大师级专家、咨询师、架构师。早年他在IBM工作。退出IBM之后，以独立咨询师的身份在美国工作了十多年。后来他加盟了ThoughtWorks，成为早期致力于推动敏捷开发的一批开发者。现在他离开了ThoughtWorks，在英国的TrafficBroker公司就任解决方案架构师一职。</p>
+
+<h4>推荐书籍</h4>
+
+<p><img class="left" src="/images/2013/07/releaseit.png">#####Release It!</p>
+
+<p><strong>推荐理由：</strong>Michael Nygard的Releast It!可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
+
+<p><img class="right" src="/images/2013/07/beautifularchitecture.png"></p>
+
+<h5>Beautiful Architecture</h5>
+
+<p><strong>推荐理由：</strong>全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。</p>
+
+<p><img class="right" src="/images/2013/07/eip.png"></p>
+
+<h5>Enterprise Integation Patterns</h5>
+
+<p><strong>推荐理由：</strong>本书关注企业级软件系统的本质问题，那就是集成。对于采用异步消息传递的集成方案，本书针对不同场景给出了不同的解决方案，并以模式的方式进行概述与归纳。倘若你在设计软件系统时，需要使用异步消息传递的方式对系统进行集成，本书可以成为你的最佳指南。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[处理文件请求限制]]></title>
@@ -329,39 +403,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <img class="center" src="/images/2013/02/hdfs03.png"></p>
 
 <p>采用这种客户端缓存的方式，可以有效地减少网络请求，避免大数据的写入造成网络堵塞，进而提高网络吞吐量。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[对CQRS的基础理解]]></title>
-    <link href="http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs/"/>
-    <updated>2012-12-31T10:59:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/12/31/basic-understanding-on-cqrs</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/seperated.jpg" width="500" height="375">
-CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，它甚至可以被称为是一种架构风格，可以取得与MapReduce，REST同等的地位，对软件系统的整体架构产生重要影响。</p>
-
-<p>CQRS即Command Query Responsibility Seperation（命令查询职责分离），其设计思想来源于Mayer提出的CQS（Command Query Seperation）。这种命令与查询的分离方式，可以更好地控制请求者的操作。查询操作不会造成数据的修改，因而它属于一种幂等操作，可以反复地发起，而不用担心会对系统造成影响。基于这种特性，我们还可以为其提供缓存，从而改进查询的性能。命令操作则与之相反，它会直接影响系统信息的改变。查询操作与命令操作对事务的要求也不一样。由于查询操作不会改变系统状态，因而，不会产生最终的数据不一致。从请求响应的角度来看，查询操作常常需要同步请求，实时返回结果；命令操作则不然，因为我们并不期待命令操作必须返回结果，这就可以采用fire-and-forget方式，而这种方式正是运用异步操作的前提。此外，对于大多数软件系统而言，查询操作发起的频率通常要远远高于命令操作。如上种种，都是将命令与查询进行分离的根本原因。</p>
-
-<p>这就很好地阐释了我们为何需要运用CQRS模式，同时也说明了CQRS的适用场景。</p>
-
-<!--more-->
-
-
-<p>只要充分理解了运用CQRS模式的意图，理解CQRS模式就变得容易了许多。下图是CQRS框架<a href="http://www.axonframework.org">AxonFramework</a>官方文档给出的CQRS架构图。
-<img class="center" src="/images/2012/12/cqrs-arch.png" width="613" height="434"></p>
-
-<p>在这个架构图中，最核心的概念是Command、Event。以我的理解，CQRS模式的风格源头就是基于事件的异步状态机模型。抛开命令查询分离这一核心原则，这才是CQRS的基础内容。CQRS对设计者的影响，是将领域逻辑，尤其是业务流程，皆看做是一种领域对象状态迁移的过程。这一点与REST将HTTP应用协议看做是应用状态迁移的引擎，有着异曲同工之妙。这种观点（或设计视图）引出了Command与Event的概念。Command是系统中会引起状态变化的活动，通常是一种命令语气，例如注册会议RegisterToConference。至于Event，则描述了某种事件的发生，通常是命令的结果（但并不一定是直接结果，但源头一定是因为发送了命令），例如OrderConfirmed。我发现，这种事件更接近于一种事实，即某次数据改变的结果，是一种确定无疑已经发生的事实。这一思想直接引入了Event Source，并带来Audit（审计）的好处。而它更是与<a href="http://www.datomic.com">Datomic数据库</a>的设计哲学一脉相承。Datomic的设计哲学就是：“将数据(Data)看做是事实(Fact)。每个事实都是过去的痕迹，虽然这种过去可以遗忘，但却无法改变。”Event Source可以将这些事件的发生过程记录下来，使得我们可以追溯业务流程。
-<img class="center" src="/images/2012/12/datomic.jpg" width="563" height="274"></p>
-
-<p>Command和Event都有对应的Handler来处理。它们具有一个共同的特征，即支持异步处理方式。这也是为何在架构中需要引入Command Bus和Event Bus的原因。在UI端执行命令请求，事实上就是将命令（注意，这是一个命令对象，你完全将其理解为Command模式的运用。注意，命令的命名一定要恰如其分地体现业务的意图）发送到Command Bus中。Command Bus更像是一个调停者（Mediator），在接收到Command时，会将其路由到准确的CommandHandler，由CommandHandler来处理该命令。在Axon Framework中，Command Bus提供了dispatch()方法对命令进行分发。也就是说，在它的实现中，并没有对Command提供异步处理，而仅仅是完成路由的功能。不过，在我自己的框架实现中，我却将Command Bus看做是消息通道，而将Command Handler看做是该消息通道的侦听者。因此，我引入了队列来实现Command Bus。很难说明哪种方式更合理，这还要取决于业务模型。整体来看，后一个方案似乎有些重型了。不过，我现在并未引入消息队列，而是使用了Scala的Actor，从多线程的角度来实现CommandBus的异步模型，也可以说得过去。</p>
-
-<p>Event的处理与之相似。Axon Framework同时支持同步和异步方式。从框架角度讲，提供更多的选择是一件好事。但基于CQRS模式的核心思想来看，如果对Command(包括Event)的处理未采用异步模型，它就没有发挥出足够的优势，此时采用CQRS，反而会增加设计难度，有些得不偿失。</p>
-
-<p>在Command端，基本的处理流程是由UI发起命令请求，发送到CommandBus，并由它分发给对应的Command Handler来处理命令。Command Handler会与领域对象，特别是与Aggregation Root对象通信。在处理了相关的业务逻辑后，会触发Event。一方面，它会将Event放到Event Store中；另一方面，同时会将Event发送到Event Bus，再由Event Handler处理事件。根据Axon Framework的官方文档，Event Handler会负责更新数据源，从而保证查询端能够得到最新的数据。</p>
-
-<p>然而，这一过程并不是这样简单。因为整个过程可能体现的是一个状态机。Command会导致状态的迁移，并在执行Aggregate的逻辑时，触发对应的Event。Event Handler在处理事件时，并不一定是这个业务过程的终点，它可能会发送引起下一个状态迁移的命令，从而形成一个不断迁移的过程，直至业务完全结束。这就需要我们在引入CQRS时，需要改变之前的设计思路，尽量从状态迁移的角度去理解业务逻辑。UML中的状态图是一个很好的分析工具。另外，它也带来一个挑战，就是事务。因为整个过程都涉及到数据状态的变化，当某个状态迁移出现问题时，要保证数据的最终结果是一致的。Axon Framework的解决方案是引入<a href="http://martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work模式</a>。此外，在真正实现时，究竟是由Event Handler去更新数据源，还是交由Aggregate去完成，还有待考量。我倾向于由Aggregate委派给Repository来完成。从职责分配的角度来看，这种方式更为合理。因为与数据源打交道的逻辑绝对不能太过于分散，以免数据源的改变影响到整个领域层。在DDD中，持久逻辑都是被封装到Repository（在其内部，又会委派给基础设施层中提供数据访问的对象）。换言之，这种实践是符合DDD的设计思想的。</p>
-
-<p>本文没有详细讨论Repository、Aggregate Root在引入CQRS后，二者会产生什么样的变化？此外，命令查询职责分离模式对数据源的要求，在Command端与Query端的范式已经产生了根本的区别，在设计时我们应该如何考虑？这些内容，我将在以后的博客深入分析。</p>
 ]]></content>
   </entry>
   

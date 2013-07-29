@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="学习一门语言，固然需要了解这门语言的语法，但针对一些完全属于不同范式的语言，即使通过阅读书籍可以理解一些特殊的语法，若不能付诸实践，总有隔靴搔痒之感。其实，要能通过运用这门新语言开发一个项目，或能快速并深刻地了解甚至吃透这门语言。我正是这样尝试着运用Scala来开发我的一个开源框架。可是， &hellip;">
+  <meta name="description" content="今天要阅读的代码来自《Scala By Example》一书的第一个例子。这两段代码通过实现一个快速排序算法体现了命令式与函数式之间的区别。这种直观的对比无疑很好地展现了函数式编程的优雅与简洁。让我们来看看这两段代码，首先是命令式的实现方式： def sort(xs: Array[Int]) { &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,114 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/07/reading-scala-code-2/">阅读Scala代码之二</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-07T22:37:00+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/07/reading-scala-code-2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天要阅读的代码来自《Scala By Example》一书的第一个例子。这两段代码通过实现一个快速排序算法体现了命令式与函数式之间的区别。这种直观的对比无疑很好地展现了函数式编程的优雅与简洁。让我们来看看这两段代码，首先是命令式的实现方式：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">j</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="n">t</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">r</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">((</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">var</span> <span class="n">i</span> <span class="k">=</span> <span class="n">l</span><span class="o">;</span> <span class="k">var</span> <span class="n">j</span> <span class="k">=</span> <span class="n">r</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>          <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">j</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">r</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">r</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">sort1</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面是函数式的方式：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="n">xs</span>
+</span><span class='line'>    <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
+</span><span class='line'>      <span class="nc">Array</span><span class="o">.</span><span class="n">concat</span><span class="o">(</span>
+</span><span class='line'>        <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&gt;)),</span>
+</span><span class='line'>             <span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">==),</span>
+</span><span class='line'>        <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&lt;)))</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>后者的简洁不言而喻，感觉实在太强烈了。它还展露出一种优雅的从容，因为没有嵌套的while循环，清扫了许多阅读障碍，没有繁文缛节，直指问题本质，显得游刃有余，挥洒自如。究其根由，在于这种函数式的编程方式，完全匹配快速排序的算法原则与过程，就像是那种斩钉截铁的证明，没有多余的啰嗦，结果如同“清水出芙蓉，天然来雕饰”。</p>
+
+<p>不提这种感觉的美感，函数式编程带来的实实在在好处在于它的无副作用特质。这就好似你寻找的药方，不仅能够药到病除，服用后还没有不良反应，真可以说得上奢望了。阅读第二段代码，我们可以非常直观地看到没有任何操作修改了传入的xs数组。从外向内看，返回的数组是通过Array.concat将三段数组给串联了起来，返回了一个新的数组对象。表面看来，这段代码对xs做了filter操作，根据传入的Predicate对数组元素进行筛选。事实上，filter同样是函数，它并没有直接更改被操作的数组，而是返回了一个新的筛选后的数组对象。这意味着，即使我们传入一个val的数组对象，这个sort函数也是不会抱怨的。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">target</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">7</span><span class="o">)</span>
+</span><span class='line'><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">sort</span><span class="o">(</span><span class="n">target</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这两种方案皆使用了递归，时间复杂度皆为O(N log(N))，但就简洁性和易读性而言，却不可同日而语。而这种无副作用特性则体现了函数式的不变特质，从而可以极大地简化并发编程模型。当然，这种方法必然会造成空间的浪费；不过，有JVM提供的GC负责内存管理，我们也无需关心这些对象在何时需要被释放。只要系统对内存的要求没有特别的限制，这一问题几乎可以忽略不计。</p>
+
+<p>好吧，让我们再转到Scala语言层面的特性上来。看第一段代码，除了个别关键字与语法不同之外，它几乎与Java代码没有太大的区别，最大的不同还在于Scala将函数（或者说方法）提升到了一等公民。第二段代码中，比较特殊的用法是调用Array的filter函数。该函数的签名为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">filter</span><span class="o">(</span><span class="n">p</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="nc">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>调用时，这段代码传入的表达式比较奇怪。严格意义上，filter显然需要传入一个函数，这个函数要求一个输入参数，返回为Boolean型。如果采用匿名函数的方式，调用方式应该为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果使用变量的placeholder，则可以表示为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="k">_</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而这里使用的则是一种称为partially applied function的方式，它支持我们在不会引起歧义的情况下（主要是指只有一个参数的情形），直接省略该参数变量。只要明白这种语法，这样的代码仍然是可读的。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -601,54 +709,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/22/preface-of-java-design-patterns/">Java设计模式译者序</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-22T16:52:00+08:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/22/preface-of-java-design-patterns/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/02/dpinjava.jpeg">
-如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。</p>
-
-<p>是否设计模式的精妙之处，业已为这些著作所穷尽？然，又未必尽然！以模式而论，若只局限在这23种模式的范围内，几乎每种模式的变化，都可以被悉心推演出来；每种模式的结构，也已被阐述得淋漓尽致。然而，若论及设计，则如大道苍穹，实则是不可穷尽的。基本上，设计的复杂程度已不亚于一个纷繁的世界，而软件，就是我们要构造的这个世界。</p>
-
-<p>因此，再出现一本讲解设计模式的书，就不足为怪了。那么，它值得你去阅读吗？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/22/preface-of-java-design-patterns/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -686,6 +746,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/07/29/agilechina-magazine/">AgileChina2003架构演进杂志</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/07/05/corrupt-code/">代码是如何腐化的</a>
       </li>
     
@@ -699,10 +763,6 @@
     
       <li class="post">
         <a href="/blog/2013/05/13/architecture-and-design-of-reading-radar/">ThoughtWorks读书雷达-架构设计篇</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/05/08/farewell-struts-1-dot-x/">Struts 1.x一路走好</a>
       </li>
     
   </ul>
@@ -740,7 +800,7 @@
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/tags/api' style='font-size: 104.61538461538461%'>API</a> <a href='/blog/tags/architecture' style='font-size: 150.76923076923077%'>Architecture</a> <a href='/blog/tags/big-data' style='font-size: 104.61538461538461%'>Big Data</a> <a href='/blog/tags/book' style='font-size: 104.61538461538461%'>Book</a> <a href='/blog/tags/coach' style='font-size: 109.23076923076923%'>Coach</a> <a href='/blog/tags/coding' style='font-size: 118.46153846153845%'>Coding</a> <a href='/blog/tags/cqrs' style='font-size: 104.61538461538461%'>CQRS</a> <a href='/blog/tags/csharp' style='font-size: 113.84615384615384%'>CSharp</a> <a href='/blog/tags/design' style='font-size: 160.0%'>Design</a> <a href='/blog/tags/design-patterns' style='font-size: 109.23076923076923%'>Design Patterns</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNet</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNET</a> <a href='/blog/tags/extjs' style='font-size: 104.61538461538461%'>ExtJS</a> <a href='/blog/tags/gae' style='font-size: 104.61538461538461%'>GAE</a> <a href='/blog/tags/geek' style='font-size: 104.61538461538461%'>Geek</a> <a href='/blog/tags/go' style='font-size: 104.61538461538461%'>GO</a> <a href='/blog/tags/hadoop' style='font-size: 109.23076923076923%'>Hadoop</a> <a href='/blog/tags/hdfs' style='font-size: 104.61538461538461%'>HDFS</a> <a href='/blog/tags/infoq' style='font-size: 109.23076923076923%'>InfoQ</a> <a href='/blog/tags/java' style='font-size: 123.07692307692308%'>Java</a> <a href='/blog/tags/javascript' style='font-size: 104.61538461538461%'>JavaScript</a> <a href='/blog/tags/language' style='font-size: 104.61538461538461%'>Language</a> <a href='/blog/tags/literature' style='font-size: 113.84615384615384%'>Literature</a> <a href='/blog/tags/mapreduce' style='font-size: 104.61538461538461%'>MapReduce</a> <a href='/blog/tags/mock' style='font-size: 104.61538461538461%'>Mock</a> <a href='/blog/tags/mvc' style='font-size: 109.23076923076923%'>MVC</a> <a href='/blog/tags/mysql' style='font-size: 104.61538461538461%'>MySQL</a> <a href='/blog/tags/nosql' style='font-size: 104.61538461538461%'>NoSQL</a> <a href='/blog/tags/notes' style='font-size: 109.23076923076923%'>Notes</a> <a href='/blog/tags/novel' style='font-size: 104.61538461538461%'>Novel</a> <a href='/blog/tags/nutch' style='font-size: 104.61538461538461%'>Nutch</a> <a href='/blog/tags/octopress' style='font-size: 113.84615384615384%'>Octopress</a> <a href='/blog/tags/oo' style='font-size: 118.46153846153845%'>OO</a> <a href='/blog/tags/poem' style='font-size: 104.61538461538461%'>Poem</a> <a href='/blog/tags/reading' style='font-size: 136.9230769230769%'>Reading</a> <a href='/blog/tags/reading-radar' style='font-size: 109.23076923076923%'>Reading Radar</a> <a href='/blog/tags/refactoring' style='font-size: 123.07692307692308%'>Refactoring</a> <a href='/blog/tags/responsibility' style='font-size: 113.84615384615384%'>Responsibility</a> <a href='/blog/tags/ruby' style='font-size: 109.23076923076923%'>Ruby</a> <a href='/blog/tags/scala' style='font-size: 113.84615384615384%'>Scala</a> <a href='/blog/tags/scalability' style='font-size: 104.61538461538461%'>Scalability</a> <a href='/blog/tags/struts' style='font-size: 104.61538461538461%'>Struts</a> <a href='/blog/tags/tdd' style='font-size: 113.84615384615384%'>TDD</a> <a href='/blog/tags/thinking' style='font-size: 104.61538461538461%'>Thinking</a> <a href='/blog/tags/thought' style='font-size: 104.61538461538461%'>Thought</a> <a href='/blog/tags/thoughtworks' style='font-size: 118.46153846153845%'>ThoughtWorks</a> <a href='/blog/tags/transaltion' style='font-size: 104.61538461538461%'>Transaltion</a> </span>
+    <span id="tag-cloud"><a href='/blog/tags/agilechina' style='font-size: 104.61538461538461%'>AgileChina</a> <a href='/blog/tags/api' style='font-size: 104.61538461538461%'>API</a> <a href='/blog/tags/architecture' style='font-size: 150.76923076923077%'>Architecture</a> <a href='/blog/tags/architecure' style='font-size: 104.61538461538461%'>architecure</a> <a href='/blog/tags/big-data' style='font-size: 104.61538461538461%'>Big Data</a> <a href='/blog/tags/book' style='font-size: 104.61538461538461%'>Book</a> <a href='/blog/tags/coach' style='font-size: 109.23076923076923%'>Coach</a> <a href='/blog/tags/coding' style='font-size: 118.46153846153845%'>Coding</a> <a href='/blog/tags/cqrs' style='font-size: 104.61538461538461%'>CQRS</a> <a href='/blog/tags/csharp' style='font-size: 113.84615384615384%'>CSharp</a> <a href='/blog/tags/design' style='font-size: 160.0%'>Design</a> <a href='/blog/tags/design-patterns' style='font-size: 109.23076923076923%'>Design Patterns</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNet</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNET</a> <a href='/blog/tags/extjs' style='font-size: 104.61538461538461%'>ExtJS</a> <a href='/blog/tags/gae' style='font-size: 104.61538461538461%'>GAE</a> <a href='/blog/tags/geek' style='font-size: 104.61538461538461%'>Geek</a> <a href='/blog/tags/go' style='font-size: 104.61538461538461%'>GO</a> <a href='/blog/tags/hadoop' style='font-size: 109.23076923076923%'>Hadoop</a> <a href='/blog/tags/hdfs' style='font-size: 104.61538461538461%'>HDFS</a> <a href='/blog/tags/infoq' style='font-size: 109.23076923076923%'>InfoQ</a> <a href='/blog/tags/java' style='font-size: 123.07692307692308%'>Java</a> <a href='/blog/tags/javascript' style='font-size: 104.61538461538461%'>JavaScript</a> <a href='/blog/tags/language' style='font-size: 104.61538461538461%'>Language</a> <a href='/blog/tags/literature' style='font-size: 113.84615384615384%'>Literature</a> <a href='/blog/tags/mapreduce' style='font-size: 104.61538461538461%'>MapReduce</a> <a href='/blog/tags/mock' style='font-size: 104.61538461538461%'>Mock</a> <a href='/blog/tags/mvc' style='font-size: 109.23076923076923%'>MVC</a> <a href='/blog/tags/mysql' style='font-size: 104.61538461538461%'>MySQL</a> <a href='/blog/tags/nosql' style='font-size: 104.61538461538461%'>NoSQL</a> <a href='/blog/tags/notes' style='font-size: 109.23076923076923%'>Notes</a> <a href='/blog/tags/novel' style='font-size: 104.61538461538461%'>Novel</a> <a href='/blog/tags/nutch' style='font-size: 104.61538461538461%'>Nutch</a> <a href='/blog/tags/octopress' style='font-size: 113.84615384615384%'>Octopress</a> <a href='/blog/tags/oo' style='font-size: 118.46153846153845%'>OO</a> <a href='/blog/tags/poem' style='font-size: 104.61538461538461%'>Poem</a> <a href='/blog/tags/reading' style='font-size: 136.9230769230769%'>Reading</a> <a href='/blog/tags/reading-radar' style='font-size: 109.23076923076923%'>Reading Radar</a> <a href='/blog/tags/refactoring' style='font-size: 123.07692307692308%'>Refactoring</a> <a href='/blog/tags/responsibility' style='font-size: 113.84615384615384%'>Responsibility</a> <a href='/blog/tags/ruby' style='font-size: 109.23076923076923%'>Ruby</a> <a href='/blog/tags/scala' style='font-size: 113.84615384615384%'>Scala</a> <a href='/blog/tags/scalability' style='font-size: 104.61538461538461%'>Scalability</a> <a href='/blog/tags/struts' style='font-size: 104.61538461538461%'>Struts</a> <a href='/blog/tags/tdd' style='font-size: 113.84615384615384%'>TDD</a> <a href='/blog/tags/thinking' style='font-size: 104.61538461538461%'>Thinking</a> <a href='/blog/tags/thought' style='font-size: 104.61538461538461%'>Thought</a> <a href='/blog/tags/thoughtworks' style='font-size: 118.46153846153845%'>ThoughtWorks</a> <a href='/blog/tags/transaltion' style='font-size: 104.61538461538461%'>Transaltion</a> </span>
 </section><section>
   <h1>Sina Weibo</h1>
     <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>

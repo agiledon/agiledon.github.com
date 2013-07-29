@@ -219,12 +219,16 @@
         <lastmod>2013-07-06T11:20:13+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2013/07/29/agilechina-magazine/</loc>
+        <lastmod>2013-07-29T22:40:31+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2013-02-05T20:08:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-07-06T11:20:13+08:00</lastmod>
+        <lastmod>2013-07-29T22:40:31+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -232,6 +236,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-07-06T11:20:13+08:00</lastmod>
+        <lastmod>2013-07-29T22:40:31+08:00</lastmod>
     </url>
 </urlset>
