@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-07-29T22:40:42+08:00</updated>
+  <updated>2013-08-03T21:54:15+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,40 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Spray源代码分析之一]]></title>
+    <link href="http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1/"/>
+    <updated>2013-08-02T22:07:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1</id>
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/spray_logo.png">
+Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端REST/HTTP的支持。在使用上，大概可以将其视为Java平台下的Jersey；虽然它们的特性并不尽相同。从Scala语言来看，它提供的Future与Promise可以较好地支持并发；而Akka的Actor模型无疑助推了Spray的并发处理性能。根据<a href="http://spray.io/">Spray官方网站</a>的描述，它拥有如下的特性：
+<blockquote><p>完全异步的，无阻塞的APIs<br/>基于Actor与Future<br/>高性能<br/>轻量级<br/>模块化<br/>可测试性</p></blockquote></p>
+
+<p>之所以称其为库（library）而非框架（Framework），源于Spray的设计哲学。似乎在Spray的设计者眼中，只要沾上了“框架”这个名词，就显得不够轻量，耦合也会随之而来。虽然框架并非容器，无需管理诸多对象的生命周期，但它总会为应用添加一些框架级别的约束。框架更像是一个骨架（Skeleton），应用所要做的是将自己的内容填充到这个骨架中。应用能否运行良好，取决于框架的支撑作用。以我之浅见，大约可以如此简单分辨：框架之于应用，是一种白盒式的调用，你须得了解一些框架细节，遵循规定的约束或规范，才能更好地发挥框架的威力；而类库之于应用，则是职责向黑盒传递的委派，若要调用库，只需明晓其接口即可。</p>
+
+<p>正如Spray的官方网站所说，Spray更像是基于Http搭建的一个集成层（Integration Layer）。因此你不必将自己的应用搭建在Spray之上，仅仅是当需要对Http的集成时，Spray可以成为你的一项选择。这种松散耦合，去除“供应商绑定”的方式，实在招人喜爱。Spray引人驻足的魅力，不仅在于Akka Actor模式对并发的良好支持，Scala语言本身也使其增色不少。Scala的语法较之Java更其灵活而先进，那些支持不变式、函数编程以及闭包等特性，总会让Java程序员垂涎三尺(至少在Java 8之前)。若再遥想不远将来Scala提供的async以及await（一如C# 5.0的语法特性），编写Scala程序应大有可为。当然，或也可能成亦Scala，败亦Scala，毕竟面对数量级庞大的Java程序员，Scala仍属小众。这会成为Spray的阿克琉斯之踝吗？</p>
+
+<!--more-->
+
+
+<p>诸多因子促使我选择Spray作为一个研究对象。我想，通过使用Spray，并深入挖掘其源码，定能让我受益良多。当然，在剖析其源代码之前，先让我们看看Spray的模块结构吧。
+<img class="center" src="/images/2013/spraymodules.png"></p>
+
+<p>既然Spray号称其具有松散耦合的组件结构，就让我们对这些模块间的依赖来一个先睹为快。要识别模块之间的依赖关系，最直观的方式莫过于绘制一个依赖图：
+<img class="center" src="/images/2013/spraydepencies.png"></p>
+
+<p>整洁的依赖显得清爽，斩钉截铁，绝不拖泥带水。那种如网一般深邃的依赖关系，会让人迷失。这其中的要点，仍然在于职责的分配。借助依赖关系图可以更加直观展现，何处出现多余或繁复的依赖线与环，肉眼即可观察获得。这种图甚至可以通过直觉去感受，只要绘图得当，布局合理，会有平衡之感。</p>
+
+<p>如上图所示，以浅绿标明的三个模块，都处于被依赖的层次，按照“依赖沉淀”的法则，我将其放在整个图的最底层。观其名，我们似乎也可察知这几个模块更倾向于基础设施或公共设施的范畴。值得特别书写的是spray-http，因为该模块除了必须依赖的Scala之外，完全独立，没有任何依赖。它提供了基本的Http数据结构，如Request，Response以及其他公共Header。对于一个支持Http的库而言，可以视其为核心。</p>
+
+<p>spray-caching提供了基本的缓存功能，是一个非常小的模块，仅仅包含cache.scala与LruCache.scala两个类。它引入了Future对象，使其能够更好地满足并发处理的缓存。此外，它还调用了google code上的一个第三方开源库concurrentlinkedhashmap（上图的紫色模块），作为存储Future对象的数据结构。spray-can是整个库的主要模块，提供了高性能的Http Server与Client。在这个模块中，主要的APIs都直接或间接继承了Akka提供的Actor。spray-servlet扮演了适配器的角色，它的主要目的是在Servlet API之上提供spray-can的服务器接口，从而使得spray能够在servlet容器中使用路由功能。因此，该模块除了依赖spray-util与spray-http之外，实则还要依赖于Java的Servlet。注意，上图的虚线依赖说明的是一种可选的关系。单从这一点来看，也部分说明了spray模块间的松散耦合度。一个示例是上图未曾列出的spray-json，就属于可选的用于处理json的模块。</p>
+
+<p>无论是依赖关系，还是模块职责展现的抽象层次，spray-client与spray-routing都属于更加high-level的模块。例如spray-client可以视为对spray-can中提供的Http Client APIs的包装，属于更高层次的抽象。spray-routing则以优雅的DSL形式提供了定义REST服务的接口。</p>
+
+<p>观察Spray的模块分解，非常注重职责的内聚，并以较小的粒度划分模块。由于它的设计目标为库，每个模块展现了自己的关注点，使其能够最大限度地被用户单独使用。例如当我仅需要缓存功能时，完全可以忽略Spray中支持HTTP以及REST的模块。同时，它注重调用视角的区分，为不同的调用者提供不同的抽象层次。在充分满足松耦合、高内聚的架构原则之上，适度地考虑接口的可用性与可读性。我喜欢这样一种轻量级的，尽其可能简单的架构设计。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[代码是如何腐化的]]></title>
@@ -295,125 +329,6 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>因为有了中间值的变量声明，意图会变得更清晰一些。我同意这样的观点，特别是针对一些函数式语言或动态语言而言，代码变得简洁了，但有时候会用到一些比较tricky的花招，影响了代码的可读性。但要注意，这种可读性一定是基于该语言的特色而言。我们千万不能将Scala程序写成Java命令式的方式，以为这样适合Java程序员的阅读习惯，这无疑误解了所谓“可读性”的含义。当然，就这段代码而言，由于groupBy函数的名称已经非常清晰，我并不太赞成提取出votesByLang的中间变量。这类似fluent interface的方式，只要API的设计是有意义的，这种流水线的处理方式仍然非常清楚，前提是我们要有合理的排版。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[新手培养日记(二)]]></title>
-    <link href="http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/"/>
-    <updated>2013-03-28T20:30:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/learning_perception.jpg">
-几天后，新手又一次提交了一份代码。由于改动较大，新手重新创建了一个项目。在这份代码中，新手接受了我的建议，改为使用Spring提供的JdbcTemplate。包的结构也得到了一定程度的改善。这充分说明他认识到了问题所在，并能够快速准确地采取行动去纠正这些问题。但或许是我提出的问题太多，给出的建议不够具体，在新提交的这份代码中，我还是看到了一些问题，且某些问题在上一次Review代码时，我曾经提及。</p>
-
-<p>来看看如下两段代码。首先，是CustomerService，它定义了目前Story要求的基本业务：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Service</span><span class="o">(</span><span class="s">&quot;customerService&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerService</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Autowired</span>
-</span><span class='line'><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">CustomerDAO</span> <span class="n">customerDAO</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">defaultTableNameForCustomer</span> <span class="o">=</span> <span class="s">&quot;customer&quot;</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="n">defaultTableNameForCustomer</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTableName</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">tableName</span> <span class="o">=</span> <span class="n">tableName</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Transactional</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">addCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">customerDAO</span><span class="o">.</span><span class="na">getCustomer</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdraw</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balance</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">deposit</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balance</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>在CustomerService类中，调用了CustomerDAO类的相关方法：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span>
-</span><span class='line'><span class="nd">@Repository</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDAO</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Autowired</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">JdbcTemplate</span> <span class="n">jdbcTemplate</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">createTable</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;DROP TABLE IF EXISTS &quot;</span> <span class="o">+</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;CREATE TABLE &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="s">&quot;nickname VARCHAR(45) NOT NULL ,&quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;dateOfBirth DATETIME NOT NULL,&quot;</span> <span class="o">+</span> <span class="s">&quot;balance DOUBLE NOT NULL, &quot;</span> <span class="o">+</span> <span class="s">&quot;PRIMARY KEY(nickname)&quot;</span> <span class="o">+</span> <span class="s">&quot;);&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;insert into &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(nickname, dateOfBirth, balance) values (?, ?, ?)&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">()});</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">DuplicateKeyException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">DuplicateCustomerException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; has already existed&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select * from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">Customer</span> <span class="n">customer</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">customer</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="k">new</span> <span class="n">CustomerMapper</span><span class="o">());</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">EmptyResultDataAccessException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">CustomerNotFoundException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">nickname</span> <span class="o">+</span> <span class="s">&quot; is not found&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">customer</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">Double</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select balance from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="n">Double</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">balance</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">-</span> <span class="n">balanceToWithdraw</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">balanceAfter</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">BalanceOverdrawException</span><span class="o">(</span><span class="s">&quot;You have only &quot;</span> <span class="o">+</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="s">&quot;$. You can not withdraw &quot;</span> <span class="o">+</span> <span class="n">balanceToWithdraw</span> <span class="o">+</span> <span class="s">&quot;$&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToDeposit</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="n">balanceToDeposit</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>这两段代码存在什么问题？</p>
-
-<p>显然，我们看到CustomerService履行的职责仅仅是对调用的委派，另外还添加了事务功能，除此之外，它什么事情都没有做，接到了请求，转手就递给CustomerDAO了。再看CustomerDAO，特别关注withdrawBalance()方法，你会发现这个方法的实现其实体现了较多的业务逻辑。事实上，我们看到这个方法的名称，体现的就是业务的概念。显然，这里的职责分配是不合理的。新手明显没有深刻体会Service与Dao之间的区别。无论是传统的分层架构模型，还是DDD提出的领域层与基础设施层的分离，都表达了业务与数据访问关注点分离的原则。事实上，新手还错误地将Service类放到了database.service包中。</p>
-
-<p>正确的做法应该是保证每个对象的纯洁性与单一性，让每个对象只做一件事情，只做它应该关心的事情，遵循单一职责原则。Dao是数据访问对象，那么它就应该只处理数据访问的逻辑，而对具体业务应该是“一无所知”的。一个简单的识别办法，就是不要在这个类中出现任何业务概念，它做的事情就是CRUD。</p>
-
-<p>对于许多OO初学者而言，职责不清是最容易犯下的毛病。要么就是恨不得把所有内容都塞给一个类；要么就是张冠李戴，随着性子乱分配职责，全然不考虑每个对象的感受。我常常说，对象是有意识的生物，这样不尊重对象搞乱分配，迟早这些对象会造反。</p>
 ]]></content>
   </entry>
   

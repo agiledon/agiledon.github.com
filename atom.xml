@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-07-29T22:40:42+08:00</updated>
+  <updated>2013-08-03T21:54:15+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,42 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Spray源代码分析之一]]></title>
+    <link href="http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1/"/>
+    <updated>2013-08-02T22:07:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1</id>
+    <content type="html"><![CDATA[<p><img class="left" src="http://agiledon.github.com/images/2013/spray_logo.png">
+Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端REST/HTTP的支持。在使用上，大概可以将其视为Java平台下的Jersey；虽然它们的特性并不尽相同。从Scala语言来看，它提供的Future与Promise可以较好地支持并发；而Akka的Actor模型无疑助推了Spray的并发处理性能。根据<a href="http://spray.io/">Spray官方网站</a>的描述，它拥有如下的特性：</p>
+
+<blockquote><p>完全异步的，无阻塞的APIs<br/>基于Actor与Future<br/>高性能<br/>轻量级<br/>模块化<br/>可测试性</p></blockquote>
+
+
+<p>之所以称其为库（library）而非框架（Framework），源于Spray的设计哲学。似乎在Spray的设计者眼中，只要沾上了“框架”这个名词，就显得不够轻量，耦合也会随之而来。虽然框架并非容器，无需管理诸多对象的生命周期，但它总会为应用添加一些框架级别的约束。框架更像是一个骨架（Skeleton），应用所要做的是将自己的内容填充到这个骨架中。应用能否运行良好，取决于框架的支撑作用。以我之浅见，大约可以如此简单分辨：框架之于应用，是一种白盒式的调用，你须得了解一些框架细节，遵循规定的约束或规范，才能更好地发挥框架的威力；而类库之于应用，则是职责向黑盒传递的委派，若要调用库，只需明晓其接口即可。</p>
+
+<p>正如Spray的官方网站所说，Spray更像是基于Http搭建的一个集成层（Integration Layer）。因此你不必将自己的应用搭建在Spray之上，仅仅是当需要对Http的集成时，Spray可以成为你的一项选择。这种松散耦合，去除“供应商绑定”的方式，实在招人喜爱。Spray引人驻足的魅力，不仅在于Akka Actor模式对并发的良好支持，Scala语言本身也使其增色不少。Scala的语法较之Java更其灵活而先进，那些支持不变式、函数编程以及闭包等特性，总会让Java程序员垂涎三尺(至少在Java 8之前)。若再遥想不远将来Scala提供的async以及await（一如C# 5.0的语法特性），编写Scala程序应大有可为。当然，或也可能成亦Scala，败亦Scala，毕竟面对数量级庞大的Java程序员，Scala仍属小众。这会成为Spray的阿克琉斯之踝吗？</p>
+
+<!--more-->
+
+
+<p>诸多因子促使我选择Spray作为一个研究对象。我想，通过使用Spray，并深入挖掘其源码，定能让我受益良多。当然，在剖析其源代码之前，先让我们看看Spray的模块结构吧。
+<img class="center" src="http://agiledon.github.com/images/2013/spraymodules.png"></p>
+
+<p>既然Spray号称其具有松散耦合的组件结构，就让我们对这些模块间的依赖来一个先睹为快。要识别模块之间的依赖关系，最直观的方式莫过于绘制一个依赖图：
+<img class="center" src="http://agiledon.github.com/images/2013/spraydepencies.png"></p>
+
+<p>整洁的依赖显得清爽，斩钉截铁，绝不拖泥带水。那种如网一般深邃的依赖关系，会让人迷失。这其中的要点，仍然在于职责的分配。借助依赖关系图可以更加直观展现，何处出现多余或繁复的依赖线与环，肉眼即可观察获得。这种图甚至可以通过直觉去感受，只要绘图得当，布局合理，会有平衡之感。</p>
+
+<p>如上图所示，以浅绿标明的三个模块，都处于被依赖的层次，按照“依赖沉淀”的法则，我将其放在整个图的最底层。观其名，我们似乎也可察知这几个模块更倾向于基础设施或公共设施的范畴。值得特别书写的是spray-http，因为该模块除了必须依赖的Scala之外，完全独立，没有任何依赖。它提供了基本的Http数据结构，如Request，Response以及其他公共Header。对于一个支持Http的库而言，可以视其为核心。</p>
+
+<p>spray-caching提供了基本的缓存功能，是一个非常小的模块，仅仅包含cache.scala与LruCache.scala两个类。它引入了Future对象，使其能够更好地满足并发处理的缓存。此外，它还调用了google code上的一个第三方开源库concurrentlinkedhashmap（上图的紫色模块），作为存储Future对象的数据结构。spray-can是整个库的主要模块，提供了高性能的Http Server与Client。在这个模块中，主要的APIs都直接或间接继承了Akka提供的Actor。spray-servlet扮演了适配器的角色，它的主要目的是在Servlet API之上提供spray-can的服务器接口，从而使得spray能够在servlet容器中使用路由功能。因此，该模块除了依赖spray-util与spray-http之外，实则还要依赖于Java的Servlet。注意，上图的虚线依赖说明的是一种可选的关系。单从这一点来看，也部分说明了spray模块间的松散耦合度。一个示例是上图未曾列出的spray-json，就属于可选的用于处理json的模块。</p>
+
+<p>无论是依赖关系，还是模块职责展现的抽象层次，spray-client与spray-routing都属于更加high-level的模块。例如spray-client可以视为对spray-can中提供的Http Client APIs的包装，属于更高层次的抽象。spray-routing则以优雅的DSL形式提供了定义REST服务的接口。</p>
+
+<p>观察Spray的模块分解，非常注重职责的内聚，并以较小的粒度划分模块。由于它的设计目标为库，每个模块展现了自己的关注点，使其能够最大限度地被用户单独使用。例如当我仅需要缓存功能时，完全可以忽略Spray中支持HTTP以及REST的模块。同时，它注重调用视角的区分，为不同的调用者提供不同的抽象层次。在充分满足松耦合、高内聚的架构原则之上，适度地考虑接口的可用性与可读性。我喜欢这样一种轻量级的，尽其可能简单的架构设计。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[AgileChina2003架构演进杂志]]></title>
@@ -1613,106 +1649,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 
 
 <p>无疑，这体现了面向对象的“封装”思想。通过封装既保证了代码的清洁与可读性，同时还有利于未来的扩展。这与OCP（开放-封闭原则）是一脉相承的。代码是有结构的，或者体现为函数，或者体现为对象，事实上都是一种按照属性与职责进行的分类。分类是保持清洁、避免重复的唯一法门。从简朴的角度来说，所有的设计其实都是在做着分类的游戏。分类体现了定义的抽象，职责的分配，结构的划分；如果再加上类别之间的协作，就是设计的全部了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[可伸缩系统的架构经验]]></title>
-    <link href="http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons/"/>
-    <updated>2013-02-27T11:37:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/02/scalability.jpg"></p>
-
-<p>最近，阅读了Will Larson的文章<a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting System for Scale</a>，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统，这种面向企业内部的软件系统通常不会有太大的负载量，太多的并发量，因而对于系统的可伸缩性考虑较少。大体而言，只要在系统部署上考虑集群以及负载均衡即可。本文给了我很多启发，现把本文的主要内容摘译出来，并结合自己对此的理解。</p>
-
-<!--more-->
-
-
-<p>Larson首先认为，一个理想的系统，对于容量（Capacity）的增长应该与添加的硬件数是线性的关系。换言之，如果系统只有一台服务器，在增加了另一台同样的机器后，容量应该翻倍。以此类推。这种线性的容量伸缩方式，通常被称之为水平伸缩“Horizontal Scalability”。</p>
-
-<p>在设计一个健壮的系统时，自然必须首要考虑失败的情况。Larson认为，一个理想的系统是当失去其中一台服务器的时候，系统不会崩溃。当然，对应而言，失去一台服务器也会导致容量的响应线性减少。这种情况通常被称为冗余“Redundancy”。</p>
-
-<h3>负载均衡</h3>
-
-<p>无论是水平伸缩还是冗余，都可以通过负载均衡来实现。负载均衡就好似一个协调请求的调停者，它会根据集群中机器的当前负载，合理的分配发往Web服务器的请求，以达到有效利用集群中各台机器资源的目的。显然，这种均衡器应该介于客户端与Web服务器之间，如下图所示：
-<img class="center" src="http://agiledon.github.com/images/2013/02/scalability01.png"></p>
-
-<p>本文提到了实现负载均衡的几种方法。其一是Smart Client，即将负载均衡的功能添加到数据库（以及缓存或服务）的客户端中。这是一种通过软件来实现负载均衡的方式，它的缺点是方案会比较复杂，不够健壮，也很难被重用（因为协调请求的逻辑会混杂在业务系统中）。对此，Larson在文章以排比的方式连续提出问题，以强化自己对此方案的不认可态度：</p>
-
-<blockquote><p>Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it&#8217;ll be easy to reuse? Tragically, no.</p></blockquote>
-
-
-<p>第二种方式是采用硬件负载均衡器，例如<a href="http://www.citrix.com/English/ps2/products/product.asp?contentID=21679">Citrix NetScaler</a>。不过，购买硬件的费用不菲，通常是一些大型公司才会考虑此方案。</p>
-
-<p>如果既不愿意承受Smart Client的痛苦，又不希望花费太多费用去购买硬件，那就可以采用一种混合（Hybird）的方式，称之为软件负载均衡器（Software Load Balancer）。Larson提到了<a href="http://haproxy.1wt.eu/">HAProxy</a>。它会运行在本地，需要负载均衡的服务都会在本地中得到均衡和协调。</p>
-
-<h3>缓存</h3>
-
-<p>为了减轻服务器的负载，还需要引入缓存。文章给出了常见的对缓存的分类，分别包括：预先计算结果（precalculating result，例如针对相关逻辑的前一天的访问量）、预先生成昂贵的索引（pre-generating expensive indexes，例如用户点击历史的推荐）以及在更快的后端存储频繁访问的数据的副本（例如<a href="http://memcached.org/">Memcached</a>）。</p>
-
-<h4>应用缓存</h4>
-
-<p>提供缓存的方式可以分为应用缓存和数据库缓存。此二者各擅胜场。应用缓存通常需要将处理缓存的代码显式地集成到应用代码中。这就有点像使用代理模式来为真实对象提供缓存。首先检查缓存中是否有需要的数据，如果有，就从缓存直接返回，否则再查询数据库。至于哪些值需要放到缓存中呢？有<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">诸多算法</a>，例如根据最近访问的，或者根据访问频率。使用Memcached的代码如下所示：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&quot;user.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user_id</span>
-</span><span class='line'><span class="n">user_blob</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span class='line'><span class="k">if</span> <span class="n">user_blob</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT * FROM users WHERE user_id=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
-</span><span class='line'>        <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">user</span>
-</span><span class='line'><span class="k">else</span><span class="p">:</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">user_blob</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>数据库缓存</h4>
-
-<p>数据库缓存对于应用代码没有污染，一些天才的DBA甚至可以在不修改任何代码的情况下，通过数据库调优来改进系统性能。例如通过配置Cassandra行缓存。</p>
-
-<h4>内存缓存</h4>
-
-<p>为了提高性能，缓存通常是存储在内存中。常见的内存缓存包括Memcached和<a href="http://redis.io/">Redis</a>。不过采用这种方式仍然需要合理的权衡。我们不可能一股脑儿的将所有数据都存放在内存中，虽然这会极大地改善性能，但比较起磁盘存储而言，RAM的代价更昂贵，同时还会影响系统的健壮性，因为内存中的数据没有持久化，容易丢失。正如之前提到的，我们应该将需要的数据放入缓存，通常的算法是<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">least recently used</a>，即LRU。</p>
-
-<h4>CDN</h4>
-
-<p>提高性能，降低Web服务器负载的另一种常见做法是将静态媒体放入CDN（Content Distribution Network）中。如下图所示：
-<img class="center" src="http://agiledon.github.com/images/2013/02/scalability02.png"></p>
-
-<p>CDN可以有效地分担Web服务器的压力，使得应用服务器可以专心致志地处理动态页面；同时，CDN还可以通过地理分布来提高响应请求的性能。在设置了CDN后，当系统接收到请求时，首先会询问CDN以获得请求中需要的静态媒体（通常会通过HTTP Header来配置CDN能够缓存的内容）。如果请求的内容不可用，CDN会查询服务器以获得该文件，并在CDN本地进行缓存，最后再提供给请求者。如果当前网站并不大，引入CDN的效果不明显时，可以考虑暂不使用CDN，在将来可以通过使用一些轻量级的HTTP服务器如<a href="http://nginx.org/">Nginx</a>，为静态媒体分出专门的子域名如static.domain.com来提供服务。</p>
-
-<h4>缓存失效</h4>
-
-<p>引入缓存所带来的问题是如何保证真实数据与缓存数据之间的一致性。这一问题通常被称之为缓存失效（Cache Invalidation）。从高屋建瓴的角度来讲，解决这一问题的办法无非即使更新缓存中的数据。一种做法是直接将新值写入缓存中（通常被称为write-through cache）；另一种做法是简单地删除缓存中的值，在等到下一次读缓存值的时候再生成。</p>
-
-<p>整体而言，要避免缓存实效，可以依赖于数据库缓存，或者为缓存数据添加有效期，又或者在实现应用程序逻辑时，尽量考虑避免此问题。例如不直接使用DELETE FROM a WHERE…来删除数据，而是先查询符合条件的数据，再使得缓存中对应的数据失效，继而根据其主键显式地删除这些行。</p>
-
-<h3>Off-Line处理</h3>
-
-<p>这篇文章还提到了Off-Line的处理方式，即通过引入消息队列的方式来处理请求。事实上，在大多数企业软件系统中，这种方式也是较为常见的做法。在我撰写的文章《<a href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/">案例分析:基于消息的分布式架构</a>》中，较为详细地介绍了这种架构。在引入消息队列后，Web服务器会充当消息的发布者，而在消息队列的另一端可以根据需要提供消费者Consumer。如下图所示。对于Off-Line的任务是否执行完毕，通常可以通过轮询或回调的方式来获知。
-<img class="center" src="http://agiledon.github.com/images/2013/02/scalability03.png"></p>
-
-<p>为了更好地提高代码可读性，可以在公开的接口定义中明确地标示该任务是On-Line还是Off-Line。</p>
-
-<p>引入Message Queue，可以极大地缓解Web服务器的压力，因为它可以将耗时较长的任务转到专门的机器上去执行。</p>
-
-<p>此外，通过引入定时任务，也可以有效地利用Web服务器的空闲时间来处理后台任务。例如，通过Spring Batch Job来执行每日、每周或者每月的定时任务。如果需要多台机器去执行这些定时任务，可以引入Spring提供的<a href="https://puppetlabs.com">Puppet</a>来管理这些服务器。Puppet提供了可读性强的声明性语言来完成对机器的配置。</p>
-
-<h4>Map-Reduce</h4>
-
-<p>对于大数据的处理，自然可以引入Map-Reduce。为整个系统专门引入一个Map-Reduce层来处理数据是有必要的。相对于使用SQL数据库作为数据中心的方式，Map-Reduce对可伸缩性的支持更好。Map-Reduce可以与任务的定时机制结合起来。如下图所示：
-<img class="center" src="http://agiledon.github.com/images/2013/02/scalability04.png"></p>
-
-<h3>平台层</h3>
-
-<p>Larson认为，大多数系统都是Web应用直接与数据库通信，但如果能加入一个平台层（Platform Layer），或许会更好。
-<img class="center" src="http://agiledon.github.com/images/2013/02/scalability05.png"></p>
-
-<p>首先，将平台与Web应用分离，使得它们可以独立地进行伸缩。例如需要添加一个新的API，就可以添加新的平台服务器，而无需增加Web服务器。要知道，在这样一个独立的物理分层架构中，不同层次对服务器的要求是不一样的。例如，对于数据库服务器而言，由于需要频繁地对磁盘进行I/O操作，因此应保证数据库服务器的IO性能，如尽量使用固态硬盘。而对于Web服务器而言，则对CPU的要求比较高，尽可能采用多核CPU。</p>
-
-<p>其次，增加一个额外的平台层，可以有效地提高系统的可重用性。例如我们可以将一些与系统共有特性以及横切关注点的内容（如对缓存的支持，对数据库的访问等功能）抽取到平台层中，作为整个系统的基础设施（Infrastructure）。尤其对于产品线系统而言，这种架构可以更好地为多产品提供服务。</p>
-
-<p>最后，这种架构也可能对跨团队开发带来好处。平台可以抽离出一些与产品无关的接口，从而隐藏其具体实现的细节。如果划分合理，并能设计出相对稳定的接口，就可以使得各个团队可以并行开发。例如可以专门成立平台团队，致力于对平台的实现以及优化。</p>
 ]]></content>
   </entry>
   
