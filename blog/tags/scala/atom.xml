@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Scala | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/scala/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-08-03T21:54:15+08:00</updated>
+  <updated>2013-08-06T10:17:34+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Spray源代码分析之一]]></title>
+    <title type="html"><![CDATA[Spray的模块结构]]></title>
     <link href="http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1/"/>
     <updated>2013-08-02T22:07:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1</id>
