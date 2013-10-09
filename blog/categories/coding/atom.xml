@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-08-29T13:24:10+08:00</updated>
+  <updated>2013-10-09T23:44:33+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,64 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Guava提供的Preconditions]]></title>
+    <link href="http://agiledon.github.com/blog/2013/10/09/using-preconditions-of-guava/"/>
+    <updated>2013-10-09T22:57:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/10/09/using-preconditions-of-guava</id>
+    <content type="html"><![CDATA[<p>我看到这么一段Java代码，主要逻辑是对传入的数据对象进行分析和处理。方法除了长了一点，本身没有什么问题，但一个不好的味道是方法中充斥了一部分对对象非空的处理，以及写日志的信息。这些语句本身不属于方法的主干实现，却很讨厌地干扰了方法的主要逻辑，影响了程序的可读性。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Processor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">(</span><span class="n">ProcessData</span> <span class="n">processData</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">processData</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">processData</span><span class="o">.</span><span class="na">getInput</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;processData is error&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">FavoratePolicy</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">policies</span> <span class="o">=</span> <span class="n">fetchPolicies</span><span class="o">(</span><span class="n">processData</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">policies</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">policies</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;can not fetch favorate policies&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">FavoratePolicy</span> <span class="n">policy</span> <span class="o">:</span> <span class="n">policies</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//handle policy</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>我最初想要尝试使用Guava提供的Optional。经过仔细分析，发现这里的场景并不适合Optional。Optional确实可以用于处理null object，甚至可以将其看做是Null Object模式的实现。但它为Java语言带来的好处，无非是提高了代码可读性，同时可以有效地防止程序员忘记对null的判断。它不能带来代码量的减少，用在这里，也无法消除非空判断以及日志的噪音。所幸，Guava还提供了Preconditions，它拥有更好而简洁的断言方式，可以处理程序的一些异常分支。它主要定义的方法包括checkArgument(), checkNotNull()以及checkState()等，可以通过抛指定异常的方式，将程序的主分支与异常分支有效地隔离开。通过引入checkArgument()方法，前面的代码可以调整为：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Processor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">(</span><span class="n">ProcessData</span> <span class="n">processData</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">checkArgument</span><span class="o">(</span><span class="n">processData</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="n">processData</span><span class="o">.</span><span class="na">getInput</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">,</span> <span class="s">&quot;processData is error&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">FavoratePolicy</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">policies</span> <span class="o">=</span> <span class="n">fetchPolicies</span><span class="o">(</span><span class="n">processData</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">checkArgument</span><span class="o">(</span><span class="n">policies</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="o">(!</span><span class="n">policies</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()),</span> <span class="s">&quot;can not fetch favorate policies&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">FavoratePolicy</span> <span class="n">policy</span> <span class="o">:</span> <span class="n">policies</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">//handle policy</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalArgumentException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">ex</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>经过这样的处理，程序的主体逻辑变得清晰了许多，而且也能够有效地避免日志方法的重复。当然，这里也可以使用checkNotNull()方法来处理ProcessData与List<FavoratePolicy>的null情形。但由于它抛出的异常为NullPointerException，用在这里会增加一个异常捕获（因为它无法处理isEmpty()的情况），所以就一致地选择了checkArgument()方法。不过，在使用这一方法时，要注意它传入的条件表达式与原有实现的表达式是相反的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Spray的模块结构]]></title>
@@ -262,73 +320,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>而这里使用的则是一种称为partially applied function的方式，它支持我们在不会引起歧义的情况下（主要是指只有一个参数的情形），直接省略该参数变量。只要明白这种语法，这样的代码仍然是可读的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[阅读Scala代码之一]]></title>
-    <link href="http://agiledon.github.com/blog/2013/04/04/reading-scala-code-1/"/>
-    <updated>2013-04-04T22:17:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/04/04/reading-scala-code-1</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/04/scala.jpg">
-学习一门语言，固然需要了解这门语言的语法，但针对一些完全属于不同范式的语言，即使通过阅读书籍可以理解一些特殊的语法，若不能付诸实践，总有隔靴搔痒之感。其实，要能通过运用这门新语言开发一个项目，或能快速并深刻地了解甚至吃透这门语言。我正是这样尝试着运用Scala来开发我的一个开源框架。可是，在开发过程中，我总感觉自己像是被捆绑了一只手的程序员一般，开发过程磕磕碰碰，不够顺畅。仔细想来，还是因为缺乏对这门语言的足够了解，尤其是那些迥异于Java却又在Scala中是极为常见的惯用法，总不能做到在合适的场景信手拈来。</p>
-
-<p>关键在于，自己阅读Scala的代码太少，编写Scala的代码更少。找到症结，那就尝试去解决。当然，我可以选择一些著名的Scala开源框架，例如<a href="http://www.playframework.com/">Play Framework</a>，Kestrel或者<a href="http://kafka.apache.org/">Kafka</a>，对其进行深入阅读。可是，我发现这些框架对于目前的我而言，似乎显得困难了一点。那么，就从一些短小的代码段开始着手吧。<!--more--></p>
-
-<p>今天阅读的这段代码来自Twitter团队编写的<a href="http://twitter.github.com/effectivescala/">Effective Scala</a>。这段代码对一个Seq对象的值进行了分类汇总，然后进行了排序。代码内容如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
-</span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">votes</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">groupBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_1</span><span class="o">)</span>
-</span><span class='line'><span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="k">case</span> <span class="o">(</span><span class="n">which</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
-</span><span class='line'><span class="o">(</span><span class="n">which</span><span class="o">,</span> <span class="n">counts</span><span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span>
-</span><span class='line'><span class="o">}.</span><span class="n">toSeq</span>
-</span><span class='line'><span class="o">.</span><span class="n">sortBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">)</span>
-</span><span class='line'><span class="o">.</span><span class="n">reverse</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>首先，它针对Seq对象votes进行了分组，调用了Seq集合的groupBy方法。该方法的定义为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">groupBy</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20(A&quot;</span><span class="o">&gt;</span><span class="n">K</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">=&gt;</span> <span class="n">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">immutable.Map</span><span class="o">[</span><span class="kt">K</span>, <span class="kt">Sequ</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>该函数的输入参数实际上是一个函数，该函数的参数为A，这个泛型参数在这里指代Seq元素的类型，即一个tuple；返回值为K，为key对应的类型。groupBy函数的返回值是一个不变类型的Map。对于此例而言，就是根据语言进行分类，由此可以得到三个类别，每个类别又包含一个Seq或者List。结果为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Map</span><span class="o">(</span><span class="n">scala</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">10</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">)),</span> <span class="n">java</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">java</span><span class="o">,</span><span class="mi">4</span><span class="o">)),</span> <span class="n">phthon</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">phthon</span><span class="o">,</span><span class="mi">10</span><span class="o">)))</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>在这段代码中，用到了Scala的特殊语法，例如groupBy(_._1)。括号中的_代表了一个类型为A的参数，在这里就是tuple对象；而_1则是方法名，对于tuple而言，_1方法能够返回tuple的第一个元素，即语言的名称。（与之类似，_2则会返回tuple的第二个元素。）因此，_._1恰好能够满足groupBy()函数需要传入的函数，从而根据语言的名称对votes进行分组。</p>
-
-<p>紧跟着groupBy函数后面的是一个map函数，它可以通过运用一个函数为Map的所有元素建立一个新的集合。简单地理解，可以将其看做是一种转换操作。在上面给出的代码中，map函数中的case (which, counts) => …是一个模式匹配的匿名函数（Pattern Matching Anonymous Functions）。在《The Scala Language Specification》中对此的定义为：
-<blockquote><p>which appear as an expression without a prior match. The expected type of such an expression must in part be defined. It must be either scala.Functionk[S1, ..., Sk, R] for some k > 0, or scala.PartialFunction[S1, R], where the argument type(s) S1, ..., Sk must be fully determined, but the result type R may be undetermined.</p></blockquote></p>
-
-<p>在文章《<a href="http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html">Scala Partial Functions Without Phd</a>》中，Erik认为这是一种特殊方式的匿名函数定义，采用这种方式会更加安全，使用更自由。文章给出了一些Partial Function的例子，例如通过Partial Function可以忽略多余的参数，忽略因为除0抛出的异常。这比直接使用匿名函数会更加安全。</p>
-
-<p>在这段代码中，map函数接受which参数就是lang，counts则是lang对应的List。在这个匿名函数中，会对counts这个List类型进行求和操作（通过foldLeft函数）。返回的结果仍然是一个包含了Tuple元素的Map类型。</p>
-
-<p>接下来的方法就比较容易理解了，即调用toSeq将Map转换为Seq，并根据tuple的第二个元素进行排序，此时，排序的关键字为统计的语言次数。soryBy函数的默认排序为升序，因此需要调用reverse颠倒顺序。</p>
-
-<p>如果弄懂了Scala与此相关的语法，要理解这段代码还是比较容易的。然而，在Twitter给出的Effective Scala文章中，提到了关于编程意图的问题。因为上述代码通过一种类似流水线转换的方式完成整个操作，操作过程中的一些中间值被隐藏在一系列的函数调用中，并没有很好地展现其意图。文章提出的解决办法就是声明中间结果和参数。上述代码可以改写为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
-</span><span class='line'><span class="k">val</span> <span class="n">votesByLang</span> <span class="k">=</span> <span class="n">votes</span> <span class="n">groupBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">lang</span> <span class="o">}</span>
-</span><span class='line'><span class="k">val</span> <span class="n">sumByLang</span> <span class="k">=</span> <span class="n">votesByLang</span> <span class="n">map</span> <span class="o">{</span> <span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="o">=&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">countsOnly</span> <span class="k">=</span> <span class="n">counts</span> <span class="n">map</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">count</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">count</span><span class="o">}</span>
-</span><span class='line'><span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">countsOnly</span><span class="o">.</span><span class="n">sum</span><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">sumByLang</span><span class="o">.</span><span class="n">toSeq</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">sortBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">count</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">count</span> <span class="o">}</span>
-</span><span class='line'><span class="o">.</span><span class="n">reverse</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>因为有了中间值的变量声明，意图会变得更清晰一些。我同意这样的观点，特别是针对一些函数式语言或动态语言而言，代码变得简洁了，但有时候会用到一些比较tricky的花招，影响了代码的可读性。但要注意，这种可读性一定是基于该语言的特色而言。我们千万不能将Scala程序写成Java命令式的方式，以为这样适合Java程序员的阅读习惯，这无疑误解了所谓“可读性”的含义。当然，就这段代码而言，由于groupBy函数的名称已经非常清晰，我并不太赞成提取出votesByLang的中间变量。这类似fluent interface的方式，只要API的设计是有意义的，这种流水线的处理方式仍然非常清楚，前提是我们要有合理的排版。</p>
 ]]></content>
   </entry>
   

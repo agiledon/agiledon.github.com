@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Java | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/java/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-08-29T13:24:10+08:00</updated>
+  <updated>2013-10-09T23:44:33+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,64 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Guava提供的Preconditions]]></title>
+    <link href="http://agiledon.github.com/blog/2013/10/09/using-preconditions-of-guava/"/>
+    <updated>2013-10-09T22:57:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/10/09/using-preconditions-of-guava</id>
+    <content type="html"><![CDATA[<p>我看到这么一段Java代码，主要逻辑是对传入的数据对象进行分析和处理。方法除了长了一点，本身没有什么问题，但一个不好的味道是方法中充斥了一部分对对象非空的处理，以及写日志的信息。这些语句本身不属于方法的主干实现，却很讨厌地干扰了方法的主要逻辑，影响了程序的可读性。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Processor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">(</span><span class="n">ProcessData</span> <span class="n">processData</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">processData</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">processData</span><span class="o">.</span><span class="na">getInput</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;processData is error&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">FavoratePolicy</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">policies</span> <span class="o">=</span> <span class="n">fetchPolicies</span><span class="o">(</span><span class="n">processData</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">policies</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">policies</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;can not fetch favorate policies&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">FavoratePolicy</span> <span class="n">policy</span> <span class="o">:</span> <span class="n">policies</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//handle policy</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>我最初想要尝试使用Guava提供的Optional。经过仔细分析，发现这里的场景并不适合Optional。Optional确实可以用于处理null object，甚至可以将其看做是Null Object模式的实现。但它为Java语言带来的好处，无非是提高了代码可读性，同时可以有效地防止程序员忘记对null的判断。它不能带来代码量的减少，用在这里，也无法消除非空判断以及日志的噪音。所幸，Guava还提供了Preconditions，它拥有更好而简洁的断言方式，可以处理程序的一些异常分支。它主要定义的方法包括checkArgument(), checkNotNull()以及checkState()等，可以通过抛指定异常的方式，将程序的主分支与异常分支有效地隔离开。通过引入checkArgument()方法，前面的代码可以调整为：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Processor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">(</span><span class="n">ProcessData</span> <span class="n">processData</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">checkArgument</span><span class="o">(</span><span class="n">processData</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="n">processData</span><span class="o">.</span><span class="na">getInput</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">,</span> <span class="s">&quot;processData is error&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">FavoratePolicy</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">policies</span> <span class="o">=</span> <span class="n">fetchPolicies</span><span class="o">(</span><span class="n">processData</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">checkArgument</span><span class="o">(</span><span class="n">policies</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="o">(!</span><span class="n">policies</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()),</span> <span class="s">&quot;can not fetch favorate policies&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">FavoratePolicy</span> <span class="n">policy</span> <span class="o">:</span> <span class="n">policies</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">//handle policy</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalArgumentException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">ex</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>经过这样的处理，程序的主体逻辑变得清晰了许多，而且也能够有效地避免日志方法的重复。当然，这里也可以使用checkNotNull()方法来处理ProcessData与List<FavoratePolicy>的null情形。但由于它抛出的异常为NullPointerException，用在这里会增加一个异常捕获（因为它无法处理isEmpty()的情况），所以就一致地选择了checkArgument()方法。不过，在使用这一方法时，要注意它传入的条件表达式与原有实现的表达式是相反的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[代码是如何腐化的]]></title>
@@ -621,103 +679,6 @@
 <p>接下来就可以运行MyCrawler应用了。注意，在运行该程序时，你一定要启动你的MySQL数据库。在Mac下，可以输入命令mysql.server start来启动。你可能会发现项目无法编译成功，因为某些插件依赖的对象无法找到。我猜测在运行ant时，并没有编译这些插件，使得这些插件的依赖库并没有完全获得。我采取了一种粗暴的做法，就是直接将这些无法编译通过的插件直接删除。至少，对于我们这个简单的抓取工作而言，事实上用不了这么多插件。</p>
 
 <p>运行完成后，你可以到MySQL数据库下查询webpage数据表。如果运行成功，可以查询到表中的数据记录。如果运行失败，一方面可以在IDE工具的控制台上看到一些信息。另一方面也可以查询日志。日志记录会更详细，该文件可以在当前项目的根目录下找到，即hadoop.log日志文件。我在之前碰到的一个问题就是内存不够的异常，控制台上并未显示该信息，但在hadoop.log中能够找到，帮助我定位了问题。运行这样一个普通任务，把内存设置为512M就足够了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[对Log进行mock]]></title>
-    <link href="http://agiledon.github.com/blog/2012/12/28/mock-log/"/>
-    <updated>2012-12-28T11:13:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2012/12/28/mock-log</id>
-    <content type="html"><![CDATA[<p>在我们进行的一个项目中，需要测试是否按照要求正确写入到日志中。例如，我们定义了这样的类和方法：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClient</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">S</span><span class="o">,</span> <span class="n">D</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">D</span> <span class="n">sendRequest</span><span class="o">(</span><span class="n">S</span> <span class="n">request</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">D</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">responseType</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">Source</span> <span class="n">source</span> <span class="o">=</span> <span class="n">jaxbUtil</span><span class="o">.</span><span class="na">marshall</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nf">sendRequest</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">responseType</span><span class="o">);</span>
-</span><span class='line'> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'> <span class="kd">private</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">D</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">D</span> <span class="n">sendRequest</span><span class="o">(</span><span class="n">Source</span> <span class="n">source</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">D</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">responseType</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">webServiceTemplate</span><span class="o">.</span><span class="na">sendSourceAndReceive</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">SourceExtractor</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">D</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;()</span> <span class="o">{</span>
-</span><span class='line'>           <span class="nd">@Override</span>
-</span><span class='line'>           <span class="kd">public</span> <span class="n">D</span> <span class="nf">extractData</span><span class="o">(</span><span class="n">Source</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">TransformerException</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                     <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;Received response: %s&quot;</span><span class="o">,</span> <span class="n">XmlSourceUtil</span><span class="o">.</span><span class="na">toXml</span><span class="o">(</span><span class="n">response</span><span class="o">)));</span>
-</span><span class='line'>                <span class="o">}</span>
-</span><span class='line'>                <span class="k">return</span> <span class="n">jaxbUtil</span><span class="o">.</span><span class="na">unmarshall</span><span class="o">(</span><span class="n">response</span><span class="o">,</span> <span class="n">responseType</span><span class="o">);</span>
-</span><span class='line'>           <span class="o">}</span>
-</span><span class='line'> <span class="o">});</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>现在，我们要测试在Debug被enable的情况下，是否真正写了日志。我们不可能在单元测试中去访问日志文件，然后判断日志是否写入。一方面，这影响了单元测试的速度，另一方面也会造成对日志文件的依赖。我们的做法是在测试时，获得该日志，然后将该日志的所有Appenders去掉，然后加入属于内存中的Appender，即WriterAppender，然后获得该Appender写入的日志内容，对这个内容进行断言。<!--more-->我们定义了一个Fixture：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Log4jFixture</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="nd">@BeforeClass</span>
-</span><span class='line'> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">clearLog4JAllApenders</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">removeAllApenders</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">addAppender</span><span class="o">(</span><span class="k">new</span> <span class="n">NullAppender</span><span class="o">());</span>
-</span><span class='line'>      <span class="n">setLoggingLevel</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na">DEBUG</span><span class="o">);</span>
-</span><span class='line'> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'> <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setLoggingLevel</span><span class="o">(</span><span class="n">Level</span> <span class="n">level</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="s">&quot;com.agiledon&quot;</span><span class="o">).</span><span class="na">setLevel</span><span class="o">(</span><span class="n">level</span><span class="o">);</span>
-</span><span class='line'> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'> <span class="kd">public</span> <span class="kd">static</span> <span class="n">StringWriter</span> <span class="nf">attachInMemoryLogAppender</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">StringWriter</span> <span class="n">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringWriter</span><span class="o">();</span>
-</span><span class='line'>      <span class="n">Logger</span><span class="o">.</span><span class="na">getRootLogger</span><span class="o">().</span><span class="na">addAppender</span><span class="o">(</span><span class="k">new</span> <span class="n">WriterAppender</span><span class="o">(</span><span class="k">new</span> <span class="n">SimpleLayout</span><span class="o">(),</span> <span class="n">buffer</span><span class="o">));</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">buffer</span><span class="o">;</span>
-</span><span class='line'> <span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>若要测试Log的测试用例，则需要继承Log4jFixture。BeforeClass方法保证了每个继承该类的测试用例，在运行测试用例之前都会事先清除Log的appender。然后，再需要记录日志时，例如调用前面ServiceClient的sendRequest()方法前，先调用attachInMemoryLogAppender()方法，最后得到的StringWriter就会包含日志的内容。例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClientTest</span> <span class="kd">extends</span> <span class="n">Log4jFixture</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">JaxbUtil</span> <span class="n">jaxbUtil</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">WebServiceTemplate</span> <span class="n">webServiceTemplate</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">ServiceClient</span> <span class="n">serviceClient</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">MockObjectFactory</span> <span class="n">mockObjectFactory</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Before</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">jaxbUtil</span> <span class="o">=</span> <span class="n">mockObjectFactory</span><span class="o">.</span><span class="na">createStrictMock</span><span class="o">(</span><span class="n">JaxbUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">webServiceTemplate</span> <span class="o">=</span> <span class="n">mockObjectFactory</span><span class="o">.</span><span class="na">createStrictMock</span><span class="o">(</span><span class="n">WebServiceTemplate</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">serviceClient</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServiceClient</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">serviceClient</span><span class="o">.</span><span class="na">setJaxbUtil</span><span class="o">(</span><span class="n">jaxbUtil</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">serviceClient</span><span class="o">.</span><span class="na">setWebServiceTemplate</span><span class="o">(</span><span class="n">webServiceTemplate</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_log_response_when_debug_enabled</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">setLoggingLevel</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na">INFO</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Capture</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">SourceExtractor</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sourceExtractorCapture</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Capture</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">SourceExtractor</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
-</span><span class='line'>    <span class="n">expect</span><span class="o">(</span><span class="n">webServiceTemplate</span><span class="o">.</span><span class="na">sendSourceAndReceive</span><span class="o">(</span><span class="n">anyObject</span><span class="o">(</span><span class="n">Source</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="n">capture</span><span class="o">(</span><span class="n">sourceExtractorCapture</span><span class="o">))).</span><span class="na">andReturn</span><span class="o">(</span><span class="k">new</span> <span class="n">ReturnXml</span><span class="o">());</span>
-</span><span class='line'>    <span class="n">expect</span><span class="o">(</span><span class="n">jaxbUtil</span><span class="o">.</span><span class="na">marshall</span><span class="o">(</span><span class="n">anyObject</span><span class="o">())).</span><span class="na">andReturn</span><span class="o">(</span><span class="k">new</span> <span class="n">StringSource</span><span class="o">(</span><span class="s">&quot;&amp;lt;root/&amp;gt;&quot;</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">expect</span><span class="o">(</span><span class="n">jaxbUtil</span><span class="o">.</span><span class="na">unmarshall</span><span class="o">(</span><span class="n">anyObject</span><span class="o">(</span><span class="n">Source</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="n">anyObject</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">class</span><span class="o">))).</span><span class="na">andReturn</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">());</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">mockObjectFactory</span><span class="o">.</span><span class="na">replay</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">StringWriter</span> <span class="n">stringWriter</span> <span class="o">=</span> <span class="n">attachInMemoryLogAppender</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">serviceClient</span><span class="o">.</span><span class="na">sendRequest</span><span class="o">(</span><span class="k">new</span> <span class="n">Request</span><span class="o">(),</span> <span class="n">ReturnXml</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">SourceExtractor</span> <span class="n">actualSourceExtractor</span> <span class="o">=</span> <span class="n">sourceExtractorCapture</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">actualSourceExtractor</span><span class="o">.</span><span class="na">extractData</span><span class="o">(</span><span class="k">new</span> <span class="n">StringSource</span><span class="o">(</span><span class="s">&quot;&amp;lt;root/&amp;gt;&quot;</span><span class="o">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">stringWriter</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">both</span><span class="o">(</span><span class="n">containsString</span><span class="o">(</span><span class="s">&quot;Received response:&quot;</span><span class="o">)).</span><span class="na">and</span><span class="o">(</span><span class="n">containsString</span><span class="o">(</span><span class="s">&quot;&amp;lt;root/&amp;gt;&quot;</span><span class="o">)));</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>在测试中，因为要测试的ServiceClient类，调用了私有方法sendRequest()，该方法的第二个参数事实上是一个实现了SourceExtractor的匿名类。我们用了EasyMock提供的Capture来负责捕获。</p>
 ]]></content>
   </entry>
   
