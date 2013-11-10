@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-10-09T23:44:33+08:00</updated>
+  <updated>2013-11-11T00:00:38+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,195 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Maven为一个项目生成多个Jar包]]></title>
+    <link href="http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven/"/>
+    <updated>2013-11-10T22:43:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven</id>
+    <content type="html"><![CDATA[<p>虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代，它因为提供了较为灵活的编写Task的功能，而忽略了制定一套看似呆板，实则有效的标准模板。于是，在不同的企业，不同的Java项目，出现了各种各样奇怪的目录结构与打包要求。拖着这些沉重的历史包袱，我们自然希望彻底革命，把那些看不顺眼的东西全部改造，让整个项目焕然一新。这是好事儿，所谓长痛不如短痛，一下子把问题肿瘤给割了，痛快！可是现实总有那么一些阻力会让我们缩手缩脚，我们不能挥起革命的利刃一阵乱砍，这弄不好会砍伤自己的手。于是乎，我们需要做战略性的撤退。退一步海阔天空嘛。</p>
+
+<p>我面对的就是这样一个软件系统。这个Java开发的软件系统一直没有依赖管理，仅仅编写了Ant任务用于发布打包。我们的任务是渐进地引入Maven，并在从Build到deploy的整个生命周期中，逐步替换Ant，与持续集成搭配起来。这个系统的多数模块都划分了服务端与客户端。然而不巧的是，各个模块的服务端和客户端都集中在一个模块中。同时，这个项目的目录结构并非标准的Maven结构，如下图所示。因此，还需要自定义Source与TestSource的目录结构。在原来的Ant任务中，是将它们打包成了两个Jar包。现在，我们需要在Maven中同样做到这一点。</p>
+
+<!-- more -->
+
+
+<p><img class="left" src="/images/2013/folder-structure.png"></p>
+
+<p>分析这个目录结构，无非是在打包时，对文件进行include或exclude。我查阅到Maven的一位开发者Tim O'Brien写的一篇博客<a href="http://blog.sonatype.com/people/2010/01/how-to-create-two-jars-from-one-project-and-why-you-shouldnt/#.Un9DKpTN_Gp">Sonatype的博客</a>，详细介绍了具体的做法。当然，在博客中，他一再强调了这种做法的不可取，建议在项目模块上做出好的分解，保证一个Module对应一个Jar包。这篇博客介绍了两种做法，一个是在Profile中定义，一个则是在build中定义，使用的插件皆为maven-jar-plugin。对于我要解决的问题，可以考虑选择使用第二种做法，因为它只需要执行一条mvn package命令就能同时得到Server和Client的Jar包。具体的做法就是在插件的配置中，include各自的文件夹即可。配置如下：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>build<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>sourceDirectory<span class="ni">&amp;gt;</span>src<span class="ni">&amp;lt;</span>/sourceDirectory<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>testSourceDirectory<span class="ni">&amp;gt;</span>testSrc<span class="ni">&amp;lt;</span>/testSourceDirectory<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>plugins<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>plugin<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>maven-jar-plugin<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>executions<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>execution<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>server<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>goals<span class="ni">&amp;gt;&amp;lt;</span>goal<span class="ni">&amp;gt;</span>jar<span class="ni">&amp;lt;</span>/goal<span class="ni">&amp;gt;&amp;lt;</span>/goals<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>phase<span class="ni">&amp;gt;</span>package<span class="ni">&amp;lt;</span>/phase<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>                        <span class="ni">&amp;lt;</span>classifier<span class="ni">&amp;gt;</span>server<span class="ni">&amp;lt;</span>/classifier<span class="ni">&amp;gt;</span>
+</span><span class='line'>                        <span class="ni">&amp;lt;</span>includes<span class="ni">&amp;gt;</span>
+</span><span class='line'>                            <span class="ni">&amp;lt;</span>include<span class="ni">&amp;gt;</span>**/server/**<span class="ni">&amp;lt;</span>/include<span class="ni">&amp;gt;</span>
+</span><span class='line'>                        <span class="ni">&amp;lt;</span>/includes<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>/execution<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>execution<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>client<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>goals<span class="ni">&amp;gt;&amp;lt;</span>goal<span class="ni">&amp;gt;</span>jar<span class="ni">&amp;lt;</span>/goal<span class="ni">&amp;gt;&amp;lt;</span>/goals<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>phase<span class="ni">&amp;gt;</span>package<span class="ni">&amp;lt;</span>/phase<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>                        <span class="ni">&amp;lt;</span>classifier<span class="ni">&amp;gt;</span>client<span class="ni">&amp;lt;</span>/classifier<span class="ni">&amp;gt;</span>
+</span><span class='line'>                        <span class="ni">&amp;lt;</span>includes<span class="ni">&amp;gt;</span>
+</span><span class='line'>                            <span class="ni">&amp;lt;</span>include<span class="ni">&amp;gt;</span>**/client/**<span class="ni">&amp;lt;</span>/include<span class="ni">&amp;gt;</span>
+</span><span class='line'>                        <span class="ni">&amp;lt;</span>/includes<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>/execution<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>/executions<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>/plugin<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/plugins<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/build<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>通过这样的配置，运行mvn package可以生成三个包，其中testmaven-1.0-SNAPSHOT.jar同时包含了服务端和客户端的类；而服务端和客户端对应的Jar则为testmaven-1.0-SNAPSHOT-server.jar和testmaven-1.0-SNAPSHOT-client.jar。</p>
+
+<p>在前面的配置中，我们并没有为server和client包定义自己的坐标，而是沿用了统一的一个。这就意味着依赖这个包的其他Module，可能无法通过Dependency来精确定位Server或Client。这对于部署来说，是没有问题的，但却无法进行依赖管理；除非在依赖的时候，去依赖整个大的模块。</p>
+
+<p>要保证依赖管理，就意味着需要为server和client分别指定各自的坐标。看来需要另辟蹊径。其实，Maven是支持在一个项目中建立多个子模块的。我们可以考虑在项目中引入两个子模块，分别对应server和client，并在这两个子模块中建立自己的pom.xml文件。这在本质上是与Maven多模块支持是相同的，唯一不同的是代码结构。而且这种新建模块并没有影响原有的目录结构，对于遗留系统而言，还是可以接受的。因此，我们建立了如下图所示的模块结构：
+<img class="center" src="/images/2013/module-structure.png"></p>
+
+<p>在新的结构中，除了原有模块外，我还引入了另外两个新的模块server和client，它们除了拥有自己的pom.xml文件，没有其他任何内容。而在原有模块下，同样定义了一个pom.xml文件，它将作为整个项目的parent。定义如下：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>packaging<span class="ni">&amp;gt;</span>pom<span class="ni">&amp;lt;</span>/packaging<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>modules<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>module<span class="ni">&amp;gt;</span>server<span class="ni">&amp;lt;</span>/module<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>module<span class="ni">&amp;gt;</span>client<span class="ni">&amp;lt;</span>/module<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/modules<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这里定义的坐标是整个项目的坐标，同时指定了packaging的类型为pom。在这个pom.xml文件中还包括了两个子模块，其中的值应该与模块的名称对应。接下来配置server模块的pom.xml：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>parent<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/parent<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven-server<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>build<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>sourceDirectory<span class="ni">&amp;gt;</span>../src<span class="ni">&amp;lt;</span>/sourceDirectory<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>testSourceDirectory<span class="ni">&amp;gt;</span>../testSrc<span class="ni">&amp;lt;</span>/testSourceDirectory<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>plugins<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>plugin<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>maven-compiler-plugin<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>3.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>includes<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>include<span class="ni">&amp;gt;</span>**/server/**<span class="ni">&amp;lt;</span>/include<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>/includes<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>/plugin<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/plugins<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/build<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>首先声明了parent指向了主模块的坐标。接下来，声明当前模块的artifact id为testmaven-server。这就为server指定了独立的坐标。一旦部署后，在maven的Repository中会得到这样的文件：com/test/maven/testmaven-server/1.0-SNAPSHOT/testmaven-server-1.0-SNAPSHOT.jar。我们就可以在依赖中这样声明：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>dependencies<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven-server<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/dependencies<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>运行mvn package，oops……竟然出现问题了。什么问题呢？单元测试无法通过。报告的错误为：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.1:testCompile (default-testCompile) on project testmaven-server: Compilation failure: Compilation failure:
+</span><span class='line'>[ERROR] /Users/twer/learn/testmaven/testSrc/com/test/maven/client/HelloMavenTest.java:[11,9] cannot find symbol
+</span><span class='line'>[ERROR] symbol  : class HelloMaven
+</span><span class='line'>[ERROR] location: class com.test.maven.client.HelloMavenTest</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>仔细分析，原来是在执行编译server包时，报告无法编译client包对应的测试类。怎么会在编译server包时，去编译client包对应的测试呢？仔细观察我们的pom.xml文件，在maven-compiler-plugin插件中，我们配置了对server文件的引入，这就意味着在编译server包时，不会引入client文件夹下的所有文件（当然在这里就是Java类文件）。但是，我们并没有在test-compile阶段排除client对应的测试文件。这就导致client的测试无法找到对应的实现类。找到根源，问题就好解决了，显然我们需要在test-compile阶段排除client文件夹。所以，server模块下正确的pom.xml配置为：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>parent<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/parent<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven-server<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>build<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>sourceDirectory<span class="ni">&amp;gt;</span>../src<span class="ni">&amp;lt;</span>/sourceDirectory<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>testSourceDirectory<span class="ni">&amp;gt;</span>../testSrc<span class="ni">&amp;lt;</span>/testSourceDirectory<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>plugins<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>plugin<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>maven-compiler-plugin<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>3.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>includes<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>include<span class="ni">&amp;gt;</span>**/server/**<span class="ni">&amp;lt;</span>/include<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>/includes<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>executions<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>execution<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>default-testCompile<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>phase<span class="ni">&amp;gt;</span>test-compile<span class="ni">&amp;lt;</span>/phase<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>                        <span class="ni">&amp;lt;</span>testExcludes<span class="ni">&amp;gt;</span>
+</span><span class='line'>                            <span class="ni">&amp;lt;</span>exclude<span class="ni">&amp;gt;</span>**/client/**<span class="ni">&amp;lt;</span>/exclude<span class="ni">&amp;gt;</span>
+</span><span class='line'>                        <span class="ni">&amp;lt;</span>/testExcludes<span class="ni">&amp;gt;</span>
+</span><span class='line'>                    <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
+</span><span class='line'>                <span class="ni">&amp;lt;</span>/execution<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>/executions<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>/plugin<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/plugins<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/build<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>注意：我在IntelliJ配置execution下的configuration节时，碰到一个问题，那就是针对testExcludes配置节没有智能提示。由于其他maven配置节在正确情况下都有智能提示，因而让我产生错误，认为这个配置项不支持testExcludes，这让我纠结了好半天。</p>
+
+<p>对于client模块而言，如法炮制，只是包含以及过滤的文件夹反转了一个个儿而已。当我们进行install甚至deploy时，在repository下的test/maven文件夹中，看到了三个文件夹，如图所示：
+<img class="center" src="/images/2013/maven-repository.png"></p>
+
+<p>其中的testmaven/1.0-SNAPSHOT文件夹下并没有jar包，因为它对应的配置为主模块的配置，也就是parent配置。在这个配置中，我们将packaging的类型设置为pom了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Guava提供的Preconditions]]></title>
@@ -247,79 +436,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 </span><span class='line'>
 </span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[阅读Scala代码之二]]></title>
-    <link href="http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2/"/>
-    <updated>2013-04-07T22:37:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2</id>
-    <content type="html"><![CDATA[<p>今天要阅读的代码来自《Scala By Example》一书的第一个例子。这两段代码通过实现一个快速排序算法体现了命令式与函数式之间的区别。这种直观的对比无疑很好地展现了函数式编程的优雅与简洁。让我们来看看这两段代码，首先是命令式的实现方式：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">j</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="n">t</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">def</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">r</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">((</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">var</span> <span class="n">i</span> <span class="k">=</span> <span class="n">l</span><span class="o">;</span> <span class="k">var</span> <span class="n">j</span> <span class="k">=</span> <span class="n">r</span>
-</span><span class='line'>  <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
-</span><span class='line'>      <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>      <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">l</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">j</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">r</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">r</span><span class="o">)</span>
-</span><span class='line'><span class="n">sort1</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>下面是函数式的方式：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="mi">1</span><span class="o">)</span> <span class="n">xs</span>
-</span><span class='line'><span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
-</span><span class='line'>  <span class="nc">Array</span><span class="o">.</span><span class="n">concat</span><span class="o">(</span>
-</span><span class='line'>    <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;)),</span>
-</span><span class='line'>         <span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">==),</span>
-</span><span class='line'>    <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;)))</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>后者的简洁不言而喻，感觉实在太强烈了。它还展露出一种优雅的从容，因为没有嵌套的while循环，清扫了许多阅读障碍，没有繁文缛节，直指问题本质，显得游刃有余，挥洒自如。究其根由，在于这种函数式的编程方式，完全匹配快速排序的算法原则与过程，就像是那种斩钉截铁的证明，没有多余的啰嗦，结果如同“清水出芙蓉，天然来雕饰”。</p>
-
-<p>不提这种感觉的美感，函数式编程带来的实实在在好处在于它的无副作用特质。这就好似你寻找的药方，不仅能够药到病除，服用后还没有不良反应，真可以说得上奢望了。阅读第二段代码，我们可以非常直观地看到没有任何操作修改了传入的xs数组。从外向内看，返回的数组是通过Array.concat将三段数组给串联了起来，返回了一个新的数组对象。表面看来，这段代码对xs做了filter操作，根据传入的Predicate对数组元素进行筛选。事实上，filter同样是函数，它并没有直接更改被操作的数组，而是返回了一个新的筛选后的数组对象。这意味着，即使我们传入一个val的数组对象，这个sort函数也是不会抱怨的。例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">target</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">7</span><span class="o">)</span>
-</span><span class='line'><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">sort</span><span class="o">(</span><span class="n">target</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>这两种方案皆使用了递归，时间复杂度皆为O(N log(N))，但就简洁性和易读性而言，却不可同日而语。而这种无副作用特性则体现了函数式的不变特质，从而可以极大地简化并发编程模型。当然，这种方法必然会造成空间的浪费；不过，有JVM提供的GC负责内存管理，我们也无需关心这些对象在何时需要被释放。只要系统对内存的要求没有特别的限制，这一问题几乎可以忽略不计。</p>
-
-<p>好吧，让我们再转到Scala语言层面的特性上来。看第一段代码，除了个别关键字与语法不同之外，它几乎与Java代码没有太大的区别，最大的不同还在于Scala将函数（或者说方法）提升到了一等公民。第二段代码中，比较特殊的用法是调用Array的filter函数。该函数的签名为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">filter</span><span class="o">(</span><span class="n">p</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="nc">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>调用时，这段代码传入的表达式比较奇怪。严格意义上，filter显然需要传入一个函数，这个函数要求一个输入参数，返回为Boolean型。如果采用匿名函数的方式，调用方式应该为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>如果使用变量的placeholder，则可以表示为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(&lt;</span><span class="n">em</span><span class="o">&gt;</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>而这里使用的则是一种称为partially applied function的方式，它支持我们在不会引起歧义的情况下（主要是指只有一个参数的情形），直接省略该参数变量。只要明白这种语法，这样的代码仍然是可读的。</p>
 ]]></content>
   </entry>
   

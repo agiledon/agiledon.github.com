@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-10-09T23:44:33+08:00</updated>
+  <updated>2013-11-11T00:00:38+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,182 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Maven为一个项目生成多个Jar包]]></title>
+    <link href="http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven/"/>
+    <updated>2013-11-10T22:43:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven</id>
+    <content type="html"><![CDATA[<p>虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代，它因为提供了较为灵活的编写Task的功能，而忽略了制定一套看似呆板，实则有效的标准模板。于是，在不同的企业，不同的Java项目，出现了各种各样奇怪的目录结构与打包要求。拖着这些沉重的历史包袱，我们自然希望彻底革命，把那些看不顺眼的东西全部改造，让整个项目焕然一新。这是好事儿，所谓长痛不如短痛，一下子把问题肿瘤给割了，痛快！可是现实总有那么一些阻力会让我们缩手缩脚，我们不能挥起革命的利刃一阵乱砍，这弄不好会砍伤自己的手。于是乎，我们需要做战略性的撤退。退一步海阔天空嘛。</p>
+
+<p>我面对的就是这样一个软件系统。这个Java开发的软件系统一直没有依赖管理，仅仅编写了Ant任务用于发布打包。我们的任务是渐进地引入Maven，并在从Build到deploy的整个生命周期中，逐步替换Ant，与持续集成搭配起来。这个系统的多数模块都划分了服务端与客户端。然而不巧的是，各个模块的服务端和客户端都集中在一个模块中。同时，这个项目的目录结构并非标准的Maven结构，如下图所示。因此，还需要自定义Source与TestSource的目录结构。在原来的Ant任务中，是将它们打包成了两个Jar包。现在，我们需要在Maven中同样做到这一点。</p>
+
+<!-- more -->
+
+
+<p><img class="left" src="http://agiledon.github.com/images/2013/folder-structure.png"></p>
+
+<p>分析这个目录结构，无非是在打包时，对文件进行include或exclude。我查阅到Maven的一位开发者Tim O&#8217;Brien写的一篇博客<a href="http://blog.sonatype.com/people/2010/01/how-to-create-two-jars-from-one-project-and-why-you-shouldnt/#.Un9DKpTN_Gp">Sonatype的博客</a>，详细介绍了具体的做法。当然，在博客中，他一再强调了这种做法的不可取，建议在项目模块上做出好的分解，保证一个Module对应一个Jar包。这篇博客介绍了两种做法，一个是在Profile中定义，一个则是在build中定义，使用的插件皆为maven-jar-plugin。对于我要解决的问题，可以考虑选择使用第二种做法，因为它只需要执行一条mvn package命令就能同时得到Server和Client的Jar包。具体的做法就是在插件的配置中，include各自的文件夹即可。配置如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>src<span class="nt">&lt;/sourceDirectory&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-jar-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>server<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;goals&gt;&lt;goal&gt;</span>jar<span class="nt">&lt;/goal&gt;&lt;/goals&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;classifier&gt;</span>server<span class="nt">&lt;/classifier&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;includes&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;/includes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>client<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;goals&gt;&lt;goal&gt;</span>jar<span class="nt">&lt;/goal&gt;&lt;/goals&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;classifier&gt;</span>client<span class="nt">&lt;/classifier&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;includes&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;include&gt;</span>**/client/**<span class="nt">&lt;/include&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;/includes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过这样的配置，运行mvn package可以生成三个包，其中testmaven-1.0-SNAPSHOT.jar同时包含了服务端和客户端的类；而服务端和客户端对应的Jar则为testmaven-1.0-SNAPSHOT-server.jar和testmaven-1.0-SNAPSHOT-client.jar。</p>
+
+<p>在前面的配置中，我们并没有为server和client包定义自己的坐标，而是沿用了统一的一个。这就意味着依赖这个包的其他Module，可能无法通过Dependency来精确定位Server或Client。这对于部署来说，是没有问题的，但却无法进行依赖管理；除非在依赖的时候，去依赖整个大的模块。</p>
+
+<p>要保证依赖管理，就意味着需要为server和client分别指定各自的坐标。看来需要另辟蹊径。其实，Maven是支持在一个项目中建立多个子模块的。我们可以考虑在项目中引入两个子模块，分别对应server和client，并在这两个子模块中建立自己的pom.xml文件。这在本质上是与Maven多模块支持是相同的，唯一不同的是代码结构。而且这种新建模块并没有影响原有的目录结构，对于遗留系统而言，还是可以接受的。因此，我们建立了如下图所示的模块结构：
+<img class="center" src="http://agiledon.github.com/images/2013/module-structure.png"></p>
+
+<p>在新的结构中，除了原有模块外，我还引入了另外两个新的模块server和client，它们除了拥有自己的pom.xml文件，没有其他任何内容。而在原有模块下，同样定义了一个pom.xml文件，它将作为整个项目的parent。定义如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;packaging&gt;</span>pom<span class="nt">&lt;/packaging&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;modules&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;module&gt;</span>server<span class="nt">&lt;/module&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;module&gt;</span>client<span class="nt">&lt;/module&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/modules&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里定义的坐标是整个项目的坐标，同时指定了packaging的类型为pom。在这个pom.xml文件中还包括了两个子模块，其中的值应该与模块的名称对应。接下来配置server模块的pom.xml：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;parent&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/parent&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>../src<span class="nt">&lt;/sourceDirectory&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>../testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;version&gt;</span>3.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;includes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/includes&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先声明了parent指向了主模块的坐标。接下来，声明当前模块的artifact id为testmaven-server。这就为server指定了独立的坐标。一旦部署后，在maven的Repository中会得到这样的文件：com/test/maven/testmaven-server/1.0-SNAPSHOT/testmaven-server-1.0-SNAPSHOT.jar。我们就可以在依赖中这样声明：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependencies&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行mvn package，oops……竟然出现问题了。什么问题呢？单元测试无法通过。报告的错误为：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.1:testCompile (default-testCompile) on project testmaven-server: Compilation failure: Compilation failure:
+</span><span class='line'>[ERROR] /Users/twer/learn/testmaven/testSrc/com/test/maven/client/HelloMavenTest.java:[11,9] cannot find symbol
+</span><span class='line'>[ERROR] symbol  : class HelloMaven
+</span><span class='line'>[ERROR] location: class com.test.maven.client.HelloMavenTest</span></code></pre></td></tr></table></div></figure>
+
+
+<p>仔细分析，原来是在执行编译server包时，报告无法编译client包对应的测试类。怎么会在编译server包时，去编译client包对应的测试呢？仔细观察我们的pom.xml文件，在maven-compiler-plugin插件中，我们配置了对server文件的引入，这就意味着在编译server包时，不会引入client文件夹下的所有文件（当然在这里就是Java类文件）。但是，我们并没有在test-compile阶段排除client对应的测试文件。这就导致client的测试无法找到对应的实现类。找到根源，问题就好解决了，显然我们需要在test-compile阶段排除client文件夹。所以，server模块下正确的pom.xml配置为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;parent&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/parent&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>../src<span class="nt">&lt;/sourceDirectory&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>../testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;version&gt;</span>3.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;includes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/includes&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>default-testCompile<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>test-compile<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;testExcludes&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;exclude&gt;</span>**/client/**<span class="nt">&lt;/exclude&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;/testExcludes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意：我在IntelliJ配置execution下的configuration节时，碰到一个问题，那就是针对testExcludes配置节没有智能提示。由于其他maven配置节在正确情况下都有智能提示，因而让我产生错误，认为这个配置项不支持testExcludes，这让我纠结了好半天。</p>
+
+<p>对于client模块而言，如法炮制，只是包含以及过滤的文件夹反转了一个个儿而已。当我们进行install甚至deploy时，在repository下的test/maven文件夹中，看到了三个文件夹，如图所示：
+<img class="center" src="http://agiledon.github.com/images/2013/maven-repository.png"></p>
+
+<p>其中的testmaven/1.0-SNAPSHOT文件夹下并没有jar包，因为它对应的配置为主模块的配置，也就是parent配置。在这个配置中，我们将packaging的类型设置为pom了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Guava提供的Preconditions]]></title>
@@ -1328,151 +1504,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>厨川白村在其著述《苦闷的象征》中写道：“……无非说是‘活着’这事，就是反复着这战斗的苦难。我们的生活愈不肤浅，愈深，便比照着这深，生命力愈盛，便比照着盛，这苦恼也不得不愈加其烈。在伏在心的深处的内底生活，即无意识心理的底里，是蓄积着极痛烈而且深刻的许多伤害的。一面经验着这样的苦闷，一面参与着悲惨的战斗，向人生的道路进行的时候，我们就或呻，或叫，或怨嗟，或号泣，而同时也常有自己陶醉在奏凯的欢乐和赞美的事。这发出来的声音，就是文艺。对于人生，有着极强的爱慕和执着，至于虽然负了重伤，流着血，苦闷着，悲哀着，然而放不下，忘不掉的时候，在这时候，人类发出来的诅咒，愤激，赞叹，企慕，欢呼的声音，不就是文艺么？在这样的意义上，文艺就是朝着真善美的理想，追赶向上的一路的生命的进行曲，也是进军的喇叭。响亮的闳远的那声音，有着贯天地动百世的伟力的所以就在此。”</p>
 
 <p>若能在苦闷中不停地战斗，即使暴风骤雨满路荆棘，鲜血淋漓狼狈不堪，总还能印证自己的存在。战斗是一种精神，一种态度。它或许仅仅是一种象征意义，然而我们在战斗中会变得饱满而鲜活——暮然回首，我们发现，生活多么的畅快淋漓！此时，苍老其实是一种壮美；毋宁说，隐居也变成了一种战斗！</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[新人培养日记(一)]]></title>
-    <link href="http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man/"/>
-    <updated>2013-03-14T20:37:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/03/growup.jpg">
-我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。它要求创建一个电子银行系统，提供银行的一些基本功能，例如客户管理、存取款等业务逻辑。</p>
-
-<p>最初我并不知道新手的真实水平，不过，可以假设他只具备基础的Java编程知识，对TDD、Refactoring以及OO有最初步的了解，但处于懵懵懂懂之间。我最初希望新手仅仅针对业务层进行设计与编码，但新手坚持要加上数据库访问以及Web页面。我认为这种做法有利于新手学习到更多的Java框架和库，便同意了这种请求。</p>
-
-<!--more-->
-
-
-<p>我给新人简单地讲了前面两个Story的需求，就将这个项目扔给新手，一周后，我再去Review他提交的代码。结果发现了一大堆问题。</p>
-
-<p>首先，项目没有使用任何构建工具，例如Maven或者Gradle。项目依赖的一些Java包，例如JUnit和Mockito，使用了直接依赖的方式。没有构建工具来创建构建脚本，就无法使用最快捷的方式来编译、构建以及运行测试，从而使得开发者懒于在提交前进行构建，以确保代码没有引入问题。没有自动化构建，更谈不上持续集成了（我打算在项目中期要求新手搭建CI环境）。</p>
-
-<p><img class="center" src="http://agiledon.github.com/images/2013/03/coach01.png">
-新手对代码包的划分，以及相关类的命名，有些惨不忍睹。上图是对该项目包结构以及相关类分布的截图。infoTracker包的命名让人觉得莫名其妙，打开其中的类查看代码，发现它事实上是调用DBTransaction类，执行对数据表的CRUD操作。例如代码：</p>
-
-<figure class='code'><figcaption><span>infoTracker.CustomerAccountUpdater.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerAccountUpdater</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">DBTransaction</span> <span class="n">transaction</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DBTransaction</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">addBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">transaction</span><span class="o">.</span><span class="na">addBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerBalanceInvalid</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">transaction</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>database包的DBTransaction类的命名更是容易引起歧义，以为是对事务的处理，实则是DAO对象：</p>
-
-<figure class='code'><figcaption><span>database.DBTransaction.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBTransaction</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">connection</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">PreparedStatement</span> <span class="n">pstmt</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">DBTransaction</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">connection</span> <span class="o">=</span> <span class="n">DBConnection</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">nickname</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">Date</span> <span class="n">dateOfBirth</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">properName</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getProperName</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">Date</span> <span class="n">joiningDate</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getJoiningDate</span><span class="o">();</span>
-</span><span class='line'>        <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">();</span>
-</span><span class='line'>        <span class="kt">boolean</span> <span class="n">isBonusAdded</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">isBonusAdded</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;insert into userinfo values (?, ?, ?, ?, ?, ?)&quot;</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nickname</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">dateOfBirth</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">properName</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">joiningDate</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setDouble</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">balance</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">setBoolean</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">isBonusAdded</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>新手并没有使用我建议的Spring JDBC Template，而是直接使用了JDBC，因而充斥了大量的冗余代码。再看他实现的DBConnection，居然将连接的相关属性硬编码到Java类中了：</p>
-
-<figure class='code'><figcaption><span>database.DBConnection.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBConnection</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">conn</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="nf">getConnection</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">driver</span> <span class="o">=</span> <span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;jdbc:mysql://127.0.0.1:3306/test_01&quot;</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">driver</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">disconnect</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>再看测试，没有单元测试和集成测试的概念。一些本来可以进行单元测试的逻辑，例如针对Customer Nickname的验证逻辑，并没有得到足够的测试覆盖。由于没有构建脚本帮助搭建本地测试环境，在获得系统源代码后，根本无法运行集成测试。</p>
-
-<p>整体来看，新手对一个项目如何进行分层以及分包缺乏基本的概念，没有自动化构建的意识。对于如何编写数据库访问的类也缺乏足够的知识。不了解单元测试与集成测试之间的区别，没有开发环境和测试环境的基本认识。</p>
-
-<p>我首先考虑引入gradle实现基本的自动化构建，它可以通过引入一些插件就可以比较容易地实现java编译、测试以及自动化打包的功能，还能比较容易地运行Jetty。</p>
-
-<figure class='code'><figcaption><span>build.gradle </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;idea&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;java&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;war&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;jetty&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">repositories</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">mavenCentral</span><span class="o">()</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">compile</span> <span class="o">(</span>
-</span><span class='line'>            <span class="s1">&#39;joda-time:joda-time:2.1&#39;</span>
-</span><span class='line'>    <span class="o">)</span>
-</span><span class='line'>    <span class="n">testCompile</span> <span class="o">(</span>
-</span><span class='line'>            <span class="s1">&#39;junit:junit:4.11&#39;</span><span class="o">,</span>
-</span><span class='line'>            <span class="s1">&#39;org.mockito:mockito-all:1.9.5&#39;</span>
-</span><span class='line'>    <span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我修改了之前定义的infoTracker包，将其重命名为repository包，并放到domain包下，并对其下的类也同样进行了重命名。修改后的包结构如下图所示：
-<img class="center" src="http://agiledon.github.com/images/2013/03/coach02.png"></p>
-
-<p>我没有修改数据库访问层的代码，而是要求新手使用JDBC Template，并着重给他讲解了数据库访问的基础知识，并要求他将数据库属性放置到配置文件中。我想，到了下一周，他又会提交一份什么样的代码呢？</p>
 ]]></content>
   </entry>
   

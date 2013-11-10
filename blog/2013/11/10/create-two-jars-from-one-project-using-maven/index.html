@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>使用Maven为一个项目生成多个Jar包 - 简单文本</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="简单文本" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">简单文本</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">使用Maven为一个项目生成多个Jar包</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-10T22:43:00+08:00" pubdate data-updated="true">Nov 10<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代，它因为提供了较为灵活的编写Task的功能，而忽略了制定一套看似呆板，实则有效的标准模板。于是，在不同的企业，不同的Java项目，出现了各种各样奇怪的目录结构与打包要求。拖着这些沉重的历史包袱，我们自然希望彻底革命，把那些看不顺眼的东西全部改造，让整个项目焕然一新。这是好事儿，所谓长痛不如短痛，一下子把问题肿瘤给割了，痛快！可是现实总有那么一些阻力会让我们缩手缩脚，我们不能挥起革命的利刃一阵乱砍，这弄不好会砍伤自己的手。于是乎，我们需要做战略性的撤退。退一步海阔天空嘛。</p>
+
+<p>我面对的就是这样一个软件系统。这个Java开发的软件系统一直没有依赖管理，仅仅编写了Ant任务用于发布打包。我们的任务是渐进地引入Maven，并在从Build到deploy的整个生命周期中，逐步替换Ant，与持续集成搭配起来。这个系统的多数模块都划分了服务端与客户端。然而不巧的是，各个模块的服务端和客户端都集中在一个模块中。同时，这个项目的目录结构并非标准的Maven结构，如下图所示。因此，还需要自定义Source与TestSource的目录结构。在原来的Ant任务中，是将它们打包成了两个Jar包。现在，我们需要在Maven中同样做到这一点。</p>
+
+<!-- more -->
+
+
+<p><img class="left" src="/images/2013/folder-structure.png"></p>
+
+<p>分析这个目录结构，无非是在打包时，对文件进行include或exclude。我查阅到Maven的一位开发者Tim O&#8217;Brien写的一篇博客<a href="http://blog.sonatype.com/people/2010/01/how-to-create-two-jars-from-one-project-and-why-you-shouldnt/#.Un9DKpTN_Gp">Sonatype的博客</a>，详细介绍了具体的做法。当然，在博客中，他一再强调了这种做法的不可取，建议在项目模块上做出好的分解，保证一个Module对应一个Jar包。这篇博客介绍了两种做法，一个是在Profile中定义，一个则是在build中定义，使用的插件皆为maven-jar-plugin。对于我要解决的问题，可以考虑选择使用第二种做法，因为它只需要执行一条mvn package命令就能同时得到Server和Client的Jar包。具体的做法就是在插件的配置中，include各自的文件夹即可。配置如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>src<span class="nt">&lt;/sourceDirectory&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-jar-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>server<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;goals&gt;&lt;goal&gt;</span>jar<span class="nt">&lt;/goal&gt;&lt;/goals&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;classifier&gt;</span>server<span class="nt">&lt;/classifier&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;includes&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;/includes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>client<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;goals&gt;&lt;goal&gt;</span>jar<span class="nt">&lt;/goal&gt;&lt;/goals&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;classifier&gt;</span>client<span class="nt">&lt;/classifier&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;includes&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;include&gt;</span>**/client/**<span class="nt">&lt;/include&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;/includes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过这样的配置，运行mvn package可以生成三个包，其中testmaven-1.0-SNAPSHOT.jar同时包含了服务端和客户端的类；而服务端和客户端对应的Jar则为testmaven-1.0-SNAPSHOT-server.jar和testmaven-1.0-SNAPSHOT-client.jar。</p>
+
+<p>在前面的配置中，我们并没有为server和client包定义自己的坐标，而是沿用了统一的一个。这就意味着依赖这个包的其他Module，可能无法通过Dependency来精确定位Server或Client。这对于部署来说，是没有问题的，但却无法进行依赖管理；除非在依赖的时候，去依赖整个大的模块。</p>
+
+<p>要保证依赖管理，就意味着需要为server和client分别指定各自的坐标。看来需要另辟蹊径。其实，Maven是支持在一个项目中建立多个子模块的。我们可以考虑在项目中引入两个子模块，分别对应server和client，并在这两个子模块中建立自己的pom.xml文件。这在本质上是与Maven多模块支持是相同的，唯一不同的是代码结构。而且这种新建模块并没有影响原有的目录结构，对于遗留系统而言，还是可以接受的。因此，我们建立了如下图所示的模块结构：
+<img class="center" src="/images/2013/module-structure.png"></p>
+
+<p>在新的结构中，除了原有模块外，我还引入了另外两个新的模块server和client，它们除了拥有自己的pom.xml文件，没有其他任何内容。而在原有模块下，同样定义了一个pom.xml文件，它将作为整个项目的parent。定义如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;packaging&gt;</span>pom<span class="nt">&lt;/packaging&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;modules&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;module&gt;</span>server<span class="nt">&lt;/module&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;module&gt;</span>client<span class="nt">&lt;/module&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/modules&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里定义的坐标是整个项目的坐标，同时指定了packaging的类型为pom。在这个pom.xml文件中还包括了两个子模块，其中的值应该与模块的名称对应。接下来配置server模块的pom.xml：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;parent&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/parent&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>../src<span class="nt">&lt;/sourceDirectory&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>../testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;version&gt;</span>3.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;includes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/includes&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先声明了parent指向了主模块的坐标。接下来，声明当前模块的artifact id为testmaven-server。这就为server指定了独立的坐标。一旦部署后，在maven的Repository中会得到这样的文件：com/test/maven/testmaven-server/1.0-SNAPSHOT/testmaven-server-1.0-SNAPSHOT.jar。我们就可以在依赖中这样声明：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/dependencies&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行mvn package，oops……竟然出现问题了。什么问题呢？单元测试无法通过。报告的错误为：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.1:testCompile (default-testCompile) on project testmaven-server: Compilation failure: Compilation failure:
+</span><span class='line'>[ERROR] /Users/twer/learn/testmaven/testSrc/com/test/maven/client/HelloMavenTest.java:[11,9] cannot find symbol
+</span><span class='line'>[ERROR] symbol  : class HelloMaven
+</span><span class='line'>[ERROR] location: class com.test.maven.client.HelloMavenTest</span></code></pre></td></tr></table></div></figure>
+
+
+<p>仔细分析，原来是在执行编译server包时，报告无法编译client包对应的测试类。怎么会在编译server包时，去编译client包对应的测试呢？仔细观察我们的pom.xml文件，在maven-compiler-plugin插件中，我们配置了对server文件的引入，这就意味着在编译server包时，不会引入client文件夹下的所有文件（当然在这里就是Java类文件）。但是，我们并没有在test-compile阶段排除client对应的测试文件。这就导致client的测试无法找到对应的实现类。找到根源，问题就好解决了，显然我们需要在test-compile阶段排除client文件夹。所以，server模块下正确的pom.xml配置为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;parent&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/parent&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>../src<span class="nt">&lt;/sourceDirectory&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>../testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;version&gt;</span>3.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;includes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/includes&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>default-testCompile<span class="nt">&lt;/id&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>test-compile<span class="nt">&lt;/phase&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;testExcludes&gt;</span>
+</span><span class='line'>                                <span class="nt">&lt;exclude&gt;</span>**/client/**<span class="nt">&lt;/exclude&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;/testExcludes&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意：我在IntelliJ配置execution下的configuration节时，碰到一个问题，那就是针对testExcludes配置节没有智能提示。由于其他maven配置节在正确情况下都有智能提示，因而让我产生错误，认为这个配置项不支持testExcludes，这让我纠结了好半天。</p>
+
+<p>对于client模块而言，如法炮制，只是包含以及过滤的文件夹反转了一个个儿而已。当我们进行install甚至deploy时，在repository下的test/maven文件夹中，看到了三个文件夹，如图所示：
+<img class="center" src="/images/2013/maven-repository.png"></p>
+
+<p>其中的testmaven/1.0-SNAPSHOT文件夹下并没有jar包，因为它对应的配置为主模块的配置，也就是parent配置。在这个配置中，我们将packaging的类型设置为pom了。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-10T22:43:00+08:00" pubdate data-updated="true">Nov 10<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/coding/'>Coding</a>, <a class='category' href='/blog/tags/java/'>Java</a>, <a class='category' href='/blog/tags/maven/'>Maven</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/09/using-preconditions-of-guava/" title="Previous Post: 使用Guava提供的Preconditions">&laquo; 使用Guava提供的Preconditions</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/profile.png" align="center"/></p>
+  	<p><strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Senior Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/">使用Maven为一个项目生成多个Jar包</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/09/using-preconditions-of-guava/">使用Guava提供的Preconditions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/29/about-just-enough-software-architecuture/">关于《恰如其分的软件架构》</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/06/methodologies-of-reading-radar/">ThoughtWorks读书雷达-方法学篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/02/analysis-sourcecode-of-spray-1/">Spray的模块结构</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/tags/agile' style='font-size: 104.61538461538461%'>Agile</a> <a href='/blog/tags/agilechina' style='font-size: 104.61538461538461%'>AgileChina</a> <a href='/blog/tags/api' style='font-size: 104.61538461538461%'>API</a> <a href='/blog/tags/architecture' style='font-size: 155.3846153846154%'>Architecture</a> <a href='/blog/tags/architecure' style='font-size: 104.61538461538461%'>architecure</a> <a href='/blog/tags/big-data' style='font-size: 104.61538461538461%'>Big Data</a> <a href='/blog/tags/book' style='font-size: 104.61538461538461%'>Book</a> <a href='/blog/tags/coach' style='font-size: 109.23076923076923%'>Coach</a> <a href='/blog/tags/coding' style='font-size: 123.07692307692308%'>Coding</a> <a href='/blog/tags/cqrs' style='font-size: 104.61538461538461%'>CQRS</a> <a href='/blog/tags/csharp' style='font-size: 113.84615384615384%'>CSharp</a> <a href='/blog/tags/design' style='font-size: 160.0%'>Design</a> <a href='/blog/tags/design-patterns' style='font-size: 109.23076923076923%'>Design Patterns</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNET</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNet</a> <a href='/blog/tags/extjs' style='font-size: 104.61538461538461%'>ExtJS</a> <a href='/blog/tags/gae' style='font-size: 104.61538461538461%'>GAE</a> <a href='/blog/tags/geek' style='font-size: 104.61538461538461%'>Geek</a> <a href='/blog/tags/go' style='font-size: 104.61538461538461%'>GO</a> <a href='/blog/tags/guava' style='font-size: 104.61538461538461%'>Guava</a> <a href='/blog/tags/hadoop' style='font-size: 109.23076923076923%'>Hadoop</a> <a href='/blog/tags/hdfs' style='font-size: 104.61538461538461%'>HDFS</a> <a href='/blog/tags/infoq' style='font-size: 109.23076923076923%'>InfoQ</a> <a href='/blog/tags/java' style='font-size: 132.30769230769232%'>Java</a> <a href='/blog/tags/javascript' style='font-size: 104.61538461538461%'>JavaScript</a> <a href='/blog/tags/language' style='font-size: 104.61538461538461%'>Language</a> <a href='/blog/tags/literature' style='font-size: 113.84615384615384%'>Literature</a> <a href='/blog/tags/mapreduce' style='font-size: 104.61538461538461%'>MapReduce</a> <a href='/blog/tags/maven' style='font-size: 104.61538461538461%'>Maven</a> <a href='/blog/tags/mock' style='font-size: 104.61538461538461%'>Mock</a> <a href='/blog/tags/mvc' style='font-size: 109.23076923076923%'>MVC</a> <a href='/blog/tags/mysql' style='font-size: 104.61538461538461%'>MySQL</a> <a href='/blog/tags/nosql' style='font-size: 104.61538461538461%'>NoSQL</a> <a href='/blog/tags/notes' style='font-size: 109.23076923076923%'>Notes</a> <a href='/blog/tags/novel' style='font-size: 104.61538461538461%'>Novel</a> <a href='/blog/tags/nutch' style='font-size: 104.61538461538461%'>Nutch</a> <a href='/blog/tags/octopress' style='font-size: 113.84615384615384%'>Octopress</a> <a href='/blog/tags/oo' style='font-size: 118.46153846153845%'>OO</a> <a href='/blog/tags/poem' style='font-size: 104.61538461538461%'>Poem</a> <a href='/blog/tags/reading' style='font-size: 141.53846153846155%'>Reading</a> <a href='/blog/tags/reading-radar' style='font-size: 118.46153846153845%'>Reading Radar</a> <a href='/blog/tags/refactoring' style='font-size: 123.07692307692308%'>Refactoring</a> <a href='/blog/tags/responsibility' style='font-size: 113.84615384615384%'>Responsibility</a> <a href='/blog/tags/rest' style='font-size: 104.61538461538461%'>REST</a> <a href='/blog/tags/ruby' style='font-size: 109.23076923076923%'>Ruby</a> <a href='/blog/tags/scala' style='font-size: 118.46153846153845%'>Scala</a> <a href='/blog/tags/scalability' style='font-size: 104.61538461538461%'>Scalability</a> <a href='/blog/tags/spray' style='font-size: 104.61538461538461%'>Spray</a> <a href='/blog/tags/struts' style='font-size: 104.61538461538461%'>Struts</a> <a href='/blog/tags/tdd' style='font-size: 113.84615384615384%'>TDD</a> <a href='/blog/tags/thinking' style='font-size: 104.61538461538461%'>Thinking</a> <a href='/blog/tags/thought' style='font-size: 104.61538461538461%'>Thought</a> <a href='/blog/tags/thoughtworks' style='font-size: 123.07692307692308%'>ThoughtWorks</a> <a href='/blog/tags/transaltion' style='font-size: 104.61538461538461%'>Transaltion</a> <a href='/blog/tags/translation' style='font-size: 104.61538461538461%'>Translation</a> </span>
+</section><section>
+  <h1>Sina Weibo</h1>
+    <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/bruce.e.zhang@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+<section>
+  <h1>Visitor</h1>
+  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
