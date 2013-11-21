@@ -1,0 +1,585 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>玩花招的PowerMock - 简单文本</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="当我们面对一个遗留系统时，常见的问题是没有测试。正如Michael Feathers在Working Effectively with Legacy Code一书中对“遗留代码”的定义。他将其简单归纳为“没有测试的代码”。真是太贴切了！正是因为没有测试，使得我们对遗留代码的任何重构都有些战战兢兢， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2013/11/21/play-trick-with-powermock/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="简单文本" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">简单文本</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">玩花招的PowerMock</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-21T12:42:00+08:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>当我们面对一个遗留系统时，常见的问题是没有测试。正如Michael Feathers在Working Effectively with Legacy Code一书中对“遗留代码”的定义。他将其简单归纳为“没有测试的代码”。真是太贴切了！正是因为没有测试，使得我们对遗留代码的任何重构都有些战战兢兢，甚至成为开发人员抵制重构的借口。从收益与成本的比例来看，对于这样的系统，我一贯认为不要盲目进行重构。因为重构的真正适用场景其实是发生在开发期间，而非维护期间。当然，提升自己的重构能力，尤其学会运用IDE提供的自动重构工具，可以在一定程度上保障重构的质量。然而，安全的做法，还是需要为其编写测试。</p>
+
+<p>测试是分层的，即使是针对自动化测试。面对遗留系统，成本相对较低的是针对功能特性编写的功能测试（或者说是验收测试），这可以运用一些BDD框架如Cucumber、JBehave等。由于它的测试粒度较粗，可以以较少的测试用例覆盖系统的主要功能。然而，它的缺点同样存在，那就是反馈周期相对较长。这就好像你置身一个陌生的城市，在找不到路的情况下，只是跟着感觉走。走了数十公里之后，方才幡然醒悟，想起要翻一翻带在手上的地图。倘若发现方向走错，再要回转就已经晚了。反馈周期最短的自然是单元测试。同样根据Michael Feather的定义，单元测试一定要快，一定要不依赖于外部资源。单元测试的粒度自然是最小的，但不要直观地认为单元测试就是针对方法。若只是针对方法来编写单元测试，就会陷入为测试而测试的怪圈。即使是位于技术象限的单元测试，我们仍然要按照业务规则来编写。一个测试方法应该对应一个粒度最小的原子功能。</p>
+
+<!-- more -->
+
+
+<p>要让单元测试跑得快，还要不吃草（依赖外部资源），应该怎么办？答案呼之欲出，那就是Mock。Mock当然不是万能的，记得胡凯写过一篇文章，提及Mock不是银弹。我知道他仅仅是为了强调这个观点，避免太多人过于依赖Mock，因为Brooks早就发表过论断，在软件行业，其实根本就“没有银弹”。关于Mock的争论由来已久，对此，我准备避而不谈。至少在我看来，如下几点基本已成定论：</p>
+
+<p>1、是Mock行为，而非Mock数据；如果是针对数据，则应该属于Stub的范畴；</p>
+
+<p>2、Mock通常发生在三种情况（让我们假设被测试对象为消费者，它要协作的对象为服务，此时需要Mock服务）：服务的行为只有定义，还未实现；服务需要访问外部资源（这意味着它可能很慢，也意味着它需要依赖外部资源）；服务的行为结果不确定（例如天气服务，股票服务）。</p>
+
+<p>自然，我们不需要自己写Mock，有许多现成的好用框架，例如Java平台下的Mockito与EasyMock，.NET平台下的Moq，以及C++下的Google Mock和MockCpp。</p>
+
+<p>然而，问题依然存在。考虑这样两种情况：</p>
+
+<p>1、当我们要Mock的服务，其实是Utils的静态方法时，应该怎么办？</p>
+
+<p>2、当我们要测试的方法内部直接实例化了协作的服务对象，又该怎么办？</p>
+
+<p>显然，这是设计和代码的坏味道，它明显违背了DIP原则，即它不应该依赖于细节，而应该依赖于抽象。换言之，它产生了对服务对象的具体依赖。若要遵循DIP，就应该在被测对象的外部来注入依赖。这种紧耦合酿成了我们设计的类不具备良好的可测试性。</p>
+
+<p>一个蠢蠢欲动的声音在说：让我们重构吧！且住，先让我们把这苛求的眼光放柔和一点。当你视所有丑陋的代码为“蝼蚁”时，那是因为你站在了足够的高度。可是站得太高，往往摔得更惨。现在，还是脚踏实地，先设身处地地考虑这样的场景：这是一个代码行数超过1000万行的软件系统，一共有十余个开发团队，一百多名开发人员在这个团队中工作。这个系统几乎没有测试，而系统的Jar包则达到上千个。这些Utils的静态方法被数十乃至上百个类调用，牵涉到的模块也有多个甚至十余个。而且，这个系统并没有引入任何一个IoC容器。有了这样一个背景，让我们再把柔和的眼光变得锐利一点，分析分析重构的可行性。要消除前面提到的坏味道，就需要将这些静态方法修改为实例方法，并通过依赖注入的方式注入。这个变化带来的是对整个系统的全局影响，即使我们有一些自动化重构的手段，仍然不认为这种重构一定就是可行的。</p>
+
+<p>这就是我要谈PowerMock的前提！</p>
+
+<p>现在，轮到玩花招的PowerMock出场了。有了它，什么静态方法，方法内部实例，乃至私有方法，统统都是浮云。而且，它对Mockito与EasyMock的扩展，使得我们更容易熟悉它的语法。要使用它很简单，需先设置对它的依赖。我选择了PowerMock针对Mockito的扩展：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.powermock<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>powermock-api-mockito<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.5.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.powermock<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>powermock-module-junit4<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.5.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>org.mockito<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>mockito-all<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.9.5<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>让我先给出如下的一份奇奇怪怪的设计，它主要是为了迎合之前提到的代码臭味。</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeTableUtil</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">count</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Employee</span><span class="o">&gt;</span> <span class="n">findAll</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Employee</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">insert</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">existed</span><span class="o">(</span><span class="n">employee</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ExistedEmployeeException</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//insert employee</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">employee</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullEmployeeException</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">existed</span><span class="o">(</span><span class="n">employee</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">//delete employee</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">existed</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeRepository</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">EmployeeTableUtil</span> <span class="n">tableUtil</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">count</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">EmployeeTableUtil</span><span class="o">().</span><span class="na">count</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Employee</span><span class="o">&gt;</span> <span class="n">findAll</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">findAll</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">insert</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">tableUtil</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ExistedEmployeeException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">update</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NullEmployeeException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">tableUtil</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">double</span> <span class="nf">bonus</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">employee</span><span class="o">.</span><span class="na">getSalary</span><span class="o">()</span> <span class="o">*</span> <span class="mf">0.1d</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTableUtil</span><span class="o">(</span><span class="n">EmployeeTableUtil</span> <span class="n">tableUtil</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">tableUtil</span> <span class="o">=</span> <span class="n">tableUtil</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在，我要针对EmployeeRepository编写测试，它协作的服务类为EmployeTableUtil，主要承担了访问数据库的职责。在测试EmployeeRepository时，我们需要去Mock协作对象EmployeeTableUtil的行为。</p>
+
+<p>在使用PowerMock编写测试时，首先需要在测试类上运用框架提供的Annotation：@PrepareForTest，以及一个Runner：PowerMockRunner。因为我们要Mock的对象为EmployeeTableUtil，故而测试类的定义为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">PowerMockRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@PrepareForTest</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeRepositoryTest</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">EmployeeRepository</span> <span class="n">repository</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Before</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EmployRepository</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在我要使用PowerMock去Mock静态方法，如EmployeeTableUtil的findAll()方法，至于要测试的方法则为EmployeeRepository的findAll()方法。则编写的单元测试为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_mock_static_method</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">Employee</span><span class="o">&gt;</span> <span class="n">employee</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Employee</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="n">employee</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">employee</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;2&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">PowerMockito</span><span class="o">.</span><span class="na">mockStatic</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">when</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">findAll</span><span class="o">()).</span><span class="na">thenReturn</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">Employee</span><span class="o">&gt;</span> <span class="n">employees</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">findAll</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">employees</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">employees</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getId</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">employees</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">getId</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;2&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">PowerMockito</span><span class="o">.</span><span class="na">verifyStatic</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">findAll</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Mock静态方法的关键是先要调用框架定义的PowerMockito类的mockStatic()方法（针对EasyMock有相似的类）。方法接收的参数就是我们要Mock的类的类型。接下来就可以调用Mockito框架的方法，对我们要模拟的方法findAll()进行模拟，这里主要的工作是为模拟方法的返回值设置一个stub。之后就是单元测试的验证逻辑。如果需要验证被Mock的方法是否被调用，则需要调用PowerMockito.verifyStatic()方法，紧随其后的是被mock的方法。</p>
+
+<p>如果要Mock的方法是一个命令方法（即没有返回值的方法），做法又有不同。倘若熟悉Mockito，可以看出PowerMock完全沿袭了Mockito的风格（当然，针对EasyMock的扩展则会沿袭EasyMock的风格，这是PowerMock体贴人的地方）：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_mock_exception_for_command_method_in_mock_object</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Employee</span> <span class="n">employee</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">PowerMockito</span><span class="o">.</span><span class="na">mockStatic</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">PowerMockito</span><span class="o">.</span><span class="na">doThrow</span><span class="o">(</span><span class="k">new</span> <span class="n">NullEmployeeException</span><span class="o">()).</span><span class="na">when</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">repository</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">employee</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="kc">false</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>PowerMock还可以Mock私有方法，当然只能是实例的私有方法。这主要发生在当我们不希望Mock服务的公开方法时（例如，公开方法的逻辑没有Mock的必要），但这些公开方法的内部又调用了自己的私有方法，而私有方法却需要Mock。例如，EmployeeTableUtil的insert()和delete()方法调用了私有的existed()方法。假设insert()和delete()方法不需要我们Mock，此时就需要对私有方法existed()进行Mock。因为是实例方法，所以下面的测试方法通过调用setTableUtil()方法将被模拟的对象注入到EmployeeRepository对象中：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_mock_private_method</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Employee</span> <span class="n">employee</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">EmployeeTableUtil</span> <span class="n">util</span> <span class="o">=</span> <span class="n">PowerMockito</span><span class="o">.</span><span class="na">spy</span><span class="o">(</span><span class="k">new</span> <span class="n">EmployeeTableUtil</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">PowerMockito</span><span class="o">.</span><span class="na">when</span><span class="o">(</span><span class="n">util</span><span class="o">,</span><span class="s">&quot;existed&quot;</span><span class="o">,</span> <span class="n">anyString</span><span class="o">())</span>
+</span><span class='line'>                <span class="o">.</span><span class="na">thenReturn</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">repository</span><span class="o">.</span><span class="na">setTableUtil</span><span class="o">(</span><span class="n">util</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">repository</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">employee</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="kc">false</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">repository</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">employee</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="kc">true</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>PowerMock顺带还提供了测试私有方法的便捷办法（注意是测试，而不是Mock）。例如，测试EmployeeReployee类的私有方法bonus()：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_test_private_method</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Employee</span> <span class="n">employee</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">employee</span><span class="o">.</span><span class="na">setSalary</span><span class="o">(</span><span class="mi">8000</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Whitebox</span><span class="o">.&lt;</span><span class="n">Double</span><span class="o">&gt;</span><span class="n">invokeMethod</span><span class="o">(</span><span class="n">repository</span><span class="o">,</span> <span class="s">&quot;bonus&quot;</span><span class="o">,</span> <span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="mi">800</span><span class="n">d</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后再来看看另外一种诡异的手段。假设我们要测试的方法其内部调用了协作对象的方法，而该协作对象不是在外部注入的，而是在方法中直接实例化。例如在前面例子中，EmployeeRepository的count()方法：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeRepository</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">EmployeeTableUtil</span> <span class="n">tableUtil</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">count</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">EmployeeTableUtil</span><span class="o">().</span><span class="na">count</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要针对这样一种情形进行Mock，做法有所不同。因为它实际针对的是待测类——即这里的EmployeeRepository——执行count()方法，这就需要在count()方法内部形成一个拦截点。因此，需要在@PrepareForTest标记中指向EmployeeRepository类的类型，而非我们要Mock的EmployeeTableUtil。故而，我们需要为这个测试定义一个新的测试类：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">PowerMockRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@PrepareForTest</span><span class="o">(</span><span class="n">EmployeeRepository</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConstructionEmployeeRepositoryTest</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_mock_construction_object</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">EmployeeTableUtil</span> <span class="n">util</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">when</span><span class="o">(</span><span class="n">util</span><span class="o">.</span><span class="na">count</span><span class="o">()).</span><span class="na">thenReturn</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">PowerMockito</span><span class="o">.</span><span class="na">whenNew</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">withNoArguments</span><span class="o">().</span><span class="na">thenReturn</span><span class="o">(</span><span class="n">util</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">EmployeeRepository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EmployeeRepository</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">repository</span><span class="o">.</span><span class="na">count</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">100</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，测试方法的前两行代码调用的mock()与when()方法都是Mockito提供的方法，与PowerMock无关。</p>
+
+<p>或许我已经变得像祥林嫂一般的唠叨，但我还是必须再次申明，以上Mock方式所针对的情形皆为设计与代码的坏味道。优先情况下，我们应该重构，使得它遵循DIP原则，解除对服务类的耦合，使其具有良好的可测试性；而不能因为有了强大的PowerMock而“姑息养奸”。换言之，让我们仅仅将PowerMock耍弄的种种花招，看做是压箱底的手段。实在走投无路了，再祭出你的杀手锏吧！</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-21T12:42:00+08:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='category' href='/blog/tags/mock/'>Mock</a>, <a class='category' href='/blog/tags/tdd/'>TDD</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2013/11/21/play-trick-with-powermock/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2013/11/21/play-trick-with-powermock/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/" title="Previous Post: 使用Maven为一个项目生成多个Jar包">&laquo; 使用Maven为一个项目生成多个Jar包</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/profile.png" align="center"/></p>
+  	<p><strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Senior Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/21/play-trick-with-powermock/">玩花招的PowerMock</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/">使用Maven为一个项目生成多个Jar包</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/09/using-preconditions-of-guava/">使用Guava提供的Preconditions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/29/about-just-enough-software-architecuture/">关于《恰如其分的软件架构》</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/06/methodologies-of-reading-radar/">ThoughtWorks读书雷达-方法学篇</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/tags/agile' style='font-size: 104.61538461538461%'>Agile</a> <a href='/blog/tags/agilechina' style='font-size: 104.61538461538461%'>AgileChina</a> <a href='/blog/tags/api' style='font-size: 104.61538461538461%'>API</a> <a href='/blog/tags/architecture' style='font-size: 155.3846153846154%'>Architecture</a> <a href='/blog/tags/architecure' style='font-size: 104.61538461538461%'>architecure</a> <a href='/blog/tags/big-data' style='font-size: 104.61538461538461%'>Big Data</a> <a href='/blog/tags/book' style='font-size: 104.61538461538461%'>Book</a> <a href='/blog/tags/coach' style='font-size: 109.23076923076923%'>Coach</a> <a href='/blog/tags/coding' style='font-size: 123.07692307692308%'>Coding</a> <a href='/blog/tags/cqrs' style='font-size: 104.61538461538461%'>CQRS</a> <a href='/blog/tags/csharp' style='font-size: 113.84615384615384%'>CSharp</a> <a href='/blog/tags/design' style='font-size: 160.0%'>Design</a> <a href='/blog/tags/design-patterns' style='font-size: 109.23076923076923%'>Design Patterns</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNET</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNet</a> <a href='/blog/tags/extjs' style='font-size: 104.61538461538461%'>ExtJS</a> <a href='/blog/tags/gae' style='font-size: 104.61538461538461%'>GAE</a> <a href='/blog/tags/geek' style='font-size: 104.61538461538461%'>Geek</a> <a href='/blog/tags/go' style='font-size: 104.61538461538461%'>GO</a> <a href='/blog/tags/guava' style='font-size: 104.61538461538461%'>Guava</a> <a href='/blog/tags/hadoop' style='font-size: 109.23076923076923%'>Hadoop</a> <a href='/blog/tags/hdfs' style='font-size: 104.61538461538461%'>HDFS</a> <a href='/blog/tags/infoq' style='font-size: 109.23076923076923%'>InfoQ</a> <a href='/blog/tags/java' style='font-size: 132.30769230769232%'>Java</a> <a href='/blog/tags/javascript' style='font-size: 104.61538461538461%'>JavaScript</a> <a href='/blog/tags/language' style='font-size: 104.61538461538461%'>Language</a> <a href='/blog/tags/literature' style='font-size: 113.84615384615384%'>Literature</a> <a href='/blog/tags/mapreduce' style='font-size: 104.61538461538461%'>MapReduce</a> <a href='/blog/tags/maven' style='font-size: 104.61538461538461%'>Maven</a> <a href='/blog/tags/mock' style='font-size: 109.23076923076923%'>Mock</a> <a href='/blog/tags/mvc' style='font-size: 109.23076923076923%'>MVC</a> <a href='/blog/tags/mysql' style='font-size: 104.61538461538461%'>MySQL</a> <a href='/blog/tags/nosql' style='font-size: 104.61538461538461%'>NoSQL</a> <a href='/blog/tags/notes' style='font-size: 109.23076923076923%'>Notes</a> <a href='/blog/tags/novel' style='font-size: 104.61538461538461%'>Novel</a> <a href='/blog/tags/nutch' style='font-size: 104.61538461538461%'>Nutch</a> <a href='/blog/tags/octopress' style='font-size: 113.84615384615384%'>Octopress</a> <a href='/blog/tags/oo' style='font-size: 118.46153846153845%'>OO</a> <a href='/blog/tags/poem' style='font-size: 104.61538461538461%'>Poem</a> <a href='/blog/tags/reading' style='font-size: 141.53846153846155%'>Reading</a> <a href='/blog/tags/reading-radar' style='font-size: 118.46153846153845%'>Reading Radar</a> <a href='/blog/tags/refactoring' style='font-size: 123.07692307692308%'>Refactoring</a> <a href='/blog/tags/responsibility' style='font-size: 113.84615384615384%'>Responsibility</a> <a href='/blog/tags/rest' style='font-size: 104.61538461538461%'>REST</a> <a href='/blog/tags/ruby' style='font-size: 109.23076923076923%'>Ruby</a> <a href='/blog/tags/scala' style='font-size: 118.46153846153845%'>Scala</a> <a href='/blog/tags/scalability' style='font-size: 104.61538461538461%'>Scalability</a> <a href='/blog/tags/spray' style='font-size: 104.61538461538461%'>Spray</a> <a href='/blog/tags/struts' style='font-size: 104.61538461538461%'>Struts</a> <a href='/blog/tags/tdd' style='font-size: 118.46153846153845%'>TDD</a> <a href='/blog/tags/thinking' style='font-size: 104.61538461538461%'>Thinking</a> <a href='/blog/tags/thought' style='font-size: 104.61538461538461%'>Thought</a> <a href='/blog/tags/thoughtworks' style='font-size: 123.07692307692308%'>ThoughtWorks</a> <a href='/blog/tags/transaltion' style='font-size: 104.61538461538461%'>Transaltion</a> <a href='/blog/tags/translation' style='font-size: 104.61538461538461%'>Translation</a> </span>
+</section><section>
+  <h1>Sina Weibo</h1>
+    <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/bruce.e.zhang@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+<section>
+  <h1>Visitor</h1>
+  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2013/11/21/play-trick-with-powermock/';
+        var disqus_url = 'http://agiledon.github.com/blog/2013/11/21/play-trick-with-powermock/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
