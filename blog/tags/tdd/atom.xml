@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: TDD | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/tdd/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-11-21T22:41:08+08:00</updated>
+  <updated>2013-12-11T07:34:13+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -288,6 +288,20 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意，测试方法的前两行代码调用的mock()与when()方法都是Mockito提供的方法，与PowerMock无关。</p>
+
+<p>我虽然没有看过PowerMock的源代码，但我猜测，当我们在使用PowerMock去Mock静态方法时，定然是结合反射与代理的方式来完成对该方法的调用，其中必然需要初始化该类。由于是静态方法，更多的是需要静态初始化。此外，还有一种情形时，你所要测试的类声明和初始化了一个静态的字段。这些都可能需要调用静态初始化。我们在开发中就碰到一种情形是，我们希望Mock的一个类，定义了一个static块，其中又调用了私有的静态方法。在这个私有静态方法中，依赖了其他的一些对象，这些对象还牵扯到服务容器的问题。即使以静态的方式Mock了该类，仍然逃不过运行static块的命运，换言之，仍然需要依赖服务容器。这时，又可以祭出PowerMock的杀器了。它提供了@SuppressStaticInitializationFor的标注，在该标注中需要传入字符串类型的目标类型的全名。假设EmployeeTableUtil有一个static块是我们需要绕过的，它的类全名为com.agiledon.powermock.EmployeeTableUtil：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">PowerMockRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@PrepareForTest</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@SuppressStaticInitializationFor</span><span class="o">(</span><span class="s">&quot;com.agiledon.powermock.EmployeeTableUtil&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeRepositoryTest</span> <span class="o">{}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>此外，对于@PrepareForTest以及@SuppressStaticInitializationFor标记而言，如果需要针对多个类型，则需要传入一个数组，例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">PowerMockRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@PrepareForTest</span><span class="o">({</span><span class="n">MockedObjectA</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">MockObjectB</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+</span><span class='line'><span class="nd">@SuppressStaticInitializationFor</span><span class="o">({</span><span class="s">&quot;com.agiledon.powermock.MockedObjectA&quot;</span><span class="o">,</span> <span class="s">&quot;com.agiledon.powermock.MockedObjectB&quot;</span><span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OneTest</span> <span class="o">{}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>或许我已经变得像祥林嫂一般的唠叨，但我还是必须再次申明，以上Mock方式所针对的情形皆为设计与代码的坏味道。优先情况下，我们应该重构，使得它遵循DIP原则，解除对服务类的耦合，使其具有良好的可测试性；而不能因为有了强大的PowerMock而“姑息养奸”。换言之，让我们仅仅将PowerMock耍弄的种种花招，看做是压箱底的手段。实在走投无路了，再祭出你的杀手锏吧！</p>
 ]]></content>
