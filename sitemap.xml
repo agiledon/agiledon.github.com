@@ -251,12 +251,16 @@
         <lastmod>2013-12-11T07:33:33+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2013/12/24/the-scenarios-for-using-git/</loc>
+        <lastmod>2013-12-24T22:30:10+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2013-02-05T20:08:46+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2013-12-11T07:33:33+08:00</lastmod>
+        <lastmod>2013-12-24T22:30:10+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -264,6 +268,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2013-12-11T07:33:33+08:00</lastmod>
+        <lastmod>2013-12-24T22:30:10+08:00</lastmod>
     </url>
 </urlset>

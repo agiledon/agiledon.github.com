@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="杜拉斯在《情人》里劈头就是这么一段话：“我已经老了，有一天，在一处公共场所的大厅里，有一个男人向我走来。他主动介绍自己，他对我说：‘我认识你，永远记得你。那时候，你还很年轻，人人都说你美，现在，我是特为来告诉你，对我来说，我觉得现在你比年轻的时候更美，那时你是年轻女人，与你那时的面貌相比， &hellip;">
+  <meta name="description" content="我在使用Hadoop编写MapReduce程序时，遇到了一些问题，通过在Google上查询资料，并结合自己对Hadoop的理解，逐一解决了这些问题。 自定义Writable Hadoop对MapReduce中Key与Value的类型是有要求的，简单说来，这些类型必须支持Hadoop的序列化。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,54 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/19/hadoop-mapreduce-skillset/">Hadoop MapReduce技巧</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-19T13:19:00+08:00" pubdate data-updated="true">Mar 19<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/03/19/hadoop-mapreduce-skillset/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/2013/03/mapreduce.jpg">
+我在使用Hadoop编写MapReduce程序时，遇到了一些问题，通过在Google上查询资料，并结合自己对Hadoop的理解，逐一解决了这些问题。</p>
+
+<h4>自定义Writable</h4>
+
+<p>Hadoop对MapReduce中Key与Value的类型是有要求的，简单说来，这些类型必须支持Hadoop的序列化。为了提高序列化的性能，Hadoop还为Java中常见的基本类型提供了相应地支持序列化的类型，如IntWritable，LongWritable，并为String类型提供了Text类型。不过，这些Hadoop内建的类型并不足以支持真实遇到的业务。此时，就需要自定义Writable类，使得它既能够作为Job的Key或者Value，又能体现业务逻辑。</p>
+
+<p>假设我已经从豆瓣抓取了书籍的数据，包括书籍的Title以及读者定义的Tag，并以Json格式存储在文本文件中。现在我希望提取这些数据中我感兴趣的内容，例如指定书籍的Tag列表，包括Tag被标记的次数。这些数据可以作为向量，为后面的数据分析提供基础数据。对于Map，我希望读取Json文件，然后得到每本书的Title，以及对应的单个Tag信息。作为Map的输出，我希望是我自己定义的类型BookTag。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/03/19/hadoop-mapreduce-skillset/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -501,55 +549,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/13/the-image-of-time/">时间主题二则</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-13T23:17:00+08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/13/the-image-of-time/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/02/time.png"></p>
-
-<h3>一 偶然的时间图形</h3>
-
-<p>时间是一幅充满神秘暗含玄奥的几何图形。点与线的纷繁组合，凸显宇宙的奥秘，然而，无知的我们却无法将其解密。时间无意作弄我们，我们却自主地愿意接受时间对我们的安排，心甘情愿沦为奴隶。时间冷冰冰地俯瞰这个世界，看到蚁群在他的几何世界中，因为某种偶然发生碰撞，上演的那些喜怒哀乐的话剧，颇为有趣，他却始终不曾流露一丝笑容。冷酷是他成为神诋的唯一标志。</p>
-
-<p>就是在错综复杂的几何图形中的某一点，我阅读博尔赫斯《叛徒和英雄的主题》。不错，我阅读到这一句：“……认为有一种隐秘的时间形式，有一种重复出现的线条图形。”这启发我对时间的遐想。此时，窗外正有一片秋叶缓缓落下，或许具有离去的悲哀，或许充满皈依大地的喜悦，而作为人，其实并不知晓落叶的心情，正如我们不知道时间的规则。就在这一点，我的爱人是否正轻轻发出细微如雨点滴入大海一般的叹息呢？她在想些什么？如果我们心有灵犀，在我的心弦被时间的神秘所触动的时候，她敏感的心弦是否发生共鸣？我和她在空间上分处两个不同的点，就像在一张白纸上描绘的分处两端的点，对折起来，两点产生了奇妙的重叠。时间的魔力可以让空间的不同点产生交汇。也许在下一刻，我们的心绪产生了不可避免的分岔，然而在时间的几何图形中，我们是重叠的。即使面对整个苍穹，虽然时间描绘出不同的景色，例如黄昏的惨白与朝晨的绚烂，在不同的空间之上，每个人物的姿态万千各异，却在时间的几何图形上交汇为同一个点。每一个点都想要挤占这无限小的空间，一个不可计算面积的点的空间，于是，我们的行为产生了碰撞，于是，产生了偶然。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/13/the-image-of-time/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -587,6 +586,10 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/24/the-scenarios-for-using-git/">Git的使用场景</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/21/play-trick-with-powermock/">玩花招的PowerMock</a>
       </li>
     
@@ -600,10 +603,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     
       <li class="post">
         <a href="/blog/2013/08/29/about-just-enough-software-architecuture/">关于《恰如其分的软件架构》</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/06/methodologies-of-reading-radar/">ThoughtWorks读书雷达-方法学篇</a>
       </li>
     
   </ul>
@@ -641,7 +640,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/tags/agile' style='font-size: 104.61538461538461%'>Agile</a> <a href='/blog/tags/agilechina' style='font-size: 104.61538461538461%'>AgileChina</a> <a href='/blog/tags/api' style='font-size: 104.61538461538461%'>API</a> <a href='/blog/tags/architecture' style='font-size: 155.3846153846154%'>Architecture</a> <a href='/blog/tags/architecure' style='font-size: 104.61538461538461%'>architecure</a> <a href='/blog/tags/big-data' style='font-size: 104.61538461538461%'>Big Data</a> <a href='/blog/tags/book' style='font-size: 104.61538461538461%'>Book</a> <a href='/blog/tags/coach' style='font-size: 109.23076923076923%'>Coach</a> <a href='/blog/tags/coding' style='font-size: 123.07692307692308%'>Coding</a> <a href='/blog/tags/cqrs' style='font-size: 104.61538461538461%'>CQRS</a> <a href='/blog/tags/csharp' style='font-size: 113.84615384615384%'>CSharp</a> <a href='/blog/tags/design' style='font-size: 160.0%'>Design</a> <a href='/blog/tags/design-patterns' style='font-size: 109.23076923076923%'>Design Patterns</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNET</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNet</a> <a href='/blog/tags/extjs' style='font-size: 104.61538461538461%'>ExtJS</a> <a href='/blog/tags/gae' style='font-size: 104.61538461538461%'>GAE</a> <a href='/blog/tags/geek' style='font-size: 104.61538461538461%'>Geek</a> <a href='/blog/tags/go' style='font-size: 104.61538461538461%'>GO</a> <a href='/blog/tags/guava' style='font-size: 104.61538461538461%'>Guava</a> <a href='/blog/tags/hadoop' style='font-size: 109.23076923076923%'>Hadoop</a> <a href='/blog/tags/hdfs' style='font-size: 104.61538461538461%'>HDFS</a> <a href='/blog/tags/infoq' style='font-size: 109.23076923076923%'>InfoQ</a> <a href='/blog/tags/java' style='font-size: 132.30769230769232%'>Java</a> <a href='/blog/tags/javascript' style='font-size: 104.61538461538461%'>JavaScript</a> <a href='/blog/tags/language' style='font-size: 104.61538461538461%'>Language</a> <a href='/blog/tags/literature' style='font-size: 113.84615384615384%'>Literature</a> <a href='/blog/tags/mapreduce' style='font-size: 104.61538461538461%'>MapReduce</a> <a href='/blog/tags/maven' style='font-size: 104.61538461538461%'>Maven</a> <a href='/blog/tags/mock' style='font-size: 109.23076923076923%'>Mock</a> <a href='/blog/tags/mvc' style='font-size: 109.23076923076923%'>MVC</a> <a href='/blog/tags/mysql' style='font-size: 104.61538461538461%'>MySQL</a> <a href='/blog/tags/nosql' style='font-size: 104.61538461538461%'>NoSQL</a> <a href='/blog/tags/notes' style='font-size: 109.23076923076923%'>Notes</a> <a href='/blog/tags/novel' style='font-size: 104.61538461538461%'>Novel</a> <a href='/blog/tags/nutch' style='font-size: 104.61538461538461%'>Nutch</a> <a href='/blog/tags/octopress' style='font-size: 113.84615384615384%'>Octopress</a> <a href='/blog/tags/oo' style='font-size: 118.46153846153845%'>OO</a> <a href='/blog/tags/poem' style='font-size: 104.61538461538461%'>Poem</a> <a href='/blog/tags/reading' style='font-size: 141.53846153846155%'>Reading</a> <a href='/blog/tags/reading-radar' style='font-size: 118.46153846153845%'>Reading Radar</a> <a href='/blog/tags/refactoring' style='font-size: 123.07692307692308%'>Refactoring</a> <a href='/blog/tags/responsibility' style='font-size: 113.84615384615384%'>Responsibility</a> <a href='/blog/tags/rest' style='font-size: 104.61538461538461%'>REST</a> <a href='/blog/tags/ruby' style='font-size: 109.23076923076923%'>Ruby</a> <a href='/blog/tags/scala' style='font-size: 118.46153846153845%'>Scala</a> <a href='/blog/tags/scalability' style='font-size: 104.61538461538461%'>Scalability</a> <a href='/blog/tags/spray' style='font-size: 104.61538461538461%'>Spray</a> <a href='/blog/tags/struts' style='font-size: 104.61538461538461%'>Struts</a> <a href='/blog/tags/tdd' style='font-size: 118.46153846153845%'>TDD</a> <a href='/blog/tags/thinking' style='font-size: 104.61538461538461%'>Thinking</a> <a href='/blog/tags/thought' style='font-size: 104.61538461538461%'>Thought</a> <a href='/blog/tags/thoughtworks' style='font-size: 123.07692307692308%'>ThoughtWorks</a> <a href='/blog/tags/transaltion' style='font-size: 104.61538461538461%'>Transaltion</a> <a href='/blog/tags/translation' style='font-size: 104.61538461538461%'>Translation</a> </span>
+    <span id="tag-cloud"><a href='/blog/tags/agile' style='font-size: 104.61538461538461%'>Agile</a> <a href='/blog/tags/agilechina' style='font-size: 104.61538461538461%'>AgileChina</a> <a href='/blog/tags/api' style='font-size: 104.61538461538461%'>API</a> <a href='/blog/tags/architecture' style='font-size: 155.3846153846154%'>Architecture</a> <a href='/blog/tags/architecure' style='font-size: 104.61538461538461%'>architecure</a> <a href='/blog/tags/big-data' style='font-size: 104.61538461538461%'>Big Data</a> <a href='/blog/tags/book' style='font-size: 104.61538461538461%'>Book</a> <a href='/blog/tags/coach' style='font-size: 109.23076923076923%'>Coach</a> <a href='/blog/tags/coding' style='font-size: 123.07692307692308%'>Coding</a> <a href='/blog/tags/cqrs' style='font-size: 104.61538461538461%'>CQRS</a> <a href='/blog/tags/csharp' style='font-size: 113.84615384615384%'>CSharp</a> <a href='/blog/tags/design' style='font-size: 160.0%'>Design</a> <a href='/blog/tags/design-patterns' style='font-size: 109.23076923076923%'>Design Patterns</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNET</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNet</a> <a href='/blog/tags/extjs' style='font-size: 104.61538461538461%'>ExtJS</a> <a href='/blog/tags/gae' style='font-size: 104.61538461538461%'>GAE</a> <a href='/blog/tags/geek' style='font-size: 104.61538461538461%'>Geek</a> <a href='/blog/tags/git' style='font-size: 104.61538461538461%'>Git</a> <a href='/blog/tags/go' style='font-size: 104.61538461538461%'>GO</a> <a href='/blog/tags/guava' style='font-size: 104.61538461538461%'>Guava</a> <a href='/blog/tags/hadoop' style='font-size: 109.23076923076923%'>Hadoop</a> <a href='/blog/tags/hdfs' style='font-size: 104.61538461538461%'>HDFS</a> <a href='/blog/tags/infoq' style='font-size: 109.23076923076923%'>InfoQ</a> <a href='/blog/tags/java' style='font-size: 132.30769230769232%'>Java</a> <a href='/blog/tags/javascript' style='font-size: 104.61538461538461%'>JavaScript</a> <a href='/blog/tags/language' style='font-size: 104.61538461538461%'>Language</a> <a href='/blog/tags/literature' style='font-size: 113.84615384615384%'>Literature</a> <a href='/blog/tags/mapreduce' style='font-size: 104.61538461538461%'>MapReduce</a> <a href='/blog/tags/maven' style='font-size: 104.61538461538461%'>Maven</a> <a href='/blog/tags/mock' style='font-size: 109.23076923076923%'>Mock</a> <a href='/blog/tags/mvc' style='font-size: 109.23076923076923%'>MVC</a> <a href='/blog/tags/mysql' style='font-size: 104.61538461538461%'>MySQL</a> <a href='/blog/tags/nosql' style='font-size: 104.61538461538461%'>NoSQL</a> <a href='/blog/tags/notes' style='font-size: 109.23076923076923%'>Notes</a> <a href='/blog/tags/novel' style='font-size: 104.61538461538461%'>Novel</a> <a href='/blog/tags/nutch' style='font-size: 104.61538461538461%'>Nutch</a> <a href='/blog/tags/octopress' style='font-size: 113.84615384615384%'>Octopress</a> <a href='/blog/tags/oo' style='font-size: 118.46153846153845%'>OO</a> <a href='/blog/tags/poem' style='font-size: 104.61538461538461%'>Poem</a> <a href='/blog/tags/reading' style='font-size: 141.53846153846155%'>Reading</a> <a href='/blog/tags/reading-radar' style='font-size: 118.46153846153845%'>Reading Radar</a> <a href='/blog/tags/refactoring' style='font-size: 123.07692307692308%'>Refactoring</a> <a href='/blog/tags/responsibility' style='font-size: 113.84615384615384%'>Responsibility</a> <a href='/blog/tags/rest' style='font-size: 104.61538461538461%'>REST</a> <a href='/blog/tags/ruby' style='font-size: 109.23076923076923%'>Ruby</a> <a href='/blog/tags/scala' style='font-size: 118.46153846153845%'>Scala</a> <a href='/blog/tags/scalability' style='font-size: 104.61538461538461%'>Scalability</a> <a href='/blog/tags/spray' style='font-size: 104.61538461538461%'>Spray</a> <a href='/blog/tags/struts' style='font-size: 104.61538461538461%'>Struts</a> <a href='/blog/tags/tdd' style='font-size: 118.46153846153845%'>TDD</a> <a href='/blog/tags/thinking' style='font-size: 104.61538461538461%'>Thinking</a> <a href='/blog/tags/thought' style='font-size: 104.61538461538461%'>Thought</a> <a href='/blog/tags/thoughtworks' style='font-size: 123.07692307692308%'>ThoughtWorks</a> <a href='/blog/tags/transaltion' style='font-size: 104.61538461538461%'>Transaltion</a> <a href='/blog/tags/translation' style='font-size: 104.61538461538461%'>Translation</a> </span>
 </section><section>
   <h1>Sina Weibo</h1>
     <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
