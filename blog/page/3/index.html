@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="我在使用Hadoop编写MapReduce程序时，遇到了一些问题，通过在Google上查询资料，并结合自己对Hadoop的理解，逐一解决了这些问题。 自定义Writable Hadoop对MapReduce中Key与Value的类型是有要求的，简单说来，这些类型必须支持Hadoop的序列化。 &hellip;">
+  <meta name="description" content="几天后，新手又一次提交了一份代码。由于改动较大，新手重新创建了一个项目。在这份代码中，新手接受了我的建议，改为使用Spring提供的JdbcTemplate。包的结构也得到了一定程度的改善。这充分说明他认识到了问题所在，并能够快速准确地采取行动去纠正这些问题。但或许是我提出的问题太多， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,154 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/28/diary-2-for-coaching-fresh-man/">新手培养日记(二)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-28T20:30:00+08:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/03/28/diary-2-for-coaching-fresh-man/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/03/learning_perception.jpg">
+几天后，新手又一次提交了一份代码。由于改动较大，新手重新创建了一个项目。在这份代码中，新手接受了我的建议，改为使用Spring提供的JdbcTemplate。包的结构也得到了一定程度的改善。这充分说明他认识到了问题所在，并能够快速准确地采取行动去纠正这些问题。但或许是我提出的问题太多，给出的建议不够具体，在新提交的这份代码中，我还是看到了一些问题，且某些问题在上一次Review代码时，我曾经提及。</p>
+
+<p>来看看如下两段代码。首先，是CustomerService，它定义了目前Story要求的基本业务：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Service</span><span class="o">(</span><span class="s">&quot;customerService&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerService</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Autowired</span>
+</span><span class='line'>    <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">CustomerDAO</span> <span class="n">customerDAO</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">defaultTableNameForCustomer</span> <span class="o">=</span> <span class="s">&quot;customer&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="n">defaultTableNameForCustomer</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTableName</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">tableName</span> <span class="o">=</span> <span class="n">tableName</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Transactional</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customerDAO</span><span class="o">.</span><span class="na">addCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">customerDAO</span><span class="o">.</span><span class="na">getCustomer</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdraw</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customerDAO</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balance</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customerDAO</span><span class="o">.</span><span class="na">deposit</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balance</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在CustomerService类中，调用了CustomerDAO类的相关方法：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span>
+</span><span class='line'><span class="nd">@Repository</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDAO</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Autowired</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">JdbcTemplate</span> <span class="n">jdbcTemplate</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">createTable</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;DROP TABLE IF EXISTS &quot;</span> <span class="o">+</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;CREATE TABLE &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="s">&quot;nickname VARCHAR(45) NOT NULL ,&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;dateOfBirth DATETIME NOT NULL,&quot;</span> <span class="o">+</span> <span class="s">&quot;balance DOUBLE NOT NULL, &quot;</span> <span class="o">+</span> <span class="s">&quot;PRIMARY KEY(nickname)&quot;</span> <span class="o">+</span> <span class="s">&quot;);&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;insert into &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(nickname, dateOfBirth, balance) values (?, ?, ?)&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">()});</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">DuplicateKeyException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nf">DuplicateCustomerException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; has already existed&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select * from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">Customer</span> <span class="n">customer</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">customer</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="k">new</span> <span class="n">CustomerMapper</span><span class="o">());</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">EmptyResultDataAccessException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nf">CustomerNotFoundException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">nickname</span> <span class="o">+</span> <span class="s">&quot; is not found&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">customer</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Double</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select balance from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="n">Double</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">balance</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">-</span> <span class="n">balanceToWithdraw</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">balanceAfter</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">throw</span> <span class="k">new</span> <span class="nf">BalanceOverdrawException</span><span class="o">(</span><span class="s">&quot;You have only &quot;</span> <span class="o">+</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="s">&quot;$. You can not withdraw &quot;</span> <span class="o">+</span> <span class="n">balanceToWithdraw</span> <span class="o">+</span> <span class="s">&quot;$&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToDeposit</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="n">balanceToDeposit</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这两段代码存在什么问题？</p>
+
+<p>显然，我们看到CustomerService履行的职责仅仅是对调用的委派，另外还添加了事务功能，除此之外，它什么事情都没有做，接到了请求，转手就递给CustomerDAO了。再看CustomerDAO，特别关注withdrawBalance()方法，你会发现这个方法的实现其实体现了较多的业务逻辑。事实上，我们看到这个方法的名称，体现的就是业务的概念。显然，这里的职责分配是不合理的。新手明显没有深刻体会Service与Dao之间的区别。无论是传统的分层架构模型，还是DDD提出的领域层与基础设施层的分离，都表达了业务与数据访问关注点分离的原则。事实上，新手还错误地将Service类放到了database.service包中。</p>
+
+<p>正确的做法应该是保证每个对象的纯洁性与单一性，让每个对象只做一件事情，只做它应该关心的事情，遵循单一职责原则。Dao是数据访问对象，那么它就应该只处理数据访问的逻辑，而对具体业务应该是“一无所知”的。一个简单的识别办法，就是不要在这个类中出现任何业务概念，它做的事情就是CRUD。</p>
+
+<p>对于许多OO初学者而言，职责不清是最容易犯下的毛病。要么就是恨不得把所有内容都塞给一个类；要么就是张冠李戴，随着性子乱分配职责，全然不考虑每个对象的感受。我常常说，对象是有意识的生物，这样不尊重对象搞乱分配，迟早这些对象会造反。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -503,52 +651,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/16/architecture-of-hdfs/">HDFS的架构</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-16T15:33:00+08:00" pubdate data-updated="true">Feb 16<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/16/architecture-of-hdfs/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/2013/02/hdfs.jpg">
-HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Hadoop</a>下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然，这样的架构设计主要还是满足系统的质量属性，包括如何保证分布式存储的可靠性，如何很好地支持硬件的水平扩展，如何支持对大数据处理的高性能以及客户端请求的高吞吐量。所以，HDFS的架构设计颇有参考价值，在Hadoop的Apache官方网站上也给出了<a href="http://hadoop.apache.org/docs/current/hdfs_design.html">HDFS的架构指南</a>。在<a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>卷I的第8章也详细介绍了HDFS的架构。</p>
-
-<p>HDFS的高层设计看起来很简单，主要包含NameNode与DataNode，它们之间的通信，包括客户端与HDFS NameNode服务器的通信则基于TCP/IP。客户端通过一个可配置的TCP端口连接到NameNode，通过ClientProtocol协议与NameNode交互。而DataNode使用DatanodeProtocol协议与NameNode交互。一个远程过程调用(RPC)模型被抽象出来封装ClientProtocol和Datanodeprotocol协议。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/16/architecture-of-hdfs/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -586,6 +688,10 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/24/the-scenarios-for-using-git/">Git的使用场景</a>
       </li>
     
@@ -599,10 +705,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     
       <li class="post">
         <a href="/blog/2013/10/09/using-preconditions-of-guava/">使用Guava提供的Preconditions</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/29/about-just-enough-software-architecuture/">关于《恰如其分的软件架构》</a>
       </li>
     
   </ul>
@@ -640,7 +742,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
 <section>
   <h1>Tag Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/tags/agile' style='font-size: 104.61538461538461%'>Agile</a> <a href='/blog/tags/agilechina' style='font-size: 104.61538461538461%'>AgileChina</a> <a href='/blog/tags/api' style='font-size: 104.61538461538461%'>API</a> <a href='/blog/tags/architecture' style='font-size: 155.3846153846154%'>Architecture</a> <a href='/blog/tags/architecure' style='font-size: 104.61538461538461%'>architecure</a> <a href='/blog/tags/big-data' style='font-size: 104.61538461538461%'>Big Data</a> <a href='/blog/tags/book' style='font-size: 104.61538461538461%'>Book</a> <a href='/blog/tags/coach' style='font-size: 109.23076923076923%'>Coach</a> <a href='/blog/tags/coding' style='font-size: 123.07692307692308%'>Coding</a> <a href='/blog/tags/cqrs' style='font-size: 104.61538461538461%'>CQRS</a> <a href='/blog/tags/csharp' style='font-size: 113.84615384615384%'>CSharp</a> <a href='/blog/tags/design' style='font-size: 160.0%'>Design</a> <a href='/blog/tags/design-patterns' style='font-size: 109.23076923076923%'>Design Patterns</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNET</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNet</a> <a href='/blog/tags/extjs' style='font-size: 104.61538461538461%'>ExtJS</a> <a href='/blog/tags/gae' style='font-size: 104.61538461538461%'>GAE</a> <a href='/blog/tags/geek' style='font-size: 104.61538461538461%'>Geek</a> <a href='/blog/tags/git' style='font-size: 104.61538461538461%'>Git</a> <a href='/blog/tags/go' style='font-size: 104.61538461538461%'>GO</a> <a href='/blog/tags/guava' style='font-size: 104.61538461538461%'>Guava</a> <a href='/blog/tags/hadoop' style='font-size: 109.23076923076923%'>Hadoop</a> <a href='/blog/tags/hdfs' style='font-size: 104.61538461538461%'>HDFS</a> <a href='/blog/tags/infoq' style='font-size: 109.23076923076923%'>InfoQ</a> <a href='/blog/tags/java' style='font-size: 132.30769230769232%'>Java</a> <a href='/blog/tags/javascript' style='font-size: 104.61538461538461%'>JavaScript</a> <a href='/blog/tags/language' style='font-size: 104.61538461538461%'>Language</a> <a href='/blog/tags/literature' style='font-size: 113.84615384615384%'>Literature</a> <a href='/blog/tags/mapreduce' style='font-size: 104.61538461538461%'>MapReduce</a> <a href='/blog/tags/maven' style='font-size: 104.61538461538461%'>Maven</a> <a href='/blog/tags/mock' style='font-size: 109.23076923076923%'>Mock</a> <a href='/blog/tags/mvc' style='font-size: 109.23076923076923%'>MVC</a> <a href='/blog/tags/mysql' style='font-size: 104.61538461538461%'>MySQL</a> <a href='/blog/tags/nosql' style='font-size: 104.61538461538461%'>NoSQL</a> <a href='/blog/tags/notes' style='font-size: 109.23076923076923%'>Notes</a> <a href='/blog/tags/novel' style='font-size: 104.61538461538461%'>Novel</a> <a href='/blog/tags/nutch' style='font-size: 104.61538461538461%'>Nutch</a> <a href='/blog/tags/octopress' style='font-size: 113.84615384615384%'>Octopress</a> <a href='/blog/tags/oo' style='font-size: 118.46153846153845%'>OO</a> <a href='/blog/tags/poem' style='font-size: 104.61538461538461%'>Poem</a> <a href='/blog/tags/reading' style='font-size: 141.53846153846155%'>Reading</a> <a href='/blog/tags/reading-radar' style='font-size: 118.46153846153845%'>Reading Radar</a> <a href='/blog/tags/refactoring' style='font-size: 123.07692307692308%'>Refactoring</a> <a href='/blog/tags/responsibility' style='font-size: 113.84615384615384%'>Responsibility</a> <a href='/blog/tags/rest' style='font-size: 104.61538461538461%'>REST</a> <a href='/blog/tags/ruby' style='font-size: 109.23076923076923%'>Ruby</a> <a href='/blog/tags/scala' style='font-size: 118.46153846153845%'>Scala</a> <a href='/blog/tags/scalability' style='font-size: 104.61538461538461%'>Scalability</a> <a href='/blog/tags/spray' style='font-size: 104.61538461538461%'>Spray</a> <a href='/blog/tags/struts' style='font-size: 104.61538461538461%'>Struts</a> <a href='/blog/tags/tdd' style='font-size: 118.46153846153845%'>TDD</a> <a href='/blog/tags/thinking' style='font-size: 104.61538461538461%'>Thinking</a> <a href='/blog/tags/thought' style='font-size: 104.61538461538461%'>Thought</a> <a href='/blog/tags/thoughtworks' style='font-size: 123.07692307692308%'>ThoughtWorks</a> <a href='/blog/tags/transaltion' style='font-size: 104.61538461538461%'>Transaltion</a> <a href='/blog/tags/translation' style='font-size: 104.61538461538461%'>Translation</a> </span>
+    <span id="tag-cloud"><a href='/blog/tags/agile' style='font-size: 104.61538461538461%'>Agile</a> <a href='/blog/tags/agilechina' style='font-size: 104.61538461538461%'>AgileChina</a> <a href='/blog/tags/api' style='font-size: 104.61538461538461%'>API</a> <a href='/blog/tags/architecture' style='font-size: 155.3846153846154%'>Architecture</a> <a href='/blog/tags/architecure' style='font-size: 104.61538461538461%'>architecure</a> <a href='/blog/tags/big-data' style='font-size: 104.61538461538461%'>Big Data</a> <a href='/blog/tags/book' style='font-size: 104.61538461538461%'>Book</a> <a href='/blog/tags/coach' style='font-size: 109.23076923076923%'>Coach</a> <a href='/blog/tags/coding' style='font-size: 123.07692307692308%'>Coding</a> <a href='/blog/tags/consultant' style='font-size: 104.61538461538461%'>Consultant</a> <a href='/blog/tags/cqrs' style='font-size: 104.61538461538461%'>CQRS</a> <a href='/blog/tags/csharp' style='font-size: 113.84615384615384%'>CSharp</a> <a href='/blog/tags/design' style='font-size: 160.0%'>Design</a> <a href='/blog/tags/design-patterns' style='font-size: 109.23076923076923%'>Design Patterns</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNET</a> <a href='/blog/tags/dotnet' style='font-size: 109.23076923076923%'>DotNet</a> <a href='/blog/tags/extjs' style='font-size: 104.61538461538461%'>ExtJS</a> <a href='/blog/tags/gae' style='font-size: 104.61538461538461%'>GAE</a> <a href='/blog/tags/geek' style='font-size: 104.61538461538461%'>Geek</a> <a href='/blog/tags/git' style='font-size: 104.61538461538461%'>Git</a> <a href='/blog/tags/go' style='font-size: 104.61538461538461%'>GO</a> <a href='/blog/tags/guava' style='font-size: 104.61538461538461%'>Guava</a> <a href='/blog/tags/hadoop' style='font-size: 109.23076923076923%'>Hadoop</a> <a href='/blog/tags/hdfs' style='font-size: 104.61538461538461%'>HDFS</a> <a href='/blog/tags/infoq' style='font-size: 109.23076923076923%'>InfoQ</a> <a href='/blog/tags/java' style='font-size: 132.30769230769232%'>Java</a> <a href='/blog/tags/javascript' style='font-size: 104.61538461538461%'>JavaScript</a> <a href='/blog/tags/language' style='font-size: 104.61538461538461%'>Language</a> <a href='/blog/tags/literature' style='font-size: 113.84615384615384%'>Literature</a> <a href='/blog/tags/mapreduce' style='font-size: 104.61538461538461%'>MapReduce</a> <a href='/blog/tags/maven' style='font-size: 104.61538461538461%'>Maven</a> <a href='/blog/tags/mock' style='font-size: 109.23076923076923%'>Mock</a> <a href='/blog/tags/mvc' style='font-size: 109.23076923076923%'>MVC</a> <a href='/blog/tags/mysql' style='font-size: 104.61538461538461%'>MySQL</a> <a href='/blog/tags/nosql' style='font-size: 104.61538461538461%'>NoSQL</a> <a href='/blog/tags/notes' style='font-size: 109.23076923076923%'>Notes</a> <a href='/blog/tags/novel' style='font-size: 104.61538461538461%'>Novel</a> <a href='/blog/tags/nutch' style='font-size: 104.61538461538461%'>Nutch</a> <a href='/blog/tags/octopress' style='font-size: 113.84615384615384%'>Octopress</a> <a href='/blog/tags/oo' style='font-size: 118.46153846153845%'>OO</a> <a href='/blog/tags/poem' style='font-size: 104.61538461538461%'>Poem</a> <a href='/blog/tags/reading' style='font-size: 141.53846153846155%'>Reading</a> <a href='/blog/tags/reading-radar' style='font-size: 118.46153846153845%'>Reading Radar</a> <a href='/blog/tags/refactoring' style='font-size: 123.07692307692308%'>Refactoring</a> <a href='/blog/tags/responsibility' style='font-size: 113.84615384615384%'>Responsibility</a> <a href='/blog/tags/rest' style='font-size: 104.61538461538461%'>REST</a> <a href='/blog/tags/ruby' style='font-size: 109.23076923076923%'>Ruby</a> <a href='/blog/tags/scala' style='font-size: 118.46153846153845%'>Scala</a> <a href='/blog/tags/scalability' style='font-size: 104.61538461538461%'>Scalability</a> <a href='/blog/tags/spray' style='font-size: 104.61538461538461%'>Spray</a> <a href='/blog/tags/struts' style='font-size: 104.61538461538461%'>Struts</a> <a href='/blog/tags/tdd' style='font-size: 123.07692307692308%'>TDD</a> <a href='/blog/tags/thinking' style='font-size: 104.61538461538461%'>Thinking</a> <a href='/blog/tags/thought' style='font-size: 104.61538461538461%'>Thought</a> <a href='/blog/tags/thoughtworks' style='font-size: 123.07692307692308%'>ThoughtWorks</a> <a href='/blog/tags/transaltion' style='font-size: 104.61538461538461%'>Transaltion</a> <a href='/blog/tags/translation' style='font-size: 104.61538461538461%'>Translation</a> </span>
 </section><section>
   <h1>Sina Weibo</h1>
     <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
