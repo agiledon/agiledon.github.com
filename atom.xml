@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-12-25T21:42:00+08:00</updated>
+  <updated>2014-01-09T21:52:37+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,103 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[可视化架构与DDD]]></title>
+    <link href="http://agiledon.github.com/blog/2014/01/09/visualization-architecture-and-ddd/"/>
+    <updated>2014-01-09T13:57:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/01/09/visualization-architecture-and-ddd</id>
+    <content type="html"><![CDATA[<p>从DDD的角度，领域逻辑的分析可以运用战略方法Bounded Context。可是，一个问题是：<strong>如何获得Bounded Context ？</strong></p>
+
+<p>我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex Context这一点上语焉不详。</p>
+
+<p>我的初步设想是通过绘制场景图（但并不成熟）。我认为有三种绘制场景图的方式：商业画布，体验地图和流程图。我认为，商业画布可以作为需求分析（尤其针对初创产品）的起点。商业画布如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2014/business_canvas.jpeg"></p>
+
+<p>采用这种规范化的方式来推导商业模型，可以激发我们的灵感，理清我们的思路，以便我们思考为何要做这个产品，产品应该具备哪些功能。结合优点和缺点、成本等因素，我们可以藉此判断和决策功能的优先级，从而得到MVP。这个过程需要大量运用即时贴，让整个商业模型呈现。经过取舍后，就可以针对产品绘制场景图。此时，场景图可以采用Experience Map或流程图来体现。由于商业画布本身提供了“客户”项，我们应该创建Persona，找准人物角色的特征来“搜寻”需求。绘制了场景图后，就能够确定用例了，此时，可辅以ATDD帮助确定Story。在确定了用例后，可以识别Bounded Context，并通过Context Map确定上下文之间的关系。</p>
+
+<!--more-->
+
+
+<p>就我个人感觉，体验地图还是从Persona的角度设想系统如何使用，考虑它的用户体验。它其实符合“场景”的概念。这里可能还是要考虑：在一个完整的场景中，需要哪些参与者？但是，即使从粗粒度的角度出发，场景都可能存在多个，可能需要绘制多个场景图来逐步提炼Bounded Context。</p>
+
+<p>假设我们要开发一个电子商务网站，我们就可以通过商业画布来驱动出这个产品应该具有哪些功能，它的客户有哪些等，在绘制了场景图后，可以初步得到这样的Bounded Context:
+<img class="center" src="http://agiledon.github.com/images/2014/bounded_context.jpg"></p>
+
+<p>然后，我利用Context Map得到了各个上下文之间的关系：
+<img class="center" src="http://agiledon.github.com/images/2014/context_map.jpg"></p>
+
+<p>这样，一个包图的获得就水到渠成了：
+<img class="center" src="http://agiledon.github.com/images/2014/modules.jpeg"></p>
+
+<p>在识别了Bounded Context以及Context之间的关系后，我们可以运用Hexagon架构（Cockburn提出的六边形架构）来展现系统的整体架构。Hexagon架构并不深入关注内部边界中领域部分，仅仅是简单的划分为Application与Domain两层。但它有助于我们获得基础设施层以及相关集成点的包结构。我们要合理地运用六边形架构。它更贴近应用逻辑架构，并可以驱动我们去发现诸多集成点，寻找集成模式。内外边界的分离也有助于我们将业务逻辑与应用逻辑分离开。这实际上符合“关注点分离”的架构原则。下图展现了六边形架构中常见的Port与Adapter：
+<img class="center" src="http://agiledon.github.com/images/2014/Hexagon.jpg"></p>
+
+<p>我对“可视化架构”的理解，还是要希望多通过即时贴、白板等工具来实现可视化，而非通过绘图。至少，绘图不应该成为主要的驱动力，否则，开发人员很难接受。例如，下图就是我运用Hexagon架构，并结合可视化手段分析该电子商务系统得到的应用逻辑架构，它很好地一个展现了Hexagon架构的可视化手法。
+<img class="center" src="http://agiledon.github.com/images/2014/e_commerce.jpg"></p>
+
+<p>在这个图中，直观地展现了如何与外部的支付系统以及物流系统的集成。例如，图中展现的Port实际上为防腐层（ACL）。为何要建立这样的一个防腐层呢，原因在于：支付与物流常常存在多个供应商，因而需要解除对供应商的绑定，并避免供应商系统的变化造成对电子商务系统的腐蚀。这是切合实际的决策。</p>
+
+<p>这个电子商务系统需要与仓库管理系统集成。恰好在《面向模式的软件架构》卷四的第35页，给出了一个仓库管理流程控制系统的案例。书中描述的非功能性需求，即所谓质量属性包括：</p>
+
+<blockquote><p>分布性。仓库管理流程控制系统天生就是分布式的。</p>
+
+<p>性能。仓库管理流程控制系统不是一个“绝对的”实时系统，但性能仍与业务息息相关。对系统有整体的吞吐量要求，因此系统必须确保所有的运输指令能够被及时而有效地运行。</p>
+
+<p>可伸缩性。不同仓库其大小可能会有很大的不同，因此仓库管理流程控制系统必须能既支持只有几千个箱子的小仓库，又要支持超过一百万个箱子的大仓库。</p>
+
+<p>可用性。许多仓库操作采用三班倒的24/7模式工作，因此可用性是仓库管理流程控制系统对业务案例支持的关键因素。</p></blockquote>
+
+<p>假设要设计这样的系统以支持这些质量属性。对于分布式而言，书中提出的解决方案是传统的分布式系统解决方案，即引入Broker模式，在本地建立对远程对象的代理。而对于支持并发的领域对象访问而言，则采用了Active Object模式，并引入Leader/Followers并发模型来获得可扩展。</p>
+
+<p>我没有打算引入这么复杂的模式，而仅仅是通过引入消息队列，并为消息队列引入路由的方式，来实现系统的分布式。这其中当然会用到经典的Publisher-Subscriber模式。我对领域逻辑进行了识别，将整个仓库管理流程控制系统的领域逻辑分为三个Bounded Context。</p>
+
+<ul>
+<li><p>库存管理</p></li>
+<li><p>物流控制</p></li>
+<li><p>拓扑管理</p></li>
+</ul>
+
+
+<p>整个架构如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2014/inventory.jpeg"></p>
+
+<p>对于库存管理而言，我认为它主要支持商品存放信息的数据管理，即获得商品数量、存放位置以及更新这些信息。对于该上下文而言，操作本身比较简单，且耗时较短。若出现大规模并发，其瓶颈也不在于获取或更新仓库信息（当然需要通过测试数据验证），而在于客户下订单后向仓库管理流程控制系统发起的发货请求。</p>
+
+<p>我将发货请求放到了物流控制上下文中，除此之外，它还包括收货以及订单管理等。同时，对于物流控制与拓扑管理功能，基本上与具体的仓库形成了一一对应关系。此外，对于发货请求（或收货请求），并不要求很强的实时性，这使得对这些请求的异步处理成为可能。</p>
+
+<p>物流控制由于牵涉到收货和运货，需要控制仓库的相关设备，并按照仓库的拓扑结构设定设备的路由。这说明物流控制与拓扑控制存在上下游关系，拓扑控制是上游。这两个上下文可以是Customer-Provider的关系。但它们之间不应该存在物理边界。因此，我将这两个上下文放到了同一个六边形中，而将库存管理放到了另一个单独的六边形中，以便于它们各自独立的可伸缩。</p>
+
+<p>在库存管理与物流控制六边形之间，我引入消息队列来应对从库存管理子系统中转发而来的发货请求（发货请求实则又来自于E-Commerce的订单请求）。原则上，我针对一个物理的仓库建立一个单独的消息队列，因此库存管理在发送发货请求时，会根据商品的存放位置以及用户请求的IP地址，获得最优的仓库信息，然后通过Router将消息转发到正确的消息队列中。</p>
+
+<p>一旦收到消息，物流控制系统作为消息队列的订阅者（或侦听器）就可以即使处理信息，进行后续的处理。</p>
+
+<p>针对库存管理而言，我认为它是一个独立的物理边界，因此在可视化手段中，我展现为一个单独的库存管理六边形，如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2014/inventory_2.jpeg"></p>
+
+<ul>
+<li>建立了针对REST服务的端口，对应的适配器为Controller，其目的是支持E-Commerce系统。事实上，我们对E-Commerce系统进行过分析，获得的六边形架构正好与此对接。</li>
+<li>建立了针对DB的端口，对应的适配器为DB Gateway，它负责访问库存管理自身的数据库。数据库持久化的消息包括商品的基本信息如SKU、商品名、数量等，以及商品存放的仓库名。</li>
+<li>建立了针对Queue的端口，对应的适配器为Message Router，负责将发货请求消息路由到正确的消息队列。</li>
+</ul>
+
+
+<p>物流控制与拓扑管理放在同一个边界中，它是高度可伸缩的独立系统，为展现它的可伸缩性以及它与库存管理之间的集成，我在可视化手段中，展现出两个独立的六边形，如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2014/inventory_3.jpeg"></p>
+
+<ul>
+<li>针对Queue的侦听器端口，对应的适配器为Message Handler。若有必要，如为了更好的支持并发，也可以在此引入Active Object甚至Leader/Followers。</li>
+<li>同样提供了针对REST的端口，对应适配器为Controller。它主要是为了支持移动终端设备、Web应用，以便于相关人员直接发出发货或收货请求。</li>
+<li>同样提供了DB的端口。这个数据库是对应仓库的专有数据库，与库存管理数据库无关。</li>
+<li>提供了针对设备（指仓库的设备，如叉车，箱子，运输车等）的端口，对应适配器为South Gateway。</li>
+<li>提供了针对配置文件的端口，对应适配器为Configurer。此功能是为了支持拓扑信息的动态配置。</li>
+<li>提供了针对外部物流系统的端口，这里为其建立了Shipping的防腐层，使其能够更好地支持各个不同的物流供应商。</li>
+</ul>
+
+
+<p>目前，我针对可视化架构与设计的手段仍在完善之中，并已经尝试在真实项目中实践以进行验证，并希望能够找到足够简单的方法，为架构师与开发者提供直观而又具有体验价值的沟通方式，并能形成行之有效的设计手段。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[推行TDD的思考]]></title>
@@ -1500,72 +1597,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 
 
 <p>而这里使用的则是一种称为partially applied function的方式，它支持我们在不会引起歧义的情况下（主要是指只有一个参数的情形），直接省略该参数变量。只要明白这种语法，这样的代码仍然是可读的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[阅读Scala代码之一]]></title>
-    <link href="http://agiledon.github.com/blog/2013/04/04/reading-scala-code-1/"/>
-    <updated>2013-04-04T22:17:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/04/04/reading-scala-code-1</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://agiledon.github.com/images/2013/04/scala.jpg">
-学习一门语言，固然需要了解这门语言的语法，但针对一些完全属于不同范式的语言，即使通过阅读书籍可以理解一些特殊的语法，若不能付诸实践，总有隔靴搔痒之感。其实，要能通过运用这门新语言开发一个项目，或能快速并深刻地了解甚至吃透这门语言。我正是这样尝试着运用Scala来开发我的一个开源框架。可是，在开发过程中，我总感觉自己像是被捆绑了一只手的程序员一般，开发过程磕磕碰碰，不够顺畅。仔细想来，还是因为缺乏对这门语言的足够了解，尤其是那些迥异于Java却又在Scala中是极为常见的惯用法，总不能做到在合适的场景信手拈来。</p>
-
-<p>关键在于，自己阅读Scala的代码太少，编写Scala的代码更少。找到症结，那就尝试去解决。当然，我可以选择一些著名的Scala开源框架，例如<a href="http://www.playframework.com/">Play Framework</a>，Kestrel或者<a href="http://kafka.apache.org/">Kafka</a>，对其进行深入阅读。可是，我发现这些框架对于目前的我而言，似乎显得困难了一点。那么，就从一些短小的代码段开始着手吧。<!--more--></p>
-
-<p>今天阅读的这段代码来自Twitter团队编写的<a href="http://twitter.github.com/effectivescala/">Effective Scala</a>。这段代码对一个Seq对象的值进行了分类汇总，然后进行了排序。代码内容如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
-</span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">votes</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">groupBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_1</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="k">case</span> <span class="o">(</span><span class="n">which</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="k">=&gt;</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">which</span><span class="o">,</span> <span class="n">counts</span><span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span>
-</span><span class='line'>    <span class="o">}.</span><span class="n">toSeq</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">sortBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">reverse</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>首先，它针对Seq对象votes进行了分组，调用了Seq集合的groupBy方法。该方法的定义为：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">groupBy</span><span class="o">[</span><span class="kt">K</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="o">(</span><span class="kt">A</span><span class="o">)</span> <span class="o">=&gt;</span> <span class="n">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">immutable.Map</span><span class="o">[</span><span class="kt">K</span>, <span class="kt">Sequ</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>该函数的输入参数实际上是一个函数，该函数的参数为A，这个泛型参数在这里指代Seq元素的类型，即一个tuple；返回值为K，为key对应的类型。groupBy函数的返回值是一个不变类型的Map。对于此例而言，就是根据语言进行分类，由此可以得到三个类别，每个类别又包含一个Seq或者List。结果为：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Map</span><span class="o">(</span><span class="n">scala</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">10</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">)),</span> <span class="n">java</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">java</span><span class="o">,</span><span class="mi">4</span><span class="o">)),</span> <span class="n">phthon</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">phthon</span><span class="o">,</span><span class="mi">10</span><span class="o">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在这段代码中，用到了Scala的特殊语法，例如groupBy(_._1)。括号中的_代表了一个类型为A的参数，在这里就是tuple对象；而_1则是方法名，对于tuple而言，_1方法能够返回tuple的第一个元素，即语言的名称。（与之类似，_2则会返回tuple的第二个元素。）因此，_._1恰好能够满足groupBy()函数需要传入的函数，从而根据语言的名称对votes进行分组。</p>
-
-<p>紧跟着groupBy函数后面的是一个map函数，它可以通过运用一个函数为Map的所有元素建立一个新的集合。简单地理解，可以将其看做是一种转换操作。在上面给出的代码中，map函数中的case (which, counts) => …是一个模式匹配的匿名函数（Pattern Matching Anonymous Functions）。在《The Scala Language Specification》中对此的定义为：</p>
-
-<blockquote><p>which appear as an expression without a prior match. The expected type of such an expression must in part be defined. It must be either scala.Functionk[S1, &#8230;, Sk, R] for some k > 0, or scala.PartialFunction[S1, R], where the argument type(s) S1, &#8230;, Sk must be fully determined, but the result type R may be undetermined.</p></blockquote>
-
-
-<p>在文章《<a href="http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html">Scala Partial Functions Without Phd</a>》中，Erik认为这是一种特殊方式的匿名函数定义，采用这种方式会更加安全，使用更自由。文章给出了一些Partial Function的例子，例如通过Partial Function可以忽略多余的参数，忽略因为除0抛出的异常。这比直接使用匿名函数会更加安全。</p>
-
-<p>在这段代码中，map函数接受which参数就是lang，counts则是lang对应的List。在这个匿名函数中，会对counts这个List类型进行求和操作（通过foldLeft函数）。返回的结果仍然是一个包含了Tuple元素的Map类型。</p>
-
-<p>接下来的方法就比较容易理解了，即调用toSeq将Map转换为Seq，并根据tuple的第二个元素进行排序，此时，排序的关键字为统计的语言次数。soryBy函数的默认排序为升序，因此需要调用reverse颠倒顺序。</p>
-
-<p>如果弄懂了Scala与此相关的语法，要理解这段代码还是比较容易的。然而，在Twitter给出的Effective Scala文章中，提到了关于编程意图的问题。因为上述代码通过一种类似流水线转换的方式完成整个操作，操作过程中的一些中间值被隐藏在一系列的函数调用中，并没有很好地展现其意图。文章提出的解决办法就是声明中间结果和参数。上述代码可以改写为：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
-</span><span class='line'><span class="k">val</span> <span class="n">votesByLang</span> <span class="k">=</span> <span class="n">votes</span> <span class="n">groupBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">lang</span> <span class="o">}</span>
-</span><span class='line'><span class="k">val</span> <span class="n">sumByLang</span> <span class="k">=</span> <span class="n">votesByLang</span> <span class="n">map</span> <span class="o">{</span> <span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="k">=&gt;</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">countsOnly</span> <span class="k">=</span> <span class="n">counts</span> <span class="n">map</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">count</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">count</span><span class="o">}</span>
-</span><span class='line'>  <span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">countsOnly</span><span class="o">.</span><span class="n">sum</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">sumByLang</span><span class="o">.</span><span class="n">toSeq</span>
-</span><span class='line'>  <span class="o">.</span><span class="n">sortBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">count</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">count</span> <span class="o">}</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">reverse</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>因为有了中间值的变量声明，意图会变得更清晰一些。我同意这样的观点，特别是针对一些函数式语言或动态语言而言，代码变得简洁了，但有时候会用到一些比较tricky的花招，影响了代码的可读性。但要注意，这种可读性一定是基于该语言的特色而言。我们千万不能将Scala程序写成Java命令式的方式，以为这样适合Java程序员的阅读习惯，这无疑误解了所谓“可读性”的含义。当然，就这段代码而言，由于groupBy函数的名称已经非常清晰，我并不太赞成提取出votesByLang的中间变量。这类似fluent interface的方式，只要API的设计是有意义的，这种流水线的处理方式仍然非常清楚，前提是我们要有合理的排版。</p>
 ]]></content>
   </entry>
   

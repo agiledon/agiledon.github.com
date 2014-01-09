@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Architecture | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-12-25T21:42:00+08:00</updated>
+  <updated>2014-01-09T21:52:37+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,103 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[可视化架构与DDD]]></title>
+    <link href="http://agiledon.github.com/blog/2014/01/09/visualization-architecture-and-ddd/"/>
+    <updated>2014-01-09T13:57:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/01/09/visualization-architecture-and-ddd</id>
+    <content type="html"><![CDATA[<p>从DDD的角度，领域逻辑的分析可以运用战略方法Bounded Context。可是，一个问题是：<strong>如何获得Bounded Context ？</strong></p>
+
+<p>我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex Context这一点上语焉不详。</p>
+
+<p>我的初步设想是通过绘制场景图（但并不成熟）。我认为有三种绘制场景图的方式：商业画布，体验地图和流程图。我认为，商业画布可以作为需求分析（尤其针对初创产品）的起点。商业画布如下图所示：
+<img class="center" src="/images/2014/business_canvas.jpeg"></p>
+
+<p>采用这种规范化的方式来推导商业模型，可以激发我们的灵感，理清我们的思路，以便我们思考为何要做这个产品，产品应该具备哪些功能。结合优点和缺点、成本等因素，我们可以藉此判断和决策功能的优先级，从而得到MVP。这个过程需要大量运用即时贴，让整个商业模型呈现。经过取舍后，就可以针对产品绘制场景图。此时，场景图可以采用Experience Map或流程图来体现。由于商业画布本身提供了“客户”项，我们应该创建Persona，找准人物角色的特征来“搜寻”需求。绘制了场景图后，就能够确定用例了，此时，可辅以ATDD帮助确定Story。在确定了用例后，可以识别Bounded Context，并通过Context Map确定上下文之间的关系。</p>
+
+<!--more-->
+
+
+<p>就我个人感觉，体验地图还是从Persona的角度设想系统如何使用，考虑它的用户体验。它其实符合“场景”的概念。这里可能还是要考虑：在一个完整的场景中，需要哪些参与者？但是，即使从粗粒度的角度出发，场景都可能存在多个，可能需要绘制多个场景图来逐步提炼Bounded Context。</p>
+
+<p>假设我们要开发一个电子商务网站，我们就可以通过商业画布来驱动出这个产品应该具有哪些功能，它的客户有哪些等，在绘制了场景图后，可以初步得到这样的Bounded Context:
+<img class="center" src="/images/2014/bounded_context.jpg"></p>
+
+<p>然后，我利用Context Map得到了各个上下文之间的关系：
+<img class="center" src="/images/2014/context_map.jpg"></p>
+
+<p>这样，一个包图的获得就水到渠成了：
+<img class="center" src="/images/2014/modules.jpeg"></p>
+
+<p>在识别了Bounded Context以及Context之间的关系后，我们可以运用Hexagon架构（Cockburn提出的六边形架构）来展现系统的整体架构。Hexagon架构并不深入关注内部边界中领域部分，仅仅是简单的划分为Application与Domain两层。但它有助于我们获得基础设施层以及相关集成点的包结构。我们要合理地运用六边形架构。它更贴近应用逻辑架构，并可以驱动我们去发现诸多集成点，寻找集成模式。内外边界的分离也有助于我们将业务逻辑与应用逻辑分离开。这实际上符合“关注点分离”的架构原则。下图展现了六边形架构中常见的Port与Adapter：
+<img class="center" src="/images/2014/Hexagon.jpg"></p>
+
+<p>我对“可视化架构”的理解，还是要希望多通过即时贴、白板等工具来实现可视化，而非通过绘图。至少，绘图不应该成为主要的驱动力，否则，开发人员很难接受。例如，下图就是我运用Hexagon架构，并结合可视化手段分析该电子商务系统得到的应用逻辑架构，它很好地一个展现了Hexagon架构的可视化手法。
+<img class="center" src="/images/2014/e_commerce.jpg"></p>
+
+<p>在这个图中，直观地展现了如何与外部的支付系统以及物流系统的集成。例如，图中展现的Port实际上为防腐层（ACL）。为何要建立这样的一个防腐层呢，原因在于：支付与物流常常存在多个供应商，因而需要解除对供应商的绑定，并避免供应商系统的变化造成对电子商务系统的腐蚀。这是切合实际的决策。</p>
+
+<p>这个电子商务系统需要与仓库管理系统集成。恰好在《面向模式的软件架构》卷四的第35页，给出了一个仓库管理流程控制系统的案例。书中描述的非功能性需求，即所谓质量属性包括：</p>
+
+<blockquote><p>分布性。仓库管理流程控制系统天生就是分布式的。</p>
+
+<p>性能。仓库管理流程控制系统不是一个“绝对的”实时系统，但性能仍与业务息息相关。对系统有整体的吞吐量要求，因此系统必须确保所有的运输指令能够被及时而有效地运行。</p>
+
+<p>可伸缩性。不同仓库其大小可能会有很大的不同，因此仓库管理流程控制系统必须能既支持只有几千个箱子的小仓库，又要支持超过一百万个箱子的大仓库。</p>
+
+<p>可用性。许多仓库操作采用三班倒的24/7模式工作，因此可用性是仓库管理流程控制系统对业务案例支持的关键因素。</p></blockquote>
+
+<p>假设要设计这样的系统以支持这些质量属性。对于分布式而言，书中提出的解决方案是传统的分布式系统解决方案，即引入Broker模式，在本地建立对远程对象的代理。而对于支持并发的领域对象访问而言，则采用了Active Object模式，并引入Leader/Followers并发模型来获得可扩展。</p>
+
+<p>我没有打算引入这么复杂的模式，而仅仅是通过引入消息队列，并为消息队列引入路由的方式，来实现系统的分布式。这其中当然会用到经典的Publisher-Subscriber模式。我对领域逻辑进行了识别，将整个仓库管理流程控制系统的领域逻辑分为三个Bounded Context。</p>
+
+<ul>
+<li><p>库存管理</p></li>
+<li><p>物流控制</p></li>
+<li><p>拓扑管理</p></li>
+</ul>
+
+
+<p>整个架构如下图所示：
+<img class="center" src="/images/2014/inventory.jpeg"></p>
+
+<p>对于库存管理而言，我认为它主要支持商品存放信息的数据管理，即获得商品数量、存放位置以及更新这些信息。对于该上下文而言，操作本身比较简单，且耗时较短。若出现大规模并发，其瓶颈也不在于获取或更新仓库信息（当然需要通过测试数据验证），而在于客户下订单后向仓库管理流程控制系统发起的发货请求。</p>
+
+<p>我将发货请求放到了物流控制上下文中，除此之外，它还包括收货以及订单管理等。同时，对于物流控制与拓扑管理功能，基本上与具体的仓库形成了一一对应关系。此外，对于发货请求（或收货请求），并不要求很强的实时性，这使得对这些请求的异步处理成为可能。</p>
+
+<p>物流控制由于牵涉到收货和运货，需要控制仓库的相关设备，并按照仓库的拓扑结构设定设备的路由。这说明物流控制与拓扑控制存在上下游关系，拓扑控制是上游。这两个上下文可以是Customer-Provider的关系。但它们之间不应该存在物理边界。因此，我将这两个上下文放到了同一个六边形中，而将库存管理放到了另一个单独的六边形中，以便于它们各自独立的可伸缩。</p>
+
+<p>在库存管理与物流控制六边形之间，我引入消息队列来应对从库存管理子系统中转发而来的发货请求（发货请求实则又来自于E-Commerce的订单请求）。原则上，我针对一个物理的仓库建立一个单独的消息队列，因此库存管理在发送发货请求时，会根据商品的存放位置以及用户请求的IP地址，获得最优的仓库信息，然后通过Router将消息转发到正确的消息队列中。</p>
+
+<p>一旦收到消息，物流控制系统作为消息队列的订阅者（或侦听器）就可以即使处理信息，进行后续的处理。</p>
+
+<p>针对库存管理而言，我认为它是一个独立的物理边界，因此在可视化手段中，我展现为一个单独的库存管理六边形，如下图所示：
+<img class="center" src="/images/2014/inventory_2.jpeg"></p>
+
+<ul>
+<li>建立了针对REST服务的端口，对应的适配器为Controller，其目的是支持E-Commerce系统。事实上，我们对E-Commerce系统进行过分析，获得的六边形架构正好与此对接。</li>
+<li>建立了针对DB的端口，对应的适配器为DB Gateway，它负责访问库存管理自身的数据库。数据库持久化的消息包括商品的基本信息如SKU、商品名、数量等，以及商品存放的仓库名。</li>
+<li>建立了针对Queue的端口，对应的适配器为Message Router，负责将发货请求消息路由到正确的消息队列。</li>
+</ul>
+
+
+<p>物流控制与拓扑管理放在同一个边界中，它是高度可伸缩的独立系统，为展现它的可伸缩性以及它与库存管理之间的集成，我在可视化手段中，展现出两个独立的六边形，如下图所示：
+<img class="center" src="/images/2014/inventory_3.jpeg"></p>
+
+<ul>
+<li>针对Queue的侦听器端口，对应的适配器为Message Handler。若有必要，如为了更好的支持并发，也可以在此引入Active Object甚至Leader/Followers。</li>
+<li>同样提供了针对REST的端口，对应适配器为Controller。它主要是为了支持移动终端设备、Web应用，以便于相关人员直接发出发货或收货请求。</li>
+<li>同样提供了DB的端口。这个数据库是对应仓库的专有数据库，与库存管理数据库无关。</li>
+<li>提供了针对设备（指仓库的设备，如叉车，箱子，运输车等）的端口，对应适配器为South Gateway。</li>
+<li>提供了针对配置文件的端口，对应适配器为Configurer。此功能是为了支持拓扑信息的动态配置。</li>
+<li>提供了针对外部物流系统的端口，这里为其建立了Shipping的防腐层，使其能够更好地支持各个不同的物流供应商。</li>
+</ul>
+
+
+<p>目前，我针对可视化架构与设计的手段仍在完善之中，并已经尝试在真实项目中实践以进行验证，并希望能够找到足够简单的方法，为架构师与开发者提供直观而又具有体验价值的沟通方式，并能形成行之有效的设计手段。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[AgileChina2003架构演进杂志]]></title>
@@ -350,59 +447,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>其次，增加一个额外的平台层，可以有效地提高系统的可重用性。例如我们可以将一些与系统共有特性以及横切关注点的内容（如对缓存的支持，对数据库的访问等功能）抽取到平台层中，作为整个系统的基础设施（Infrastructure）。尤其对于产品线系统而言，这种架构可以更好地为多产品提供服务。</p>
 
 <p>最后，这种架构也可能对跨团队开发带来好处。平台可以抽离出一些与产品无关的接口，从而隐藏其具体实现的细节。如果划分合理，并能设计出相对稳定的接口，就可以使得各个团队可以并行开发。例如可以专门成立平台团队，致力于对平台的实现以及优化。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[HDFS的架构]]></title>
-    <link href="http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs/"/>
-    <updated>2013-02-16T15:33:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/02/16/architecture-of-hdfs</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/02/hdfs.jpg">
-HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Hadoop</a>下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然，这样的架构设计主要还是满足系统的质量属性，包括如何保证分布式存储的可靠性，如何很好地支持硬件的水平扩展，如何支持对大数据处理的高性能以及客户端请求的高吞吐量。所以，HDFS的架构设计颇有参考价值，在Hadoop的Apache官方网站上也给出了<a href="http://hadoop.apache.org/docs/current/hdfs_design.html">HDFS的架构指南</a>。在<a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>卷I的第8章也详细介绍了HDFS的架构。</p>
-
-<p>HDFS的高层设计看起来很简单，主要包含NameNode与DataNode，它们之间的通信，包括客户端与HDFS NameNode服务器的通信则基于TCP/IP。客户端通过一个可配置的TCP端口连接到NameNode，通过ClientProtocol协议与NameNode交互。而DataNode使用DatanodeProtocol协议与NameNode交互。一个远程过程调用(RPC)模型被抽象出来封装ClientProtocol和Datanodeprotocol协议。</p>
-
-<!--more-->
-
-
-<p>通常，一个HDFS Cluter由一个NameNode和多个DataNode组成，且在大多数情况下，会由一台专门的机器运行NameNode实例。下图是HDFS的High Level Architecture：
-<img class="center" src="/images/2013/02/hdfs01.gif"></p>
-
-<div align="center">本图来自<a href="http://www.ibm.com/developerworks/library/wa-introhdfs/">IBM DeveloperWorks</a></div>
-
-
-<p>注意，在这个架构图中，观察各节点之间的通信，容易造成一个误解是NameNode会直接与DataNode通信。实则不然。虽然，NameNode可以看做是DataNode的管理者甚至是仲裁者，但由于DataNode的数量通常很多，且都是分布式部署在不同的机器上，若NameNode需要主动发起对各个DataNode的请求，会导致NameNode的负载过大，且对于网络的要求也极高。因此，在设计上，NameNode不会主动发起RPC，而是响应来自客户端或Datanode的RPC请求。如果NameNode需要获得指定DataNode的信息，则是通过DataNode调用函数后的一个简单返回值。每个DataNode都会维护一个开放的Socket，以支持客户端代码或其他DataNode的读写请求。NameNode知道该Socket的Host与Port。</p>
-
-<p><img class="left" src="/images/2013/02/hdfs02.png">
-一个好的架构必然遵循了好的架构原则。HDFS架构有许多值得我们借鉴或参考的设计决策，其中它所遵循的架构原则，对HDFS满足架构目标起到了决定性的作用。这些原则包括：元数据与数据分离；主/从架构；一次写入多次读取；移动计算比移动数据更划算。</p>
-
-<h4>元数据与数据分离</h4>
-
-<p>这主要体现在NameNode与DataNode之分，这种分离是HDFS最关键的架构决策。这两种节点的分离，意味着关注点的分离。对于一个文件系统而言，文件本身的属性（即元数据）与文件所持有的数据属于两个不同的关注点。一个简单的例子是文件名的更改。如果不实现分离，针对一个属性的修改，就可能需要对数据块进行操作，这是不合理的。如果不分离这两种节点，也不利于文件系统的分布式部署，因为我们很难找到一个主入口点。显然，这一原则是与后面提到的主/从架构是一脉相承的。</p>
-
-<p>NameNode负责维护文件系统的名字空间，任何对文件系统名字空间或属性的修改都将被NameNode记录下来。NameNode会负责执行与文件系统命名空间的操作，包括打开、关闭、重命名文件或目录。它同时还要负责决定数据块到DataNode的映射。从某种意义上讲，NameNode是所有HDFS元数据的仲裁者和资源库。</p>
-
-<p>DataNode则负责响应文件系统客户端发出的读写请求，同时还将在NameNode的指导下负责执行数据库的创建、删除以及复制。</p>
-
-<p>因为所有的用户数据都存放在DataNode中，而不会流过NameNode，就使得NameNode的负载变小，且更有利于为NameNode建立副本。</p>
-
-<h4>主/从架构</h4>
-
-<p>主从架构表现的是Component之间的关系，即由主组件控制从组件。在HDFS中，一个HDFS集群是由一个NameNode和一定数目的DataNode组成。NameNode是一个中心服务器，负责管理文件系统的名字空间(namespace)以及客户端对文件的访问。集群中的DataNode一般是一个节点一个，负责管理它所在节点上的存储。</p>
-
-<h4>一次写入多次读写</h4>
-
-<p>一次写入多次读写，即Write Once Read Many，是HDFS针对文件访问采取的访问模型。HDFS中的文件只能写一次，且在任何时间只能有一个Writer。当文件被创建，接着写入数据，最后，一旦文件被关闭，就不能再修改。这种模型可以有效地保证数据一致性，且避免了复杂的并发同步处理，很好地支持了对数据访问的高吞吐量。</p>
-
-<h4>移动计算比移动数据更划算</h4>
-
-<p>移动计算比移动数据更划算，即moving computation is cheaper than moving data。对于数据运算而言，越靠近数据，执行运算的性能就越好，尤其是当数据量非常大的时候，更是如此。由于分布式文件系统的数据并不一定存储在一台机器上，就使得运算的数据常常与执行运算的位置不相同。如果直接去远程访问数据，可能需要发起多次网络请求，且传输数据的成本也相当客观。因此最好的方式是保证数据与运算离得最近。这就带来两种不同的策略。一种是移动数据，另一种是移动运算。显然，移动数据，尤其是大数据的成本非常之高。要让网络的消耗最低，并提高系统的吞吐量，最佳方式是将运算的执行移到离它要处理的数据更近的地方，而不是移动数据。</p>
-
-<p>HDFS在改善吞吐量与数据访问性能上还做出了一个好的设计决策，就是数据块的Staging。当客户端创建文件时，并没有立即将其发送给NameNode，而是将文件数据存储到本地的临时文件中。这个操作是透明的，客户端不会觉察，也不必关心。文件的创建事实上是一个流数据的写，当临时文件累计的数据量超过一个数据块大小时，客户端才会联系NameNode。NameNode将文件名插入文件系统的层次结构中，并且分配一个数据块给它。然后返回Datanode的标识符和目标数据块给客户端。接着，客户端将这块数据从本地临时文件上传到指定的Datanode上。当文件关闭时，在临时文件中剩余的没有上传的数据也会传输到指定的Datanode上。然后客户端告诉Namenode文件已经关闭。此时Namenode才将文件创建操作提交到HDFS的文件系统。这个操作的大致时序图如下所示：
-<img class="center" src="/images/2013/02/hdfs03.png"></p>
-
-<p>采用这种客户端缓存的方式，可以有效地减少网络请求，避免大数据的写入造成网络堵塞，进而提高网络吞吐量。</p>
 ]]></content>
   </entry>
   

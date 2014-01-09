@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Architecture | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2013-12-25T21:42:00+08:00</updated>
+  <updated>2014-01-09T21:52:37+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,103 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[可视化架构与DDD]]></title>
+    <link href="http://agiledon.github.com/blog/2014/01/09/visualization-architecture-and-ddd/"/>
+    <updated>2014-01-09T13:57:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/01/09/visualization-architecture-and-ddd</id>
+    <content type="html"><![CDATA[<p>从DDD的角度，领域逻辑的分析可以运用战略方法Bounded Context。可是，一个问题是：<strong>如何获得Bounded Context ？</strong></p>
+
+<p>我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex Context这一点上语焉不详。</p>
+
+<p>我的初步设想是通过绘制场景图（但并不成熟）。我认为有三种绘制场景图的方式：商业画布，体验地图和流程图。我认为，商业画布可以作为需求分析（尤其针对初创产品）的起点。商业画布如下图所示：
+<img class="center" src="/images/2014/business_canvas.jpeg"></p>
+
+<p>采用这种规范化的方式来推导商业模型，可以激发我们的灵感，理清我们的思路，以便我们思考为何要做这个产品，产品应该具备哪些功能。结合优点和缺点、成本等因素，我们可以藉此判断和决策功能的优先级，从而得到MVP。这个过程需要大量运用即时贴，让整个商业模型呈现。经过取舍后，就可以针对产品绘制场景图。此时，场景图可以采用Experience Map或流程图来体现。由于商业画布本身提供了“客户”项，我们应该创建Persona，找准人物角色的特征来“搜寻”需求。绘制了场景图后，就能够确定用例了，此时，可辅以ATDD帮助确定Story。在确定了用例后，可以识别Bounded Context，并通过Context Map确定上下文之间的关系。</p>
+
+<!--more-->
+
+
+<p>就我个人感觉，体验地图还是从Persona的角度设想系统如何使用，考虑它的用户体验。它其实符合“场景”的概念。这里可能还是要考虑：在一个完整的场景中，需要哪些参与者？但是，即使从粗粒度的角度出发，场景都可能存在多个，可能需要绘制多个场景图来逐步提炼Bounded Context。</p>
+
+<p>假设我们要开发一个电子商务网站，我们就可以通过商业画布来驱动出这个产品应该具有哪些功能，它的客户有哪些等，在绘制了场景图后，可以初步得到这样的Bounded Context:
+<img class="center" src="/images/2014/bounded_context.jpg"></p>
+
+<p>然后，我利用Context Map得到了各个上下文之间的关系：
+<img class="center" src="/images/2014/context_map.jpg"></p>
+
+<p>这样，一个包图的获得就水到渠成了：
+<img class="center" src="/images/2014/modules.jpeg"></p>
+
+<p>在识别了Bounded Context以及Context之间的关系后，我们可以运用Hexagon架构（Cockburn提出的六边形架构）来展现系统的整体架构。Hexagon架构并不深入关注内部边界中领域部分，仅仅是简单的划分为Application与Domain两层。但它有助于我们获得基础设施层以及相关集成点的包结构。我们要合理地运用六边形架构。它更贴近应用逻辑架构，并可以驱动我们去发现诸多集成点，寻找集成模式。内外边界的分离也有助于我们将业务逻辑与应用逻辑分离开。这实际上符合“关注点分离”的架构原则。下图展现了六边形架构中常见的Port与Adapter：
+<img class="center" src="/images/2014/Hexagon.jpg"></p>
+
+<p>我对“可视化架构”的理解，还是要希望多通过即时贴、白板等工具来实现可视化，而非通过绘图。至少，绘图不应该成为主要的驱动力，否则，开发人员很难接受。例如，下图就是我运用Hexagon架构，并结合可视化手段分析该电子商务系统得到的应用逻辑架构，它很好地一个展现了Hexagon架构的可视化手法。
+<img class="center" src="/images/2014/e_commerce.jpg"></p>
+
+<p>在这个图中，直观地展现了如何与外部的支付系统以及物流系统的集成。例如，图中展现的Port实际上为防腐层（ACL）。为何要建立这样的一个防腐层呢，原因在于：支付与物流常常存在多个供应商，因而需要解除对供应商的绑定，并避免供应商系统的变化造成对电子商务系统的腐蚀。这是切合实际的决策。</p>
+
+<p>这个电子商务系统需要与仓库管理系统集成。恰好在《面向模式的软件架构》卷四的第35页，给出了一个仓库管理流程控制系统的案例。书中描述的非功能性需求，即所谓质量属性包括：</p>
+
+<blockquote><p>分布性。仓库管理流程控制系统天生就是分布式的。</p>
+
+<p>性能。仓库管理流程控制系统不是一个“绝对的”实时系统，但性能仍与业务息息相关。对系统有整体的吞吐量要求，因此系统必须确保所有的运输指令能够被及时而有效地运行。</p>
+
+<p>可伸缩性。不同仓库其大小可能会有很大的不同，因此仓库管理流程控制系统必须能既支持只有几千个箱子的小仓库，又要支持超过一百万个箱子的大仓库。</p>
+
+<p>可用性。许多仓库操作采用三班倒的24/7模式工作，因此可用性是仓库管理流程控制系统对业务案例支持的关键因素。</p></blockquote>
+
+<p>假设要设计这样的系统以支持这些质量属性。对于分布式而言，书中提出的解决方案是传统的分布式系统解决方案，即引入Broker模式，在本地建立对远程对象的代理。而对于支持并发的领域对象访问而言，则采用了Active Object模式，并引入Leader/Followers并发模型来获得可扩展。</p>
+
+<p>我没有打算引入这么复杂的模式，而仅仅是通过引入消息队列，并为消息队列引入路由的方式，来实现系统的分布式。这其中当然会用到经典的Publisher-Subscriber模式。我对领域逻辑进行了识别，将整个仓库管理流程控制系统的领域逻辑分为三个Bounded Context。</p>
+
+<ul>
+<li><p>库存管理</p></li>
+<li><p>物流控制</p></li>
+<li><p>拓扑管理</p></li>
+</ul>
+
+
+<p>整个架构如下图所示：
+<img class="center" src="/images/2014/inventory.jpeg"></p>
+
+<p>对于库存管理而言，我认为它主要支持商品存放信息的数据管理，即获得商品数量、存放位置以及更新这些信息。对于该上下文而言，操作本身比较简单，且耗时较短。若出现大规模并发，其瓶颈也不在于获取或更新仓库信息（当然需要通过测试数据验证），而在于客户下订单后向仓库管理流程控制系统发起的发货请求。</p>
+
+<p>我将发货请求放到了物流控制上下文中，除此之外，它还包括收货以及订单管理等。同时，对于物流控制与拓扑管理功能，基本上与具体的仓库形成了一一对应关系。此外，对于发货请求（或收货请求），并不要求很强的实时性，这使得对这些请求的异步处理成为可能。</p>
+
+<p>物流控制由于牵涉到收货和运货，需要控制仓库的相关设备，并按照仓库的拓扑结构设定设备的路由。这说明物流控制与拓扑控制存在上下游关系，拓扑控制是上游。这两个上下文可以是Customer-Provider的关系。但它们之间不应该存在物理边界。因此，我将这两个上下文放到了同一个六边形中，而将库存管理放到了另一个单独的六边形中，以便于它们各自独立的可伸缩。</p>
+
+<p>在库存管理与物流控制六边形之间，我引入消息队列来应对从库存管理子系统中转发而来的发货请求（发货请求实则又来自于E-Commerce的订单请求）。原则上，我针对一个物理的仓库建立一个单独的消息队列，因此库存管理在发送发货请求时，会根据商品的存放位置以及用户请求的IP地址，获得最优的仓库信息，然后通过Router将消息转发到正确的消息队列中。</p>
+
+<p>一旦收到消息，物流控制系统作为消息队列的订阅者（或侦听器）就可以即使处理信息，进行后续的处理。</p>
+
+<p>针对库存管理而言，我认为它是一个独立的物理边界，因此在可视化手段中，我展现为一个单独的库存管理六边形，如下图所示：
+<img class="center" src="/images/2014/inventory_2.jpeg"></p>
+
+<ul>
+<li>建立了针对REST服务的端口，对应的适配器为Controller，其目的是支持E-Commerce系统。事实上，我们对E-Commerce系统进行过分析，获得的六边形架构正好与此对接。</li>
+<li>建立了针对DB的端口，对应的适配器为DB Gateway，它负责访问库存管理自身的数据库。数据库持久化的消息包括商品的基本信息如SKU、商品名、数量等，以及商品存放的仓库名。</li>
+<li>建立了针对Queue的端口，对应的适配器为Message Router，负责将发货请求消息路由到正确的消息队列。</li>
+</ul>
+
+
+<p>物流控制与拓扑管理放在同一个边界中，它是高度可伸缩的独立系统，为展现它的可伸缩性以及它与库存管理之间的集成，我在可视化手段中，展现出两个独立的六边形，如下图所示：
+<img class="center" src="/images/2014/inventory_3.jpeg"></p>
+
+<ul>
+<li>针对Queue的侦听器端口，对应的适配器为Message Handler。若有必要，如为了更好的支持并发，也可以在此引入Active Object甚至Leader/Followers。</li>
+<li>同样提供了针对REST的端口，对应适配器为Controller。它主要是为了支持移动终端设备、Web应用，以便于相关人员直接发出发货或收货请求。</li>
+<li>同样提供了DB的端口。这个数据库是对应仓库的专有数据库，与库存管理数据库无关。</li>
+<li>提供了针对设备（指仓库的设备，如叉车，箱子，运输车等）的端口，对应适配器为South Gateway。</li>
+<li>提供了针对配置文件的端口，对应适配器为Configurer。此功能是为了支持拓扑信息的动态配置。</li>
+<li>提供了针对外部物流系统的端口，这里为其建立了Shipping的防腐层，使其能够更好地支持各个不同的物流供应商。</li>
+</ul>
+
+
+<p>目前，我针对可视化架构与设计的手段仍在完善之中，并已经尝试在真实项目中实践以进行验证，并希望能够找到足够简单的方法，为架构师与开发者提供直观而又具有体验价值的沟通方式，并能形成行之有效的设计手段。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[关于《恰如其分的软件架构》]]></title>
@@ -304,109 +401,6 @@
 <p>接下来就可以运行MyCrawler应用了。注意，在运行该程序时，你一定要启动你的MySQL数据库。在Mac下，可以输入命令mysql.server start来启动。你可能会发现项目无法编译成功，因为某些插件依赖的对象无法找到。我猜测在运行ant时，并没有编译这些插件，使得这些插件的依赖库并没有完全获得。我采取了一种粗暴的做法，就是直接将这些无法编译通过的插件直接删除。至少，对于我们这个简单的抓取工作而言，事实上用不了这么多插件。</p>
 
 <p>运行完成后，你可以到MySQL数据库下查询webpage数据表。如果运行成功，可以查询到表中的数据记录。如果运行失败，一方面可以在IDE工具的控制台上看到一些信息。另一方面也可以查询日志。日志记录会更详细，该文件可以在当前项目的根目录下找到，即hadoop.log日志文件。我在之前碰到的一个问题就是内存不够的异常，控制台上并未显示该信息，但在hadoop.log中能够找到，帮助我定位了问题。运行这样一个普通任务，把内存设置为512M就足够了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[可伸缩系统的架构经验]]></title>
-    <link href="http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons/"/>
-    <updated>2013-02-27T11:37:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/02/27/scalability-system-architecture-lessons</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/scalability.jpg"></p>
-
-<p>最近，阅读了Will Larson的文章<a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting System for Scale</a>，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统，这种面向企业内部的软件系统通常不会有太大的负载量，太多的并发量，因而对于系统的可伸缩性考虑较少。大体而言，只要在系统部署上考虑集群以及负载均衡即可。本文给了我很多启发，现把本文的主要内容摘译出来，并结合自己对此的理解。</p>
-
-<!--more-->
-
-
-<p>Larson首先认为，一个理想的系统，对于容量（Capacity）的增长应该与添加的硬件数是线性的关系。换言之，如果系统只有一台服务器，在增加了另一台同样的机器后，容量应该翻倍。以此类推。这种线性的容量伸缩方式，通常被称之为水平伸缩“Horizontal Scalability”。</p>
-
-<p>在设计一个健壮的系统时，自然必须首要考虑失败的情况。Larson认为，一个理想的系统是当失去其中一台服务器的时候，系统不会崩溃。当然，对应而言，失去一台服务器也会导致容量的响应线性减少。这种情况通常被称为冗余“Redundancy”。</p>
-
-<h3>负载均衡</h3>
-
-<p>无论是水平伸缩还是冗余，都可以通过负载均衡来实现。负载均衡就好似一个协调请求的调停者，它会根据集群中机器的当前负载，合理的分配发往Web服务器的请求，以达到有效利用集群中各台机器资源的目的。显然，这种均衡器应该介于客户端与Web服务器之间，如下图所示：
-<img class="center" src="/images/2013/02/scalability01.png"></p>
-
-<p>本文提到了实现负载均衡的几种方法。其一是Smart Client，即将负载均衡的功能添加到数据库（以及缓存或服务）的客户端中。这是一种通过软件来实现负载均衡的方式，它的缺点是方案会比较复杂，不够健壮，也很难被重用（因为协调请求的逻辑会混杂在业务系统中）。对此，Larson在文章以排比的方式连续提出问题，以强化自己对此方案的不认可态度：
-<blockquote><p>Is it attractive because it is the simplest solution? Usually, no. Is it seductive because it is the most robust? Sadly, no. Is it alluring because it'll be easy to reuse? Tragically, no.</p></blockquote></p>
-
-<p>第二种方式是采用硬件负载均衡器，例如<a href="http://www.citrix.com/English/ps2/products/product.asp?contentID=21679">Citrix NetScaler</a>。不过，购买硬件的费用不菲，通常是一些大型公司才会考虑此方案。</p>
-
-<p>如果既不愿意承受Smart Client的痛苦，又不希望花费太多费用去购买硬件，那就可以采用一种混合（Hybird）的方式，称之为软件负载均衡器（Software Load Balancer）。Larson提到了<a href="http://haproxy.1wt.eu/">HAProxy</a>。它会运行在本地，需要负载均衡的服务都会在本地中得到均衡和协调。</p>
-
-<h3>缓存</h3>
-
-<p>为了减轻服务器的负载，还需要引入缓存。文章给出了常见的对缓存的分类，分别包括：预先计算结果（precalculating result，例如针对相关逻辑的前一天的访问量）、预先生成昂贵的索引（pre-generating expensive indexes，例如用户点击历史的推荐）以及在更快的后端存储频繁访问的数据的副本（例如<a href="http://memcached.org/">Memcached</a>）。</p>
-
-<h4>应用缓存</h4>
-
-<p>提供缓存的方式可以分为应用缓存和数据库缓存。此二者各擅胜场。应用缓存通常需要将处理缓存的代码显式地集成到应用代码中。这就有点像使用代理模式来为真实对象提供缓存。首先检查缓存中是否有需要的数据，如果有，就从缓存直接返回，否则再查询数据库。至于哪些值需要放到缓存中呢？有<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">诸多算法</a>，例如根据最近访问的，或者根据访问频率。使用Memcached的代码如下所示：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='python'><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&quot;user.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user_id</span>
-</span><span class='line'><span class="n">user_blob</span> <span class="o">=</span> <span class="n">memcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-</span><span class='line'><span class="k">if</span> <span class="n">user_blob</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">user</span> <span class="o">=</span> <span class="n">mysql</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT * FROM users WHERE user_id=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
-</span><span class='line'><span class="k">if</span> <span class="n">user</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">memcache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
-</span><span class='line'><span class="k">return</span> <span class="n">user</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">else</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">user_blob</span><span class="p">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h4>数据库缓存</h4>
-
-<p>数据库缓存对于应用代码没有污染，一些天才的DBA甚至可以在不修改任何代码的情况下，通过数据库调优来改进系统性能。例如通过配置Cassandra行缓存。</p>
-
-<h4>内存缓存</h4>
-
-<p>为了提高性能，缓存通常是存储在内存中。常见的内存缓存包括Memcached和<a href="http://redis.io/">Redis</a>。不过采用这种方式仍然需要合理的权衡。我们不可能一股脑儿的将所有数据都存放在内存中，虽然这会极大地改善性能，但比较起磁盘存储而言，RAM的代价更昂贵，同时还会影响系统的健壮性，因为内存中的数据没有持久化，容易丢失。正如之前提到的，我们应该将需要的数据放入缓存，通常的算法是<a href="http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used">least recently used</a>，即LRU。</p>
-
-<h4>CDN</h4>
-
-<p>提高性能，降低Web服务器负载的另一种常见做法是将静态媒体放入CDN（Content Distribution Network）中。如下图所示：
-<img class="center" src="/images/2013/02/scalability02.png"></p>
-
-<p>CDN可以有效地分担Web服务器的压力，使得应用服务器可以专心致志地处理动态页面；同时，CDN还可以通过地理分布来提高响应请求的性能。在设置了CDN后，当系统接收到请求时，首先会询问CDN以获得请求中需要的静态媒体（通常会通过HTTP Header来配置CDN能够缓存的内容）。如果请求的内容不可用，CDN会查询服务器以获得该文件，并在CDN本地进行缓存，最后再提供给请求者。如果当前网站并不大，引入CDN的效果不明显时，可以考虑暂不使用CDN，在将来可以通过使用一些轻量级的HTTP服务器如<a href="http://nginx.org/">Nginx</a>，为静态媒体分出专门的子域名如static.domain.com来提供服务。</p>
-
-<h4>缓存失效</h4>
-
-<p>引入缓存所带来的问题是如何保证真实数据与缓存数据之间的一致性。这一问题通常被称之为缓存失效（Cache Invalidation）。从高屋建瓴的角度来讲，解决这一问题的办法无非即使更新缓存中的数据。一种做法是直接将新值写入缓存中（通常被称为write-through cache）；另一种做法是简单地删除缓存中的值，在等到下一次读缓存值的时候再生成。</p>
-
-<p>整体而言，要避免缓存实效，可以依赖于数据库缓存，或者为缓存数据添加有效期，又或者在实现应用程序逻辑时，尽量考虑避免此问题。例如不直接使用DELETE FROM a WHERE…来删除数据，而是先查询符合条件的数据，再使得缓存中对应的数据失效，继而根据其主键显式地删除这些行。</p>
-
-<h3>Off-Line处理</h3>
-
-<p>这篇文章还提到了Off-Line的处理方式，即通过引入消息队列的方式来处理请求。事实上，在大多数企业软件系统中，这种方式也是较为常见的做法。在我撰写的文章《<a href="http://agiledon.github.com/blog/2012/12/27/distributed-architecture-based-on-message/">案例分析:基于消息的分布式架构</a>》中，较为详细地介绍了这种架构。在引入消息队列后，Web服务器会充当消息的发布者，而在消息队列的另一端可以根据需要提供消费者Consumer。如下图所示。对于Off-Line的任务是否执行完毕，通常可以通过轮询或回调的方式来获知。
-<img class="center" src="/images/2013/02/scalability03.png"></p>
-
-<p>为了更好地提高代码可读性，可以在公开的接口定义中明确地标示该任务是On-Line还是Off-Line。</p>
-
-<p>引入Message Queue，可以极大地缓解Web服务器的压力，因为它可以将耗时较长的任务转到专门的机器上去执行。</p>
-
-<p>此外，通过引入定时任务，也可以有效地利用Web服务器的空闲时间来处理后台任务。例如，通过Spring Batch Job来执行每日、每周或者每月的定时任务。如果需要多台机器去执行这些定时任务，可以引入Spring提供的<a href="https://puppetlabs.com">Puppet</a>来管理这些服务器。Puppet提供了可读性强的声明性语言来完成对机器的配置。</p>
-
-<h4>Map-Reduce</h4>
-
-<p>对于大数据的处理，自然可以引入Map-Reduce。为整个系统专门引入一个Map-Reduce层来处理数据是有必要的。相对于使用SQL数据库作为数据中心的方式，Map-Reduce对可伸缩性的支持更好。Map-Reduce可以与任务的定时机制结合起来。如下图所示：
-<img class="center" src="/images/2013/02/scalability04.png"></p>
-
-<h3>平台层</h3>
-
-<p>Larson认为，大多数系统都是Web应用直接与数据库通信，但如果能加入一个平台层（Platform Layer），或许会更好。
-<img class="center" src="/images/2013/02/scalability05.png"></p>
-
-<p>首先，将平台与Web应用分离，使得它们可以独立地进行伸缩。例如需要添加一个新的API，就可以添加新的平台服务器，而无需增加Web服务器。要知道，在这样一个独立的物理分层架构中，不同层次对服务器的要求是不一样的。例如，对于数据库服务器而言，由于需要频繁地对磁盘进行I/O操作，因此应保证数据库服务器的IO性能，如尽量使用固态硬盘。而对于Web服务器而言，则对CPU的要求比较高，尽可能采用多核CPU。</p>
-
-<p>其次，增加一个额外的平台层，可以有效地提高系统的可重用性。例如我们可以将一些与系统共有特性以及横切关注点的内容（如对缓存的支持，对数据库的访问等功能）抽取到平台层中，作为整个系统的基础设施（Infrastructure）。尤其对于产品线系统而言，这种架构可以更好地为多产品提供服务。</p>
-
-<p>最后，这种架构也可能对跨团队开发带来好处。平台可以抽离出一些与产品无关的接口，从而隐藏其具体实现的细节。如果划分合理，并能设计出相对稳定的接口，就可以使得各个团队可以并行开发。例如可以专门成立平台团队，致力于对平台的实现以及优化。</p>
 ]]></content>
   </entry>
   
