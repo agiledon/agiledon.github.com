@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-11T16:18:36+08:00</updated>
+  <updated>2014-01-11T19:35:33+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -21,13 +21,9 @@
     <content type="html"><![CDATA[<p>目前来看，推行TDD的障碍大约有如下几点：</p>
 
 <pre><code>1. 开发人员的质量意识；
-
 2. 分析需求并进行任务分解的能力；
-
 3. 将测试作为开发起点的开发习惯；
-
 4. 开发人员的重构能力，包括如何识别坏味道和如何运用重构手法；
-
 5. 单元测试的基础设施，尤其是测试数据准备；
 </code></pre>
 

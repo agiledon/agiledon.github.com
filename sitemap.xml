@@ -256,7 +256,7 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/2013/12/25/thought-about-applying-tdd/</loc>
-        <lastmod>2014-01-10T12:36:44+08:00</lastmod>
+        <lastmod>2014-01-11T19:20:18+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/2014/01/09/visualization-architecture-and-ddd/</loc>
@@ -267,12 +267,16 @@
         <lastmod>2014-01-11T15:52:39+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2014/01/11/excerpt-from-barone-rampante/</loc>
+        <lastmod>2014-01-11T19:35:09+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2014-01-11T11:39:11+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2014-01-11T16:08:00+08:00</lastmod>
+        <lastmod>2014-01-11T19:35:09+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -280,6 +284,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2014-01-11T16:08:00+08:00</lastmod>
+        <lastmod>2014-01-11T19:35:09+08:00</lastmod>
     </url>
 </urlset>

@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-11T16:18:36+08:00</updated>
+  <updated>2014-01-11T19:35:33+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[摘录《树上的男爵》]]></title>
+    <link href="http://agiledon.github.com/blog/2014/01/11/excerpt-from-barone-rampante/"/>
+    <updated>2014-01-11T19:32:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/01/11/excerpt-from-barone-rampante</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2014/barone_rampante.jpeg"></p>
+
+<p>卡尔维诺《树上的男爵》书写了这么一段难以言说、无可名状的美丽的段落，让我惊叹，甚至是那种心悸的喜悦。这样的笔下的景色，仿佛让我身临其境，又似乎另有一种魔力，如夕阳之下各色景观都涂上了一层金色的光亮。这一段落并非那种精致的美，但却自有一种纤细与磅礴，很奇怪的矛盾杂糅，然后蹦出一种奇异的美。</p>
+
+<blockquote><p>他的天地已经变了，这是一个由架在空中的细长而弯曲的桥，由粗糙树皮上的结节、瘤子和皱褶，由透过或疏或密的树叶挡起的帷幕而变幻着深浅的绿色阳光组成的世界，微风一吹，树叶的柄就抖动不已，而当树干摇摆时整棵树的叶子就像一方纱巾飘动起来。而我们的世界呢，是平贴在地面上的，我们看到的是比例失调的形象，我们当然不理解他在那上面的感受。夜里他倾听着树木如何用它的细胞在树干里记下代表岁月的年轮，树霉如何在北风中扩大斑点，在窝里熟睡的小鸟瑟缩着将脑袋钻进最暖和的翅膀下的羽毛里，毛毛虫蠕动，伯劳鸟腹中的蛋孕育成功。有的时候，原野静悄悄，耳膛内只有细微的响动，一声粗号，一声尖叫，一阵野草迅疾瑟瑟声，一阵流水淙淙响，一阵踏在泥土和石子上的蹄声，而蝉鸣声高出一切之上。响声一个接一个消失，听觉不断辨别出新的声音，就像那拆着一团毛线的手指，感觉到每根毛线变得越来越细，细得几乎感触不到了。同时青蛙一直在鸣唱，作为一种背景并不影响其它声音的传播，如同太阳光不因星星的不断闪烁而起变化。相反，每当风吹起或吹过，每一种声音都会起变化并成为新的声音，留在耳膛内最深处的只有隐隐约约的呼啸声或低吟声，那是大海。</p></blockquote>
+
+<p>要多么细致的观察，多么敏感的心灵，与大自然的脉搏一起跳动，放开身体的所有触觉、嗅觉与视觉，才能从灵魂中涌现出这样的文字，最后再借助一只魔笔润色，天然地凸显出来，就好像它自天地诞生以来一直就存在，只是从未有人发现，偶然的，被在天地之间嬉戏的卡尔维诺发现了。是的，是被发现了，而不是创作出来了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[读《被禁锢的头脑》]]></title>
@@ -175,13 +190,9 @@
     <content type="html"><![CDATA[<p>目前来看，推行TDD的障碍大约有如下几点：</p>
 
 <pre><code>1. 开发人员的质量意识；
-
 2. 分析需求并进行任务分解的能力；
-
 3. 将测试作为开发起点的开发习惯；
-
 4. 开发人员的重构能力，包括如何识别坏味道和如何运用重构手法；
-
 5. 单元测试的基础设施，尤其是测试数据准备；
 </code></pre>
 
@@ -1475,106 +1486,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>[7]：Jez Humble：<a href="http://continuousdelivery.com/2011/05/make-large-scale-changes-incrementally-with-branch-by-abstraction/">Make Large Scale Changes Incrementally with Branch By Abstraction</a></p>
 
 <p>[8]：Michael Feathers：<a href="http://www.amazon.com/Working-Effectively-Legacy-Michael-Feathers/dp/0131177052">Working Effectively with Legacy Code</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ThoughtWorks(中国)程序员读书雷达]]></title>
-    <link href="http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar/"/>
-    <updated>2013-04-17T21:46:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/04/reading-radar.jpg">
-软件业的特点是变化。若要提高软件开发的技能，就必须跟上技术发展的步伐。埋首醉心于项目开发与实战，固然能够锤炼自己的开发技巧，却难免受限于经验与学识。世界上并不存在速成的终南捷径，但阅读好的技术书籍，尤其是阅读大师们的经典著作，总能收到事半功倍之效。一位优秀的程序员，或许就是一名好的阅读者。好的阅读者，总是知道如何选择好的书籍。书海浩繁，良莠不齐。阅读技术好书，如与智者交谈，“与君一席话胜读十年书”；遭遇技术烂书，如被拐卖，“少小离家老大回，乡音无改鬓毛衰”。</p>
-
-<p>ThoughtWorks作为一家学习型组织，颇为看重每一位员工的学习能力。事实上，大多数ThoughtWorker的骨子里，都溢满了读书的基因。与书相伴，与书为伍，既是一种乐趣，又是一种习惯。当习惯成为自然时，书籍就成为生活和工作不可或缺的一部分了。如果说人文历史哲学等书籍是一碗心灵鸡汤，技术书籍大抵算得上是一味营养素，读之可以直接带来养分；可若是不了解自己究竟缺了哪一种营养，乱吃乱补，结果就可能适得其反了。有鉴于此，我和同事刘龙军结合自身的阅读经验，为新入职ThoughtWorks的程序员制作了一份读书路线图。我们将范围明确为程序员，是因为作为程序员的我们，它是我们最了解的工作角色。我们筛选出了一些大家公认的经典书籍，再结合自己的阅读体会，并广泛征集了更多ThoughtWorker的意见，包括徐昊，熊节，郑晔等资深阅读者，得到了这样一份草稿。在中国公司内部推出时，这份读书路线图得到了多数人的认可和欢迎。继而，我们在成都办公室陆续针对此读书路线图展开了读书俱乐部的活动，算是做了一次全方位大面积的试水。</p>
-
-<!--more-->
-
-
-<p>现在，我们觉得是推出正式版本，并面向更多受众的时机了。这就是大家现在看到的ThoughtWorks(中国)程序员读书雷达。它相较于之前的读书路线图草稿，分类更为专业，书籍筛选更为合理，并以雷达独有的优势，来展现不同的阅读维度与阅读深度。显然，读书雷达更能表达我们对所选书籍的深度认识。它可以作为学习型组织的一份知识输入，每一位程序员都可以根据自身水平与能力，选择适合自己的书籍，甚至组成一份表达阅读履历的读书路线图，在获得知识完善与汲取的过程中，提高自身能力，达至各个维度的巅峰。</p>
-
-<p>该读书雷达将书籍分为了如下四个象限：</p>
-
-<blockquote><p>Coding Practice（编程实践）<br/>Architecture & Design（架构与设计）<br/>Methodology（方法学）<br/>Thought & Leadership（思想与领导力）</p></blockquote>
-
-
-<p>我们之所以将方法学、思想与领导力放入到这个为程序员设计的读书雷达中，乃是因为软件开发不仅仅是个人的活动，也不仅仅是编码技巧和设计能力的体现。我们认为，开发技能其实是一项综合的系统工程。了解方法学，可以促进你对开发过程的理解；关于思想，则涉及大脑思维的修炼，可以提高程序员的抽象能力、学习能力，有助于帮助程序员发现事物发展的规律和本质；至于领导力，则有助于程序员在开发团队中发挥更大的作用，并能作为很好的团队成员，提升团队的整体能力。我们没有在这个读书雷达中包括语言类的书籍，原因在于这类书籍太过于发散，且更新较快；我们也不可能奢望在一张读书雷达图中，为不同的语言平台展现不同的优秀书籍。相比较语言的学习，我们更看重程序员在编程实践上的基本功。</p>
-
-<p>每个象限皆分为三个等级，分别为Fundamental、Medium和Advanced，对应初学、进阶和高级。在雷达图中，读者可以根据该书在图中距离圆心的远近，判断它的难度级别。我们还使用了不同的图示来表达对每本书的倾向性意见，其中，橙色的三角形图示代表“强烈推荐”，蓝色的圆形图示代表“推荐”。我们希望这类书籍对于程序员而言，可以根据自己目前的水平，选择适合自己的书籍。在这个层次上，强烈推荐可能就意味着必读。</p>
-
-<p>或许有人会质疑读书雷达的挑选标准。正所谓“每个人心中都有自己的哈姆雷特”，我们认同的未必能得到读者的认同，这是我们这个世界关于一种观点或态度的常态。我们发布这个读书雷达，只是希望能提供更多有用的信息与参考，而非代表一种读书权利的绝对化。事实上，我们也不可能做到。此外，&#8221;吾生也有涯，而知也无涯&#8221;，我们阅读的书籍毕竟有限，且读书雷达的容量也有限，难免会有遗珠之叹，这也是一件无可奈何之事。然而，我们欢迎更多的批评与建议，或许你推荐的好书恰恰是我们遗忘的，又或者激起了我们的共识，那么我们也会毫不吝啬地更新读书雷达，以求做到我们能力范围内的尽善尽美。当然，正如你看到的，我们在Methodology（方法学）象限，更多地推荐了与敏捷和精益相关的书籍。这是因为我们对敏捷技能与方法更有心得和信心。对于我和刘龙军还不够擅长的领域，我们不敢也不愿做出可能误导人的推荐。</p>
-
-<p>本读书雷达虽然冠以ThoughtWorks（中国）之名，但选书的倾向与意见并非ThoughtWorks（中国）官方的态度，而是作为制作者（龙军和我）个人表达的意见而已。如果你也加入了ThoughtWorks，你一定会发现这种自发组织的民间活动，在ThoughtWorks可谓俯拾皆是，不用诧异。</p>
-
-<p>我将在后面的文章中，根据每个象限为每一本书给出我们的推荐理由。此时，书籍成为了我们的臣民，我想对这个王国做一次不吝惜赞赏的巡视。最后，列出读书雷达的中英文书单，如下所示(感谢凯峰为这个雷达图建立的豆列，可以访问<a href="http://book.douban.com/doulist/2012097/">ThoughtWorks(中国)程序员读书雷达</a>)：</p>
-
-<h3>Coding Practice | 编程实践</h3>
-
-<h4>基础篇</h4>
-
-<blockquote><p>Clean Code《代码整洁之道》<br/>Pragmatic Unit Testing《单元测试之道》<br/>The Productive Programmer《卓有成效的程序员》<br/>Test-Driven Development By Example《测试驱动开发》<br/>Clean Coder《程序员的职业修养》<br/>The Art of Readable Code《编写可读代码的艺术》</p></blockquote>
-
-
-<h4>进阶篇</h4>
-
-<blockquote><p>Refactoring To Patterns《重构与模式》<br/>Implementation Patterns《实现模式》<br/>Code Complete《代码大全》<br/>The Pragmatic Programmer《程序员修炼之道》</p></blockquote>
-
-
-<h4>高级篇</h4>
-
-<blockquote><p>Structure and Interpretation of Computer Programs《计算机程序的构造和解释》<br/>Working Effectively with Legacy Code《修改代码的艺术》</p></blockquote>
-
-
-<h3>Architecture &amp; Design | 架构与设计</h3>
-
-<h4>基础篇</h4>
-
-<blockquote><p>Agile Software Development 《敏捷软件开发：原则、实践与模式》<br/>Head First Design Patterns《深入浅出设计模式》<br/>Design Patterns 《设计模式》</p></blockquote>
-
-
-<h4>进阶篇</h4>
-
-<blockquote><p>The Art of UNIX Programming 《Unix编程艺术》<br/>Practical API Design  《框架设计的艺术》<br/>Domain Specific Languages 《领域特定语言》<br/>Patterns of Enterprise Application Architecture 《企业应用架构模式》</p></blockquote>
-
-
-<h4>高级篇</h4>
-
-<blockquote><p>Release It <br/>Domain-Driven Design 《领域驱动设计》<br/>Enterprise Integration Patterns《企业集成模式》<br/>Beautiful Architecture《架构之美》<br/>Pattern-Oriented Software Architecture《面向模式的软件架构》</p></blockquote>
-
-
-<h3>Methodology | 方法学</h3>
-
-<h4>基础篇</h4>
-
-<blockquote><p>User Stories Applied《用户故事与敏捷方法》<br/>The Gold Mine《金矿》<br/>Scrum and XP From the Trenches《硝烟中的Scrum和XP》<br/>Continuous Integration《持续集成》<br/>Extreme Programming Explained《解析极限编程》</p></blockquote>
-
-
-<h4>进阶篇</h4>
-
-<blockquote><p>Lean Thinking《精益思想》<br/>Continuous Delivery《持续交付》<br/>How Google Tests Software<br/>Agile Testing<br/>Extreme Programming Refactored《重构极限编程》</p></blockquote>
-
-
-<h4>高级篇</h4>
-
-<blockquote><p>Specification By Example</p></blockquote>
-
-
-<h3>Thought &amp; Leadership | 思想与领导力</h3>
-
-<h4>基础篇</h4>
-
-<blockquote><p>The Effective Executive《卓有成效的管理者》<br/>Are Your Lights On?《你的灯亮着吗》<br/>Becoming A Technical Leader《成为技术领导者》</p></blockquote>
-
-
-<h4>进阶篇</h4>
-
-<blockquote><p>The Fifth Discipline《第五项修炼》<br/>The Design Of Business<br/>Management 3.0《管理3.0：培养和提升敏捷领导力》<br/>Presentation To Win<br/>The McKinsey Way《麦肯锡方法》</p></blockquote>
-
-
-<h4>高级篇</h4>
-
-<blockquote><p>Thinking, Fast and Slow《思考快与慢》</p></blockquote>
-
 ]]></content>
   </entry>
   
