@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="软件业的特点是变化。若要提高软件开发的技能，就必须跟上技术发展的步伐。埋首醉心于项目开发与实战，固然能够锤炼自己的开发技巧，却难免受限于经验与学识。世界上并不存在速成的终南捷径，但阅读好的技术书籍，尤其是阅读大师们的经典著作，总能收到事半功倍之效。一位优秀的程序员，或许就是一名好的阅读者。 &hellip;">
+  <meta name="description" content="什么是遗留系统（Legacy System）？根据维基百科的定义，遗留系统是一种旧的方法、旧的技术、旧的计算机系统或应用程序[1]。这一定义事实上并没有很好地揭露遗留系统的本质。我认为，遗留系统首先是一个还在运行和使用，但已步入软件生命周期衰老期的软件系统。它符合所谓的“奶牛规则”：奶牛逐渐衰老 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/24/technical-stack-migration-for-legacy-system/">遗留系统的技术栈迁移</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-24T17:55:00+08:00" pubdate data-updated="true">Apr 24<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/24/technical-stack-migration-for-legacy-system/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/04/legacy.png">
+什么是遗留系统（Legacy System）？根据维基百科的定义，遗留系统是一种旧的方法、旧的技术、旧的计算机系统或应用程序[1]。这一定义事实上并没有很好地揭露遗留系统的本质。我认为，遗留系统首先是一个还在运行和使用，但已步入软件生命周期衰老期的软件系统。它符合所谓的“奶牛规则”：奶牛逐渐衰老，最终无奶可挤；然而与此同时，饲养成本却在上升。这意味着遗留系统会逐渐随着时间的推移，不断地增加维护成本。</p>
+
+<p>维护一个软件系统，就需要了解该软件系统的知识。若知识缺失，就意味着这会给维护人员带来极大的障碍和困难。从这个角度讲，所谓“遗留系统”，就是缺少了一部分重要知识，使得维护人员“知其然而不知其所以然”的软件系统。</p>
+
+<p>若要让遗留系统焕发青春，最彻底的做法自然是推倒重来，但这样付出的代价太高；而且，即使对系统重新设计和开发，仍然免不了会重蹈遗留系统的覆辙。或者，可以对遗留系统进行重构，在不修改系统功能的情况下改善系统设计。只是这种重构常常是对系统进行重大扩展或修改的前奏，如无绝对必要，并不推荐这种偿还“技术债务（Technical Debt）”的方式。重构应与开发同时进行，而不应将其作为债务推迟到最后，以至于支付高昂的利息。最后，还有一种方式，则是对遗留系统进行技术栈迁移。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/24/technical-stack-migration-for-legacy-system/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -666,50 +712,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/02/harvest-from-reading/">阅读的设计体悟</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-02T21:46:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/02/harvest-from-reading/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/03/jsbookcover.jpg">
-不管语言的变化有多大，关于程序设计的基本编程思想和设计本质，应是殊途同归。两年前阅读了Jonathan Snook的著作《Javascript捷径教程Accelerated DOM Scripting with Ajax, APIs, and Libraries》。在书中，他带领读者构建了一个简单的动画对象。简单的例子，轻描淡写的描述，却似乎展现了朴素的基本设计思想。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/02/harvest-from-reading/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -747,6 +749,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/13/testing-styles-of-scalatest/">ScalaTest的测试风格</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
       </li>
     
@@ -760,10 +766,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/24/the-scenarios-for-using-git/">Git的使用场景</a>
       </li>
     
   </ul>
@@ -804,14 +806,13 @@
 <a style="font-size: 100%" href="/blog/tags/api/">API</a>
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
-<a style="font-size: 100%" href="/blog/tags/architecure/">Architecure</a>
 <a style="font-size: 100%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 100%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
-<a style="font-size: 145%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
-<a style="font-size: 166%" href="/blog/tags/coding/">Coding</a>
-<a style="font-size: 205%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 164%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 202%" href="/blog/tags/design/">Design</a>
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
@@ -822,10 +823,10 @@
 <a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
 <a style="font-size: 128%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
-<a style="font-size: 180%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
 <a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
-<a style="font-size: 157%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
 <a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
 <a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
@@ -834,22 +835,23 @@
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
 <a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
-<a style="font-size: 157%" href="/blog/tags/oo/">OO</a>
-<a style="font-size: 145%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
-<a style="font-size: 194%" href="/blog/tags/reading/">Reading</a>
-<a style="font-size: 157%" href="/blog/tags/reading-radar/">Reading Radar</a>
-<a style="font-size: 166%" href="/blog/tags/refactoring/">Refactoring</a>
-<a style="font-size: 145%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 100%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 192%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 157%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 164%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
-<a style="font-size: 166%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
 <a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
 <a style="font-size: 100%" href="/blog/tags/thought/">Thought</a>
-<a style="font-size: 166%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
 
   </ul>

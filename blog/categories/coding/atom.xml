@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-12T10:43:50+08:00</updated>
+  <updated>2014-01-13T21:34:05+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,158 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ScalaTest的测试风格]]></title>
+    <link href="http://agiledon.github.com/blog/2014/01/13/testing-styles-of-scalatest/"/>
+    <updated>2014-01-13T18:39:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/01/13/testing-styles-of-scalatest</id>
+    <content type="html"><![CDATA[<p>ScalaTest几乎已经成为Scala语言默认的测试框架，而在JVM平台下，无论是否使用Scala进行开发，我认为仍有尝试ScalaTest的必要。这主要源于它提供了多种表达力超强的测试风格，能够满足各种层次的需求包括单元测试、BDD、验收测试、数据驱动测试。正如ScalaTest的创建者Bill Venners所说：</p>
+
+<blockquote><p>A guiding design principle of ScalaTest is that different people on a team should be able look at each others test code and know immediately what's going on.</p>
+
+<p>ScalaTest is designed to make it easy for you to customize your testing tool to meet your current needs, and for the built-in traits at least, make it easy for anyone who comes along later to read and understand your code.</p></blockquote>
+
+<h2>UT与IT的风格选择</h2>
+
+<p>ScalaTest一共提供了七种测试风格，分别为：FunSuite，FlatSpec，FunSpec，WordSpec，FreeSpec，PropSpec和FeatureSpec。这就好像使用相同的原料做成不同美味乃至不同菜系的佳肴，你可以根据自己的口味进行选择。以我个人的偏好来看，我倾向于选择FlatSpec或FunSpec(类似Ruby下的RSpec)来编写单元测试与集成测试。虽然FunSuite的方式要更灵活，而且更符合传统测试方法的风格，区别仅在于test()方法可以接受一个闭包，但坏处恰恰就是它太灵活了。而FlatSpec和FunSpec则通过提供诸如it、should、describe等方法，来规定书写测试的一种模式，例如前者明显的<em>“主-谓-宾”结构</em>，后者清晰的<strong>分级式结构</strong>，都可以使团队的测试更加规范。如下是ScalaTest官方网站的提供的FunSuite、FlatSpec和FunSpec的三种风格样例。</p>
+
+<p>``` scala
+//FunSuite
+import org.scalatest.FunSuite</p>
+
+<p>class SetSuite extends FunSuite {</p>
+
+<pre><code>test("An empty Set should have size 0") {    
+    assert(Set.empty.size == 0)  
+}
+test("Invoking head on an empty Set should produce NoSuchElementException") {
+    intercept[NoSuchElementException] { 
+        Set.empty.head    
+    }  
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//FlatSpec
+import org.scalatest.FlatSpec</p>
+
+<p>class SetSpec extends FlatSpec {</p>
+
+<pre><code>"An empty Set" should "have size 0" in {
+    assert(Set.empty.size == 0)  
+}
+it should "produce NoSuchElementException when head is invoked" in {
+    intercept[NoSuchElementException] { 
+        Set.empty.head    
+    }  
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//FunSpec
+import org.scalatest.FunSpec</p>
+
+<p>class SetSpec extends FunSpec {</p>
+
+<pre><code>describe("A Set") {
+    describe("when empty") { 
+        it("should have size 0") {
+            assert(Set.empty.size == 0)      
+        }
+            it("should produce NoSuchElementException when head is invoked") {
+            intercept[NoSuchElementException] {
+                Set.empty.head       
+            }      
+        }
+    }    
+}  
+</code></pre>
+
+<p>}
+```</p>
+
+<p>至于WordSpec和FreeSpec，要么太复杂，要么可读性稍差，要么惯用法风格有些混杂，个人认为都不是太好的选择，除非你已经习惯了这种风格。</p>
+
+<h2>数据驱动测试风格</h2>
+
+<p>JUnit对类似表数据的Fixture准备提供了Parameterized支持，但非常不直观，而且还需要为测试编写构造函数，然后定义一个带有@Parameters标记的静态方法。TestNG的DataProvider略好，但通过在测试方法上指定DataProvider的方式，仍然不尽如人意。ScalaTest提供的PropSpec充分利用了Scala函数式语言的特性，使得代码更简单，表达性也更强：
+``` scala
+import org.scalatest.<em>
+import prop.</em>
+import scala.collection.immutable._</p>
+
+<p>class SetSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
+  val examples =</p>
+
+<pre><code>Table(
+  "set", BitSet.empty, HashSet.empty[Int], TreeSet.empty[Int]
+)
+</code></pre>
+
+<p>  property("an empty Set should have size 0") {</p>
+
+<pre><code>forAll(examples) { set =&gt;
+  set.size should be(0)
+}
+</code></pre>
+
+<p>  }
+  property("invoking head on an empty set should produce NoSuchElementException") {</p>
+
+<pre><code>forAll(examples) { set =&gt;
+  a [NoSuchElementException] should be thrownBy { set.head }
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>验收测试风格</h2>
+
+<p>我们会推荐由PO（或者需求分析人员BA）与测试人员结对编写验收测试的业务场景，然后由开发人员和测试人员结对实现该场景。Cocumber、JBehave、Twist乃至Robot、Fitness都可以用于编写这样的验收测试（Fitness与Robot更接近实例化需求的方式）。这些工具有一个特点是业务场景与测试支持代码完全是分开的。例如Cucumber将业务场景放到feature文件中，而将测试支持代码放到rb文件中。JBehave类似。这样的好处是feature文件很干净，很纯粹，与技术实现没有任何关系，且有利于生成Living Document。然而，这种分离方式在带来良好可读性的同时，也带来维护成本的增加。</p>
+
+<p>ScalaTest在提供类似Feature的验收测试Spec时，并没有将业务场景与测试支持代码分开，而是采用了混合的方式来表现：
+``` scala
+import org.scalatest.{ShouldMatchers, GivenWhenThen, FeatureSpec}</p>
+
+<p>class TVSetTest extends FeatureSpec with GivenWhenThen with ShouldMatchers{
+  info("As a TV Set owner")
+  info("I want to be able to turn the TV on and off")
+  info("So I can watch TV when I want")
+  info("And save energy when I'm not watching TV")</p>
+
+<p>  feature("TV power button") {</p>
+
+<pre><code>scenario("User press power button when TV is off") {
+  Given("a TV set that is switched off")
+  val tv = new TVSet
+  tv.isOn should be (false)
+
+  When("The power button is pressed")
+  tv.pressPowerButton
+
+  Then("The TV should switch on")
+  tv.isOn should be (true)
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>ScalaTest的FeatureSpec支持常见的Given-When-Then模式。在上面的代码段中，info提供了对Feature的基本描述，然后提供了feature与scenario两个层级。熟悉Cucumber和JBehave的人对此应该不会陌生。测试支持代码直接写在Given、When、Then方法下，因而针对同一个Feature，只产生一个scala文件。这就意味着测试支持代码与自然语言描述是处于同一级的，准确地说，他们其实就属于同一个测试。开发时，PO（或者需求）与测试可以先编写FeatureSpec的骨架，即info-feature-scenario以及Given-When-Then部分。一旦编写好这个FeatureSpec，就可以提交到版本管理库。当开发人员与需求、测试一起Kick Off要做的Story时，就可以根据这个FeatureSpec进行，然后，要求开发人员在完成Story的实现前，与测试结对完成它的测试实现代码。</p>
+
+<p>由于ScalaTest还提供了Tag等功能，我们还可以通过对测试提取基类或者Trait有效地对这些测试进行重用，保证测试代码的可维护性。由于只需要维护一个scala，成本会降低许多，也不需要在业务场景和测试支持代码之间跳转，降低维护的难度。唯一的缺点是它天然不支持Living Document。但是我们发现这些自然语言描述实则都集中在FeatureSpec提供的方法中，我们完全可以自行开发工具或插件，完成对场景描述以及步骤的提取，生成我们需要的文档。</p>
+
+<p>目前，我的同事杨云已经将ScalaTest作为编写验收测试的工具引入到项目中。受他启发，在我当前的项目中也选择使用了ScalaTest作为验收测试的框架。考虑到IDE支持尤其是重构等方面的工具支持，以及构建中对测试运行、测试覆盖率检查等的支持，目前我并没有考虑在单元测试和集成测试中使用ScalaTest。之所以如此，还是源于对成本与收益的考量。</p>
+
+<p><strong>说明：</strong>文章的代码片段全部来自ScalaTest官方网站。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[推行TDD的思考]]></title>
@@ -626,40 +778,6 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>经过这样的处理，程序的主体逻辑变得清晰了许多，而且也能够有效地避免日志方法的重复。当然，这里也可以使用checkNotNull()方法来处理ProcessData与List<FavoratePolicy>的null情形。但由于它抛出的异常为NullPointerException，用在这里会增加一个异常捕获（因为它无法处理isEmpty()的情况），所以就一致地选择了checkArgument()方法。不过，在使用这一方法时，要注意它传入的条件表达式与原有实现的表达式是相反的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Spray的模块结构]]></title>
-    <link href="http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1/"/>
-    <updated>2013-08-02T22:07:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/spray_logo.png">
-Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端REST/HTTP的支持。在使用上，大概可以将其视为Java平台下的Jersey；虽然它们的特性并不尽相同。从Scala语言来看，它提供的Future与Promise可以较好地支持并发；而Akka的Actor模型无疑助推了Spray的并发处理性能。根据<a href="http://spray.io/">Spray官方网站</a>的描述，它拥有如下的特性：
-<blockquote><p>完全异步的，无阻塞的APIs<br/>基于Actor与Future<br/>高性能<br/>轻量级<br/>模块化<br/>可测试性</p></blockquote></p>
-
-<p>之所以称其为库（library）而非框架（Framework），源于Spray的设计哲学。似乎在Spray的设计者眼中，只要沾上了“框架”这个名词，就显得不够轻量，耦合也会随之而来。虽然框架并非容器，无需管理诸多对象的生命周期，但它总会为应用添加一些框架级别的约束。框架更像是一个骨架（Skeleton），应用所要做的是将自己的内容填充到这个骨架中。应用能否运行良好，取决于框架的支撑作用。以我之浅见，大约可以如此简单分辨：框架之于应用，是一种白盒式的调用，你须得了解一些框架细节，遵循规定的约束或规范，才能更好地发挥框架的威力；而类库之于应用，则是职责向黑盒传递的委派，若要调用库，只需明晓其接口即可。</p>
-
-<p>正如Spray的官方网站所说，Spray更像是基于Http搭建的一个集成层（Integration Layer）。因此你不必将自己的应用搭建在Spray之上，仅仅是当需要对Http的集成时，Spray可以成为你的一项选择。这种松散耦合，去除“供应商绑定”的方式，实在招人喜爱。Spray引人驻足的魅力，不仅在于Akka Actor模式对并发的良好支持，Scala语言本身也使其增色不少。Scala的语法较之Java更其灵活而先进，那些支持不变式、函数编程以及闭包等特性，总会让Java程序员垂涎三尺(至少在Java 8之前)。若再遥想不远将来Scala提供的async以及await（一如C# 5.0的语法特性），编写Scala程序应大有可为。当然，或也可能成亦Scala，败亦Scala，毕竟面对数量级庞大的Java程序员，Scala仍属小众。这会成为Spray的阿克琉斯之踝吗？</p>
-
-<!--more-->
-
-
-<p>诸多因子促使我选择Spray作为一个研究对象。我想，通过使用Spray，并深入挖掘其源码，定能让我受益良多。当然，在剖析其源代码之前，先让我们看看Spray的模块结构吧。
-<img class="center" src="/images/2013/spraymodules.png"></p>
-
-<p>既然Spray号称其具有松散耦合的组件结构，就让我们对这些模块间的依赖来一个先睹为快。要识别模块之间的依赖关系，最直观的方式莫过于绘制一个依赖图：
-<img class="center" src="/images/2013/spraydepencies.png"></p>
-
-<p>整洁的依赖显得清爽，斩钉截铁，绝不拖泥带水。那种如网一般深邃的依赖关系，会让人迷失。这其中的要点，仍然在于职责的分配。借助依赖关系图可以更加直观展现，何处出现多余或繁复的依赖线与环，肉眼即可观察获得。这种图甚至可以通过直觉去感受，只要绘图得当，布局合理，会有平衡之感。</p>
-
-<p>如上图所示，以浅绿标明的三个模块，都处于被依赖的层次，按照“依赖沉淀”的法则，我将其放在整个图的最底层。观其名，我们似乎也可察知这几个模块更倾向于基础设施或公共设施的范畴。值得特别书写的是spray-http，因为该模块除了必须依赖的Scala之外，完全独立，没有任何依赖。它提供了基本的Http数据结构，如Request，Response以及其他公共Header。对于一个支持Http的库而言，可以视其为核心。</p>
-
-<p>spray-caching提供了基本的缓存功能，是一个非常小的模块，仅仅包含cache.scala与LruCache.scala两个类。它引入了Future对象，使其能够更好地满足并发处理的缓存。此外，它还调用了google code上的一个第三方开源库concurrentlinkedhashmap（上图的紫色模块），作为存储Future对象的数据结构。spray-can是整个库的主要模块，提供了高性能的Http Server与Client。在这个模块中，主要的APIs都直接或间接继承了Akka提供的Actor。spray-servlet扮演了适配器的角色，它的主要目的是在Servlet API之上提供spray-can的服务器接口，从而使得spray能够在servlet容器中使用路由功能。因此，该模块除了依赖spray-util与spray-http之外，实则还要依赖于Java的Servlet。注意，上图的虚线依赖说明的是一种可选的关系。单从这一点来看，也部分说明了spray模块间的松散耦合度。一个示例是上图未曾列出的spray-json，就属于可选的用于处理json的模块。</p>
-
-<p>无论是依赖关系，还是模块职责展现的抽象层次，spray-client与spray-routing都属于更加high-level的模块。例如spray-client可以视为对spray-can中提供的Http Client APIs的包装，属于更高层次的抽象。spray-routing则以优雅的DSL形式提供了定义REST服务的接口。</p>
-
-<p>观察Spray的模块分解，非常注重职责的内聚，并以较小的粒度划分模块。由于它的设计目标为库，每个模块展现了自己的关注点，使其能够最大限度地被用户单独使用。例如当我仅需要缓存功能时，完全可以忽略Spray中支持HTTP以及REST的模块。同时，它注重调用视角的区分，为不同的调用者提供不同的抽象层次。在充分满足松耦合、高内聚的架构原则之上，适度地考虑接口的可用性与可读性。我喜欢这样一种轻量级的，尽其可能简单的架构设计。</p>
 ]]></content>
   </entry>
   

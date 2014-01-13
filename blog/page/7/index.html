@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="接缝（seam）是Michael C. Feathers提出的概念。Feathers在Working Effectively with Legacy Code一书中对接缝的定义如下：接缝，顾名思义，就是指程序中的一些特殊的点，在这些点上你无需作任何修改就可以达到改动程序行为的目的。 “接缝” &hellip;">
+  <meta name="description" content="处理遗留系统，几乎是每个程序员都不可能绕过的一件麻烦事儿。因为时间压力，技能不足以及功能复杂等诸多原因，常常使得遗留系统的代码变得糟糕混乱，可读性与维护性差，无法保证功能的可测试性，纠缠不清的代码让类、方法之间紧紧耦合在一起。如果遗留系统能够正常工作，那么我们还可以置之不理， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/10/09/handle-legacy-system/">处理遗留系统</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-09T19:57:00+08:00" pubdate data-updated="true">Oct 9<span>th</span>, 2011</time>
+        
+         | <a href="/blog/2011/10/09/handle-legacy-system/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2011/10/legecy.png"></p>
+
+<p>处理遗留系统，几乎是每个程序员都不可能绕过的一件麻烦事儿。因为时间压力，技能不足以及功能复杂等诸多原因，常常使得遗留系统的代码变得糟糕混乱，可读性与维护性差，无法保证功能的可测试性，纠缠不清的代码让类、方法之间紧紧耦合在一起。如果遗留系统能够正常工作，那么我们还可以置之不理，即使代码接近腐烂的边缘，我们还可以得过且过。倘若我们需要维护遗留系统，或者需要为它添加新的功能，又或者需要将新的系统与遗留系统进行集成，就必须正视遗留系统带来的问题了。</p>
+
+<p>处理遗留系统，首先需要分析和了解遗留系统，尤其这个遗留系统并非你开发时，更需如此。我们可以考虑双管齐下的办法。一是从业务逻辑方面去了解。相比新系统而言，遗留系统的唯一好处就是它往往是可以运行可以使用的。因此，最好的办法是直接运行遗留系统，通过实际操作了解系统的各个功能点、业务流程。这样的直观感受可以最快地帮助你了解该系统：它能够做什么？它能达成什么目标？它的范围是什么？它存在什么问题？其二则需要从系统架构出发，了解遗留系统的逻辑结构和物理分布。可以阅读架构文档和源代码，如果能够咨询遗留系统的设计者或开发人员，就更好。尽快地描绘出遗留系统的轮廓图，可以帮助你从技术的宏观角度剖析遗留系统的结构与组成。再结合你对该系统业务的理解，快速地掌握遗留系统。如果需要阅读源代码，最好能够从主程序入口开始，找到一些主要的模块，了解其大体的设计方式与编码习惯。由于之前对系统架构已有了解，阅读代码时，不应在一开始就去理解代码实现的细节，而应结合架构文档，比对代码实现是否与文档的描述一致，并充分利用自己的技术与经验，找到阅读代码的终南捷径。例如，如果我们知道该系统采用了MVC架构，就可以很容易地根据Url找到对应的Controller对象，并在该对象中寻找业务功能实现的脉络。又例如我们知道系统采用了SSH框架，而我们又非常熟悉SSH框架，就可以基本忽略系统基础设施的部分，直接了解系统的业务实现。如果是Swing系统，而且在界面中混杂了大量的业务逻辑和界面逻辑，则需要找到系统实现的特点，譬如系统的业务都是通过菜单项进行操作，就可以在界面中找到相关的菜单对象，然后根据这些对象的Action操作，一步一步跟踪。甚至可以利用调试的方法，设置断点，来摸清楚系统的运行机制与执行顺序。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2011/10/09/handle-legacy-system/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -150,6 +197,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/13/testing-styles-of-scalatest/">ScalaTest的测试风格</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
       </li>
     
@@ -163,10 +214,6 @@
     
       <li class="post">
         <a href="/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/24/the-scenarios-for-using-git/">Git的使用场景</a>
       </li>
     
   </ul>
@@ -207,14 +254,13 @@
 <a style="font-size: 100%" href="/blog/tags/api/">API</a>
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
-<a style="font-size: 100%" href="/blog/tags/architecure/">Architecure</a>
 <a style="font-size: 100%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 100%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
-<a style="font-size: 145%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
-<a style="font-size: 166%" href="/blog/tags/coding/">Coding</a>
-<a style="font-size: 205%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 164%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 202%" href="/blog/tags/design/">Design</a>
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
@@ -225,10 +271,10 @@
 <a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
 <a style="font-size: 128%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
-<a style="font-size: 180%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
 <a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
-<a style="font-size: 157%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
 <a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
 <a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
@@ -237,22 +283,23 @@
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
 <a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
-<a style="font-size: 157%" href="/blog/tags/oo/">OO</a>
-<a style="font-size: 145%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
-<a style="font-size: 194%" href="/blog/tags/reading/">Reading</a>
-<a style="font-size: 157%" href="/blog/tags/reading-radar/">Reading Radar</a>
-<a style="font-size: 166%" href="/blog/tags/refactoring/">Refactoring</a>
-<a style="font-size: 145%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 100%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 192%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 157%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 164%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
-<a style="font-size: 166%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
 <a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
 <a style="font-size: 100%" href="/blog/tags/thought/">Thought</a>
-<a style="font-size: 166%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
 
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Architecture | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-12T10:43:50+08:00</updated>
+  <updated>2014-01-13T21:34:05+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -139,6 +139,80 @@
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[AgileChina2003架构演进杂志]]></title>
+    <link href="http://agiledon.github.com/blog/2013/07/29/agilechina-magazine/"/>
+    <updated>2013-07-29T22:06:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2013/07/29/agilechina-magazine</id>
+    <content type="html"><![CDATA[<h3>“架构演进”介绍</h3>
+
+<p>软件系统的架构从来都不是一蹴而就的，它需要在不断的演化中改进设计，甚至做出重要的架构迁移。尤其对于大型软件系统而言，组织管理、软件过程、需求变化、规模扩张、技术迁移、遗留系统等诸多因素都决定着架构的发展，甚至可能是诸多力量的博弈与权衡。</p>
+
+<h3>技术文章</h3>
+
+<h4>演化架构与紧急设计系列</h4>
+
+<p>本系列文章旨在从全新的视角来介绍经常讨论但是又难以理解的软件架构和设计概念。作者 Neal Ford 将通过介绍一些具体示例来帮助您在演化架构和紧急设计的灵活实践中打下坚实的基础。通过将重要的架构和设计决定推迟到最后责任时刻，您可以防止由于不必要的复杂度而降低软件项目质量的问题。点击<a href="http://www.ibm.com/developerworks/cn/java/j-eaed/">链接</a>。</p>
+
+<h4>遗留系统的技术栈迁移</h4>
+
+<p>遗留系统是一个还在运行和使用，但已步入软件生命周期衰老期的软件系统。它可能会因为无法满足新的质量需求，又或者是出于企业战略决策的考虑等诸多原因，需要对其进行技术栈迁移。然而，在迁移过程中，我们既需要满足迁移后的需求，又必须保证原有的系统功能不会受到破坏，这就为技术栈迁移制造了障碍。本文提出运用“风险驱动模型”来完成这一工作。风险驱动模型就是通过识别风险，对风险排定优先级；然后根据风险选定相关技术，再对风险是否得到缓解进行评估的一种架构方法。点击<a href="http://www.infoq.com/cn/articles/legacy-system-migration">链接</a>。</p>
+
+<h4>注重实效的架构师——大胆行前人未行之路</h4>
+
+<p>是什么让架构师们精通自己的技艺？熟练的架构师是如何进行设计的？一次次，有人问起我这些问题，而我也不止一遍的问我自己。很明显，这并不只是软件工程过程、设计方法、技术或是编程的专业程度所决定的。很多架构师具备令人钦佩且完备的技术知识，这确实是使设计成功的必要条件。但是，还是有很多的软件项目失败了，或是在项目的架构中遭受到了严峻的挑战。掌握此道的关键在于架构师是以什么方式实现设计，他们重视什么，他们关注哪些方面以及在这些方面努力着。点击<a href="http://www.infoq.com/cn/articles/pragmatic-architect">链接</a>。</p>
+
+<!--more-->
+
+
+<h4>可扩展Web架构与分布式系统</h4>
+
+<p>开放源代码已经成为一些大型网站的基本原则。而在这些网站成长的过程中，一些优秀的实践经验和规则也出现在他们的结构中。本文旨在介绍一些在大型网站结构设计的过程中需要注意的关键问题以及实现目标的基础工作。本文侧重于介绍网络系统，尽管一些准则在其他分布式系统中也是适用的。点击<a href="http://www.oschina.net/translate/scalable-web-architecture-and-distributed-systems">链接</a>。</p>
+
+<h4>架构师</h4>
+
+<p><img class="left" src="/images/2013/07/nealford.png"></p>
+
+<h5>Neal Ford</h5>
+
+<p>Neal Ford是全球IT咨询公司ThoughtWorks的软件架构师。除了常规工作，他做的事情还包括设计和开发应用程序、教学材料、杂志文章、课件和视频/DVD演示，同时还是各种技术书籍的作者或者编辑，其中包括著作The Productive Programmer。他专注于设计和开发大规模企业应用程序，同时，他也是世界开发人员会议的国际知名演说家。
+<img class="right" src="/images/2013/07/ericevans.png"></p>
+
+<h5>Eric Evans</h5>
+
+<p>大型业务系统方面的领域建模和设计专家。早20世纪90年代，他就参与了很多项目，基于对象（Object）开发出许多大型的业务系统，并致力于将敏捷过程应用到现实项目中。
+此外，Eric Evans还是《领域驱动设计——软件核心复杂性应对之道》一书的作者。在书中他总结了构建上述业务系统相关的经验、原则和技术等。并介绍了一个建模和设计技术的系统，成功的团队应用这一系统可以组装有业务需求的复杂软件系统，并使系统在增大时仍然保持敏捷。
+Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。<img class="left" src="/images/2013/07/buschmann.png"></p>
+
+<h5>FranK Buschmann</h5>
+
+<p>德国慕尼黑西门子技术公司资深技术专家及负责人。Wiley软件设计模式系列图书主编。他的研究领域包括对象技术、软件架构、产品线、模型驱动软件开发和模式。他曾是ANSI C++标准化委员会x3J16的成员，于1996年发起了首届EuroPLoP会议。Frank Buschmann是Pattern-Oriented Software Architecture系列书籍的主要作者。
+<img class="right" src="/images/2013/07/george.png"></p>
+
+<h5>Fred George</h5>
+
+<p>Fred George先生在敏捷开发领域颇有声望，在业界有将近40年的开发经验，是国际敏捷领域大师级专家、咨询师、架构师。早年他在IBM工作。退出IBM之后，以独立咨询师的身份在美国工作了十多年。后来他加盟了ThoughtWorks，成为早期致力于推动敏捷开发的一批开发者。现在他离开了ThoughtWorks，在英国的TrafficBroker公司就任解决方案架构师一职。</p>
+
+<h4>推荐书籍</h4>
+
+<p><img class="left" src="/images/2013/07/releaseit.png">#####Release It!</p>
+
+<p><strong>推荐理由：</strong>Michael Nygard的Releast It!可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
+
+<p><img class="right" src="/images/2013/07/beautifularchitecture.png"></p>
+
+<h5>Beautiful Architecture</h5>
+
+<p><strong>推荐理由：</strong>全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。</p>
+
+<p><img class="right" src="/images/2013/07/eip.png"></p>
+
+<h5>Enterprise Integation Patterns</h5>
+
+<p><strong>推荐理由：</strong>本书关注企业级软件系统的本质问题，那就是集成。对于采用异步消息传递的集成方案，本书针对不同场景给出了不同的解决方案，并以模式的方式进行概述与归纳。倘若你在设计软件系统时，需要使用异步消息传递的方式对系统进行集成，本书可以成为你的最佳指南。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[处理文件请求限制]]></title>
     <link href="http://agiledon.github.com/blog/2013/06/13/handle-the-limitation-of-requesting-file/"/>
     <updated>2013-06-13T21:29:00+08:00</updated>
@@ -192,225 +266,6 @@
 <p>如果将《领域驱动设计》视为应对领域复杂性的解决之道，Michael Nygard的<a href="http://book.douban.com/subject/2065284/">Releast It!</a>则可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
 
 <p>最后一本推荐书籍看似有些大杂烩，实则是大家云集的架构师合唱团，可谓架构的盛宴，那就是Till Adam编著的Beatiful Architecture《<a href="http://book.douban.com/subject/4086029/">架构之美</a>》。全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。当然，在阅读时，千万不要在太多的技术细节中迷失自己，关键还是要把握美丽架构的基本原则。而这正是本书的主线，使得本书能够在散乱的主题中，还能做到“形散而神不散”。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Nutch Crawler抓取数据并存储到MySQL]]></title>
-    <link href="http://agiledon.github.com/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql/"/>
-    <updated>2013-03-07T22:17:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql</id>
-    <content type="html"><![CDATA[<p>Apache Nutch是在Java平台上开发的开源网络爬虫工具。按照<a href="http://wiki.apache.org/nutch/NutchTutorial">Nutch官方网站</a>给出的向导，通过使用Nutch命令，可以比较容易地抓取指定种子网站的数据。不过，若是要通过它提供的Java API，以编程方式抓取数据，并存储到指定的数据存储，如MySQL，则有一些技巧或者说秘诀需要注意。经过这几天抽空进行的试验，并查询了相关资料，完成了指定网站数据的抓取。</p>
-
-<p>首先，需要准备好Nutch。目前Nutch的最新版本是2.1，在官方网站可以下载到2.1版本的源代码。奇怪的是，网站并未提供该版本的Bin下载。我们若是要通过Java API调用，则需要依赖于Nutch需要的Jar包。我们可以直接在自己的Java项目中导入这些Jar包，也可以在项目的pom.xml文件中指定Maven的Repository。</p>
-
-<!--more-->
-
-
-<p>要直接导入Jar包，对于2.1版本而言，因为仅提供了源代码，所以在下载了Nutch之后，需要使用ant命令编译。编译后的Jar包会放在${NUTCH_HOME}下的runtime/local/lib下。如果想在pom.xml下管理依赖，而非直接导入，则需要查看Nutch 2.1究竟依赖了哪些Java库，并要了解这些库的版本。这个依赖管理还是比较麻烦的。所以，我在这里直接给出pom.xml文件。
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="ni">&amp;lt;</span>?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-</span><span class='line'><span class="ni">&amp;lt;</span>project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-</span><span class='line'>     xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>modelVersion<span class="ni">&amp;gt;</span>4.0.0<span class="ni">&amp;lt;</span>/modelVersion<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>NutchSample<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>NutchSample<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>repositories<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>repository<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>maven-restlet<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>Public online Restlet repository<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>url<span class="ni">&amp;gt;</span>http://maven.restlet.org<span class="ni">&amp;lt;</span>/url<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/repository<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/repositories<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>dependencies<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>junit<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>junit<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>4.11<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.nutch<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>nutch<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>2.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.hsqldb<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>hsqldb<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>2.2.8<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.solr<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>solr-core<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>3.4.0<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.hadoop<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>hadoop-core<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0.3<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.hadoop<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>hadoop-test<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0.3<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.slf4j<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>slf4j-log4j12<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.6.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.gora<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>gora-core<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>0.2.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.gora<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>gora-sql<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>0.1.1-incubating<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.jdom<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>jdom<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.elasticsearch<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>elasticsearch<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>0.19.4<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.restlet.jse<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>org.restlet<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>2.0.5<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.restlet.jse<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>org.restlet.ext.jackson<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>2.0.5<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>mysql<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>mysql-connector-java<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>5.1.18<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/dependencies<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;&lt;/project&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>注意，其中的mysql是后面存储抓取的数据时使用。pom.xml文件前面的maven-restlet的repository是restlet以及restlet.ext.jackson是独有的。因为这两个库必须在这个Repository下才能下载Jar包。</p>
-
-<p>现在，假设我们已经通过maven建立了一个空白的Java项目，并且已经导入了依赖包，或者通过pom.xml下载了这些Jar包。接下来需要执行以下步骤：</p>
-
-<h4>建立种子文件</h4>
-
-<p>在项目的根目录下，建立urls目录，然后在目录下建立一个文本文件，文件名为seed.txt。内容是你要爬取的网站域名，例如：http://agiledon.github.com。如果要抓取多个网站，可以每行放一个网站域名。</p>
-
-<h4>复制配置文件</h4>
-
-<p>在项目main\resources目录下，创建文件夹nutchconf（文件夹名其实无关紧要，只要保证其下的文件都在classpath下即可。一个简单的做法是将resource目录设置为source root），然后到${NUTCH_HOME}\runtime\local\conf目录下，将里面所有的文件拷贝到你刚刚创建的文件夹下。</p>
-
-<h4>修改配置文件</h4>
-
-<p>首先，修改nutch-site.xml文件，将其设置为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;configuration&gt;&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>property<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>http.agent.name<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>value<span class="ni">&amp;gt;</span>my nutch spider<span class="ni">&amp;lt;</span>/value<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/property<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>property<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>parser.character.encoding.default<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>value<span class="ni">&amp;gt;</span>utf-8<span class="ni">&amp;lt;</span>/value<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>description<span class="ni">&amp;gt;</span>The character encoding to fall back to when no other information
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;</span>is available<span class="nt">&lt;/description&gt;&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>/property<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>property<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>storage.data.store.class<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>value<span class="ni">&amp;gt;</span>org.apache.gora.sql.store.SqlStore<span class="ni">&amp;lt;</span>/value<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>description<span class="ni">&amp;gt;</span>Default class for storing data<span class="ni">&amp;lt;</span>/description<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/property<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;&lt;/configuration&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>修改gora.properties，增加mysql的设置：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>gora.sqlstore.jdbc.driver=com.mysql.jdbc.Driver
-</span><span class='line'>gora.sqlstore.jdbc.url=jdbc:mysql://localhost:3306/nutch?createDatabaseIfNotExist=true
-</span><span class='line'>gora.sqlstore.jdbc.user=root
-</span><span class='line'>gora.sqlstore.jdbc.password=</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>注意，jdbc.url值中的nutch为MySQL中数据库的名字，你可以根据自己的需要设置数据库名。前提是你要在MySQL中创建数据库。url值的createDatabaseIfNotExist=true，指代的是如果数据库中不存在该数据库，在运行Crawler时会自动创建。但是，对于MySQL而言，由于编码问题，可能会导致一些问题出现。因此，还是建议由自己创建。创建脚本在后面的链接提供。</p>
-
-<p>接下来，打开gora-sql-mapping.xml，将WebPage映射文件的primarykey的length修改为767。</p>
-
-<h4>准备MySQL数据库</h4>
-
-<p>这里不再介绍如何安装MySQL数据库，如果是Mac Moutain Lion下安装MySQL，请参考我的博文《<a href="http://agiledon.github.com/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/">使用HomeBrew在Moutain Lion上安装MySQL</a>》。</p>
-
-<p>因为编码的问题，要准备MySQL数据库还是一件麻烦事。在网上找到一篇文章<a href="http://nlp.solutions.asia/?p=180">Setting up Nutch 2.1 with MySQL to handle UTF-8</a>，很好地讲解了相关注意事项，并提供了脚本。我这里就不再赘述了。事实上，我们完全可以按照这篇文章来实现运用Nutch命令的方式抓取数据，并存储到MySQL。</p>
-
-<h4>调用Nutch Java API</h4>
-
-<p>Nutch本身提供了Crawler类来执行数据爬虫的命令。我们可以使用Hadoop的ToolRunner来运行Crawl工具。代码如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCrawler</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">crawlArg</span> <span class="o">=</span> <span class="s">&quot;urls -depth 3 -topN 5&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="c1">// Run Crawl tool</span>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">ToolRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">NutchConfiguration</span><span class="o">.</span><span class="na">create</span><span class="o">(),</span> <span class="k">new</span> <span class="n">Crawler</span><span class="o">(),</span>
-</span><span class='line'>                <span class="n">tokenize</span><span class="o">(</span><span class="n">crawlArg</span><span class="o">));</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">tokenize</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">StringTokenizer</span> <span class="n">tok</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">tokens</span><span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">tok</span><span class="o">.</span><span class="na">countTokens</span><span class="o">()];</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">tok</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">tokens</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">tok</span><span class="o">.</span><span class="na">nextToken</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">i</span><span class="o">++;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">tokens</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h4>复制插件</h4>
-
-<p>因为Nutch在抓取数据时，需要对数据进行解析。解析过程中要调用插件urlnormalizer-basic的UrlNormalizer。所以，我们还需要将对应版本Nutch下的插件复制到我们的项目中来。你可以直接在项目的根目录下创建plugins目录，并将其设置为source root，然后将${NUTCH_HOME}\runtime\local\plugins下的插件复制到这个目录中。</p>
-
-<p>接下来就可以运行MyCrawler应用了。注意，在运行该程序时，你一定要启动你的MySQL数据库。在Mac下，可以输入命令mysql.server start来启动。你可能会发现项目无法编译成功，因为某些插件依赖的对象无法找到。我猜测在运行ant时，并没有编译这些插件，使得这些插件的依赖库并没有完全获得。我采取了一种粗暴的做法，就是直接将这些无法编译通过的插件直接删除。至少，对于我们这个简单的抓取工作而言，事实上用不了这么多插件。</p>
-
-<p>运行完成后，你可以到MySQL数据库下查询webpage数据表。如果运行成功，可以查询到表中的数据记录。如果运行失败，一方面可以在IDE工具的控制台上看到一些信息。另一方面也可以查询日志。日志记录会更详细，该文件可以在当前项目的根目录下找到，即hadoop.log日志文件。我在之前碰到的一个问题就是内存不够的异常，控制台上并未显示该信息，但在hadoop.log中能够找到，帮助我定位了问题。运行这样一个普通任务，把内存设置为512M就足够了。</p>
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Scala | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/scala/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-12T10:43:50+08:00</updated>
+  <updated>2014-01-13T21:34:05+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,158 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ScalaTest的测试风格]]></title>
+    <link href="http://agiledon.github.com/blog/2014/01/13/testing-styles-of-scalatest/"/>
+    <updated>2014-01-13T18:39:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/01/13/testing-styles-of-scalatest</id>
+    <content type="html"><![CDATA[<p>ScalaTest几乎已经成为Scala语言默认的测试框架，而在JVM平台下，无论是否使用Scala进行开发，我认为仍有尝试ScalaTest的必要。这主要源于它提供了多种表达力超强的测试风格，能够满足各种层次的需求包括单元测试、BDD、验收测试、数据驱动测试。正如ScalaTest的创建者Bill Venners所说：</p>
+
+<blockquote><p>A guiding design principle of ScalaTest is that different people on a team should be able look at each others test code and know immediately what's going on.</p>
+
+<p>ScalaTest is designed to make it easy for you to customize your testing tool to meet your current needs, and for the built-in traits at least, make it easy for anyone who comes along later to read and understand your code.</p></blockquote>
+
+<h2>UT与IT的风格选择</h2>
+
+<p>ScalaTest一共提供了七种测试风格，分别为：FunSuite，FlatSpec，FunSpec，WordSpec，FreeSpec，PropSpec和FeatureSpec。这就好像使用相同的原料做成不同美味乃至不同菜系的佳肴，你可以根据自己的口味进行选择。以我个人的偏好来看，我倾向于选择FlatSpec或FunSpec(类似Ruby下的RSpec)来编写单元测试与集成测试。虽然FunSuite的方式要更灵活，而且更符合传统测试方法的风格，区别仅在于test()方法可以接受一个闭包，但坏处恰恰就是它太灵活了。而FlatSpec和FunSpec则通过提供诸如it、should、describe等方法，来规定书写测试的一种模式，例如前者明显的<em>“主-谓-宾”结构</em>，后者清晰的<strong>分级式结构</strong>，都可以使团队的测试更加规范。如下是ScalaTest官方网站的提供的FunSuite、FlatSpec和FunSpec的三种风格样例。</p>
+
+<p>``` scala
+//FunSuite
+import org.scalatest.FunSuite</p>
+
+<p>class SetSuite extends FunSuite {</p>
+
+<pre><code>test("An empty Set should have size 0") {    
+    assert(Set.empty.size == 0)  
+}
+test("Invoking head on an empty Set should produce NoSuchElementException") {
+    intercept[NoSuchElementException] { 
+        Set.empty.head    
+    }  
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//FlatSpec
+import org.scalatest.FlatSpec</p>
+
+<p>class SetSpec extends FlatSpec {</p>
+
+<pre><code>"An empty Set" should "have size 0" in {
+    assert(Set.empty.size == 0)  
+}
+it should "produce NoSuchElementException when head is invoked" in {
+    intercept[NoSuchElementException] { 
+        Set.empty.head    
+    }  
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//FunSpec
+import org.scalatest.FunSpec</p>
+
+<p>class SetSpec extends FunSpec {</p>
+
+<pre><code>describe("A Set") {
+    describe("when empty") { 
+        it("should have size 0") {
+            assert(Set.empty.size == 0)      
+        }
+            it("should produce NoSuchElementException when head is invoked") {
+            intercept[NoSuchElementException] {
+                Set.empty.head       
+            }      
+        }
+    }    
+}  
+</code></pre>
+
+<p>}
+```</p>
+
+<p>至于WordSpec和FreeSpec，要么太复杂，要么可读性稍差，要么惯用法风格有些混杂，个人认为都不是太好的选择，除非你已经习惯了这种风格。</p>
+
+<h2>数据驱动测试风格</h2>
+
+<p>JUnit对类似表数据的Fixture准备提供了Parameterized支持，但非常不直观，而且还需要为测试编写构造函数，然后定义一个带有@Parameters标记的静态方法。TestNG的DataProvider略好，但通过在测试方法上指定DataProvider的方式，仍然不尽如人意。ScalaTest提供的PropSpec充分利用了Scala函数式语言的特性，使得代码更简单，表达性也更强：
+``` scala
+import org.scalatest.<em>
+import prop.</em>
+import scala.collection.immutable._</p>
+
+<p>class SetSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
+  val examples =</p>
+
+<pre><code>Table(
+  "set", BitSet.empty, HashSet.empty[Int], TreeSet.empty[Int]
+)
+</code></pre>
+
+<p>  property("an empty Set should have size 0") {</p>
+
+<pre><code>forAll(examples) { set =&gt;
+  set.size should be(0)
+}
+</code></pre>
+
+<p>  }
+  property("invoking head on an empty set should produce NoSuchElementException") {</p>
+
+<pre><code>forAll(examples) { set =&gt;
+  a [NoSuchElementException] should be thrownBy { set.head }
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>验收测试风格</h2>
+
+<p>我们会推荐由PO（或者需求分析人员BA）与测试人员结对编写验收测试的业务场景，然后由开发人员和测试人员结对实现该场景。Cocumber、JBehave、Twist乃至Robot、Fitness都可以用于编写这样的验收测试（Fitness与Robot更接近实例化需求的方式）。这些工具有一个特点是业务场景与测试支持代码完全是分开的。例如Cucumber将业务场景放到feature文件中，而将测试支持代码放到rb文件中。JBehave类似。这样的好处是feature文件很干净，很纯粹，与技术实现没有任何关系，且有利于生成Living Document。然而，这种分离方式在带来良好可读性的同时，也带来维护成本的增加。</p>
+
+<p>ScalaTest在提供类似Feature的验收测试Spec时，并没有将业务场景与测试支持代码分开，而是采用了混合的方式来表现：
+``` scala
+import org.scalatest.{ShouldMatchers, GivenWhenThen, FeatureSpec}</p>
+
+<p>class TVSetTest extends FeatureSpec with GivenWhenThen with ShouldMatchers{
+  info("As a TV Set owner")
+  info("I want to be able to turn the TV on and off")
+  info("So I can watch TV when I want")
+  info("And save energy when I'm not watching TV")</p>
+
+<p>  feature("TV power button") {</p>
+
+<pre><code>scenario("User press power button when TV is off") {
+  Given("a TV set that is switched off")
+  val tv = new TVSet
+  tv.isOn should be (false)
+
+  When("The power button is pressed")
+  tv.pressPowerButton
+
+  Then("The TV should switch on")
+  tv.isOn should be (true)
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>ScalaTest的FeatureSpec支持常见的Given-When-Then模式。在上面的代码段中，info提供了对Feature的基本描述，然后提供了feature与scenario两个层级。熟悉Cucumber和JBehave的人对此应该不会陌生。测试支持代码直接写在Given、When、Then方法下，因而针对同一个Feature，只产生一个scala文件。这就意味着测试支持代码与自然语言描述是处于同一级的，准确地说，他们其实就属于同一个测试。开发时，PO（或者需求）与测试可以先编写FeatureSpec的骨架，即info-feature-scenario以及Given-When-Then部分。一旦编写好这个FeatureSpec，就可以提交到版本管理库。当开发人员与需求、测试一起Kick Off要做的Story时，就可以根据这个FeatureSpec进行，然后，要求开发人员在完成Story的实现前，与测试结对完成它的测试实现代码。</p>
+
+<p>由于ScalaTest还提供了Tag等功能，我们还可以通过对测试提取基类或者Trait有效地对这些测试进行重用，保证测试代码的可维护性。由于只需要维护一个scala，成本会降低许多，也不需要在业务场景和测试支持代码之间跳转，降低维护的难度。唯一的缺点是它天然不支持Living Document。但是我们发现这些自然语言描述实则都集中在FeatureSpec提供的方法中，我们完全可以自行开发工具或插件，完成对场景描述以及步骤的提取，生成我们需要的文档。</p>
+
+<p>目前，我的同事杨云已经将ScalaTest作为编写验收测试的工具引入到项目中。受他启发，在我当前的项目中也选择使用了ScalaTest作为验收测试的框架。考虑到IDE支持尤其是重构等方面的工具支持，以及构建中对测试运行、测试覆盖率检查等的支持，目前我并没有考虑在单元测试和集成测试中使用ScalaTest。之所以如此，还是源于对成本与收益的考量。</p>
+
+<p><strong>说明：</strong>文章的代码片段全部来自ScalaTest官方网站。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Spray的模块结构]]></title>
