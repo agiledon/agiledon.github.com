@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Scala | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/scala/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-17T21:54:34+08:00</updated>
+  <updated>2014-01-17T23:03:02+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -76,7 +76,7 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <h2>Top-Level Supervisors</h2>
 
 <p>一个Actor系统在创建之初，至少有三个Actor，如下图所示：
-<img class="center" src="images/2014/supervisor.png"></p>
+<img class="center" src="/images/2014/supervisor.png"></p>
 
 <p><strong>1.The Guardian Actor</strong></p>
 
