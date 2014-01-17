@@ -10,8 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="
-这是我在今年四月到澳洲Brisbane街头拍到的一组照片，Geek们，看到这些名称，是否有些熟悉的感觉呢？ ">
+  <meta name="description" content="卡尔维诺在哈佛大学的文学讲座（即诺顿论坛，是为纪念美国著名学者诺顿开设的，每年邀请世界文化名人作讲座，艾略特、博尔赫斯也曾获邀参加诺顿讲座）被他的妻子编成了一本独立的书《美国讲稿》。这本书展现了卡尔维诺的文学精神，体现了他的文学态度和气质。不过，我在阅读该书时，却发现了一些与编程有关的内容。 1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +67,57 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/21/literature-and-software/">文学与软件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-21T18:59:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/21/literature-and-software/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/2012/12/dafenqi.jpg" width="182" height="276"></p>
+
+<p> 卡尔维诺在哈佛大学的文学讲座（即诺顿论坛，是为纪念美国著名学者诺顿开设的，每年邀请世界文化名人作讲座，艾略特、博尔赫斯也曾获邀参加诺顿讲座）被他的妻子编成了一本独立的书《美国讲稿》。这本书展现了卡尔维诺的文学精神，体现了他的文学态度和气质。不过，我在阅读该书时，却发现了一些与编程有关的内容。</p>
+
+<p>1、文学中的重构</p>
+
+<p> 达芬奇在《大西洋草图》中记述了他幻想中海怪的形象，进行了前后三次重构。最初的描述是：</p>
+
+<p><strong>啊，人们多次在波浪翻滚的广阔海洋之中看到你，看到你那长满鬃毛的黑色背脊，你像一座大山，傲慢地徐徐前进！</strong></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/21/literature-and-software/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -508,71 +558,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/10/11/Issue-of-isdefined/">IsDefined的问题</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-10-11T17:06:00+08:00" pubdate data-updated="true">Oct 11<span>th</span>, 2011</time>
-        
-         | <a href="/blog/2011/10/11/Issue-of-isdefined/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在.NET 4.0(当然也包括4.0以前的版本)下，用反射判断某个方法是否运用了自定义Attribute时，可以通过调用MethodInfo的IsDefined()方法进行确认。当然，IsDefined()方法事实上定义在MethodInfo的父类MemberInfo中，但它仅仅被定义为抽象方法，真正的实现是在MethodInfo的子类DynamicMethod中。调用方式如下所示：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">methodInfo</span><span class="p">.</span><span class="n">IsDefined</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MyAttribute</span><span class="p">),</span> <span class="k">false</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然而，在实际开发中，我发现该方法有一个问题。如果获得MethodInfo的方式是通过加载程序集，然后利用反射方式获得的MethodInfo对象，即使该方法运用了自定义Attribute，返回的结果仍然是false。例如，我们将需要判断的方法所在的类定义到一个单独的Project中，并编译为单独的dll文件，然后，利用Assembly的LoadFile()方式获得程序集：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="kt">var</span> <span class="n">assembly</span> <span class="p">=</span> <span class="n">Assembly</span><span class="p">.</span><span class="n">LoadFile</span><span class="p">(</span><span class="n">assemblyPath</span><span class="p">);</span>
-</span><span class='line'>  <span class="kt">var</span> <span class="n">types</span> <span class="p">=</span> <span class="n">assembly</span><span class="p">.</span><span class="n">GetExportedTypes</span><span class="p">();</span>
-</span><span class='line'>  <span class="n">types</span><span class="p">.</span><span class="n">ToList</span><span class="p">().</span><span class="n">ForEach</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">type</span> <span class="p">=&gt;</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>          <span class="kt">var</span> <span class="n">flag</span> <span class="p">=</span>
-</span><span class='line'>              <span class="n">type</span><span class="p">.</span><span class="n">GetMethods</span><span class="p">().</span><span class="n">Where</span><span class="p">(</span><span class="n">methodInfo</span> <span class="p">=&gt;</span> <span class="p">!</span><span class="n">methodInfo</span><span class="p">.</span><span class="n">IsAbstract</span><span class="p">).</span><span class="n">Any</span><span class="p">(</span>
-</span><span class='line'>                  <span class="n">methodInfo</span> <span class="p">=&gt;</span> <span class="n">methodInfo</span><span class="p">.</span><span class="n">IsDefined</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MyAttribute</span><span class="p">),</span> <span class="k">false</span><span class="p">));</span>
-</span><span class='line'>          <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Flag of IsDefined is: {0}&quot;</span><span class="p">,</span> <span class="n">flag</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>打印出来的值为false。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/10/11/Issue-of-isdefined/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -610,6 +595,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/16/actor-and-its-supervisors-of-akka/">Akka的Actor及其Supervisors</a>
       </li>
     
@@ -623,10 +612,6 @@
     
       <li class="post">
         <a href="/blog/2014/01/10/reading-the-captive-mind/">读《被禁锢的头脑》</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/09/visualization-architecture-and-ddd/">可视化架构与DDD</a>
       </li>
     
   </ul>
@@ -711,7 +696,7 @@
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
 <a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
-<a style="font-size: 100%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
 
