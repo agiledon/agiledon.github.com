@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Apache Nutch是在Java平台上开发的开源网络爬虫工具。按照Nutch官方网站给出的向导，通过使用Nutch命令，可以比较容易地抓取指定种子网站的数据。不过，若是要通过它提供的Java API，以编程方式抓取数据，并存储到指定的数据存储，如MySQL，则有一些技巧或者说秘诀需要注意。 &hellip;">
+  <meta name="description" content="我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/">新人培养日记(一)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-14T20:37:00+08:00" pubdate data-updated="true">Mar 14<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/03/growup.jpg">
+我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。它要求创建一个电子银行系统，提供银行的一些基本功能，例如客户管理、存取款等业务逻辑。</p>
+
+<p>最初我并不知道新手的真实水平，不过，可以假设他只具备基础的Java编程知识，对TDD、Refactoring以及OO有最初步的了解，但处于懵懵懂懂之间。我最初希望新手仅仅针对业务层进行设计与编码，但新手坚持要加上数据库访问以及Web页面。我认为这种做法有利于新手学习到更多的Java框架和库，便同意了这种请求。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -484,55 +530,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/05/role-of-object/">对象的角色</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-05T21:55:00+08:00" pubdate data-updated="true">Feb 5<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/05/role-of-object/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/02/roleofobject.png"></p>
-
-<p>若要获得良好的对象设计，就必须对职责进行合理的分配。每个对象承担的职责不能太多，也不能太少，恰如其分即可。职责分配如乐谱中对音符的组织，高明的音乐家总是能让不同的音符放在合理的位置，奏成悦耳的心曲，表达音乐家的内心感情。然而，即使设计师明确职责分配的重要性，在面临纷乱复杂的需求时，常常被乱花迷了眼，或者无法识别正确的职责，又或者顾此失彼，将职责放错了位置，变成了对职责混乱的涂鸦。</p>
-
-<p>要识别职责，进而合理分配职责，有许多秘诀，或云“技巧”。不过，将对象的角色作为职责分配的开始，不失为一个好的起点。角色是对象的身份，若以拟人化的方式思考对象世界，就可以设想：究竟是怎样的身份，需得承担怎样的职责，才会与其身份相当，不至于乱了规矩。红楼梦中，刘姥姥进了大观园，出尽了洋相，就是因为身份失当；又可以想想倘若林黛玉像尤三姐那般爱恨分明，也不至于见花落泪，惹人爱怜了。故而在分配职责时，我们能首先明确对象的角色，即可将思想带入到这一角色中，设身处地，推断这一角色可以或者必须承担哪些职责。</p>
-
-<p>在<a href="http://product.china-pub.com/30653">Object Design:Roles, Responsibility, and Collaborations</a>一书中，将对象的角色分为了五种，分别为信息持有者、构造者、服务提供者、协调者和控制者。这种分类差不多涵盖了对象在软件系统中扮演的角色。以此为基础，在进行软件设计时，可以思考你要设计的对象，究竟属于哪一种角色。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/05/role-of-object/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -570,6 +567,10 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
       </li>
     
@@ -583,10 +584,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     
       <li class="post">
         <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/10/reading-the-captive-mind/">读《被禁锢的头脑》</a>
       </li>
     
   </ul>
@@ -665,7 +662,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 171%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 177%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>

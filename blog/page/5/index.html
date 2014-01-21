@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="书的内容其实没有书名那么富有诗意，整本书中，汉嘉都在废纸堆中与老鼠、苍蝇为伍，这种如下水道般的卑微存在，在现实生活中，定然是遭到嘲笑、冷落甚至摒弃的下等人。我在书的一开始，完全欣赏不到那种诗意的美。设身处地，我会选择逃离，即使有黑格尔、康德、加缪与梵高。归根结底， &hellip;">
+  <meta name="description" content="若要获得良好的对象设计，就必须对职责进行合理的分配。每个对象承担的职责不能太多，也不能太少，恰如其分即可。职责分配如乐谱中对音符的组织，高明的音乐家总是能让不同的音符放在合理的位置，奏成悦耳的心曲，表达音乐家的内心感情。然而，即使设计师明确职责分配的重要性，在面临纷乱复杂的需求时， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,55 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/05/role-of-object/">对象的角色</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-05T21:55:00+08:00" pubdate data-updated="true">Feb 5<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/02/05/role-of-object/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/02/roleofobject.png"></p>
+
+<p>若要获得良好的对象设计，就必须对职责进行合理的分配。每个对象承担的职责不能太多，也不能太少，恰如其分即可。职责分配如乐谱中对音符的组织，高明的音乐家总是能让不同的音符放在合理的位置，奏成悦耳的心曲，表达音乐家的内心感情。然而，即使设计师明确职责分配的重要性，在面临纷乱复杂的需求时，常常被乱花迷了眼，或者无法识别正确的职责，又或者顾此失彼，将职责放错了位置，变成了对职责混乱的涂鸦。</p>
+
+<p>要识别职责，进而合理分配职责，有许多秘诀，或云“技巧”。不过，将对象的角色作为职责分配的开始，不失为一个好的起点。角色是对象的身份，若以拟人化的方式思考对象世界，就可以设想：究竟是怎样的身份，需得承担怎样的职责，才会与其身份相当，不至于乱了规矩。红楼梦中，刘姥姥进了大观园，出尽了洋相，就是因为身份失当；又可以想想倘若林黛玉像尤三姐那般爱恨分明，也不至于见花落泪，惹人爱怜了。故而在分配职责时，我们能首先明确对象的角色，即可将思想带入到这一角色中，设身处地，推断这一角色可以或者必须承担哪些职责。</p>
+
+<p>在<a href="http://product.china-pub.com/30653">Object Design:Roles, Responsibility, and Collaborations</a>一书中，将对象的角色分为了五种，分别为信息持有者、构造者、服务提供者、协调者和控制者。这种分类差不多涵盖了对象在软件系统中扮演的角色。以此为基础，在进行软件设计时，可以思考你要设计的对象，究竟属于哪一种角色。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/02/05/role-of-object/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -519,51 +568,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/25/octopress-issues-solution-and-tips/">Octopress博客问题解决方案与技巧</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-25T09:14:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/25/octopress-issues-solution-and-tips/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/2012/12/octopress.jpg" width="259" height="154"></p>
-
-<p>在GitHub上创建了自己的博客后，先后在Jekyll和Octopress之间来回折腾了好一段时间。之前打算直接使用Jekyll提供的博客模板，后来觉得太费神，看到Octopress还不错，且它也是基于Jekyll，并能非常方便地部署到GitHub上。经过最初的安装到对博客的深入改造，目前我的博客需要的功能已经大致完成。在这个过程中，也碰到了许多问题。通过搜索Google以及自己阅读Octopress代码，找到了对应的解决办法。此外，也有一些小技巧的积累。考虑到还有许多正在使用或想要使用Octopress的朋友，因此在这里集中分享一下。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/12/25/octopress-issues-solution-and-tips/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -601,6 +605,10 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
       </li>
     
@@ -614,10 +622,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
     
       <li class="post">
         <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/10/reading-the-captive-mind/">读《被禁锢的头脑》</a>
       </li>
     
   </ul>
@@ -696,7 +700,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 171%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 177%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>

@@ -1,0 +1,588 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>Scala支持与Java的隐式转换 - 简单文本</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="Neal Ford在几年前提出的“Poly Programming”思想，已经逐渐成为主流。这种思想并非是为了炫耀多语言的技能，然后选择“高大上”。真正的目的在于更好地利用各种语言处理不同场景、不同问题的优势。 由于都运行在JVM上，Java与Scala之间基本能做到无缝的集成， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="简单文本" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">简单文本</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Scala支持与Java的隐式转换</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-21T21:55:00+08:00" pubdate data-updated="true">Jan 21<span>st</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Neal Ford在几年前提出的“Poly Programming”思想，已经逐渐成为主流。这种思想并非是为了炫耀多语言的技能，然后选择“高大上”。真正的目的在于更好地利用各种语言处理不同场景、不同问题的优势。</p>
+
+<p>由于都运行在JVM上，Java与Scala之间基本能做到无缝的集成，区别主要在于各自的API各有不同。由于Scala为集合提供了更多便捷的函数，因此，Java与Scala在集合之间的互操作，或许是在这种多语言平台下使用最为频繁的。</p>
+
+<h2>Scala中操作Java集合</h2>
+
+<p>两种情况需要在Scala中操作Java集合。一种是Scala调用了其他的Java库，针对Java集合需要转换为Scala集合，如此才能享受Scala集合提供的福利；另一种是编写了Scala程序，但需要提供给Java库，为了更好地无缝集成，要让Java库体会不到Scala的存在。</p>
+
+<!--more-->
+
+
+<h3>Scala调用Java库</h3>
+
+<p>为了享用Scala提供的集合特性，在Scala程序中若要调用Java库，通常需要将其转换。例如，JavaXmlConfigure为一个Java类，它的readSoftInfos()方法返回的是一个Java的List。现在，我在Scala中调用该方法（这里以ScalaTest编写的测试来表现Scala程序）：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">XmlConfigureSpec</span> <span class="k">extends</span> <span class="nc">FlatSpec</span> <span class="k">with</span> <span class="nc">ShouldMatchers</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">it</span> <span class="n">should</span> <span class="s">&quot;load all package soft nodes for version config&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">configure</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JavaXmlConfigure</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">softInfo</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">softInfo</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时，编译器会提示无法找到result的foreach方法。因为这里的result的类型为java.util.List。若要将其转换为Scala的集合，就需要增加如下语句：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.JavaConversions._</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，经过隐式转换后，这里的result类型为Seq[SoftInfo]。如果像下面这样显式指定为Scala的List或Set类型，则无法转换：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">result</span><span class="k">:</span><span class="kt">Set</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span> <span class="c1">//or</span>
+</span><span class='line'><span class="k">val</span> <span class="n">result</span><span class="k">:</span><span class="kt">List</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Scala的代码以Java库的形式提供给Java调用者</h3>
+
+<p>在JVM平台下进行多语言开发时，多数情况下会以Java为主，而对于一些特定场景，能够更好发挥Scala特性的，例如并发处理等，则会选择Scala。此时，若要做到对Java友好，则对于Scala的方法返回值，应尽量屏蔽Scala的类型信息。</p>
+
+<p>举例来说，我用Scala来读取一个配置文件，并对配置文件进行解析和转换，得到一个Scala的Seq集合对象，如下代码所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">XmlConfigure</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">readSoftInfos</span><span class="o">(</span><span class="n">configFileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">version</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>  <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">document</span> <span class="k">=</span> <span class="nc">XML</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="n">getClass</span><span class="o">.</span><span class="n">getResource</span><span class="o">(</span><span class="n">configFileName</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">pkgSoftNodes</span> <span class="k">=</span> <span class="n">document</span> <span class="o">\\</span> <span class="s">&quot;PKGSOFT&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">softInfoNodes</span> <span class="k">=</span> <span class="n">pkgSoftNodes</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">node</span> <span class="k">=&gt;</span> <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">equalsIgnoreCase</span><span class="o">(</span><span class="n">version</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">(</span><span class="n">softInfoNodes</span> <span class="o">\\</span> <span class="s">&quot;SOFTINFO&quot;</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">softInfoNode</span> <span class="k">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">attributes</span> <span class="k">=</span> <span class="n">softInfoNode</span><span class="o">.</span><span class="n">attributes</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nc">SoftInfo</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;fileName&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softUseType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toLong</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上的readSoftInfos方法返回的是对xml节点进行map的结果，类型为scala的Seq[SoftInfo]。倘若Java代码需要调用这个方法，则还需要对其进行转换，即要求调用者必须具备Scala的知识，这未必友好。</p>
+
+<p>那么应该怎样改善呢？直接的做法就是让readSoftInfos方法返回Java的List，这时候需要使用Scala提供的隐式转换：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.JavaConversions._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">XmlConfigure</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">readSoftInfos</span><span class="o">(</span><span class="n">configFileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">version</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">document</span> <span class="k">=</span> <span class="nc">XML</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="n">getClass</span><span class="o">.</span><span class="n">getResource</span><span class="o">(</span><span class="n">configFileName</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">pkgSoftNodes</span> <span class="k">=</span> <span class="n">document</span> <span class="o">\\</span> <span class="s">&quot;PKGSOFT&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">softInfoNodes</span> <span class="k">=</span> <span class="n">pkgSoftNodes</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">node</span> <span class="k">=&gt;</span> <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">equalsIgnoreCase</span><span class="o">(</span><span class="n">version</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">(</span><span class="n">softInfoNodes</span> <span class="o">\\</span> <span class="s">&quot;SOFTINFO&quot;</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">softInfoNode</span> <span class="k">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">attributes</span> <span class="k">=</span> <span class="n">softInfoNode</span><span class="o">.</span><span class="n">attributes</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nc">SoftInfo</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;fileName&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softUseType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toLong</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此时，只需要导入scala.collection.JavaConversions._，我们并不需要将map返回的Seq显式地转换为java.util.List。对于Java的调用者而言，可以直接认为XmlConfigure就是一个Java类。</p>
+
+<h2>Java中操作Scala集合</h2>
+
+<p>Java要调用Scala代码，而不幸的，这个需要调用的Scala代码不够体贴，直接返回了Scala的集合类型。由于Java不提供自定义隐式转换的功能，因此，只能调用Scala提供的转换类进行显式转换。例如Scala中的XmlConfigure类，其readSoftInfos()返回的是Scala的Seq：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">scala.collection.JavaConversions</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">hamcrest</span><span class="o">.</span><span class="na">MatcherAssert</span><span class="o">.</span><span class="na">assertThat</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">hamcrest</span><span class="o">.</span><span class="na">core</span><span class="o">.</span><span class="na">Is</span><span class="o">.</span><span class="na">is</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">XmlConfigureJavaTest</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_load_xml_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">XmlConfigure</span> <span class="n">xmlConfigure</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XmlConfigure</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">SoftInfo</span><span class="o">&gt;</span> <span class="n">softInfos</span> <span class="o">=</span> <span class="n">JavaConversions</span><span class="o">.</span><span class="na">asJavaList</span><span class="o">(</span><span class="n">xmlConfigure</span><span class="o">.</span><span class="na">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">softInfos</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">7</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在readSoftInfos()函数返回的为Scala集合类型的情况下，若不进行显示转换，则无法通过编译。</p>
+
+<h2>Scala的隐式转换</h2>
+
+<p>Scala对Java集合与Scala集合之间的互相转换都用到了Scala提供的隐式转换功能。我们导入的JavaConversions就是承担这种转换的一个Facade Object。它扩展了两个trait：WrapAsScala和WrapAsJava。在JavaConversions对象中定义的方法实际上是将请求委派自它继承的trait的隐式转换函数。例如将Seq转换为java的List：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">JavaConversions</span> <span class="k">extends</span> <span class="nc">WrapAsScala</span> <span class="k">with</span> <span class="nc">WrapAsJava</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">asJavaList</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">b</span> <span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">ju.List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="n">seqAsJavaList</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">b</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>seqAsJavaList就是定义在WrapAsJava中的隐式转换函数。在这个函数中又作了一个模式匹配。如果匹配JListWrapper，则调用传入的wrapped参数的asInstanseOf进行类型转换；否则，就将该seq作为参数传递给包装器SeqWrapper。包装器SeqWrapper是Scala定义的样例类（case class），扩展自Java的AbstractList：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">//WrapAsJava</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.</span><span class="o">{</span> <span class="n">lang</span> <span class="k">=&gt;</span> <span class="n">jl</span><span class="o">,</span> <span class="n">util</span> <span class="k">=&gt;</span> <span class="n">ju</span> <span class="o">},</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.{</span> <span class="n">concurrent</span> <span class="k">=&gt;</span> <span class="n">juc</span> <span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.language.implicitConversions</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">trait</span> <span class="nc">WrapAsJava</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">import</span> <span class="nn">Wrappers._</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">seqAsJavaList</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">seq</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">ju.List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="n">seq</span> <span class="k">match</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nc">JListWrapper</span><span class="o">(</span><span class="n">wrapped</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">wrapped</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">ju.List</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
+</span><span class='line'>    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">new</span> <span class="nc">SeqWrapper</span><span class="o">(</span><span class="n">seq</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Wrappers</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.</span><span class="o">{</span> <span class="n">lang</span> <span class="k">=&gt;</span> <span class="n">jl</span><span class="o">,</span> <span class="n">util</span> <span class="k">=&gt;</span> <span class="n">ju</span> <span class="o">},</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.{</span> <span class="n">concurrent</span> <span class="k">=&gt;</span> <span class="n">juc</span> <span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">WrapAsScala._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">WrapAsJava._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">collection</span><span class="o">]</span> <span class="k">trait</span> <span class="nc">Wrappers</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="k">class</span> <span class="nc">SeqWrapper</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">underlying</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span> <span class="k">extends</span> <span class="n">ju</span><span class="o">.</span><span class="nc">AbstractList</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">with</span> <span class="nc">IterableWrapperTrait</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">get</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="n">underlying</span><span class="o">(</span><span class="n">i</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>隐式转换与扩展方法</h2>
+
+<p>在前面我们提到，在Scala中如果导入了JavaConversions，那么即使得到的是Java的List对象，我们仍然可以对其调用foreach函数。即如下代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>      <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">softInfo</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">softInfo</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>若为result加上类型，应该会更清晰：
+Liquid error: invalid byte sequence in US-ASCII</p>
+
+<p>显然，这里的result为java.util.List类型，为何却可以调用foreach函数呢？这种形式让我想起C#提供的扩展方法。例如在C# 3.0之前的集合类型，如List，并没有例如first()，where()等方法，但通过引入的扩展方法机制，我们可以对List进行静态扩展，但调用的时候却好像是集合对象自身拥有的实例方法那样。这一实现与动态语言的直接扩展不同，而是C#的一种语法糖。通过使用隐式转换，Scala也可以做到这一点。</p>
+
+<p>上面代码中的result，实则是通过隐式转换，将其转换为一个扩展自scala的Iterable[+A]，而最终扩展自trait IterableLike，其中定义了foreach()函数。当然，在这个foreach()函数中，实则又调用了object Iterator的foreach()函数：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">IterableLike</span><span class="o">[</span><span class="kt">+A</span>, <span class="kt">+Repr</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">Any</span> <span class="k">with</span> <span class="nc">Equals</span> <span class="k">with</span> <span class="nc">TraversableLike</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">Repr</span><span class="o">]</span> <span class="k">with</span> <span class="nc">GenIterableLike</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">Repr</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'><span class="n">self</span> <span class="k">=&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">foreach</span><span class="o">[</span><span class="kt">U</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">U</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span>
+</span><span class='line'>    <span class="n">iterator</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们可以利用这种机制为已定义好的无法修改的类（尤其是Java提供的类）进行扩展。例如为java.io.File进行扩展，使其支持read功能：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">RichFile</span><span class="o">(</span><span class="k">val</span> <span class="n">from</span><span class="k">:</span> <span class="kt">File</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">read</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromFile</span><span class="o">(</span><span class="n">from</span><span class="o">.</span><span class="n">getPath</span><span class="o">).</span><span class="n">mkString</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">implicit</span> <span class="k">def</span> <span class="n">file2RichFile</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">File</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">RichFile</span><span class="o">(</span><span class="n">from</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>直接import该隐式转换，File就可以像真正提供read方法那样调用了：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">fileContent</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">&quot;README.txt&quot;</span><span class="o">).</span><span class="n">read</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-21T21:55:00+08:00" pubdate data-updated="true">Jan 21<span>st</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='tag' href='/blog/tags/scala/'>Scala</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/01/17/jump-out-of-comfort-zone/" title="Previous Post: 跳出舒适区">&laquo; 跳出舒适区</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/profile.png" align="center"/></p>
+  	<p><strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Senior Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/16/actor-and-its-supervisors-of-akka/">Akka的Actor及其Supervisors</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/13/testing-styles-of-scalatest/">ScalaTest的测试风格</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+<section>
+  <h1>Tag Cloud</h1>
+  <ul class="tag-cloud">
+<a style="font-size: 100%" href="/blog/tags/api/">API</a>
+<a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
+<a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
+<a style="font-size: 100%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 100%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
+<a style="font-size: 164%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 202%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 100%" href="/blog/tags/extjs/">ExtJS</a>
+<a style="font-size: 100%" href="/blog/tags/gae/">GAE</a>
+<a style="font-size: 100%" href="/blog/tags/go/">GO</a>
+<a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
+<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
+<a style="font-size: 128%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
+<a style="font-size: 100%" href="/blog/tags/language/">Language</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
+<a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
+<a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
+<a style="font-size: 100%" href="/blog/tags/nosql/">NoSQL</a>
+<a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
+<a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
+<a style="font-size: 100%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 192%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
+<a style="font-size: 177%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
+<a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
+<a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
+
+  </ul>
+</section>
+<section>
+  <h1>Sina Weibo</h1>
+    <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/bruce.e.zhang@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+<section>
+  <h1>Visitor</h1>
+  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

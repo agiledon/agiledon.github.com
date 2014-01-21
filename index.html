@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="今天，微信群“改变自己”发布了一篇张辉的文章《一个人的旅程：逃离舒适圈》——之所以选择一个人从北京到拉斯维加斯，就是希望挑战一下自己的孤独和不安感觉。读到这篇文章，让我想起自己的一次远行，何其相似。当我只有一个人面对一个陌生环境时，我也常常会陷入一种焦虑不安的情绪之中。 &hellip;">
+  <meta name="description" content="Neal Ford在几年前提出的“Poly Programming”思想，已经逐渐成为主流。这种思想并非是为了炫耀多语言的技能，然后选择“高大上”。真正的目的在于更好地利用各种语言处理不同场景、不同问题的优势。 由于都运行在JVM上，Java与Scala之间基本能做到无缝的集成， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,55 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-21T21:55:00+08:00" pubdate data-updated="true">Jan 21<span>st</span>, 2014</time>
+        
+         | <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Neal Ford在几年前提出的“Poly Programming”思想，已经逐渐成为主流。这种思想并非是为了炫耀多语言的技能，然后选择“高大上”。真正的目的在于更好地利用各种语言处理不同场景、不同问题的优势。</p>
+
+<p>由于都运行在JVM上，Java与Scala之间基本能做到无缝的集成，区别主要在于各自的API各有不同。由于Scala为集合提供了更多便捷的函数，因此，Java与Scala在集合之间的互操作，或许是在这种多语言平台下使用最为频繁的。</p>
+
+<h2>Scala中操作Java集合</h2>
+
+<p>两种情况需要在Scala中操作Java集合。一种是Scala调用了其他的Java库，针对Java集合需要转换为Scala集合，如此才能享受Scala集合提供的福利；另一种是编写了Scala程序，但需要提供给Java库，为了更好地无缝集成，要让Java库体会不到Scala的存在。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -730,51 +779,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/">使用Maven为一个项目生成多个Jar包</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-10T22:43:00+08:00" pubdate data-updated="true">Nov 10<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代，它因为提供了较为灵活的编写Task的功能，而忽略了制定一套看似呆板，实则有效的标准模板。于是，在不同的企业，不同的Java项目，出现了各种各样奇怪的目录结构与打包要求。拖着这些沉重的历史包袱，我们自然希望彻底革命，把那些看不顺眼的东西全部改造，让整个项目焕然一新。这是好事儿，所谓长痛不如短痛，一下子把问题肿瘤给割了，痛快！可是现实总有那么一些阻力会让我们缩手缩脚，我们不能挥起革命的利刃一阵乱砍，这弄不好会砍伤自己的手。于是乎，我们需要做战略性的撤退。退一步海阔天空嘛。</p>
-
-<p>我面对的就是这样一个软件系统。这个Java开发的软件系统一直没有依赖管理，仅仅编写了Ant任务用于发布打包。我们的任务是渐进地引入Maven，并在从Build到deploy的整个生命周期中，逐步替换Ant，与持续集成搭配起来。这个系统的多数模块都划分了服务端与客户端。然而不巧的是，各个模块的服务端和客户端都集中在一个模块中。同时，这个项目的目录结构并非标准的Maven结构，如下图所示。因此，还需要自定义Source与TestSource的目录结构。在原来的Ant任务中，是将它们打包成了两个Jar包。现在，我们需要在Maven中同样做到这一点。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -810,6 +814,10 @@ Liquid error: invalid byte sequence in US-ASCII</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
       </li>
     
@@ -823,10 +831,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
     
       <li class="post">
         <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/10/reading-the-captive-mind/">读《被禁锢的头脑》</a>
       </li>
     
   </ul>
@@ -905,7 +909,7 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 171%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 177%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>

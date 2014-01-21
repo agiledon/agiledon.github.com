@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="卡尔维诺在哈佛大学的文学讲座（即诺顿论坛，是为纪念美国著名学者诺顿开设的，每年邀请世界文化名人作讲座，艾略特、博尔赫斯也曾获邀参加诺顿讲座）被他的妻子编成了一本独立的书《美国讲稿》。这本书展现了卡尔维诺的文学精神，体现了他的文学态度和气质。不过，我在阅读该书时，却发现了一些与编程有关的内容。 1 &hellip;">
+  <meta name="description" content="在GitHub上创建了自己的博客后，先后在Jekyll和Octopress之间来回折腾了好一段时间。之前打算直接使用Jekyll提供的博客模板，后来觉得太费神，看到Octopress还不错，且它也是基于Jekyll，并能非常方便地部署到GitHub上。经过最初的安装到对博客的深入改造， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/25/octopress-issues-solution-and-tips/">Octopress博客问题解决方案与技巧</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-25T09:14:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/25/octopress-issues-solution-and-tips/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/2012/12/octopress.jpg" width="259" height="154"></p>
+
+<p>在GitHub上创建了自己的博客后，先后在Jekyll和Octopress之间来回折腾了好一段时间。之前打算直接使用Jekyll提供的博客模板，后来觉得太费神，看到Octopress还不错，且它也是基于Jekyll，并能非常方便地部署到GitHub上。经过最初的安装到对博客的深入改造，目前我的博客需要的功能已经大致完成。在这个过程中，也碰到了许多问题。通过搜索Google以及自己阅读Octopress代码，找到了对应的解决办法。此外，也有一些小技巧的积累。考虑到还有许多正在使用或想要使用Octopress的朋友，因此在这里集中分享一下。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/25/octopress-issues-solution-and-tips/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -496,68 +541,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/">Post数据到服务端生成文件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-10T11:27:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我们希望将客户端（ExtJS 4.0）浏览器中选择的记录post到服务端（ASP.NET MVC 3.0），然后在服务端将这些数据导出到CSV文件中，并传到客户端进行保存。最初，我们希望在客户端采用AJAX请求，将json数据post到服务端。例如：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">postSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">Ext</span><span class="p">.</span><span class="nx">Ajax</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">jsonData</span><span class="o">:</span> <span class="nx">Ext</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span>
-</span><span class='line'>            <span class="nx">Ext</span><span class="p">.</span><span class="nx">getCmp</span><span class="p">(</span><span class="nx">gridId</span><span class="p">).</span><span class="nx">getSelectedRecords</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">item</span><span class="p">){</span>
-</span><span class='line'>                <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>                <span class="p">})</span>
-</span><span class='line'>        <span class="p">),</span>
-</span><span class='line'>        <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>            <span class="nx">callback</span><span class="p">();</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在服务端，Controller中的Action可以处理post过来的json数据，然后以FileResult的方式返回。为了更好地处理CSV文件，我们定义了一个CsvActionResult，它继承自FileResult，并重写了它的WriteFile()方法。浏览器就可以获得CsvActionResult返回的Stream，从而就可以完成文件的下载和保存了。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -595,6 +578,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
       </li>
     
@@ -608,10 +595,6 @@
     
       <li class="post">
         <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/10/reading-the-captive-mind/">读《被禁锢的头脑》</a>
       </li>
     
   </ul>
@@ -690,7 +673,7 @@
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 171%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 177%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>

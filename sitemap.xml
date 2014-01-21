@@ -283,12 +283,18 @@
         <lastmod>2014-01-17T23:02:20+08:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala/
+        </loc>
+        <lastmod>2014-01-21T22:05:16+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2014-01-11T11:39:11+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2014-01-17T23:02:34+08:00</lastmod>
+        <lastmod>2014-01-21T22:05:16+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -296,6 +302,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2014-01-17T23:02:34+08:00</lastmod>
+        <lastmod>2014-01-21T22:05:16+08:00</lastmod>
     </url>
 </urlset>

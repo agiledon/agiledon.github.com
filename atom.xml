@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-17T23:03:02+08:00</updated>
+  <updated>2014-01-21T22:05:45+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,215 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Scala支持与Java的隐式转换]]></title>
+    <link href="http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala/"/>
+    <updated>2014-01-21T21:55:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala</id>
+    <content type="html"><![CDATA[<p>Neal Ford在几年前提出的“Poly Programming”思想，已经逐渐成为主流。这种思想并非是为了炫耀多语言的技能，然后选择“高大上”。真正的目的在于更好地利用各种语言处理不同场景、不同问题的优势。</p>
+
+<p>由于都运行在JVM上，Java与Scala之间基本能做到无缝的集成，区别主要在于各自的API各有不同。由于Scala为集合提供了更多便捷的函数，因此，Java与Scala在集合之间的互操作，或许是在这种多语言平台下使用最为频繁的。</p>
+
+<h2>Scala中操作Java集合</h2>
+
+<p>两种情况需要在Scala中操作Java集合。一种是Scala调用了其他的Java库，针对Java集合需要转换为Scala集合，如此才能享受Scala集合提供的福利；另一种是编写了Scala程序，但需要提供给Java库，为了更好地无缝集成，要让Java库体会不到Scala的存在。</p>
+
+<!--more-->
+
+
+<h3>Scala调用Java库</h3>
+
+<p>为了享用Scala提供的集合特性，在Scala程序中若要调用Java库，通常需要将其转换。例如，JavaXmlConfigure为一个Java类，它的readSoftInfos()方法返回的是一个Java的List。现在，我在Scala中调用该方法（这里以ScalaTest编写的测试来表现Scala程序）：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">XmlConfigureSpec</span> <span class="k">extends</span> <span class="nc">FlatSpec</span> <span class="k">with</span> <span class="nc">ShouldMatchers</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">it</span> <span class="n">should</span> <span class="s">&quot;load all package soft nodes for version config&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">configure</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JavaXmlConfigure</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">softInfo</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">softInfo</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时，编译器会提示无法找到result的foreach方法。因为这里的result的类型为java.util.List。若要将其转换为Scala的集合，就需要增加如下语句：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.JavaConversions._</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意，经过隐式转换后，这里的result类型为Seq[SoftInfo]。如果像下面这样显式指定为Scala的List或Set类型，则无法转换：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">result</span><span class="k">:</span><span class="kt">Set</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span> <span class="c1">//or</span>
+</span><span class='line'><span class="k">val</span> <span class="n">result</span><span class="k">:</span><span class="kt">List</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Scala的代码以Java库的形式提供给Java调用者</h3>
+
+<p>在JVM平台下进行多语言开发时，多数情况下会以Java为主，而对于一些特定场景，能够更好发挥Scala特性的，例如并发处理等，则会选择Scala。此时，若要做到对Java友好，则对于Scala的方法返回值，应尽量屏蔽Scala的类型信息。</p>
+
+<p>举例来说，我用Scala来读取一个配置文件，并对配置文件进行解析和转换，得到一个Scala的Seq集合对象，如下代码所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">XmlConfigure</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">readSoftInfos</span><span class="o">(</span><span class="n">configFileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">version</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>  <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">document</span> <span class="k">=</span> <span class="nc">XML</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="n">getClass</span><span class="o">.</span><span class="n">getResource</span><span class="o">(</span><span class="n">configFileName</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">pkgSoftNodes</span> <span class="k">=</span> <span class="n">document</span> <span class="o">\\</span> <span class="s">&quot;PKGSOFT&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">softInfoNodes</span> <span class="k">=</span> <span class="n">pkgSoftNodes</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">node</span> <span class="k">=&gt;</span> <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">equalsIgnoreCase</span><span class="o">(</span><span class="n">version</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">(</span><span class="n">softInfoNodes</span> <span class="o">\\</span> <span class="s">&quot;SOFTINFO&quot;</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">softInfoNode</span> <span class="k">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">attributes</span> <span class="k">=</span> <span class="n">softInfoNode</span><span class="o">.</span><span class="n">attributes</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nc">SoftInfo</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;fileName&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softUseType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toLong</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上的readSoftInfos方法返回的是对xml节点进行map的结果，类型为scala的Seq[SoftInfo]。倘若Java代码需要调用这个方法，则还需要对其进行转换，即要求调用者必须具备Scala的知识，这未必友好。</p>
+
+<p>那么应该怎样改善呢？直接的做法就是让readSoftInfos方法返回Java的List，这时候需要使用Scala提供的隐式转换：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.JavaConversions._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">XmlConfigure</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">readSoftInfos</span><span class="o">(</span><span class="n">configFileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">version</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">document</span> <span class="k">=</span> <span class="nc">XML</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="n">getClass</span><span class="o">.</span><span class="n">getResource</span><span class="o">(</span><span class="n">configFileName</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">pkgSoftNodes</span> <span class="k">=</span> <span class="n">document</span> <span class="o">\\</span> <span class="s">&quot;PKGSOFT&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">softInfoNodes</span> <span class="k">=</span> <span class="n">pkgSoftNodes</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">node</span> <span class="k">=&gt;</span> <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">equalsIgnoreCase</span><span class="o">(</span><span class="n">version</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">(</span><span class="n">softInfoNodes</span> <span class="o">\\</span> <span class="s">&quot;SOFTINFO&quot;</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">softInfoNode</span> <span class="k">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">attributes</span> <span class="k">=</span> <span class="n">softInfoNode</span><span class="o">.</span><span class="n">attributes</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nc">SoftInfo</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;fileName&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softUseType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toLong</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此时，只需要导入scala.collection.JavaConversions._，我们并不需要将map返回的Seq显式地转换为java.util.List。对于Java的调用者而言，可以直接认为XmlConfigure就是一个Java类。</p>
+
+<h2>Java中操作Scala集合</h2>
+
+<p>Java要调用Scala代码，而不幸的，这个需要调用的Scala代码不够体贴，直接返回了Scala的集合类型。由于Java不提供自定义隐式转换的功能，因此，只能调用Scala提供的转换类进行显式转换。例如Scala中的XmlConfigure类，其readSoftInfos()返回的是Scala的Seq：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">scala.collection.JavaConversions</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">hamcrest</span><span class="o">.</span><span class="na">MatcherAssert</span><span class="o">.</span><span class="na">assertThat</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">hamcrest</span><span class="o">.</span><span class="na">core</span><span class="o">.</span><span class="na">Is</span><span class="o">.</span><span class="na">is</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">XmlConfigureJavaTest</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_load_xml_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">XmlConfigure</span> <span class="n">xmlConfigure</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XmlConfigure</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">SoftInfo</span><span class="o">&gt;</span> <span class="n">softInfos</span> <span class="o">=</span> <span class="n">JavaConversions</span><span class="o">.</span><span class="na">asJavaList</span><span class="o">(</span><span class="n">xmlConfigure</span><span class="o">.</span><span class="na">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">softInfos</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">7</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在readSoftInfos()函数返回的为Scala集合类型的情况下，若不进行显示转换，则无法通过编译。</p>
+
+<h2>Scala的隐式转换</h2>
+
+<p>Scala对Java集合与Scala集合之间的互相转换都用到了Scala提供的隐式转换功能。我们导入的JavaConversions就是承担这种转换的一个Facade Object。它扩展了两个trait：WrapAsScala和WrapAsJava。在JavaConversions对象中定义的方法实际上是将请求委派自它继承的trait的隐式转换函数。例如将Seq转换为java的List：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">JavaConversions</span> <span class="k">extends</span> <span class="nc">WrapAsScala</span> <span class="k">with</span> <span class="nc">WrapAsJava</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">asJavaList</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">b</span> <span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">ju.List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="n">seqAsJavaList</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">b</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>seqAsJavaList就是定义在WrapAsJava中的隐式转换函数。在这个函数中又作了一个模式匹配。如果匹配JListWrapper，则调用传入的wrapped参数的asInstanseOf进行类型转换；否则，就将该seq作为参数传递给包装器SeqWrapper。包装器SeqWrapper是Scala定义的样例类（case class），扩展自Java的AbstractList：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">//WrapAsJava</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.</span><span class="o">{</span> <span class="n">lang</span> <span class="k">=&gt;</span> <span class="n">jl</span><span class="o">,</span> <span class="n">util</span> <span class="k">=&gt;</span> <span class="n">ju</span> <span class="o">},</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.{</span> <span class="n">concurrent</span> <span class="k">=&gt;</span> <span class="n">juc</span> <span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.language.implicitConversions</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">trait</span> <span class="nc">WrapAsJava</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">import</span> <span class="nn">Wrappers._</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">seqAsJavaList</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">seq</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">ju.List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="n">seq</span> <span class="k">match</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nc">JListWrapper</span><span class="o">(</span><span class="n">wrapped</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">wrapped</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">ju.List</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
+</span><span class='line'>    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">new</span> <span class="nc">SeqWrapper</span><span class="o">(</span><span class="n">seq</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Wrappers</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.</span><span class="o">{</span> <span class="n">lang</span> <span class="k">=&gt;</span> <span class="n">jl</span><span class="o">,</span> <span class="n">util</span> <span class="k">=&gt;</span> <span class="n">ju</span> <span class="o">},</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.{</span> <span class="n">concurrent</span> <span class="k">=&gt;</span> <span class="n">juc</span> <span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">WrapAsScala._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">WrapAsJava._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">collection</span><span class="o">]</span> <span class="k">trait</span> <span class="nc">Wrappers</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="k">class</span> <span class="nc">SeqWrapper</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">underlying</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span> <span class="k">extends</span> <span class="n">ju</span><span class="o">.</span><span class="nc">AbstractList</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">with</span> <span class="nc">IterableWrapperTrait</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">get</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="n">underlying</span><span class="o">(</span><span class="n">i</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>隐式转换与扩展方法</h2>
+
+<p>在前面我们提到，在Scala中如果导入了JavaConversions，那么即使得到的是Java的List对象，我们仍然可以对其调用foreach函数。即如下代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>      <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">result</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">softInfo</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">softInfo</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>若为result加上类型，应该会更清晰：
+Liquid error: invalid byte sequence in US-ASCII</p>
+
+<p>显然，这里的result为java.util.List类型，为何却可以调用foreach函数呢？这种形式让我想起C#提供的扩展方法。例如在C# 3.0之前的集合类型，如List，并没有例如first()，where()等方法，但通过引入的扩展方法机制，我们可以对List进行静态扩展，但调用的时候却好像是集合对象自身拥有的实例方法那样。这一实现与动态语言的直接扩展不同，而是C#的一种语法糖。通过使用隐式转换，Scala也可以做到这一点。</p>
+
+<p>上面代码中的result，实则是通过隐式转换，将其转换为一个扩展自scala的Iterable[+A]，而最终扩展自trait IterableLike，其中定义了foreach()函数。当然，在这个foreach()函数中，实则又调用了object Iterator的foreach()函数：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">IterableLike</span><span class="o">[</span><span class="kt">+A</span>, <span class="kt">+Repr</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">Any</span> <span class="k">with</span> <span class="nc">Equals</span> <span class="k">with</span> <span class="nc">TraversableLike</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">Repr</span><span class="o">]</span> <span class="k">with</span> <span class="nc">GenIterableLike</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">Repr</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'><span class="n">self</span> <span class="k">=&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">foreach</span><span class="o">[</span><span class="kt">U</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">U</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span>
+</span><span class='line'>    <span class="n">iterator</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们可以利用这种机制为已定义好的无法修改的类（尤其是Java提供的类）进行扩展。例如为java.io.File进行扩展，使其支持read功能：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">RichFile</span><span class="o">(</span><span class="k">val</span> <span class="n">from</span><span class="k">:</span> <span class="kt">File</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">read</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromFile</span><span class="o">(</span><span class="n">from</span><span class="o">.</span><span class="n">getPath</span><span class="o">).</span><span class="n">mkString</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">implicit</span> <span class="k">def</span> <span class="n">file2RichFile</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">File</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">RichFile</span><span class="o">(</span><span class="n">from</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>直接import该隐式转换，File就可以像真正提供read方法那样调用了：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">fileContent</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">&quot;README.txt&quot;</span><span class="o">).</span><span class="n">read</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[跳出舒适区]]></title>
@@ -1513,40 +1722,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>如果将《领域驱动设计》视为应对领域复杂性的解决之道，Michael Nygard的<a href="http://book.douban.com/subject/2065284/">Releast It!</a>则可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
 
 <p>最后一本推荐书籍看似有些大杂烩，实则是大家云集的架构师合唱团，可谓架构的盛宴，那就是Till Adam编著的Beatiful Architecture《<a href="http://book.douban.com/subject/4086029/">架构之美</a>》。全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。当然，在阅读时，千万不要在太多的技术细节中迷失自己，关键还是要把握美丽架构的基本原则。而这正是本书的主线，使得本书能够在散乱的主题中，还能做到“形散而神不散”。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Struts 1.x一路走好]]></title>
-    <link href="http://agiledon.github.com/blog/2013/05/08/farewell-struts-1-dot-x/"/>
-    <updated>2013-05-08T22:38:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/05/08/farewell-struts-1-dot-x</id>
-    <content type="html"><![CDATA[<p>因为Struts 1.x宣布退出了历史舞台，于是InfoQ组织了一次虚拟访谈。恰好在我现在的项目中，仍然能够看到Struts 1.x的身影，以我这浅薄的Web开发经验，也能有幸被丁雪丰邀请参加了这次虚拟访谈，和李锟、张龙就这一事件畅谈了各自的感受和想法。这篇<a href="http://www.infoq.com/cn/articles/virtual-panel-struts1?utm_source=infoq&amp;utm_medium=popular_links_homepage">虚拟访谈</a>发表在了InfoQ上。这里发布的则是我自己就主持人提出的问题给出的回答。</p>
-
-<p><strong>1. Struts是最早的MVC框架之一，影响了很多人，你是否还记得最早接触到它时，给你留下的印象是什么？</strong></p>
-
-<p><strong>张逸：</strong>从业15年来，我主要参与的开发工作除了早期的Windows Form应用开发外，主要还是集中在后端。用分层的角度来说，即工作在数据层、领域层以及服务层。虽然早已知道Struts的大名，甚至了解到所谓Struts+Spring+Hibernate几乎成为了Java企业开发的标配，却一直没有机会使用Struts。我当时工作的项目主要还是在微软的.NET平台上，经历了从ASP到ASP.NET，再到ASP.NET MVC的过程。在使用ASP时，我很质疑那种业务代码与表现代码混杂在一起的开发方式；而在最初拥抱ASP.NET时，我认为这种Code-Behind会是一种良好的职责分离。然而，ASP.NET在灵活性或扩展性方面带来的约束，使得它越来越不适合富客户端的开发了。于是，才有了借鉴Ruby On Rails思想的ASP.NET MVC出现。或许我的回答偏题了，但我想借ASP的这种发展来看待此次Struts 1.x退出历史舞台的事件，那就是任何产品都会步入晚年的衰落期，跟不上技术的发展，必然会被淘汰，没有什么好奇怪的。</p>
-
-<!--more-->
-
-
-<p><strong>2. Struts 1.x即将走完最后的历程，对于那些仍在使用它的系统，你有什么建议？如果要升级，有几个备选方案，例如Struts 2.x、Spring MVC等等，你会如何选择？</strong></p>
-
-<p><strong>张逸：</strong>奇怪的是，虽然在早期我不曾有机会使用Struts 1.x，然而我现在正在工作的一个大型项目，因为其漫长的历史，一部分Web前端使用的正好是Struts 1.x。对于这种正在使用它的系统，若要说有何建议，简言之，还是需要在决策时视情况而定。在我们当前项目的一个子系统中，Struts 1.x是与Spring MVC 2.0共存的；而在另一个子系统中，又存在Struts 2.x与Spring MVC 3.x共存的情况。从架构的一致性来看，这是很不合理的；然而就项目的真实情况，我又认为这种现象未尝不可。迁移的成本往往是昂贵的，尤其对于遗留系统而言，若没有覆盖率极高的验收测试，盲目地为了追求架构一致性进行迁移，反而会引入新的问题。这就需要权衡迁移的成本和迁移得到的好处。在Java平台下，可供选择的成熟Web框架并不多，Struts 2.x以及Spring MVC相较于Struts 1.x而言，主要还是体现在模式上的区别，属于侵入性更小、架构更为简单的框架。相对于升级，我更倾向于保留原有框架，对于新增的功能则可以引入更新的框架。若因为种种原因硬要升级，我更倾向于选择Spring MVC，一方面它与Spring框架的集成度更好，学习曲线低；同时它对于Struts 1.x实现方式的固有支持，会使得迁移的成本会降低。最重要的一点是Spring MVC目前还保有一定程度的活力，它的版本还在演化中；相对而言，Struts似乎已经失去活力了。</p>
-
-<p>若抛开这些成熟的Web框架不谈，我的建议是不妨试试Java平台下的其他框架，例如jRails，Spring Roo、Apach Wicket或者Play。若想继续工作在Spring的技术栈下，Spring Roo会是一个有趣的选择。事实上，你可以认为它是Spring所要力推的下一代Web框架，如果你不想重蹈Struts 1.x的覆辙，可以在决策时冒着风险给予提前尝鲜的机会。Play框架是基于Java和Scala开发的Web框架，它似乎更偏重于建造可伸缩性的Web框架。此外，它的安全模块、持久化支持(包括对NoSQL与Big Data的支持)、RESTful以及Mobile的支持，使得它更适合开发当今的Web应用程序。</p>
-
-<p><strong>3. 经常会有框架或软件结束生命周期，不再进行维护，这对使用它的用户多多少少带来了一些困扰，能否聊聊您在项目最初进行选择时的一些经验之谈。</strong></p>
-
-<p><strong>张逸：</strong>对于框架的选择，我比较偏重于框架的简单性和无侵入性这两个特点。简单性可以保证我们快速地理解框架的架构，并能够正确地使用它；无侵入性则使得我们可以避免所谓“供应商锁定”的反模式，在需要迁移框架时，可以尽快摆脱原有框架的约束。当然，这种选择总要结合项目需求，根据风险对各种质量属性进行综合权衡，方能做出合理的设计决策。因此，我会将这两个特点看做是重要的衡量指标，但并非绝对。在一定程度上，我们还可以通过更好的架构设计来规避对框架的依赖，例如通过好的分层设计，或者引入防腐层隔离对框架的依赖。以Struts 1.x而言，只要我们避免在Action中引入业务逻辑，选用新Web框架的成本就会更低一些。同时，保证足够的测试覆盖率是必要的，尤其是足够覆盖率的单元测试与集成测试，它常常可以放缓系统衰老的脚步。对于旧系统的维护或重构而言，测试覆盖率是进行改造的良好基石。</p>
-
-<p><strong>4. 随着像Backbone.js这样的前端MVC框架的流行，Struts这样的服务器端MVC的作用似乎有所减弱，您觉得MVC逻辑“前移”会是今后的发展趋势么？</strong></p>
-
-<p><strong>张逸：</strong>我完全赞同这一点。在我参与的上一个项目中，对于服务端的Web层而言，几乎就成为了一个Controller+JSON+REST的组合，MVC中的M被JSON或资源所替代，V则干脆消失了，由Controller来负责必要的服务端验证，并完成HTTP请求的路由功能，其余的前端逻辑都交由我们当初选择的ExtJS了。</p>
-
-<p>这种设计是完全合理的。但我仍然要说明一点的是，这种设计由于加大了前端的复杂度，因而需要我们更加关注前端的代码质量。传统开发要求的关注点分离、松耦合与高内聚原则同样适用于这样的前端代码。虽然不一定要提倡前端代码的测试驱动开发，但至少要保证这些代码具有足够的测试覆盖率。例如，我们可以为Javascript（或者jQuery)引入Jasmine，QUnit等测试框架。在我的同事曾经参与的一个项目中，由最初只支持一个品牌，增强到支持多个品牌的需求变化，这其中需要涉及到对大量前端代码的复用。由于之前的设计并未考虑到多品牌的支持，因而需要重构前端代码，以达成复用的目的。如果没有足够的测试覆盖率，以及良好的职责分离，要做到这一点的难度不言而喻。</p>
-
-<p>我还提到，前端的许多模式事实上都是从MVC模式衍生而来，例如MVP，MVVM等。此时，MVC可以作为核心模式的一个名词。应该为那些变种的模式命名，并给出最佳实践，从而表达特定的含义。对于这种服务端与客户端结合起来共同协作的模式，可以命名为MC2MVC，或者RC2MVC。有个“2”，就表示从服务端到客户端的意思。至于RC2MVC，则是为了强调服务端提供的“资源”，而非传统意义上的模型。</p>
 ]]></content>
   </entry>
   

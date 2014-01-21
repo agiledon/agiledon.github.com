@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Scala | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/scala/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-17T23:03:02+08:00</updated>
+  <updated>2014-01-21T22:05:45+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,217 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Scala支持与Java的隐式转换]]></title>
+    <link href="http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala/"/>
+    <updated>2014-01-21T21:55:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/01/21/implicit-conversion-between-java-and-scala</id>
+    <content type="html"><![CDATA[<p>Neal Ford在几年前提出的“Poly Programming”思想，已经逐渐成为主流。这种思想并非是为了炫耀多语言的技能，然后选择“高大上”。真正的目的在于更好地利用各种语言处理不同场景、不同问题的优势。</p>
+
+<p>由于都运行在JVM上，Java与Scala之间基本能做到无缝的集成，区别主要在于各自的API各有不同。由于Scala为集合提供了更多便捷的函数，因此，Java与Scala在集合之间的互操作，或许是在这种多语言平台下使用最为频繁的。</p>
+
+<h2>Scala中操作Java集合</h2>
+
+<p>两种情况需要在Scala中操作Java集合。一种是Scala调用了其他的Java库，针对Java集合需要转换为Scala集合，如此才能享受Scala集合提供的福利；另一种是编写了Scala程序，但需要提供给Java库，为了更好地无缝集成，要让Java库体会不到Scala的存在。</p>
+
+<!--more-->
+
+
+<h3>Scala调用Java库</h3>
+
+<p>为了享用Scala提供的集合特性，在Scala程序中若要调用Java库，通常需要将其转换。例如，JavaXmlConfigure为一个Java类，它的readSoftInfos()方法返回的是一个Java的List。现在，我在Scala中调用该方法（这里以ScalaTest编写的测试来表现Scala程序）：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">XmlConfigureSpec</span> <span class="k">extends</span> <span class="nc">FlatSpec</span> <span class="k">with</span> <span class="nc">ShouldMatchers</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">it</span> <span class="n">should</span> <span class="s">&quot;load all package soft nodes for version config&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">configure</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JavaXmlConfigure</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">softInfo</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">println</span><span class="o">(</span><span class="n">softInfo</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这时，编译器会提示无法找到result的foreach方法。因为这里的result的类型为java.util.List。若要将其转换为Scala的集合，就需要增加如下语句：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.JavaConversions._</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>注意，经过隐式转换后，这里的result类型为Seq[SoftInfo]。如果像下面这样显式指定为Scala的List或Set类型，则无法转换：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">result</span><span class="k">:</span><span class="kt">Set</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span> <span class="c1">//or</span>
+</span><span class='line'><span class="k">val</span> <span class="n">result</span><span class="k">:</span><span class="kt">List</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Scala的代码以Java库的形式提供给Java调用者</h3>
+
+<p>在JVM平台下进行多语言开发时，多数情况下会以Java为主，而对于一些特定场景，能够更好发挥Scala特性的，例如并发处理等，则会选择Scala。此时，若要做到对Java友好，则对于Scala的方法返回值，应尽量屏蔽Scala的类型信息。</p>
+
+<p>举例来说，我用Scala来读取一个配置文件，并对配置文件进行解析和转换，得到一个Scala的Seq集合对象，如下代码所示：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">XmlConfigure</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">readSoftInfos</span><span class="o">(</span><span class="n">configFileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">version</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>  <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">document</span> <span class="k">=</span> <span class="nc">XML</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="n">getClass</span><span class="o">.</span><span class="n">getResource</span><span class="o">(</span><span class="n">configFileName</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">pkgSoftNodes</span> <span class="k">=</span> <span class="n">document</span> <span class="o">\\</span> <span class="s">&quot;PKGSOFT&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">softInfoNodes</span> <span class="k">=</span> <span class="n">pkgSoftNodes</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">node</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">equalsIgnoreCase</span><span class="o">(</span><span class="n">version</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">(</span><span class="n">softInfoNodes</span> <span class="o">\\</span> <span class="s">&quot;SOFTINFO&quot;</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">softInfoNode</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">attributes</span> <span class="k">=</span> <span class="n">softInfoNode</span><span class="o">.</span><span class="n">attributes</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nc">SoftInfo</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;fileName&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softUseType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toLong</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>如上的readSoftInfos方法返回的是对xml节点进行map的结果，类型为scala的Seq[SoftInfo]。倘若Java代码需要调用这个方法，则还需要对其进行转换，即要求调用者必须具备Scala的知识，这未必友好。</p>
+
+<p>那么应该怎样改善呢？直接的做法就是让readSoftInfos方法返回Java的List，这时候需要使用Scala提供的隐式转换：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.JavaConversions._&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">XmlConfigure</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">readSoftInfos</span><span class="o">(</span><span class="n">configFileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">version</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">document</span> <span class="k">=</span> <span class="nc">XML</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="n">getClass</span><span class="o">.</span><span class="n">getResource</span><span class="o">(</span><span class="n">configFileName</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">pkgSoftNodes</span> <span class="k">=</span> <span class="n">document</span> <span class="o">\\</span> <span class="s">&quot;PKGSOFT&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">softInfoNodes</span> <span class="k">=</span> <span class="n">pkgSoftNodes</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">node</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">equalsIgnoreCase</span><span class="o">(</span><span class="n">version</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">(</span><span class="n">softInfoNodes</span> <span class="o">\\</span> <span class="s">&quot;SOFTINFO&quot;</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">softInfoNode</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">attributes</span> <span class="k">=</span> <span class="n">softInfoNode</span><span class="o">.</span><span class="n">attributes</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nc">SoftInfo</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;fileName&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softUseType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toLong</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>此时，只需要导入scala.collection.JavaConversions._，我们并不需要将map返回的Seq显式地转换为java.util.List。对于Java的调用者而言，可以直接认为XmlConfigure就是一个Java类。</p>
+
+<h2>Java中操作Scala集合</h2>
+
+<p>Java要调用Scala代码，而不幸的，这个需要调用的Scala代码不够体贴，直接返回了Scala的集合类型。由于Java不提供自定义隐式转换的功能，因此，只能调用Scala提供的转换类进行显式转换。例如Scala中的XmlConfigure类，其readSoftInfos()返回的是Scala的Seq：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">scala.collection.JavaConversions</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">hamcrest</span><span class="o">.</span><span class="na">MatcherAssert</span><span class="o">.</span><span class="na">assertThat</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">hamcrest</span><span class="o">.</span><span class="na">core</span><span class="o">.</span><span class="na">Is</span><span class="o">.</span><span class="na">is</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">XmlConfigureJavaTest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_load_xml_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">XmlConfigure</span> <span class="n">xmlConfigure</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XmlConfigure</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">SoftInfo</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">softInfos</span> <span class="o">=</span> <span class="n">JavaConversions</span><span class="o">.</span><span class="na">asJavaList</span><span class="o">(</span><span class="n">xmlConfigure</span><span class="o">.</span><span class="na">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">softInfos</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">7</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>在readSoftInfos()函数返回的为Scala集合类型的情况下，若不进行显示转换，则无法通过编译。</p>
+
+<h2>Scala的隐式转换</h2>
+
+<p>Scala对Java集合与Scala集合之间的互相转换都用到了Scala提供的隐式转换功能。我们导入的JavaConversions就是承担这种转换的一个Facade Object。它扩展了两个trait：WrapAsScala和WrapAsJava。在JavaConversions对象中定义的方法实际上是将请求委派自它继承的trait的隐式转换函数。例如将Seq转换为java的List：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">JavaConversions</span> <span class="k">extends</span> <span class="nc">WrapAsScala</span> <span class="k">with</span> <span class="nc">WrapAsJava</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">asJavaList</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;b%20:%20Seq[A]&quot;</span><span class="o">&gt;</span><span class="n">A</span><span class="o">&lt;/</span><span class="n">a</span><span class="k">&gt;:</span> <span class="n">ju</span><span class="o">.</span><span class="nc">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="n">seqAsJavaList</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;b&quot;</span><span class="o">&gt;</span><span class="n">A</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>seqAsJavaList就是定义在WrapAsJava中的隐式转换函数。在这个函数中又作了一个模式匹配。如果匹配JListWrapper，则调用传入的wrapped参数的asInstanseOf进行类型转换；否则，就将该seq作为参数传递给包装器SeqWrapper。包装器SeqWrapper是Scala定义的样例类（case class），扩展自Java的AbstractList：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">//WrapAsJava</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.</span><span class="o">{</span> <span class="n">lang</span> <span class="k">=&gt;</span> <span class="n">jl</span><span class="o">,</span> <span class="n">util</span> <span class="k">=&gt;</span> <span class="n">ju</span> <span class="o">},</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.{</span> <span class="n">concurrent</span> <span class="k">=&gt;</span> <span class="n">juc</span> <span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.language.implicitConversions</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">trait</span> <span class="nc">WrapAsJava</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">import</span> <span class="nn">Wrappers._</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">seqAsJavaList</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;seq:%20Seq[A]&quot;</span><span class="o">&gt;</span><span class="n">A</span><span class="o">&lt;/</span><span class="n">a</span><span class="k">&gt;:</span> <span class="n">ju</span><span class="o">.</span><span class="nc">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="n">seq</span> <span class="k">match</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">case</span> <span class="nc">JListWrapper</span><span class="o">(</span><span class="n">wrapped</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">wrapped</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">ju.List</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
+</span><span class='line'><span class="k">case</span> <span class="k">_</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="k">new</span> <span class="nc">SeqWrapper</span><span class="o">(</span><span class="n">seq</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;//</span><span class="nc">Wrappers</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.</span><span class="o">{</span> <span class="n">lang</span> <span class="k">=&gt;</span> <span class="n">jl</span><span class="o">,</span> <span class="n">util</span> <span class="k">=&gt;</span> <span class="n">ju</span> <span class="o">},</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.{</span> <span class="n">concurrent</span> <span class="k">=&gt;</span> <span class="n">juc</span> <span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">WrapAsScala.</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">WrapAsJava.</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">private</span><span class="o">[</span><span class="kt">collection</span><span class="o">]</span> <span class="k">trait</span> <span class="nc">Wrappers</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="k">class</span> <span class="nc">SeqWrapper</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;underlying:%20Seq[A]&quot;</span><span class="o">&gt;</span><span class="n">A</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">extends</span> <span class="n">ju</span><span class="o">.</span><span class="nc">AbstractList</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">with</span> <span class="nc">IterableWrapperTrait</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">get</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="n">underlying</span><span class="o">(</span><span class="n">i</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>隐式转换与扩展方法</h2>
+
+<p>在前面我们提到，在Scala中如果导入了JavaConversions，那么即使得到的是Java的List对象，我们仍然可以对其调用foreach函数。即如下代码：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">softInfo</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">println</span><span class="o">(</span><span class="n">softInfo</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>若为result加上类型，应该会更清晰：
+Liquid error: invalid byte sequence in US-ASCII</p>
+
+<p>显然，这里的result为java.util.List类型，为何却可以调用foreach函数呢？这种形式让我想起C#提供的扩展方法。例如在C# 3.0之前的集合类型，如List，并没有例如first()，where()等方法，但通过引入的扩展方法机制，我们可以对List进行静态扩展，但调用的时候却好像是集合对象自身拥有的实例方法那样。这一实现与动态语言的直接扩展不同，而是C#的一种语法糖。通过使用隐式转换，Scala也可以做到这一点。</p>
+
+<p>上面代码中的result，实则是通过隐式转换，将其转换为一个扩展自scala的Iterable[+A]，而最终扩展自trait IterableLike，其中定义了foreach()函数。当然，在这个foreach()函数中，实则又调用了object Iterator的foreach()函数：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">IterableLike</span><span class="o">[</span><span class="kt">+A</span>, <span class="kt">+Repr</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">Any</span> <span class="k">with</span> <span class="nc">Equals</span> <span class="k">with</span> <span class="nc">TraversableLike</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">Repr</span><span class="o">]</span> <span class="k">with</span> <span class="nc">GenIterableLike</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">Repr</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'><span class="n">self</span> <span class="o">=&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">foreach</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20A%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="o">&lt;/</span><span class="n">a</span><span class="k">&gt;:</span> <span class="nc">Unit</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">iterator</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>我们可以利用这种机制为已定义好的无法修改的类（尤其是Java提供的类）进行扩展。例如为java.io.File进行扩展，使其支持read功能：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">RichFile</span><span class="o">(</span><span class="k">val</span> <span class="n">from</span><span class="k">:</span> <span class="kt">File</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">read</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromFile</span><span class="o">(</span><span class="n">from</span><span class="o">.</span><span class="n">getPath</span><span class="o">).</span><span class="n">mkString</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">implicit</span> <span class="k">def</span> <span class="n">file2RichFile</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">File</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">RichFile</span><span class="o">(</span><span class="n">from</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>直接import该隐式转换，File就可以像真正提供read方法那样调用了：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">fileContent</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">&quot;README.txt&quot;</span><span class="o">).</span><span class="n">read</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka的Actor及其Supervisors]]></title>
@@ -380,73 +591,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>而这里使用的则是一种称为partially applied function的方式，它支持我们在不会引起歧义的情况下（主要是指只有一个参数的情形），直接省略该参数变量。只要明白这种语法，这样的代码仍然是可读的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[阅读Scala代码之一]]></title>
-    <link href="http://agiledon.github.com/blog/2013/04/04/reading-scala-code-1/"/>
-    <updated>2013-04-04T22:17:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/04/04/reading-scala-code-1</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/04/scala.jpg">
-学习一门语言，固然需要了解这门语言的语法，但针对一些完全属于不同范式的语言，即使通过阅读书籍可以理解一些特殊的语法，若不能付诸实践，总有隔靴搔痒之感。其实，要能通过运用这门新语言开发一个项目，或能快速并深刻地了解甚至吃透这门语言。我正是这样尝试着运用Scala来开发我的一个开源框架。可是，在开发过程中，我总感觉自己像是被捆绑了一只手的程序员一般，开发过程磕磕碰碰，不够顺畅。仔细想来，还是因为缺乏对这门语言的足够了解，尤其是那些迥异于Java却又在Scala中是极为常见的惯用法，总不能做到在合适的场景信手拈来。</p>
-
-<p>关键在于，自己阅读Scala的代码太少，编写Scala的代码更少。找到症结，那就尝试去解决。当然，我可以选择一些著名的Scala开源框架，例如<a href="http://www.playframework.com/">Play Framework</a>，Kestrel或者<a href="http://kafka.apache.org/">Kafka</a>，对其进行深入阅读。可是，我发现这些框架对于目前的我而言，似乎显得困难了一点。那么，就从一些短小的代码段开始着手吧。<!--more--></p>
-
-<p>今天阅读的这段代码来自Twitter团队编写的<a href="http://twitter.github.com/effectivescala/">Effective Scala</a>。这段代码对一个Seq对象的值进行了分类汇总，然后进行了排序。代码内容如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
-</span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">votes</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">groupBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_1</span><span class="o">)</span>
-</span><span class='line'><span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="k">case</span> <span class="o">(</span><span class="n">which</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
-</span><span class='line'><span class="o">(</span><span class="n">which</span><span class="o">,</span> <span class="n">counts</span><span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="mi">0</span><span class="o">)(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">))</span>
-</span><span class='line'><span class="o">}.</span><span class="n">toSeq</span>
-</span><span class='line'><span class="o">.</span><span class="n">sortBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">_2</span><span class="o">)</span>
-</span><span class='line'><span class="o">.</span><span class="n">reverse</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>首先，它针对Seq对象votes进行了分组，调用了Seq集合的groupBy方法。该方法的定义为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">groupBy</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20(A&quot;</span><span class="o">&gt;</span><span class="n">K</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">=&gt;</span> <span class="n">K</span><span class="o">)</span><span class="k">:</span> <span class="kt">immutable.Map</span><span class="o">[</span><span class="kt">K</span>, <span class="kt">Sequ</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>该函数的输入参数实际上是一个函数，该函数的参数为A，这个泛型参数在这里指代Seq元素的类型，即一个tuple；返回值为K，为key对应的类型。groupBy函数的返回值是一个不变类型的Map。对于此例而言，就是根据语言进行分类，由此可以得到三个类别，每个类别又包含一个Seq或者List。结果为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">Map</span><span class="o">(</span><span class="n">scala</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">10</span><span class="o">),</span> <span class="o">(</span><span class="n">scala</span><span class="o">,</span><span class="mi">1</span><span class="o">)),</span> <span class="n">java</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">java</span><span class="o">,</span><span class="mi">4</span><span class="o">)),</span> <span class="n">phthon</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">((</span><span class="n">phthon</span><span class="o">,</span><span class="mi">10</span><span class="o">)))</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>在这段代码中，用到了Scala的特殊语法，例如groupBy(_._1)。括号中的_代表了一个类型为A的参数，在这里就是tuple对象；而_1则是方法名，对于tuple而言，_1方法能够返回tuple的第一个元素，即语言的名称。（与之类似，_2则会返回tuple的第二个元素。）因此，_._1恰好能够满足groupBy()函数需要传入的函数，从而根据语言的名称对votes进行分组。</p>
-
-<p>紧跟着groupBy函数后面的是一个map函数，它可以通过运用一个函数为Map的所有元素建立一个新的集合。简单地理解，可以将其看做是一种转换操作。在上面给出的代码中，map函数中的case (which, counts) => …是一个模式匹配的匿名函数（Pattern Matching Anonymous Functions）。在《The Scala Language Specification》中对此的定义为：
-<blockquote><p>which appear as an expression without a prior match. The expected type of such an expression must in part be defined. It must be either scala.Functionk[S1, ..., Sk, R] for some k > 0, or scala.PartialFunction[S1, R], where the argument type(s) S1, ..., Sk must be fully determined, but the result type R may be undetermined.</p></blockquote></p>
-
-<p>在文章《<a href="http://blog.bruchez.name/2011/10/scala-partial-functions-without-phd.html">Scala Partial Functions Without Phd</a>》中，Erik认为这是一种特殊方式的匿名函数定义，采用这种方式会更加安全，使用更自由。文章给出了一些Partial Function的例子，例如通过Partial Function可以忽略多余的参数，忽略因为除0抛出的异常。这比直接使用匿名函数会更加安全。</p>
-
-<p>在这段代码中，map函数接受which参数就是lang，counts则是lang对应的List。在这个匿名函数中，会对counts这个List类型进行求和操作（通过foldLeft函数）。返回的结果仍然是一个包含了Tuple元素的Map类型。</p>
-
-<p>接下来的方法就比较容易理解了，即调用toSeq将Map转换为Seq，并根据tuple的第二个元素进行排序，此时，排序的关键字为统计的语言次数。soryBy函数的默认排序为升序，因此需要调用reverse颠倒顺序。</p>
-
-<p>如果弄懂了Scala与此相关的语法，要理解这段代码还是比较容易的。然而，在Twitter给出的Effective Scala文章中，提到了关于编程意图的问题。因为上述代码通过一种类似流水线转换的方式完成整个操作，操作过程中的一些中间值被隐藏在一系列的函数调用中，并没有很好地展现其意图。文章提出的解决办法就是声明中间结果和参数。上述代码可以改写为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">votes</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">((</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="mi">4</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">),(</span><span class="s">&quot;scala&quot;</span><span class="o">,</span><span class="mi">1</span><span class="o">),(</span><span class="s">&quot;phthon&quot;</span><span class="o">,</span><span class="mi">10</span><span class="o">))</span>
-</span><span class='line'><span class="k">val</span> <span class="n">votesByLang</span> <span class="k">=</span> <span class="n">votes</span> <span class="n">groupBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">lang</span> <span class="o">}</span>
-</span><span class='line'><span class="k">val</span> <span class="n">sumByLang</span> <span class="k">=</span> <span class="n">votesByLang</span> <span class="n">map</span> <span class="o">{</span> <span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">counts</span><span class="o">)</span> <span class="o">=&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">countsOnly</span> <span class="k">=</span> <span class="n">counts</span> <span class="n">map</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">count</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">count</span><span class="o">}</span>
-</span><span class='line'><span class="o">(</span><span class="n">lang</span><span class="o">,</span> <span class="n">countsOnly</span><span class="o">.</span><span class="n">sum</span><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span><span class='line'><span class="k">val</span> <span class="n">orderedVotes</span> <span class="k">=</span> <span class="n">sumByLang</span><span class="o">.</span><span class="n">toSeq</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">sortBy</span> <span class="o">{</span> <span class="k">case</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">count</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">count</span> <span class="o">}</span>
-</span><span class='line'><span class="o">.</span><span class="n">reverse</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>因为有了中间值的变量声明，意图会变得更清晰一些。我同意这样的观点，特别是针对一些函数式语言或动态语言而言，代码变得简洁了，但有时候会用到一些比较tricky的花招，影响了代码的可读性。但要注意，这种可读性一定是基于该语言的特色而言。我们千万不能将Scala程序写成Java命令式的方式，以为这样适合Java程序员的阅读习惯，这无疑误解了所谓“可读性”的含义。当然，就这段代码而言，由于groupBy函数的名称已经非常清晰，我并不太赞成提取出votesByLang的中间变量。这类似fluent interface的方式，只要API的设计是有意义的，这种流水线的处理方式仍然非常清楚，前提是我们要有合理的排版。</p>
 ]]></content>
   </entry>
   
