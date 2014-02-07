@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代， &hellip;">
+  <meta name="description" content="当我们面对一个遗留系统时，常见的问题是没有测试。正如Michael Feathers在Working Effectively with Legacy Code一书中对“遗留代码”的定义。他将其简单归纳为“没有测试的代码”。真是太贴切了！正是因为没有测试，使得我们对遗留代码的任何重构都有些战战兢兢， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/21/play-trick-with-powermock/">玩花招的PowerMock</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-21T12:42:00+08:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
+        
+         | <a href="/blog/2013/11/21/play-trick-with-powermock/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>当我们面对一个遗留系统时，常见的问题是没有测试。正如Michael Feathers在Working Effectively with Legacy Code一书中对“遗留代码”的定义。他将其简单归纳为“没有测试的代码”。真是太贴切了！正是因为没有测试，使得我们对遗留代码的任何重构都有些战战兢兢，甚至成为开发人员抵制重构的借口。从收益与成本的比例来看，对于这样的系统，我一贯认为不要盲目进行重构。因为重构的真正适用场景其实是发生在开发期间，而非维护期间。当然，提升自己的重构能力，尤其学会运用IDE提供的自动重构工具，可以在一定程度上保障重构的质量。然而，安全的做法，还是需要为其编写测试。</p>
+
+<p>测试是分层的，即使是针对自动化测试。面对遗留系统，成本相对较低的是针对功能特性编写的功能测试（或者说是验收测试），这可以运用一些BDD框架如Cucumber、JBehave等。由于它的测试粒度较粗，可以以较少的测试用例覆盖系统的主要功能。然而，它的缺点同样存在，那就是反馈周期相对较长。这就好像你置身一个陌生的城市，在找不到路的情况下，只是跟着感觉走。走了数十公里之后，方才幡然醒悟，想起要翻一翻带在手上的地图。倘若发现方向走错，再要回转就已经晚了。反馈周期最短的自然是单元测试。同样根据Michael Feather的定义，单元测试一定要快，一定要不依赖于外部资源。单元测试的粒度自然是最小的，但不要直观地认为单元测试就是针对方法。若只是针对方法来编写单元测试，就会陷入为测试而测试的怪圈。即使是位于技术象限的单元测试，我们仍然要按照业务规则来编写。一个测试方法应该对应一个粒度最小的原子功能。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/21/play-trick-with-powermock/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -554,54 +599,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/13/architecture-and-design-of-reading-radar/">ThoughtWorks读书雷达-架构设计篇</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-13T20:41:00+08:00" pubdate data-updated="true">May 13<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/13/architecture-and-design-of-reading-radar/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/04/reading_radar_02.png">
-编码的能力与设计的能力，二者均不可偏废。我们认为，编码事实上是设计的一部分，只不过它更多的是以代码的形式来呈现，而设计则主要由模型来组成。这种设计模型有助于知识的传递与分享，同时也可以有效地提高编码质量。至于架构，则是软件系统中重要的事物，它关乎的内容往往是难以更改的。卓越的软件设计一定拥有美的架构，也能够有助于促进架构的演化。在ThoughtWorks，并没有明确的架构师职位。如果有，我们也希望这个角色应该是Martin Folwer认为的Architectus Oryzus，这些架构师与处理最困难部分的其他开发人员合作，积极地向项目贡献代码。显然，我们认为架构师也是程序员。这正是我们要在这个读书雷达中列出Architecture &amp; Design象限的原因。</p>
-
-<p>整体概览本象限列出的书籍，若有相关读书经验的人一定会注意到，这里列出的书籍并没有脱离面向对象设计体系的范畴。我们认为，在当今的企业级软件开发领域中，面向对象的思想体系仍然占据了主要的地位。对于程序员而言，建立面向对象的设计思维仍然至关重要。但是，我们从来都不曾忽略函数式语言对设计领域带来的冲击，以及它可能产生的巨大影响。在<a href="http://www.thoughtworks.com/insights">最新的ThoughtWorks Technology Radar</a>的Languages &amp; Frameworks象限中，ThoughtWorks对Scala，Clojure，F#等函数式语言青睐有加，同时也谈到了在Java中引入高阶函数等函数式特性的Functional Java发展趋势。我们也注意到在2012年的DDD eXchange会议上，函数式语言对设计范式的转变产生的影响。遗憾的是，除了少量介绍具体函数式语言的书籍，我们很少看到如面向对象设计一般专门讲解与深入探讨函数式软件设计的书籍。与其滥竽充数，不如抱残守缺。我们选择了在这期读书雷达图中，让函数式设计范式集体缺席。</p>
-
-<p>架构内容包罗万象，在这个象限中我们关注的书籍主要与架构本质内容相关，包括架构风格、架构模式和重要的架构设计原则。虽然云计算、大数据以及REST服务等相关技术已经成为架构师的必备知识，也诞生了许多优秀的书籍；但我们还是希望让这个象限的内容变得更内聚一些，从而帮助读者能够从中挑选出合适的书籍，组成学习架构与设计技能的读书路线图。或许，在将来我们希望引入Tools、Frameworks以及Platforms等更多的象限来囊括这部分内容。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/13/architecture-and-design-of-reading-radar/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -639,6 +636,10 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/07/painting-in-huangjueping-street/">黄桷坪美院的涂鸦街</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
       </li>
     
@@ -652,10 +653,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
     
       <li class="post">
         <a href="/blog/2014/01/13/testing-styles-of-scalatest/">ScalaTest的测试风格</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
       </li>
     
   </ul>
@@ -706,7 +703,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
-<a style="font-size: 100%" href="/blog/tags/extjs/">ExtJS</a>
 <a style="font-size: 100%" href="/blog/tags/gae/">GAE</a>
 <a style="font-size: 100%" href="/blog/tags/go/">GO</a>
 <a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
@@ -727,6 +723,7 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
 <a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
 <a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
 <a style="font-size: 100%" href="/blog/tags/rest/">REST</a>
 <a style="font-size: 192%" href="/blog/tags/reading/">Reading</a>

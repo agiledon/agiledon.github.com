@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="若要获得良好的对象设计，就必须对职责进行合理的分配。每个对象承担的职责不能太多，也不能太少，恰如其分即可。职责分配如乐谱中对音符的组织，高明的音乐家总是能让不同的音符放在合理的位置，奏成悦耳的心曲，表达音乐家的内心感情。然而，即使设计师明确职责分配的重要性，在面临纷乱复杂的需求时， &hellip;">
+  <meta name="description" content="微软研究院首席研究员Leslie Lamport发表了文章Why We Should Build Software Like We Build Houses，吐槽了对如今程序员不愿意做分析，画草图，而是直接开始编码的现状。看了这篇文章后，我对Lamport的观点有一些想法，觉得不吐不快。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/07/comments-on-why-we-should-build-software/">软件开发未必等同于盖房子</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-07T15:13:00+08:00" pubdate data-updated="true">Feb 7<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/02/07/comments-on-why-we-should-build-software/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/02/sketch.jpg">
+微软研究院首席研究员Leslie Lamport发表了文章<a href="http://www.wired.com.edgesuite.net/opinion/2013/01/code-bugs-programming-why-we-need-specs/#more-122883">Why We Should Build Software Like We Build Houses</a>，吐槽了对如今程序员不愿意做分析，画草图，而是直接开始编码的现状。看了这篇文章后，我对Lamport的观点有一些想法，觉得不吐不快。</p>
+
+<p>其实从文章标题以及作者开篇名义提出的问题来看，显然基于一个假设，或者说事先设定的隐喻，那就是用建筑业来形容软件开发。作者认为建筑设计师在修建房屋之前都会绘制一幅详尽的计划（或蓝图），而软件开发人员却并不这样。以两个不同的行业做对比，认为一个行业这么做了，另一个行业不这样做就有问题，这个假设合理吗？虽然，软件行业中所谓Architecture以及Build的概念确乎来自于建筑行业，甚至这种隐喻在许多年前为诸多大师认可，因而提出诸如软件工程等思想；虽然，它山之石可以攻玉，借鉴别的领域的最佳实践，确乎可以帮助软件开发收获灵感，避免去走太多弯路；然而，毕竟二者之间并不能完全划等号。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/02/07/comments-on-why-we-should-build-software/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -525,49 +571,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/26/weibo-plugin-for-octopress/">Octopress的新浪微博插件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-26T12:26:00+08:00" pubdate data-updated="true">Dec 26<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/26/weibo-plugin-for-octopress/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。一些插件为octopress提供了新浪微博的share按钮，但这并不是我想要的。也许已经有快速现成的方法支持我想要的功能，但我没有找到。那么何必还去上穷碧落下黄泉的去搜索了，身为一个程序员，这种事情就自己搞定好了。正好可以练手Ruby。经过半天的代码编写和测试，我的这个新浪微博插件就实现了。它主要能够运行rake命令，解析最新博客的标题与URL，再替换weibo-config.yml配置文件中配置的微博模板的内容，并将其发布到新浪微博中。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/12/26/weibo-plugin-for-octopress/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -605,6 +608,10 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/07/painting-in-huangjueping-street/">黄桷坪美院的涂鸦街</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
       </li>
     
@@ -618,10 +625,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
     
       <li class="post">
         <a href="/blog/2014/01/13/testing-styles-of-scalatest/">ScalaTest的测试风格</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a>
       </li>
     
   </ul>
@@ -672,7 +675,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
-<a style="font-size: 100%" href="/blog/tags/extjs/">ExtJS</a>
 <a style="font-size: 100%" href="/blog/tags/gae/">GAE</a>
 <a style="font-size: 100%" href="/blog/tags/go/">GO</a>
 <a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
@@ -693,6 +695,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
 <a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
 <a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
 <a style="font-size: 100%" href="/blog/tags/rest/">REST</a>
 <a style="font-size: 192%" href="/blog/tags/reading/">Reading</a>

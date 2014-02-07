@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-01-21T22:05:45+08:00</updated>
+  <updated>2014-02-07T17:59:43+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,28 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[黄桷坪美院的涂鸦街]]></title>
+    <link href="http://agiledon.github.com/blog/2014/02/07/painting-in-huangjueping-street/"/>
+    <updated>2014-02-07T17:56:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/02/07/painting-in-huangjueping-street</id>
+    <content type="html"><![CDATA[<p>昨天去黄桷坪的美院涂鸦一条街。虽然楼宇有些破破烂烂，墙上的涂鸦显得色彩浓厚而杂乱，但那种艺术的氛围还是让我感觉到愉悦。这种涂鸦原本就是要用颜色来描绘一种情绪，又或是依据建筑的外观涂抹一种符合其风格的自然肖像，当然也可以是卡通人物，将凸起的阳台，匍匐的树藤，蔓延的冰冷水管，或屋顶废弃的烟囱连接为一个魔幻世界。这就是艺术让人着迷的地方了，那就是所谓的“创造”。</p>
+
+<p>这幅的颜色涂抹并不张扬，在绿树下显得线条更柔和又抽象：</p>
+
+<p><img class="center" src="http://agiledon.github.com/images/2014/tuya01.jpg"></p>
+
+<p>下面这幅让我产生建筑密集症：
+<img class="center" src="http://agiledon.github.com/images/2014/tuya02.jpg"></p>
+
+<p>这一幅具有萌趣，但很破烂，那些外挂的空调外机反而成了装饰：
+<img class="center" src="http://agiledon.github.com/images/2014/tuya03.jpg"></p>
+
+<p>这种蓝色是我最爱的，虽然破旧，我反而觉得更融洽：
+<img class="center" src="http://agiledon.github.com/images/2014/tuya04.jpg"></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Scala支持与Java的隐式转换]]></title>
@@ -1683,45 +1705,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
 
 <p>纵观整个场景，存在太多制肘，我们也没有太多好的解决方案。而且，我们还应该保证这个解决方案足够简单，因为我们需要在尽量短的周期内对原有方案进行改善，以迎接新一期的业务高峰。这些限制不同于架构约束，它常常迫使我们在逼仄的空间中闪转腾挪。我们还必须尽快地实现方案的原型，并营造与真实业务场景相当的数据，对其进行压力测试和性能测试。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ThoughtWorks读书雷达-架构设计篇]]></title>
-    <link href="http://agiledon.github.com/blog/2013/05/13/architecture-and-design-of-reading-radar/"/>
-    <updated>2013-05-13T20:41:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/05/13/architecture-and-design-of-reading-radar</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/04/reading_radar_02.png">
-编码的能力与设计的能力，二者均不可偏废。我们认为，编码事实上是设计的一部分，只不过它更多的是以代码的形式来呈现，而设计则主要由模型来组成。这种设计模型有助于知识的传递与分享，同时也可以有效地提高编码质量。至于架构，则是软件系统中重要的事物，它关乎的内容往往是难以更改的。卓越的软件设计一定拥有美的架构，也能够有助于促进架构的演化。在ThoughtWorks，并没有明确的架构师职位。如果有，我们也希望这个角色应该是Martin Folwer认为的Architectus Oryzus，这些架构师与处理最困难部分的其他开发人员合作，积极地向项目贡献代码。显然，我们认为架构师也是程序员。这正是我们要在这个读书雷达中列出Architecture &amp; Design象限的原因。</p>
-
-<p>整体概览本象限列出的书籍，若有相关读书经验的人一定会注意到，这里列出的书籍并没有脱离面向对象设计体系的范畴。我们认为，在当今的企业级软件开发领域中，面向对象的思想体系仍然占据了主要的地位。对于程序员而言，建立面向对象的设计思维仍然至关重要。但是，我们从来都不曾忽略函数式语言对设计领域带来的冲击，以及它可能产生的巨大影响。在<a href="http://www.thoughtworks.com/insights">最新的ThoughtWorks Technology Radar</a>的Languages &amp; Frameworks象限中，ThoughtWorks对Scala，Clojure，F#等函数式语言青睐有加，同时也谈到了在Java中引入高阶函数等函数式特性的Functional Java发展趋势。我们也注意到在2012年的DDD eXchange会议上，函数式语言对设计范式的转变产生的影响。遗憾的是，除了少量介绍具体函数式语言的书籍，我们很少看到如面向对象设计一般专门讲解与深入探讨函数式软件设计的书籍。与其滥竽充数，不如抱残守缺。我们选择了在这期读书雷达图中，让函数式设计范式集体缺席。</p>
-
-<p>架构内容包罗万象，在这个象限中我们关注的书籍主要与架构本质内容相关，包括架构风格、架构模式和重要的架构设计原则。虽然云计算、大数据以及REST服务等相关技术已经成为架构师的必备知识，也诞生了许多优秀的书籍；但我们还是希望让这个象限的内容变得更内聚一些，从而帮助读者能够从中挑选出合适的书籍，组成学习架构与设计技能的读书路线图。或许，在将来我们希望引入Tools、Frameworks以及Platforms等更多的象限来囊括这部分内容。</p>
-
-<!--more-->
-
-
-<p>在Architecture &amp; Design象限的基础篇中，我们仍然选择设计模式作为面向对象设计能力提高的突破口。因此，我们将浅显易懂的Head First Design Patterns《<a href="http://book.douban.com/subject/1488876/">深入浅出设计模式</a>》作为学习设计模式的入门书。图文并茂以及与生活有关的设计案例可以很容易启发读者的阅读理解，快速地掌握设计模式的精要。我们唯一担心的是这样一本充斥着玩具项目的入门书籍，可能很难让读者将自己学到的设计思想运用到真实项目中。因此，我们强烈推荐Robert Martin的经典著作Agile Software Development《<a href="http://book.douban.com/subject/1140457/">敏捷软件开发</a>》。该书很好地总结了面向对象设计的SOLID原则，在设计理论上做到了高屋建瓴；同时又给出了丰富的更加贴近真实项目的案例来分析设计模式。</p>
-
-<p>我们必须列入GOF的Design Patterns《<a href="http://book.douban.com/subject/1052241/">设计模式</a>》，不仅仅是因为本书对整个设计领域的影响力，还因为本书讲到的设计理念与原则，至今读来，内涵的真知灼见仍然熠熠生辉。我强烈建议读者仔细研读本书的第一章，几乎每一句话都值得我们深思。即使你曾经读过，我仍然建议你再次阅读。本书第二章给出的案例实在太精妙了，仿佛一件艺术品，虽为人工雕刻，你却看不到斧凿的痕迹。如此浓缩的两章内容，抵得上许多讲述设计模式书籍的千言万语。当然，从今天的视角来看，GOF提出的一些设计模式如今已经变得不合时宜；然而我认为，在你没有真正理解设计模式之前，请先闭上质疑的眼光，收回批判的言辞。</p>
-
-<p>在Medium的层级，我们开始将目光投向更高层次的架构模式，这其中尤以Martin Fowler的著作Patterns of Enterprise Application Architecture《<a href="http://book.douban.com/subject/1230559/">企业应用架构模式</a>》为代表。该书围绕着分层架构模式，根据不同层次呈现出的不同特征，提炼出了在企业开发中得到广泛使用的模式。可以认为这是Martin Fowler给出的企业应用开发的最佳实践，以模式的形式告诉你在不同的场景下，你应该选择何种设计方案。书中的多数模式已经如设计模式一般深入人心，在某种程度上甚至可以作为设计人员的交流术语。换言之，倘若你不曾掌握这些模式，或许会失去在许多场景下说话的资格。</p>
-
-<p>Eric Raymond的The Art of UNIX Programming《<a href="http://book.douban.com/subject/1467587/">UNIX编程艺术</a>》则从艺术的角度剖析了UNIX的编程哲学，使得我们明白软件设计其实并没有阵营之分，即使是面向过程的语言，也能做出优雅的设计。而且，面向对象设计中所有精华的设计思想与原则，其实都可以从UNIX的编程哲学中找到，例如使用简洁的接口拼合简单的部件，清晰胜于机巧，策略同机制分离，设计追求简洁，健壮源于透明与简洁。愿本书能够开拓你的设计视野。</p>
-
-<p>Jaroslav Tulach的Practical API Design《<a href="http://book.douban.com/subject/6003832/">软件框架设计的艺术</a>》则从框架的角度讨论了如何针对API进行实效主义的设计。这在一定程度上弥补了软件设计技术书籍在API设计方面的空白。本书对于API与SPI的讨论，对模块化设计的分析，尤其是来自于NetBeans框架产品版本演化的实践经验，都是非常重要的设计知识。</p>
-
-<p>在Architecture &amp; Design象限中，放入Martin Fowler的Domain Specific Languages《<a href="http://book.douban.com/subject/21964984/">领域特定语言</a>》似乎有些突兀，或许它更应该放入Coding Practice象限。然而，我们认为掌握领域特定语言在一定程度上可以改进我们的设计，尤其是API的设计。无论是内部DSL还是外部DSL，必然会涉及到如何合理设计语言，这其中蕴含了精妙的设计思想。看看书中对状态机以DSL风格进行的分析，阐释各种解析表达式树的算法，讨论如何设计分离更有利于重用和测试，这其中又包括了对语义模型的提炼与分析。无疑，这是一本DSL的集大成之作，但如果我们仅仅将其范围局限在语言层面，你可能会错失对Martin Fowler深邃的设计思想领悟的机会。</p>
-
-<p>入选Advanced层级的书籍除了Eric Evans的Domain Driven Design《<a href="http://book.douban.com/subject/1629512/">领域驱动设计</a>》，均与软件架构直接相关。我们尤其尊重《领域驱动设计》一书在设计领域的开创与先驱地位，它提出的以领域为核心，以建模为手段的设计方法学，为设计业务复杂的大型企业级软件提供了具有实践意义的方法体系，进而催生了领域驱动设计。书中提到的诸多概念包括Entity、Value Object、Repository、Aggregation、Bounded Context，已经成为了设计知识的专用术语。我们强烈推荐此书，是因为对于程序员而言，只要你逃避不了对业务领域的分析与建模，就不能绕过领域驱动设计。</p>
-
-<p>以五卷本的系列著作来阐述软件架构模式，可见作者的宏伟决心以及对架构设计驾轻就熟的能力。我们认为，在模式领域里，以Frank Buschmann为主要贡献者的Pattern-Oriented Software Architecture《<a href="http://book.douban.com/subject/4848563/">面向模式的软件架构</a>》系列对软件设计领域带来的影响巨大而深远。这个系列虽然都是讲解架构模式，但各有其特色，关注点也有不同，分别涵盖了通用架构模式、并发模式、资源模式、分布式模式与模式语言。阅读这一系列确实需要读者下定一百万分的决心，若你不愿意通读，那么它也可以成为很不错的架构模式参考书籍。我们相信，你在软件设计中可能会遭遇的大多数设计场景，都能在本系列中找到对应的架构模式，从而作为设计方案的重要输入。</p>
-
-<p>在Pattern-Oriented Software Architecture系列中，虽然介绍了分布式系统的架构模式，但关于系统集成包括消息处理等内容却显得不够深入和详尽，这是因为已有一本优秀著作专美于前，即Gregor Hohpe与Bobby Woolf的Enterprise Integation Patterns《<a href="http://book.douban.com/subject/1766652/">企业集成模式</a>》。本书关注企业级软件系统的本质问题，那就是集成。对于采用异步消息传递的集成方案，本书针对不同场景给出了不同的解决方案，并以模式的方式进行概述与归纳。倘若你在设计软件系统时，需要使用异步消息传递的方式对系统进行集成，本书可以成为你的最佳指南。</p>
-
-<p>如果将《领域驱动设计》视为应对领域复杂性的解决之道，Michael Nygard的<a href="http://book.douban.com/subject/2065284/">Releast It!</a>则可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
-
-<p>最后一本推荐书籍看似有些大杂烩，实则是大家云集的架构师合唱团，可谓架构的盛宴，那就是Till Adam编著的Beatiful Architecture《<a href="http://book.douban.com/subject/4086029/">架构之美</a>》。全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。当然，在阅读时，千万不要在太多的技术细节中迷失自己，关键还是要把握美丽架构的基本原则。而这正是本书的主线，使得本书能够在散乱的主题中，还能做到“形散而神不散”。</p>
 ]]></content>
   </entry>
   
