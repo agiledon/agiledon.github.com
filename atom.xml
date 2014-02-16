@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-07T17:59:43+08:00</updated>
+  <updated>2014-02-16T20:44:33+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,80 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Akka中的Actor System]]></title>
+    <link href="http://agiledon.github.com/blog/2014/02/16/actor-system-in-akka/"/>
+    <updated>2014-02-16T20:36:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/02/16/actor-system-in-akka</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2014/akka/actorsystem.png">
+图中表示的是一个Actor System，它显示了在这个Actor System中最重要实体之间的关系。</p>
+
+<h2>Actor Reference</h2>
+
+<p>一个Actor引用是ActorRef的子类型，主要目的是发送消息给它表示的Actor。Actor可以通过访问self字段来得到自身的引用；若要访问发送消息的Actor的引用，则访问sender字段。</p>
+
+<h2>Actor Path</h2>
+
+<p>可以认为Actor Path是通过字符串对Actor层级关系进行组合用以标识唯一Actor的一种方式。我们在创建Actor Path时，不用创建Actor；但如果没有创建对应的Actor，则不能创建Actor Reference。还可以创建一个Actor，再终止它，然后再以相同的Actor Path再创建一个新的Actor。新创建的Actor是Actor的新化身（Incarnation），但与旧的Actor并不是同一个。对于这个新化身而言，持有旧Actor的Actor Reference并不是有效的。消息发送给旧的Actor Reference，但不会被传递给新化身，即使它们具有相同的路径。</p>
+
+<p>Actor Path包含协议、位置和actor的层级。如下是一些Actor Path的实例：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>//purely local
+</span><span class='line'>"akka://my-sys/user/service-a/worker1"                   
+</span><span class='line'>
+</span><span class='line'>// remote"akka.tcp://my-sys@host.example.com:5678/user/service-b" 
+</span><span class='line'>
+</span><span class='line'>//clustered (Future Extension)"cluster://my-cluster/service-c"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有两种方式可以获得Actor Reference：创建Actor或查找。</p>
+
+<p>要创建Actor，可以调用ActorSystem.actorOf()，它创建的Actor在guardian actor之下；接着可以调用ActorContext.actorOf()在刚才创建的Actor内生成Actor树。这些方法会返回新创建的Actor的引用。每个Actor都可以直接访问Actor Context来或得它自身、Parent以及所有Children的引用。</p>
+
+<p>要查找Actor Reference，则可调用ActorSystem.actorSelection()方法。要获得限定到特定Actor的生命周期中的ActorRef，可以使用sender引用来发送一条消息如内建的Identity消息给Actor。</p>
+
+<p>在查找ActorRef时，可以使用绝对路径或相对路径。如果是相对路径，可以用两个点（..）表示parent actor。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../brother&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用绝对路径的例子：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;/user/ServiceA&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>还可以使用通配符查询逻辑的Actor层级，例如下面的例子就是发送消息给除当前Actor之外的所有同级Actor（因为..代表parent，所以这里就意味找当前Actor的parent的下级Actor）：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../*&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>区别：actorOf vs. actorSelection vs. actorFor</h2>
+
+<ul>
+<li>actorOf：创建一个新的Actor。创建的Actor为调用该方法时所属的Context下的直接子Actor；</li>
+<li>actorSelection：当消息传递来时，只查找现有的Actor，而不会创建新的Actor；在创建了selection时，也不会验证目标Actors是否存在；</li>
+<li>actorFor（已经被actorSelection所deprecated）：只会查找现有的Actor，而不会创建新的Actor。</li>
+</ul>
+
+
+<h2>远程部署的相互影响</h2>
+
+<p>当一个Actor创建一个Child时，Actor的系统部署器会决定这个新的Actor究竟属于同一个JVM，还是另一个节点。如果是后一种情况，Actor的创建就会通过在不同JVM的网络连接而触发，这属于不同的Actor系统。远程系统会将新的Actor放在一个特定的路径下，且新Actor的Supervisor应该是一个远程的Actor引用。而且，context.parent（Supervisor的引用）与context.path.parent（actor path的父节点）表示的不是同一个Actor。如下图所示：
+<img class="center" src="http://agiledon.github.com/images/2014/akka/remote_actor.png"></p>
+
+<p>注意图中展现的两个不同的Actor系统之间的Route关系。在左边的Actor系统中，Child Actor属于Remote ActorRef，它指向了右边远端Actor系统中的一个Actor节点，该Actor对于右边的Actor系统而言，属于Local ActorRef，但它的Parent Actor却是一个Remote ActorRef，它指向了左边对应的Local ActorRef。</p>
+
+<h2>Actor Path的Top-Level Scopes</h2>
+
+<p>Actor路径的根为&#8221;/&#8221;，而后续层级包括：&#8221;/user&#8221;, &#8220;/system&#8221;, &#8220;deadLetters&#8221;, &#8220;/temp&#8221;, &#8220;/remote&#8221;。</p>
+
+<p>这里体现了Akka遵循“简单”原则的设计目标：<strong>层级中的任何事物都是Actor，且所有Actor的功能都采用同样的方式。</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[黄桷坪美院的涂鸦街]]></title>
@@ -1687,24 +1761,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[处理文件请求限制]]></title>
-    <link href="http://agiledon.github.com/blog/2013/06/13/handle-the-limitation-of-requesting-file/"/>
-    <updated>2013-06-13T21:29:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/06/13/handle-the-limitation-of-requesting-file</id>
-    <content type="html"><![CDATA[<p>在我参与的一个项目中，遇见了一个结合功能性需求与非功能性需求，并要求同时满足的场景。它的功能其实很简单，就是需要向系统发出处理文件的请求。文件的处理则涉及到多个数据表的查询，对相关数据的解析，并依照事先设定好的模板填充数据，最后生成PDF文件。一旦文件处理完毕，就可以返回处理后的文件。由于该系统的业务特殊性，这一功能需求会在某个特定时间，迎来数以万计的客户请求。同时，文件处理功能是一个相对漫长的处理过程，且生成的文件较大。在系统的最初版本中，经历过数千人次的并发数，在只有一台服务器的情况下，导致了大量请求的阻塞。同时，由于加载文件和文件读写需要耗费内存，在请求较为频繁的情况下，多次抛出OutOfMemory异常。即使在最好的情况下，服务端响应了客户端请求，也可能花费大量的时间，严重影响了用户体验。</p>
-
-<p>我们希望在后续版本中解决这一问题。然而，现实总是这么残酷。真正处理文件并提供下载功能的系统并不在我们的掌控之中。它是第三方Vendor提供的Web Service，我们开发的系统仅仅涉及到请求的转发，完成对该Web Service的调用；并在获得结果后，将响应（包含了文件流数据）返回给客户端。换言之，我们既不能改善文件处理的实现逻辑，以提高处理的速度；也无法对该Web Service进行水平伸缩，例如通过引入多台服务器建立集群和负载均衡的方式。</p>
-
-<p>遭遇如此场景实属无奈，要得出好的设计决策就好似戴着镣铐跳舞，只有在自己的服务端下功夫。我们首先想到的是限流（throttle）的方式，通过引入一个类似Controller角色的对象RequestHandlerPool，对客户端的请求进行控制。我们可以设定一个阈值，一旦超过该阈值，就将后续的请求放入队列进行排队。这个限流可以采用简单地在内存实现请求池全局对象。当然，也可以考虑引入消息队列中间件。改进后的时序图如下所示：
-<img class="center" src="http://agiledon.github.com/images/2013/06/filehandling.png"></p>
-
-<p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
-
-<p>纵观整个场景，存在太多制肘，我们也没有太多好的解决方案。而且，我们还应该保证这个解决方案足够简单，因为我们需要在尽量短的周期内对原有方案进行改善，以迎接新一期的业务高峰。这些限制不同于架构约束，它常常迫使我们在逼仄的空间中闪转腾挪。我们还必须尽快地实现方案的原型，并营造与真实业务场景相当的数据，对其进行压力测试和性能测试。</p>
 ]]></content>
   </entry>
   

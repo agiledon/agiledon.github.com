@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Akka | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/akka/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-07T17:59:43+08:00</updated>
+  <updated>2014-02-16T20:44:33+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,72 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Akka中的Actor System]]></title>
+    <link href="http://agiledon.github.com/blog/2014/02/16/actor-system-in-akka/"/>
+    <updated>2014-02-16T20:36:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/02/16/actor-system-in-akka</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/akka/actorsystem.png">
+图中表示的是一个Actor System，它显示了在这个Actor System中最重要实体之间的关系。</p>
+
+<h2>Actor Reference</h2>
+
+<p>一个Actor引用是ActorRef的子类型，主要目的是发送消息给它表示的Actor。Actor可以通过访问self字段来得到自身的引用；若要访问发送消息的Actor的引用，则访问sender字段。</p>
+
+<h2>Actor Path</h2>
+
+<p>可以认为Actor Path是通过字符串对Actor层级关系进行组合用以标识唯一Actor的一种方式。我们在创建Actor Path时，不用创建Actor；但如果没有创建对应的Actor，则不能创建Actor Reference。还可以创建一个Actor，再终止它，然后再以相同的Actor Path再创建一个新的Actor。新创建的Actor是Actor的新化身（Incarnation），但与旧的Actor并不是同一个。对于这个新化身而言，持有旧Actor的Actor Reference并不是有效的。消息发送给旧的Actor Reference，但不会被传递给新化身，即使它们具有相同的路径。</p>
+
+<p>Actor Path包含协议、位置和actor的层级。如下是一些Actor Path的实例：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>//purely local
+</span><span class='line'>"akka://my-sys/user/service-a/worker1"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>// remote"akka.tcp://my-sys@host.example.com:5678/user/service-b"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>//clustered (Future Extension)"cluster://my-cluster/service-c"                       &lt;br/></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>有两种方式可以获得Actor Reference：创建Actor或查找。</p>
+
+<p>要创建Actor，可以调用ActorSystem.actorOf()，它创建的Actor在guardian actor之下；接着可以调用ActorContext.actorOf()在刚才创建的Actor内生成Actor树。这些方法会返回新创建的Actor的引用。每个Actor都可以直接访问Actor Context来或得它自身、Parent以及所有Children的引用。</p>
+
+<p>要查找Actor Reference，则可调用ActorSystem.actorSelection()方法。要获得限定到特定Actor的生命周期中的ActorRef，可以使用sender引用来发送一条消息如内建的Identity消息给Actor。</p>
+
+<p>在查找ActorRef时，可以使用绝对路径或相对路径。如果是相对路径，可以用两个点（..）表示parent actor。例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../brother&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>使用绝对路径的例子：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;/user/ServiceA&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>还可以使用通配符查询逻辑的Actor层级，例如下面的例子就是发送消息给除当前Actor之外的所有同级Actor（因为..代表parent，所以这里就意味找当前Actor的parent的下级Actor）：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../*&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>区别：actorOf vs. actorSelection vs. actorFor</h2>
+
+<ul>
+<li>actorOf：创建一个新的Actor。创建的Actor为调用该方法时所属的Context下的直接子Actor；</li>
+<li>actorSelection：当消息传递来时，只查找现有的Actor，而不会创建新的Actor；在创建了selection时，也不会验证目标Actors是否存在；</li>
+<li>actorFor（已经被actorSelection所deprecated）：只会查找现有的Actor，而不会创建新的Actor。</li>
+</ul>
+
+
+<h2>远程部署的相互影响</h2>
+
+<p>当一个Actor创建一个Child时，Actor的系统部署器会决定这个新的Actor究竟属于同一个JVM，还是另一个节点。如果是后一种情况，Actor的创建就会通过在不同JVM的网络连接而触发，这属于不同的Actor系统。远程系统会将新的Actor放在一个特定的路径下，且新Actor的Supervisor应该是一个远程的Actor引用。而且，context.parent（Supervisor的引用）与context.path.parent（actor path的父节点）表示的不是同一个Actor。如下图所示：
+<img class="center" src="/images/2014/akka/remote_actor.png"></p>
+
+<p>注意图中展现的两个不同的Actor系统之间的Route关系。在左边的Actor系统中，Child Actor属于Remote ActorRef，它指向了右边远端Actor系统中的一个Actor节点，该Actor对于右边的Actor系统而言，属于Local ActorRef，但它的Parent Actor却是一个Remote ActorRef，它指向了左边对应的Local ActorRef。</p>
+
+<h2>Actor Path的Top-Level Scopes</h2>
+
+<p>Actor路径的根为"/"，而后续层级包括："/user", "/system", "deadLetters", "/temp", "/remote"。</p>
+
+<p>这里体现了Akka遵循“简单”原则的设计目标：<strong>层级中的任何事物都是Actor，且所有Actor的功能都采用同样的方式。</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka的Actor及其Supervisors]]></title>

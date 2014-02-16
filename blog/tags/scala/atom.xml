@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Scala | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/scala/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-07T17:59:43+08:00</updated>
+  <updated>2014-02-16T20:44:33+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,72 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Akka中的Actor System]]></title>
+    <link href="http://agiledon.github.com/blog/2014/02/16/actor-system-in-akka/"/>
+    <updated>2014-02-16T20:36:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/02/16/actor-system-in-akka</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/akka/actorsystem.png">
+图中表示的是一个Actor System，它显示了在这个Actor System中最重要实体之间的关系。</p>
+
+<h2>Actor Reference</h2>
+
+<p>一个Actor引用是ActorRef的子类型，主要目的是发送消息给它表示的Actor。Actor可以通过访问self字段来得到自身的引用；若要访问发送消息的Actor的引用，则访问sender字段。</p>
+
+<h2>Actor Path</h2>
+
+<p>可以认为Actor Path是通过字符串对Actor层级关系进行组合用以标识唯一Actor的一种方式。我们在创建Actor Path时，不用创建Actor；但如果没有创建对应的Actor，则不能创建Actor Reference。还可以创建一个Actor，再终止它，然后再以相同的Actor Path再创建一个新的Actor。新创建的Actor是Actor的新化身（Incarnation），但与旧的Actor并不是同一个。对于这个新化身而言，持有旧Actor的Actor Reference并不是有效的。消息发送给旧的Actor Reference，但不会被传递给新化身，即使它们具有相同的路径。</p>
+
+<p>Actor Path包含协议、位置和actor的层级。如下是一些Actor Path的实例：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>//purely local
+</span><span class='line'>"akka://my-sys/user/service-a/worker1"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>// remote"akka.tcp://my-sys@host.example.com:5678/user/service-b"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>//clustered (Future Extension)"cluster://my-cluster/service-c"                       &lt;br/></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>有两种方式可以获得Actor Reference：创建Actor或查找。</p>
+
+<p>要创建Actor，可以调用ActorSystem.actorOf()，它创建的Actor在guardian actor之下；接着可以调用ActorContext.actorOf()在刚才创建的Actor内生成Actor树。这些方法会返回新创建的Actor的引用。每个Actor都可以直接访问Actor Context来或得它自身、Parent以及所有Children的引用。</p>
+
+<p>要查找Actor Reference，则可调用ActorSystem.actorSelection()方法。要获得限定到特定Actor的生命周期中的ActorRef，可以使用sender引用来发送一条消息如内建的Identity消息给Actor。</p>
+
+<p>在查找ActorRef时，可以使用绝对路径或相对路径。如果是相对路径，可以用两个点（..）表示parent actor。例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../brother&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>使用绝对路径的例子：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;/user/ServiceA&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>还可以使用通配符查询逻辑的Actor层级，例如下面的例子就是发送消息给除当前Actor之外的所有同级Actor（因为..代表parent，所以这里就意味找当前Actor的parent的下级Actor）：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../*&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>区别：actorOf vs. actorSelection vs. actorFor</h2>
+
+<ul>
+<li>actorOf：创建一个新的Actor。创建的Actor为调用该方法时所属的Context下的直接子Actor；</li>
+<li>actorSelection：当消息传递来时，只查找现有的Actor，而不会创建新的Actor；在创建了selection时，也不会验证目标Actors是否存在；</li>
+<li>actorFor（已经被actorSelection所deprecated）：只会查找现有的Actor，而不会创建新的Actor。</li>
+</ul>
+
+
+<h2>远程部署的相互影响</h2>
+
+<p>当一个Actor创建一个Child时，Actor的系统部署器会决定这个新的Actor究竟属于同一个JVM，还是另一个节点。如果是后一种情况，Actor的创建就会通过在不同JVM的网络连接而触发，这属于不同的Actor系统。远程系统会将新的Actor放在一个特定的路径下，且新Actor的Supervisor应该是一个远程的Actor引用。而且，context.parent（Supervisor的引用）与context.path.parent（actor path的父节点）表示的不是同一个Actor。如下图所示：
+<img class="center" src="/images/2014/akka/remote_actor.png"></p>
+
+<p>注意图中展现的两个不同的Actor系统之间的Route关系。在左边的Actor系统中，Child Actor属于Remote ActorRef，它指向了右边远端Actor系统中的一个Actor节点，该Actor对于右边的Actor系统而言，属于Local ActorRef，但它的Parent Actor却是一个Remote ActorRef，它指向了左边对应的Local ActorRef。</p>
+
+<h2>Actor Path的Top-Level Scopes</h2>
+
+<p>Actor路径的根为"/"，而后续层级包括："/user", "/system", "deadLetters", "/temp", "/remote"。</p>
+
+<p>这里体现了Akka遵循“简单”原则的设计目标：<strong>层级中的任何事物都是Actor，且所有Actor的功能都采用同样的方式。</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Scala支持与Java的隐式转换]]></title>
@@ -518,79 +584,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <p>无论是依赖关系，还是模块职责展现的抽象层次，spray-client与spray-routing都属于更加high-level的模块。例如spray-client可以视为对spray-can中提供的Http Client APIs的包装，属于更高层次的抽象。spray-routing则以优雅的DSL形式提供了定义REST服务的接口。</p>
 
 <p>观察Spray的模块分解，非常注重职责的内聚，并以较小的粒度划分模块。由于它的设计目标为库，每个模块展现了自己的关注点，使其能够最大限度地被用户单独使用。例如当我仅需要缓存功能时，完全可以忽略Spray中支持HTTP以及REST的模块。同时，它注重调用视角的区分，为不同的调用者提供不同的抽象层次。在充分满足松耦合、高内聚的架构原则之上，适度地考虑接口的可用性与可读性。我喜欢这样一种轻量级的，尽其可能简单的架构设计。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[阅读Scala代码之二]]></title>
-    <link href="http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2/"/>
-    <updated>2013-04-07T22:37:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/04/07/reading-scala-code-2</id>
-    <content type="html"><![CDATA[<p>今天要阅读的代码来自《Scala By Example》一书的第一个例子。这两段代码通过实现一个快速排序算法体现了命令式与函数式之间的区别。这种直观的对比无疑很好地展现了函数式编程的优雅与简洁。让我们来看看这两段代码，首先是命令式的实现方式：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">j</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">);</span> <span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="k">=</span> <span class="n">t</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">def</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">r</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">((</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">var</span> <span class="n">i</span> <span class="k">=</span> <span class="n">l</span><span class="o">;</span> <span class="k">var</span> <span class="n">j</span> <span class="k">=</span> <span class="n">r</span>
-</span><span class='line'>  <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">xs</span><span class="o">(</span><span class="n">j</span><span class="o">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">pivot</span><span class="o">)</span> <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">swap</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
-</span><span class='line'>      <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'>      <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">l</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">j</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">l</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">r</span><span class="o">)</span> <span class="n">sort1</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">r</span><span class="o">)</span>
-</span><span class='line'><span class="n">sort1</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>下面是函数式的方式：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="n">sort</span><span class="o">(</span><span class="n">xs</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">=</span> <span class="mi">1</span><span class="o">)</span> <span class="n">xs</span>
-</span><span class='line'><span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">pivot</span> <span class="k">=</span> <span class="n">xs</span><span class="o">(</span><span class="n">xs</span><span class="o">.</span><span class="n">length</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span>
-</span><span class='line'>  <span class="nc">Array</span><span class="o">.</span><span class="n">concat</span><span class="o">(</span>
-</span><span class='line'>    <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;)),</span>
-</span><span class='line'>         <span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">==),</span>
-</span><span class='line'>    <span class="n">sort</span><span class="o">(</span><span class="n">xs</span> <span class="n">filter</span> <span class="o">(</span><span class="n">pivot</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;)))</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>后者的简洁不言而喻，感觉实在太强烈了。它还展露出一种优雅的从容，因为没有嵌套的while循环，清扫了许多阅读障碍，没有繁文缛节，直指问题本质，显得游刃有余，挥洒自如。究其根由，在于这种函数式的编程方式，完全匹配快速排序的算法原则与过程，就像是那种斩钉截铁的证明，没有多余的啰嗦，结果如同“清水出芙蓉，天然来雕饰”。</p>
-
-<p>不提这种感觉的美感，函数式编程带来的实实在在好处在于它的无副作用特质。这就好似你寻找的药方，不仅能够药到病除，服用后还没有不良反应，真可以说得上奢望了。阅读第二段代码，我们可以非常直观地看到没有任何操作修改了传入的xs数组。从外向内看，返回的数组是通过Array.concat将三段数组给串联了起来，返回了一个新的数组对象。表面看来，这段代码对xs做了filter操作，根据传入的Predicate对数组元素进行筛选。事实上，filter同样是函数，它并没有直接更改被操作的数组，而是返回了一个新的筛选后的数组对象。这意味着，即使我们传入一个val的数组对象，这个sort函数也是不会抱怨的。例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">target</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">7</span><span class="o">)</span>
-</span><span class='line'><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">sort</span><span class="o">(</span><span class="n">target</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>这两种方案皆使用了递归，时间复杂度皆为O(N log(N))，但就简洁性和易读性而言，却不可同日而语。而这种无副作用特性则体现了函数式的不变特质，从而可以极大地简化并发编程模型。当然，这种方法必然会造成空间的浪费；不过，有JVM提供的GC负责内存管理，我们也无需关心这些对象在何时需要被释放。只要系统对内存的要求没有特别的限制，这一问题几乎可以忽略不计。</p>
-
-<p>好吧，让我们再转到Scala语言层面的特性上来。看第一段代码，除了个别关键字与语法不同之外，它几乎与Java代码没有太大的区别，最大的不同还在于Scala将函数（或者说方法）提升到了一等公民。第二段代码中，比较特殊的用法是调用Array的filter函数。该函数的签名为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">filter</span><span class="o">(</span><span class="n">p</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="nc">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>调用时，这段代码传入的表达式比较奇怪。严格意义上，filter显然需要传入一个函数，这个函数要求一个输入参数，返回为Boolean型。如果采用匿名函数的方式，调用方式应该为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>如果使用变量的placeholder，则可以表示为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">xs</span><span class="o">.</span><span class="n">filter</span><span class="o">(&lt;</span><span class="n">em</span><span class="o">&gt;</span> <span class="k">=&gt;</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>而这里使用的则是一种称为partially applied function的方式，它支持我们在不会引起歧义的情况下（主要是指只有一个参数的情形），直接省略该参数变量。只要明白这种语法，这样的代码仍然是可读的。</p>
 ]]></content>
   </entry>
   
