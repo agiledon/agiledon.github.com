@@ -1,0 +1,560 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>Akka中的Remote Actor - 简单文本</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="Akka的设计目标就是为分布式准备的，因此所有Actor之间的交互都是通过消息，且所有动作都是异步的。这种做法就是为了确保Akka的所有功能无论是在单独的JVM，还是包含了成百上千机器的Cluster，都是可用的。 然而，本地与分布式总是存在区别，主要牵涉到两点： 消息需要支持序列号； &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/02/18/remote-actor-in-akka/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="简单文本" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">简单文本</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Akka中的Remote Actor</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-18T19:27:00+08:00" pubdate data-updated="true">Feb 18<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Akka的设计目标就是为分布式准备的，因此<strong>所有Actor之间的交互都是通过消息，且所有动作都是异步的</strong>。这种做法就是为了确保Akka的所有功能无论是在单独的JVM，还是包含了成百上千机器的Cluster，都是可用的。</p>
+
+<p>然而，本地与分布式总是存在区别，主要牵涉到两点：</p>
+
+<ul>
+<li><p>消息需要支持序列号；</p></li>
+<li><p>消息传递的可靠性问题；</p></li>
+</ul>
+
+
+<p>为了保证本地处理与分布式处理的透明化，Akka几乎没有特别为Remoting Layer提供专门的API，区别仅在于配置。开发者只需遵循Actor设计的原则，然后在配置中指定Actor子树的远程配置即可。当然，在代码层面，Akka也提供了唯一与众不同的API，就是在包含部署信息的Props中，可以允许设置Deploy实例。不过，这件事情是可以配置的。倘若两者都设置了，配置文件优先。</p>
+
+<p>若要支持Scale up，Akka提供了多个Actor子树以支持并行处理。然后以多种方式进行路由。开发者唯一要做的事情是声明一个确定的Actor作为“withRouter”，事实上就是创建一个路由Actor，它能够生成所需类型Children的数量值，该数量值是可以配置的。</p>
+
+<h2>Remote Actor</h2>
+
+<p>要调用Akka的Remote Actor，则需要对Remote Actor进行部署。首先，我们可以通过Akka的<a href="http://akka.io/downloads/">官方网站</a>下载Akka的库。我这里下载的是2.2.3版本。下载后解压。与部署有关的目录包括bin和deploy。在bin目录下是运行Akka的脚本。而在deploy目录下，除了Readme文件外，此时为空。</p>
+
+<p>现在，我们可以编写一个Remote Actor。Akka要求我们定义一个Actor，以及它对应的Application。Remote Actor与普通的Actor定义没有什么区别，例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.Actor</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">RemoteActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">message</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
+</span><span class='line'>      <span class="n">sender</span> <span class="o">!</span> <span class="n">message</span> <span class="o">+</span> <span class="s">&quot;got something&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但对于Application而言，则要求派生自akka kernel下的Bootable。akka kernel是单独的一个包，并没有包含在akka-actor中。因此需要定义依赖，例如使用sbt：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scalaVersion</span> <span class="o">:=</span> <span class="s">&quot;2.10.2&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-actor_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-kernel_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>定义的Application如下所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.kernel.Bootable</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">Props</span><span class="o">,</span> <span class="nc">ActorSystem</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.typesafe.config.ConfigFactory</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">RemoteNodeApplication</span> <span class="k">extends</span> <span class="nc">Bootable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;RemoteNodeApp&quot;</span><span class="o">,</span> <span class="nc">ConfigFactory</span><span class="o">.</span><span class="n">load</span><span class="o">().</span><span class="n">getConfig</span><span class="o">(</span><span class="s">&quot;RemoteSys&quot;</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">startup</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">RemoteActor</span><span class="o">],</span> <span class="n">name</span> <span class="k">=</span> <span class="s">&quot;remoteActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">shutdown</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们需要实现startup与shutdown方法。而在Application中，会加载配置文件application.conf的配置信息创建ActorSystem。配置如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>RemoteSys {
+</span><span class='line'>    akka {
+</span><span class='line'>        actor {
+</span><span class='line'>            provider = "akka.remote.RemoteActorRefProvider"
+</span><span class='line'>        }
+</span><span class='line'>        remote {
+</span><span class='line'>            enabled-transports = ["akka.remote.netty.tcp"]
+</span><span class='line'>            netty.tcp {
+</span><span class='line'>                hostname = "192.168.3.23"
+</span><span class='line'>                port = 2552
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>部署Remote Actor</h2>
+
+<p>application.conf文件应该放到resources目录下。编译打包。然后将编译得到的jar包拷贝到akka的deploy目录下。然后转移到bin目录下，执行akka脚本（windows下是执行akka.bat)：
+./akka com.agiledon.akka.RemoteNodeApplication</p>
+
+<p>akka命令后面是application类的full name。如果一切正常，就可以显示如下界面：
+<img class="center" src="/images/2014/akka/akka_console.png"></p>
+
+<h2>Client(Local) Actor</h2>
+
+<p>要调用部署了的Remote Actor，客户端的Actor可以通过将Remote Actor的address传递给actorSelection()方法（之前的版本为actorFor，目前已经被Deprecated），以此来获得Remote Actor的Ref。如下所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">ActorLogging</span><span class="o">,</span> <span class="nc">Actor</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.util.Timeout</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.pattern.ask</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.Await</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">LocalActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">remoteActor</span> <span class="k">=</span> <span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;akka.tcp://RemoteNodeApp@192.168.3.23:2552/user/remoteActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">timeout</span> <span class="k">=</span> <span class="nc">Timeout</span><span class="o">(</span><span class="mi">5</span> <span class="n">seconds</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">message</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">future</span> <span class="k">=</span> <span class="o">(</span><span class="n">remoteActor</span> <span class="o">?</span> <span class="n">message</span><span class="o">).</span><span class="n">mapTo</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">future</span><span class="o">,</span> <span class="n">timeout</span><span class="o">.</span><span class="n">duration</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;Message received from server -&gt; {}&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同样需要定义配置文件，但无需指定hostname与port了：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>LocalSys {
+</span><span class='line'>  akka {
+</span><span class='line'>      actor {
+</span><span class='line'>          provider = "akka.remote.RemoteActorRefProvider"
+</span><span class='line'>      }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编写Application，使其可以被运行以调用Remote Actor：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">Props</span><span class="o">,</span> <span class="nc">ActorSystem</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.typesafe.config.ConfigFactory</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">LocalNodeApplication</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;LocalNodeApp&quot;</span><span class="o">,</span> <span class="nc">ConfigFactory</span><span class="o">.</span><span class="n">load</span><span class="o">().</span><span class="n">getConfig</span><span class="o">(</span><span class="s">&quot;LocalSys&quot;</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">localActor</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">LocalActor</span><span class="o">],</span> <span class="n">name</span> <span class="k">=</span> <span class="s">&quot;localActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">localActor</span> <span class="o">!</span> <span class="s">&quot;hello demo actor&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nc">Thread</span><span class="o">.</span><span class="n">sleep</span><span class="o">(</span><span class="mi">4000</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在客户端模块的根目录下创建build.sbt文件：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>
+</span><span class='line'><span class="n">name</span> <span class="o">:=</span> <span class="s">&quot;actor-local&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">version</span> <span class="o">:=</span> <span class="s">&quot;1.0&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scalaVersion</span> <span class="o">:=</span> <span class="s">&quot;2.10.2&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-actor_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-remote_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>转移到客户端模块的根目录下，执行sbt命令，进入SBT。执行compile命令编译客户端模块actor-local。然后执行run命令，若运行成功，即可看到如下信息：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>[info] Running com.agiledon.akka.LocalNodeApplication
+</span><span class='line'>[INFO] [02/18/2014 19:11:47.461] [run-main] [Remoting] Starting remoting
+</span><span class='line'>[INFO] [02/18/2014 19:11:47.725] [run-main] [Remoting] Remoting started; listening on addresses :[akka.tcp://LocalNodeApp@192.168.3.38:2552]
+</span><span class='line'>[INFO] [02/18/2014 19:11:48.066] [LocalNodeApp-akka.actor.default-dispatcher-3] [akka://LocalNodeApp/user/localActor] Message received from server -> hello demo actor got something</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-18T19:27:00+08:00" pubdate data-updated="true">Feb 18<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='tag' href='/blog/tags/akka/'>Akka</a>, <a class='tag' href='/blog/tags/scala/'>Scala</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2014/02/18/remote-actor-in-akka/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2014/02/18/remote-actor-in-akka/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/16/actor-system-in-akka/" title="Previous Post: Akka中的Actor System">&laquo; Akka中的Actor System</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/profile.png" align="center"/></p>
+  	<p><strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Senior Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/02/18/remote-actor-in-akka/">Akka中的Remote Actor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/16/actor-system-in-akka/">Akka中的Actor System</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/07/painting-in-huangjueping-street/">黄桷坪美院的涂鸦街</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+<section>
+  <h1>Tag Cloud</h1>
+  <ul class="tag-cloud">
+<a style="font-size: 100%" href="/blog/tags/api/">API</a>
+<a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
+<a style="font-size: 144%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
+<a style="font-size: 100%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 100%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
+<a style="font-size: 164%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 202%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 100%" href="/blog/tags/go/">GO</a>
+<a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
+<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
+<a style="font-size: 128%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
+<a style="font-size: 100%" href="/blog/tags/language/">Language</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
+<a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
+<a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
+<a style="font-size: 100%" href="/blog/tags/nosql/">NoSQL</a>
+<a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
+<a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
+<a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
+<a style="font-size: 100%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 192%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
+<a style="font-size: 187%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
+<a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
+<a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
+
+  </ul>
+</section>
+<section>
+  <h1>Sina Weibo</h1>
+    <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/bruce.e.zhang@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+<section>
+  <h1>Visitor</h1>
+  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/02/18/remote-actor-in-akka/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/02/18/remote-actor-in-akka/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

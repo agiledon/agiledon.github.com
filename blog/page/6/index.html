@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="美国计算机科学家，LaTex的作者Leslie Lamport说：“分布式系统就是这样一个系统，系统中一个你甚至都不知道的计算机出了故障，却可能导致你自己的计算机不可用。”一语道破了开发分布式系统的玄机，那就是它的复杂与不可控。所以Martin Fowler强调： &hellip;">
+  <meta name="description" content="在我们进行的一个项目中，需要测试是否按照要求正确写入到日志中。例如，我们定义了这样的类和方法： public class ServiceClient { public &lt;S, D&gt; D sendRequest(S request, final Class&lt;D&gt; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,69 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/28/mock-log/">对Log进行mock</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-28T11:13:00+08:00" pubdate data-updated="true">Dec 28<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/28/mock-log/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在我们进行的一个项目中，需要测试是否按照要求正确写入到日志中。例如，我们定义了这样的类和方法：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClient</span> <span class="o">{</span>
+</span><span class='line'>     <span class="kd">public</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">,</span> <span class="n">D</span><span class="o">&gt;</span> <span class="n">D</span> <span class="n">sendRequest</span><span class="o">(</span><span class="n">S</span> <span class="n">request</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">responseType</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">Source</span> <span class="n">source</span> <span class="o">=</span> <span class="n">jaxbUtil</span><span class="o">.</span><span class="na">marshall</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nf">sendRequest</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">responseType</span><span class="o">);</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="kd">private</span> <span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">D</span> <span class="n">sendRequest</span><span class="o">(</span><span class="n">Source</span> <span class="n">source</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">responseType</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">webServiceTemplate</span><span class="o">.</span><span class="na">sendSourceAndReceive</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">SourceExtractor</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>               <span class="nd">@Override</span>
+</span><span class='line'>               <span class="kd">public</span> <span class="n">D</span> <span class="nf">extractData</span><span class="o">(</span><span class="n">Source</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">TransformerException</span> <span class="o">{</span>
+</span><span class='line'>                      <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>                           <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;Received response: %s&quot;</span><span class="o">,</span> <span class="n">XmlSourceUtil</span><span class="o">.</span><span class="na">toXml</span><span class="o">(</span><span class="n">response</span><span class="o">)));</span>
+</span><span class='line'>                      <span class="o">}</span>
+</span><span class='line'>                      <span class="k">return</span> <span class="n">jaxbUtil</span><span class="o">.</span><span class="na">unmarshall</span><span class="o">(</span><span class="n">response</span><span class="o">,</span> <span class="n">responseType</span><span class="o">);</span>
+</span><span class='line'>               <span class="o">}</span>
+</span><span class='line'>     <span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在，我们要测试在Debug被enable的情况下，是否真正写了日志。我们不可能在单元测试中去访问日志文件，然后判断日志是否写入。一方面，这影响了单元测试的速度，另一方面也会造成对日志文件的依赖。我们的做法是在测试时，获得该日志，然后将该日志的所有Appenders去掉，然后加入属于内存中的Appender，即WriterAppender，然后获得该Appender写入的日志内容，对这个内容进行断言。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/28/mock-log/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -491,52 +554,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/28/refactoring-from-beginning/">重构-勿以善小而不为</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-28T16:36:00+08:00" pubdate data-updated="true">Jun 28<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/06/28/refactoring-from-beginning/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/2012/12/refactoring.jpg" width="400" height="200">
-重构最大的敌人不是技巧与能力，而是懒惰，或者说是态度。许多细小的重构看似无足轻重，例如方法重命名，提取方法，即使重构了，似乎对代码的结构也没有太大的影响，于是就决定淡然处之，心里想“事情还未到不可挽回的地步，实现功能要紧，至于重构，还是以后再做吧！”这样一想，于是就会滋生得过且过的想法，等到代码开始变得一团糟时，重构已经变得无比困难了。此时需要的重构技巧，将百倍难于发现坏味道之初。</p>
-
-<p>在我参加的前一个项目中，我们定义了一个处理OrderSet的Controller。刚刚开始开发时，对于OrderSet的操作并不多，主要是Search与Count操作。OrderSet分为WithDetails与WithoutDetail两种类型。为了实现的简单，我们将这两种类型的操作都放在一个Controller中。随着操作的逐渐增多，这个Controller就变得越来越庞大，逐渐变得臃肿起来。每当我需要调用或者修改Controller时，我都在想：“嗯，这个代码太糟糕了，什么时候给它重构一下。”想是这么想，却一直扮演着说话的巨人，行动的矮子。即使兴起这样的念头，又因为其他的工作将此念头浇灭。直到有一天，这个Controller的代码已经到了忍无可忍的地步，我和我的Pair终于达成一致意见，决定对此代码进行手术。我们花费了近一天的时间对Controller以及相关的Repository进行了彻底的重构。重构前后的代码天差地别，我终于可以不用像吃了苍蝇那般看着代码恶心了。这种重构后体验到的愉悦简直无与伦比，最关键是结果令人满意，重构后的代码变得更可读，更简单，也更容易增加新的功能。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/06/28/refactoring-from-beginning/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -574,6 +591,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/18/remote-actor-in-akka/">Akka中的Remote Actor</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/16/actor-system-in-akka/">Akka中的Actor System</a>
       </li>
     
@@ -587,10 +608,6 @@
     
       <li class="post">
         <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/16/actor-and-its-supervisors-of-akka/">Akka的Actor及其Supervisors</a>
       </li>
     
   </ul>
@@ -630,7 +647,7 @@
   <ul class="tag-cloud">
 <a style="font-size: 100%" href="/blog/tags/api/">API</a>
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
-<a style="font-size: 128%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 144%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
 <a style="font-size: 100%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 100%" href="/blog/tags/book/">Book</a>
@@ -669,7 +686,7 @@
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 183%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 187%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>

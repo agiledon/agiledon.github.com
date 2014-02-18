@@ -10,7 +10,11 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="无论学习什么技术，都需要了解该技术的本质。若是靠死记硬背该技术提供的方法或者语法，终归是知其然而不知其所以然，当发现错误时，你根本不知道是什么原因导致的。我在使用Git时，就处于这种知其然而不知其所以然的状态。现在，再来补补课。 Git有三个工作区域，分别为：工作目录（Working &hellip;">
+  <meta name="description" content="目前来看，推行TDD的障碍大约有如下几点： 1. 开发人员的质量意识；
+2. 分析需求并进行任务分解的能力；
+3. 将测试作为开发起点的开发习惯；
+4. 开发人员的重构能力，包括如何识别坏味道和如何运用重构手法；
+5. 单元测试的基础设施，尤其是测试数据准备； 开发人员的质量意识 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +71,62 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-25T21:26:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/12/25/thought-about-applying-tdd/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>目前来看，推行TDD的障碍大约有如下几点：</p>
+
+<pre><code>1. 开发人员的质量意识；
+2. 分析需求并进行任务分解的能力；
+3. 将测试作为开发起点的开发习惯；
+4. 开发人员的重构能力，包括如何识别坏味道和如何运用重构手法；
+5. 单元测试的基础设施，尤其是测试数据准备；
+</code></pre>
+
+<h2>开发人员的质量意识</h2>
+
+<p>开发人员对于软件质量，常常偏重于软件的外部质量，体现在他们的工作效益上，就是被测试人员发现的缺陷数。而惯常的软件开发思想，总是认为开发人员不适合做测试，因为他们总是站在自己的角度去看待问题，从而可能忽略真正需要测试的用例。这种思想给了开发人员一个错误信号，认为自己不应该写测试，即使写了测试，也写不好。殊不知，由开发人员编写测试带来的收益，最重要的一点不在于测试本身，而在于它能促进开发、测试以及需求分析人员的交流与沟通。而测试先行的方式也能让开发者跳出实现的窠臼，而从业务角度去看待问题，从消费者角度去思量接口。此外，由于开发者总是惫懒地将测试职责委派给了专门的测试人员，于是渐渐会产生一种依赖心理。测试人员的精确测试当然可以保障质量，但这种测试通常是黑盒测试，这里保障的质量主要还是外部质量。而且，这种测试带来的反馈总是慢于开发进度，一旦发现缺陷，修复缺陷的成本也会变得更高。</p>
+
+<p>软件质量除了外部质量之外，内部质量同等重要。软件成本等于开发成本与维护成本之和，而维护成本的增加主要就归咎于内部质量的糟糕。这里讲的内部质量包括：代码的可读性、可重用性、可扩展性等。当我们让开发人员为原有代码编写单元测试时，总是觉得举步维艰。分析原因，主要问题在于代码的可测试性不好。要测试一个类，竟然连简单创建它的对象都变成了不可能完成的任务。我们为这样的代码编写单元测试，就好像在触及蜘蛛网，一旦被这些网丝给牵住，缠住，就可能无法摆脱。除非我们能够快刀斩乱麻，那对于这个系统而言，就不是维护，而是重写了。测试先行的开发至少在一定程度规避了这样的问题。即使代码的内部质量仍有所欠缺，但在足够覆盖率的保护下，我们要进行重构也变得更为简单。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/12/25/thought-about-applying-tdd/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -552,59 +612,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/06/16/reuse-with-extention-method/">使用扩展方法实现重用</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-16T20:06:00+08:00" pubdate data-updated="true">Jun 16<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/16/reuse-with-extention-method/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。
-<img class="center" src="/images/2013/06/IRepository.png"></p>
-
-<p>对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave()的区别仅在于它要接收的参数只是一个实体对象。事实上，我们可以调用IRepository接口本身提供的BatchSave()来实现Save()方法。Save()方法的实现对于所有实现了IRepository接口的类而言，完全是一样的。那么，我们该如何为IRepository接口增加一个Save()方法，同时又能避免代码做出太多修改？由于接口自身并不能提供实现，因此唯一可以容纳这个方法实现的就是实现了IRepository接口的类。一个办法是为所有这些实现类定义一个公共的抽象父类，并让它再实现IRepository接口，于是将Save()的实现放到这个抽象父类中，就可以使得所有子类共享Save()方法的实现了。可是，为了这个Save()方法的实现与重用，专门引入一个抽象父类，是否值得呢？除非在现有的Repository继承体系中，已经存在了这样的抽象父类，否则该类的引入会导致整个继承体系发生较大的变化。</p>
-
-<p>在.NET中，我们可以巧妙地借助扩展方法来完成对Save()方法的重用，同时又能保证现有的继承体系不变。方法就是为IRepository接口提供扩展方法：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RepositoryExtensions</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">Save</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">repository</span><span class="p">,</span> <span class="n">T</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">repo</span><span class="p">.</span><span class="n">BatchSave</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="n">entity</span><span class="p">});</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -642,6 +649,10 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/18/remote-actor-in-akka/">Akka中的Remote Actor</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/16/actor-system-in-akka/">Akka中的Actor System</a>
       </li>
     
@@ -655,10 +666,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
     
       <li class="post">
         <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/16/actor-and-its-supervisors-of-akka/">Akka的Actor及其Supervisors</a>
       </li>
     
   </ul>
@@ -698,7 +705,7 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
   <ul class="tag-cloud">
 <a style="font-size: 100%" href="/blog/tags/api/">API</a>
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
-<a style="font-size: 128%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 144%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
 <a style="font-size: 100%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 100%" href="/blog/tags/book/">Book</a>
@@ -737,7 +744,7 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 183%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 187%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 100%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>

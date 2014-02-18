@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-16T20:44:33+08:00</updated>
+  <updated>2014-02-18T19:41:59+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,187 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Akka中的Remote Actor]]></title>
+    <link href="http://agiledon.github.com/blog/2014/02/18/remote-actor-in-akka/"/>
+    <updated>2014-02-18T19:27:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/02/18/remote-actor-in-akka</id>
+    <content type="html"><![CDATA[<p>Akka的设计目标就是为分布式准备的，因此<strong>所有Actor之间的交互都是通过消息，且所有动作都是异步的</strong>。这种做法就是为了确保Akka的所有功能无论是在单独的JVM，还是包含了成百上千机器的Cluster，都是可用的。</p>
+
+<p>然而，本地与分布式总是存在区别，主要牵涉到两点：</p>
+
+<ul>
+<li><p>消息需要支持序列号；</p></li>
+<li><p>消息传递的可靠性问题；</p></li>
+</ul>
+
+
+<p>为了保证本地处理与分布式处理的透明化，Akka几乎没有特别为Remoting Layer提供专门的API，区别仅在于配置。开发者只需遵循Actor设计的原则，然后在配置中指定Actor子树的远程配置即可。当然，在代码层面，Akka也提供了唯一与众不同的API，就是在包含部署信息的Props中，可以允许设置Deploy实例。不过，这件事情是可以配置的。倘若两者都设置了，配置文件优先。</p>
+
+<p>若要支持Scale up，Akka提供了多个Actor子树以支持并行处理。然后以多种方式进行路由。开发者唯一要做的事情是声明一个确定的Actor作为“withRouter”，事实上就是创建一个路由Actor，它能够生成所需类型Children的数量值，该数量值是可以配置的。</p>
+
+<h2>Remote Actor</h2>
+
+<p>要调用Akka的Remote Actor，则需要对Remote Actor进行部署。首先，我们可以通过Akka的<a href="http://akka.io/downloads/">官方网站</a>下载Akka的库。我这里下载的是2.2.3版本。下载后解压。与部署有关的目录包括bin和deploy。在bin目录下是运行Akka的脚本。而在deploy目录下，除了Readme文件外，此时为空。</p>
+
+<p>现在，我们可以编写一个Remote Actor。Akka要求我们定义一个Actor，以及它对应的Application。Remote Actor与普通的Actor定义没有什么区别，例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.Actor</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">RemoteActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">message</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
+</span><span class='line'>      <span class="n">sender</span> <span class="o">!</span> <span class="n">message</span> <span class="o">+</span> <span class="s">&quot;got something&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但对于Application而言，则要求派生自akka kernel下的Bootable。akka kernel是单独的一个包，并没有包含在akka-actor中。因此需要定义依赖，例如使用sbt：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scalaVersion</span> <span class="o">:=</span> <span class="s">&quot;2.10.2&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-actor_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-kernel_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>定义的Application如下所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.kernel.Bootable</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">Props</span><span class="o">,</span> <span class="nc">ActorSystem</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.typesafe.config.ConfigFactory</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">RemoteNodeApplication</span> <span class="k">extends</span> <span class="nc">Bootable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;RemoteNodeApp&quot;</span><span class="o">,</span> <span class="nc">ConfigFactory</span><span class="o">.</span><span class="n">load</span><span class="o">().</span><span class="n">getConfig</span><span class="o">(</span><span class="s">&quot;RemoteSys&quot;</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">startup</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">RemoteActor</span><span class="o">],</span> <span class="n">name</span> <span class="k">=</span> <span class="s">&quot;remoteActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">shutdown</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们需要实现startup与shutdown方法。而在Application中，会加载配置文件application.conf的配置信息创建ActorSystem。配置如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>RemoteSys {
+</span><span class='line'>    akka {
+</span><span class='line'>        actor {
+</span><span class='line'>            provider = "akka.remote.RemoteActorRefProvider"
+</span><span class='line'>        }
+</span><span class='line'>        remote {
+</span><span class='line'>            enabled-transports = ["akka.remote.netty.tcp"]
+</span><span class='line'>            netty.tcp {
+</span><span class='line'>                hostname = "192.168.3.23"
+</span><span class='line'>                port = 2552
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>部署Remote Actor</h2>
+
+<p>application.conf文件应该放到resources目录下。编译打包。然后将编译得到的jar包拷贝到akka的deploy目录下。然后转移到bin目录下，执行akka脚本（windows下是执行akka.bat)：
+./akka com.agiledon.akka.RemoteNodeApplication</p>
+
+<p>akka命令后面是application类的full name。如果一切正常，就可以显示如下界面：
+<img class="center" src="http://agiledon.github.com/images/2014/akka/akka_console.png"></p>
+
+<h2>Client(Local) Actor</h2>
+
+<p>要调用部署了的Remote Actor，客户端的Actor可以通过将Remote Actor的address传递给actorSelection()方法（之前的版本为actorFor，目前已经被Deprecated），以此来获得Remote Actor的Ref。如下所示：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">ActorLogging</span><span class="o">,</span> <span class="nc">Actor</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.util.Timeout</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.pattern.ask</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.Await</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">LocalActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">remoteActor</span> <span class="k">=</span> <span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;akka.tcp://RemoteNodeApp@192.168.3.23:2552/user/remoteActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">timeout</span> <span class="k">=</span> <span class="nc">Timeout</span><span class="o">(</span><span class="mi">5</span> <span class="n">seconds</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">message</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">future</span> <span class="k">=</span> <span class="o">(</span><span class="n">remoteActor</span> <span class="o">?</span> <span class="n">message</span><span class="o">).</span><span class="n">mapTo</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">future</span><span class="o">,</span> <span class="n">timeout</span><span class="o">.</span><span class="n">duration</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;Message received from server -&gt; {}&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同样需要定义配置文件，但无需指定hostname与port了：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>LocalSys {
+</span><span class='line'>  akka {
+</span><span class='line'>      actor {
+</span><span class='line'>          provider = "akka.remote.RemoteActorRefProvider"
+</span><span class='line'>      }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编写Application，使其可以被运行以调用Remote Actor：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">Props</span><span class="o">,</span> <span class="nc">ActorSystem</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.typesafe.config.ConfigFactory</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">LocalNodeApplication</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;LocalNodeApp&quot;</span><span class="o">,</span> <span class="nc">ConfigFactory</span><span class="o">.</span><span class="n">load</span><span class="o">().</span><span class="n">getConfig</span><span class="o">(</span><span class="s">&quot;LocalSys&quot;</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">localActor</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">LocalActor</span><span class="o">],</span> <span class="n">name</span> <span class="k">=</span> <span class="s">&quot;localActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">localActor</span> <span class="o">!</span> <span class="s">&quot;hello demo actor&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nc">Thread</span><span class="o">.</span><span class="n">sleep</span><span class="o">(</span><span class="mi">4000</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在客户端模块的根目录下创建build.sbt文件：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>
+</span><span class='line'><span class="n">name</span> <span class="o">:=</span> <span class="s">&quot;actor-local&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">version</span> <span class="o">:=</span> <span class="s">&quot;1.0&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">scalaVersion</span> <span class="o">:=</span> <span class="s">&quot;2.10.2&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-actor_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-remote_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>转移到客户端模块的根目录下，执行sbt命令，进入SBT。执行compile命令编译客户端模块actor-local。然后执行run命令，若运行成功，即可看到如下信息：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>[info] Running com.agiledon.akka.LocalNodeApplication
+</span><span class='line'>[INFO] [02/18/2014 19:11:47.461] [run-main] [Remoting] Starting remoting
+</span><span class='line'>[INFO] [02/18/2014 19:11:47.725] [run-main] [Remoting] Remoting started; listening on addresses :[akka.tcp://LocalNodeApp@192.168.3.38:2552]
+</span><span class='line'>[INFO] [02/18/2014 19:11:48.066] [LocalNodeApp-akka.actor.default-dispatcher-3] [akka://LocalNodeApp/user/localActor] Message received from server -> hello demo actor got something</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka中的Actor System]]></title>
@@ -1737,30 +1918,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>如上的例子都可以通过一些细小的重构手法改进代码，使得代码的结构更加清晰，并有利于代码的重用。我深信大多数开发人员都具备这样的技能，且只需要稍加思索，即能发现这些代码的坏味。然而，我们总是因为种种原因，对这种还不太严重的“破窗”风景视而不见。殊不知当我们开始对这种不够整洁的代码采取纵容态度时，就可能会是代码腐化之始。一旦真正腐化，就将积重难返，到了那时，我们就可能真正无能为力了。</p>
 
 <p>你是否遭遇过这样的情形？面对一个承担了无数职责似乎无所不能的上帝类，它被无数多的Client调用，且又没有足够覆盖率的测试，你是否会产生心有余而力不足的感慨。这时的你，是否像一位奋战沙场，出生入死却无力挽回败局的将军，面对那汹涌而来占据压倒性优势的敌军，唯有对天长叹：“某有心杀贼，却无力回天啊！”</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用扩展方法实现重用]]></title>
-    <link href="http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method/"/>
-    <updated>2013-06-16T20:06:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method</id>
-    <content type="html"><![CDATA[<p>我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。
-<img class="center" src="http://agiledon.github.com/images/2013/06/IRepository.png"></p>
-
-<p>对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave()的区别仅在于它要接收的参数只是一个实体对象。事实上，我们可以调用IRepository接口本身提供的BatchSave()来实现Save()方法。Save()方法的实现对于所有实现了IRepository接口的类而言，完全是一样的。那么，我们该如何为IRepository接口增加一个Save()方法，同时又能避免代码做出太多修改？由于接口自身并不能提供实现，因此唯一可以容纳这个方法实现的就是实现了IRepository接口的类。一个办法是为所有这些实现类定义一个公共的抽象父类，并让它再实现IRepository接口，于是将Save()的实现放到这个抽象父类中，就可以使得所有子类共享Save()方法的实现了。可是，为了这个Save()方法的实现与重用，专门引入一个抽象父类，是否值得呢？除非在现有的Repository继承体系中，已经存在了这样的抽象父类，否则该类的引入会导致整个继承体系发生较大的变化。</p>
-
-<p>在.NET中，我们可以巧妙地借助扩展方法来完成对Save()方法的重用，同时又能保证现有的继承体系不变。方法就是为IRepository接口提供扩展方法：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RepositoryExtensions</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">Save</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">repository</span><span class="p">,</span> <span class="n">T</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">repo</span><span class="p">.</span><span class="n">BatchSave</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="n">entity</span><span class="p">});</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 ]]></content>
   </entry>
   
