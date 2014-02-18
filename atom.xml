@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-18T19:41:59+08:00</updated>
+  <updated>2014-02-18T21:18:25+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -94,13 +94,15 @@
 </span><span class='line'>        remote {
 </span><span class='line'>            enabled-transports = ["akka.remote.netty.tcp"]
 </span><span class='line'>            netty.tcp {
-</span><span class='line'>                hostname = "192.168.3.23"
+</span><span class='line'>                hostname = "192.168.3.34"
 </span><span class='line'>                port = 2552
 </span><span class='line'>            }
 </span><span class='line'>        }
 </span><span class='line'>    }
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
 
+
+<p>端口号2552也是Akka的默认端口号。</p>
 
 <h2>部署Remote Actor</h2>
 
@@ -123,7 +125,7 @@
 </span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
 </span><span class='line'>
 </span><span class='line'><span class="k">class</span> <span class="nc">LocalActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">remoteActor</span> <span class="k">=</span> <span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;akka.tcp://RemoteNodeApp@192.168.3.23:2552/user/remoteActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">remoteActor</span> <span class="k">=</span> <span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;akka.tcp://RemoteNodeApp@192.168.3.34:2552/user/remoteActor&quot;</span><span class="o">)</span>
 </span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">timeout</span> <span class="k">=</span> <span class="nc">Timeout</span><span class="o">(</span><span class="mi">5</span> <span class="n">seconds</span><span class="o">)</span>
 </span><span class='line'>
 </span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
