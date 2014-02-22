@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Git | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/git/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-18T21:18:25+08:00</updated>
+  <updated>2014-02-22T23:05:44+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -21,20 +21,20 @@
     <content type="html"><![CDATA[<p>无论学习什么技术，都需要了解该技术的本质。若是靠死记硬背该技术提供的方法或者语法，终归是知其然而不知其所以然，当发现错误时，你根本不知道是什么原因导致的。我在使用Git时，就处于这种知其然而不知其所以然的状态。现在，再来补补课。</p>
 
 <p>Git有三个工作区域，分别为：工作目录（Working Directory）、暂存区（Stage或Index）以及资源库（Repository或Git Directory）。下图是文件在这三个工作区域之间的关系：
-<img class="center" src="images/2013/lifecycle.png"></p>
+{% img center images/2013/lifecycle.png %}</p>
 
 <p>参考Pro Git一书，它给出了Git的几个要点：
 * 直接快照，而非比较差异：Git与其他版本管理系统的主要差别在于，Git只关心文件数据的整体是否发生了变化，而其他多数版本管理系统则只关心文件内容的具体差异。Git并不保存文件前后变化的差异数据，更像是把变化的文件做一个快照，然后记录在一个微型的文件系统中。每次提交更新时，会比较这个快照。若文件没有变化，Git则只对上次保存的快照作一个链接。你可以理解Git就是一个小型的文件系统。
 * 近乎所有操作都可本地执行：无需多说，这本身就是分布式版本管理系统的特征。
 * 时刻保持数据完整性：保存到Git前，所有数据都要进行内容的校验和（checksum），并将该结果作为数据的唯一标识。Git使用了SHA-1算法计算数据的校验和，并将该结果作为索引，而非文件名。
-<img class="center" src="images/2013/git-hash.png">
+{% img center images/2013/git-hash.png %}
 * 多数操作仅添加数据</p>
 
 <!--more-->
 
 
 <p>Pro Git一书认为任何一个文件在Git内部可以被分为三种状态：已提交（Committed）、已修改（Modified）和已暂存（Staged）。然而，这并不足以说明一个文件在不同的工作区域所展现的状态。我认为两种状态足以表达Git中的文件，即：未跟踪（Untracked）和已跟踪（Tracked）。而对于已跟踪状态，我又将其分为：未修改的（Unmodified），Modified（已修改的），暂存的（Staged）和已提交的（committed）。下图基本表达了我的思路：
-<img class="center" src="images/2013/file-lifecycle.png"></p>
+{% img center images/2013/file-lifecycle.png %}</p>
 
 <p>这个图表现了多种场景，满足了我们在使用Git时耳濡目染的操作情形。</p>
 
@@ -69,7 +69,7 @@ git reset HEAD README.txt
 </code></p>
 
 <p>HEAD是何意呢？在Git中，HEAD是一个特别的指针，指向你正在工作的本地分支。当前分支就是master。如下图所示：
-<img class="center" src="images/2013/git_head.png"></p>
+{% img center images/2013/git_head.png %}</p>
 
 <p>而reset命令的意思是重新设置当前的HEAD指针到特定的状态。由于当前的README.txt还没有提交到master分支的Repository中。因此，这条命令实则就是将HEAD指向README.txt文件在当前master分支的Repository状态，从而保证了对README.txt文件而言，暂存区与Repository的一致——取消了README.txt文件在暂存区的内容。</p>
 
@@ -95,7 +95,7 @@ git checkout -- hello.java
 <h2>场景4：撤销提交</h2>
 
 <p>在Git中若要撤销提交，可以使用reset或者revert命令。但二者有着显著的区别：
-<img class="left" src="images/2013/git_revert_vs_reset.png">
+{% img left images/2013/git_revert_vs_reset.png %}
 revert命令可以撤销已经提交的快照，但它并不会将该提交从项目的提交历史中移除，而是会判断要撤销的这次提交引入了哪些变化，然后将此变化撤销（此次撤销事实上还是一种变化），再将这次撤销作为一个提交。因此，在执行revert命令后，如果通过git log查看提交历史，可以看到会新增一个revert提交。命令为：
 <code>
 git revert &lt;commit&gt;
@@ -121,7 +121,7 @@ git reset --hard &lt;commit&gt;
 </code></p>
 
 <p>**注意：针对远程的提交记录，应尽量避免使用git reset命令。倘若在本地进行了reset之后，又进行了另外的修改并提交。此时，本地的提交记录与远程的提交记录在reset的那个点产生了分叉。如下图所示：
-<img class="center" src="images/2013/git_reset_commit.png"></p>
+{% img center images/2013/git_reset_commit.png %}</p>
 
 <p>此时，如果执行git push，会在本地合并后提交，并同步远程提交记录。则团队其他成员会因为这个变化的提交记录而困惑。由于一部分变更消失，甚至可能导致一些数据被破坏。因此，使用reset命令要格外当心，通常情况，应尽量针对本地提交（未push到远程）进行reset。优先考虑使用revert命令。</p>
 ]]></content>

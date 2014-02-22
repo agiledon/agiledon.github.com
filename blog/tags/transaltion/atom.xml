@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Transaltion | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/transaltion/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-18T21:18:25+08:00</updated>
+  <updated>2014-02-22T23:05:44+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns/"/>
     <updated>2013-02-22T16:52:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/dpinjava.jpeg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/dpinjava.jpeg %}
 如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。</p>
 
 <p>是否设计模式的精妙之处，业已为这些著作所穷尽？然，又未必尽然！以模式而论，若只局限在这23种模式的范围内，几乎每种模式的变化，都可以被悉心推演出来；每种模式的结构，也已被阐述得淋漓尽致。然而，若论及设计，则如大道苍穹，实则是不可穷尽的。基本上，设计的复杂程度已不亚于一个纷繁的世界，而软件，就是我们要构造的这个世界。</p>
