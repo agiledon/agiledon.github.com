@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Book | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/book/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-22T23:05:44+08:00</updated>
+  <updated>2014-03-04T20:53:00+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar/"/>
     <updated>2013-04-17T21:46:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/04/reading-radar.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/04/reading-radar.jpg">
 软件业的特点是变化。若要提高软件开发的技能，就必须跟上技术发展的步伐。埋首醉心于项目开发与实战，固然能够锤炼自己的开发技巧，却难免受限于经验与学识。世界上并不存在速成的终南捷径，但阅读好的技术书籍，尤其是阅读大师们的经典著作，总能收到事半功倍之效。一位优秀的程序员，或许就是一名好的阅读者。好的阅读者，总是知道如何选择好的书籍。书海浩繁，良莠不齐。阅读技术好书，如与智者交谈，“与君一席话胜读十年书”；遭遇技术烂书，如被拐卖，“少小离家老大回，乡音无改鬓毛衰”。</p>
 
 <p>ThoughtWorks作为一家学习型组织，颇为看重每一位员工的学习能力。事实上，大多数ThoughtWorker的骨子里，都溢满了读书的基因。与书相伴，与书为伍，既是一种乐趣，又是一种习惯。当习惯成为自然时，书籍就成为生活和工作不可或缺的一部分了。如果说人文历史哲学等书籍是一碗心灵鸡汤，技术书籍大抵算得上是一味营养素，读之可以直接带来养分；可若是不了解自己究竟缺了哪一种营养，乱吃乱补，结果就可能适得其反了。有鉴于此，我和同事刘龙军结合自身的阅读经验，为新入职ThoughtWorks的程序员制作了一份读书路线图。我们将范围明确为程序员，是因为作为程序员的我们，它是我们最了解的工作角色。我们筛选出了一些大家公认的经典书籍，再结合自己的阅读体会，并广泛征集了更多ThoughtWorker的意见，包括徐昊，熊节，郑晔等资深阅读者，得到了这样一份草稿。在中国公司内部推出时，这份读书路线图得到了多数人的认可和欢迎。继而，我们在成都办公室陆续针对此读书路线图展开了读书俱乐部的活动，算是做了一次全方位大面积的试水。</p>
@@ -29,12 +29,7 @@
 <p>现在，我们觉得是推出正式版本，并面向更多受众的时机了。这就是大家现在看到的ThoughtWorks(中国)程序员读书雷达。它相较于之前的读书路线图草稿，分类更为专业，书籍筛选更为合理，并以雷达独有的优势，来展现不同的阅读维度与阅读深度。显然，读书雷达更能表达我们对所选书籍的深度认识。它可以作为学习型组织的一份知识输入，每一位程序员都可以根据自身水平与能力，选择适合自己的书籍，甚至组成一份表达阅读履历的读书路线图，在获得知识完善与汲取的过程中，提高自身能力，达至各个维度的巅峰。</p>
 
 <p>该读书雷达将书籍分为了如下四个象限：
-{% blockquote %}
-Coding Practice（编程实践）
-Architecture &amp; Design（架构与设计）
-Methodology（方法学）
-Thought &amp; Leadership（思想与领导力）
-{% endblockquote %}</p>
+<blockquote><p>Coding Practice（编程实践）<br/>Architecture &amp; Design（架构与设计）<br/>Methodology（方法学）<br/>Thought &amp; Leadership（思想与领导力）</p></blockquote></p>
 
 <p>我们之所以将方法学、思想与领导力放入到这个为程序员设计的读书雷达中，乃是因为软件开发不仅仅是个人的活动，也不仅仅是编码技巧和设计能力的体现。我们认为，开发技能其实是一项综合的系统工程。了解方法学，可以促进你对开发过程的理解；关于思想，则涉及大脑思维的修炼，可以提高程序员的抽象能力、学习能力，有助于帮助程序员发现事物发展的规律和本质；至于领导力，则有助于程序员在开发团队中发挥更大的作用，并能作为很好的团队成员，提升团队的整体能力。我们没有在这个读书雷达中包括语言类的书籍，原因在于这类书籍太过于发散，且更新较快；我们也不可能奢望在一张读书雷达图中，为不同的语言平台展现不同的优秀书籍。相比较语言的学习，我们更看重程序员在编程实践上的基本功。</p>
 
@@ -50,113 +45,57 @@ Thought &amp; Leadership（思想与领导力）
 
 <h4>基础篇</h4>
 
-<p>{% blockquote %}
-Clean Code《代码整洁之道》
-Pragmatic Unit Testing《单元测试之道》
-The Productive Programmer《卓有成效的程序员》
-Test-Driven Development By Example《测试驱动开发》
-Clean Coder《程序员的职业修养》
-The Art of Readable Code《编写可读代码的艺术》
-{% endblockquote %}</p>
+<p><blockquote><p>Clean Code《代码整洁之道》<br/>Pragmatic Unit Testing《单元测试之道》<br/>The Productive Programmer《卓有成效的程序员》<br/>Test-Driven Development By Example《测试驱动开发》<br/>Clean Coder《程序员的职业修养》<br/>The Art of Readable Code《编写可读代码的艺术》</p></blockquote></p>
 
 <h4>进阶篇</h4>
 
-<p>{% blockquote %}
-Refactoring To Patterns《重构与模式》
-Implementation Patterns《实现模式》
-Code Complete《代码大全》
-The Pragmatic Programmer《程序员修炼之道》
-{% endblockquote %}</p>
+<p><blockquote><p>Refactoring To Patterns《重构与模式》<br/>Implementation Patterns《实现模式》<br/>Code Complete《代码大全》<br/>The Pragmatic Programmer《程序员修炼之道》</p></blockquote></p>
 
 <h4>高级篇</h4>
 
-<p>{% blockquote %}
-Structure and Interpretation of Computer Programs《计算机程序的构造和解释》
-Working Effectively with Legacy Code《修改代码的艺术》
-{% endblockquote %}</p>
+<p><blockquote><p>Structure and Interpretation of Computer Programs《计算机程序的构造和解释》<br/>Working Effectively with Legacy Code《修改代码的艺术》</p></blockquote></p>
 
 <h3>Architecture &amp; Design | 架构与设计</h3>
 
 <h4>基础篇</h4>
 
-<p>{% blockquote %}
-Agile Software Development 《敏捷软件开发：原则、实践与模式》
-Head First Design Patterns《深入浅出设计模式》
-Design Patterns 《设计模式》
-{% endblockquote %}</p>
+<p><blockquote><p>Agile Software Development 《敏捷软件开发：原则、实践与模式》<br/>Head First Design Patterns《深入浅出设计模式》<br/>Design Patterns 《设计模式》</p></blockquote></p>
 
 <h4>进阶篇</h4>
 
-<p>{% blockquote %}
-The Art of UNIX Programming 《Unix编程艺术》
-Practical API Design  《框架设计的艺术》
-Domain Specific Languages 《领域特定语言》
-Patterns of Enterprise Application Architecture 《企业应用架构模式》
-{% endblockquote %}</p>
+<p><blockquote><p>The Art of UNIX Programming 《Unix编程艺术》<br/>Practical API Design  《框架设计的艺术》<br/>Domain Specific Languages 《领域特定语言》<br/>Patterns of Enterprise Application Architecture 《企业应用架构模式》</p></blockquote></p>
 
 <h4>高级篇</h4>
 
-<p>{% blockquote %}
-Release It
-Domain-Driven Design 《领域驱动设计》
-Enterprise Integration Patterns《企业集成模式》
-Beautiful Architecture《架构之美》
-Pattern-Oriented Software Architecture《面向模式的软件架构》
-{% endblockquote %}</p>
+<p><blockquote><p>Release It<br/>Domain-Driven Design 《领域驱动设计》<br/>Enterprise Integration Patterns《企业集成模式》<br/>Beautiful Architecture《架构之美》<br/>Pattern-Oriented Software Architecture《面向模式的软件架构》</p></blockquote></p>
 
 <h3>Methodology | 方法学</h3>
 
 <h4>基础篇</h4>
 
-<p>{% blockquote %}
-User Stories Applied《用户故事与敏捷方法》
-The Gold Mine《金矿》
-Scrum and XP From the Trenches《硝烟中的Scrum和XP》
-Continuous Integration《持续集成》
-Extreme Programming Explained《解析极限编程》
-{% endblockquote %}</p>
+<p><blockquote><p>User Stories Applied《用户故事与敏捷方法》<br/>The Gold Mine《金矿》<br/>Scrum and XP From the Trenches《硝烟中的Scrum和XP》<br/>Continuous Integration《持续集成》<br/>Extreme Programming Explained《解析极限编程》</p></blockquote></p>
 
 <h4>进阶篇</h4>
 
-<p>{% blockquote %}
-Lean Thinking《精益思想》
-Continuous Delivery《持续交付》
-How Google Tests Software
-Agile Testing
-Extreme Programming Refactored《重构极限编程》
-{% endblockquote %}</p>
+<p><blockquote><p>Lean Thinking《精益思想》<br/>Continuous Delivery《持续交付》<br/>How Google Tests Software<br/>Agile Testing<br/>Extreme Programming Refactored《重构极限编程》</p></blockquote></p>
 
 <h4>高级篇</h4>
 
-<p>{% blockquote %}
-Specification By Example
-{% endblockquote %}</p>
+<p><blockquote><p>Specification By Example</p></blockquote></p>
 
 <h3>Thought &amp; Leadership | 思想与领导力</h3>
 
 <h4>基础篇</h4>
 
-<p>{% blockquote %}
-The Effective Executive《卓有成效的管理者》
-Are Your Lights On?《你的灯亮着吗》
-Becoming A Technical Leader《成为技术领导者》
-{% endblockquote %}</p>
+<p><blockquote><p>The Effective Executive《卓有成效的管理者》<br/>Are Your Lights On?《你的灯亮着吗》<br/>Becoming A Technical Leader《成为技术领导者》</p></blockquote></p>
 
 <h4>进阶篇</h4>
 
-<p>{% blockquote %}
-The Fifth Discipline《第五项修炼》
-The Design Of Business
-Management 3.0《管理3.0：培养和提升敏捷领导力》
-Presentation To Win
-The McKinsey Way《麦肯锡方法》
-{% endblockquote %}</p>
+<p><blockquote><p>The Fifth Discipline《第五项修炼》<br/>The Design Of Business<br/>Management 3.0《管理3.0：培养和提升敏捷领导力》<br/>Presentation To Win<br/>The McKinsey Way《麦肯锡方法》</p></blockquote></p>
 
 <h4>高级篇</h4>
 
-<p>{% blockquote %}
-Thinking, Fast and Slow《思考快与慢》
-{% endblockquote %}</p>
+<p><blockquote><p>Thinking, Fast and Slow《思考快与慢》</p></blockquote></p>
 ]]></content>
   </entry>
   

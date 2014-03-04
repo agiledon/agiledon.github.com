@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Visualization | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/visualization/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-22T23:05:44+08:00</updated>
+  <updated>2014-03-04T20:53:00+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -23,10 +23,10 @@
 <p>我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex Context这一点上语焉不详。</p>
 
 <p>我的初步设想是通过绘制场景图（但并不成熟）。我认为有三种绘制场景图的方式：商业画布，体验地图和流程图。我认为，商业画布可以作为需求分析（尤其针对初创产品）的起点。商业画布如下图所示：
-{% img center /images/2014/business_canvas.jpeg %}</p>
+<img class="center" src="/images/2014/business_canvas.jpeg"></p>
 
 <p>采用这种规范化的方式来推导商业模型，可以激发我们的灵感，理清我们的思路，以便我们思考为何要做这个产品，产品应该具备哪些功能。结合优点和缺点、成本等因素，我们可以藉此判断和决策功能的优先级，从而得到MVP。这个过程需要大量运用即时贴，让整个商业模型呈现。经过取舍后，就可以针对产品绘制场景图。此时，场景图可以采用Experience Map或流程图来体现。Experience Map的例子如下图所示：
-{% img center /images/2014/experience_map.gif %}</p>
+<img class="center" src="/images/2014/experience_map.gif"></p>
 
 <p>由于商业画布本身提供了“客户”项，我们应该创建Persona，找准人物角色的特征来“搜寻”需求。绘制了场景图后，就能够确定用例了，此时，可辅以ATDD帮助确定Story。在确定了用例后，可以识别Bounded Context，并通过Context Map确定上下文之间的关系。</p>
 
@@ -39,23 +39,23 @@
 
 <blockquote><p>为了更好的理解我们选择的目标消费者，我们需要对消费者进行完整的建模，即Persona。越接近于真实的Persona帮助我们更好的理解其用户目标……Persona的重要产出物是一系列用户目标，对于同一个Persona，用户目标可能有不同，有些目标是基础核心目标，有些则是衍生性的，例如一个访问网站潜在投资者的核心目标可能是了解成为投资者的过程，而衍生性目标可能是获得一些关于公司历史信息增加信任度。</p></blockquote>
 
-<p>{% img center /images/2014/persona.jpg %}
+<p><img class="center" src="/images/2014/persona.jpg">
 <strong>说明</strong>：本图摘自熊子川博客</p>
 
 <p>假设我们要开发一个电子商务网站，我们就可以通过商业画布来驱动出这个产品应该具有哪些功能，它的客户有哪些等，在绘制了场景图后，可以初步得到这样的Bounded Context:
-{% img center /images/2014/bounded_context.jpg %}</p>
+<img class="center" src="/images/2014/bounded_context.jpg"></p>
 
 <p>然后，我利用Context Map得到了各个上下文之间的关系：
-{% img center /images/2014/context_map.jpg %}</p>
+<img class="center" src="/images/2014/context_map.jpg"></p>
 
 <p>这样，一个包图的获得就水到渠成了：
-{% img center /images/2014/modules.jpeg %}</p>
+<img class="center" src="/images/2014/modules.jpeg"></p>
 
 <p>在识别了Bounded Context以及Context之间的关系后，我们可以运用Hexagon架构（Cockburn提出的六边形架构）来展现系统的整体架构。Hexagon架构并不深入关注内部边界中领域部分，仅仅是简单的划分为Application与Domain两层。但它有助于我们获得基础设施层以及相关集成点的包结构。我们要合理地运用六边形架构。它更贴近应用逻辑架构，并可以驱动我们去发现诸多集成点，寻找集成模式。内外边界的分离也有助于我们将业务逻辑与应用逻辑分离开。这实际上符合“关注点分离”的架构原则。下图展现了六边形架构中常见的Port与Adapter：
-{% img center /images/2014/Hexagon.jpg %}</p>
+<img class="center" src="/images/2014/Hexagon.jpg"></p>
 
 <p>我对“可视化架构”的理解，还是要希望多通过即时贴、白板等工具来实现可视化，而非通过绘图。至少，绘图不应该成为主要的驱动力，否则，开发人员很难接受。例如，下图就是我运用Hexagon架构，并结合可视化手段分析该电子商务系统得到的应用逻辑架构，它很好地一个展现了Hexagon架构的可视化手法。
-{% img center /images/2014/e_commerce.jpg %}</p>
+<img class="center" src="/images/2014/e_commerce.jpg"></p>
 
 <p>在这个图中，直观地展现了如何与外部的支付系统以及物流系统的集成。例如，图中展现的Port实际上为防腐层（ACL）。为何要建立这样的一个防腐层呢，原因在于：支付与物流常常存在多个供应商，因而需要解除对供应商的绑定，并避免供应商系统的变化造成对电子商务系统的腐蚀。这是切合实际的决策。</p>
 
@@ -81,7 +81,7 @@
 
 
 <p>整个架构如下图所示：
-{% img center /images/2014/inventory.jpeg %}</p>
+<img class="center" src="/images/2014/inventory.jpeg"></p>
 
 <p>对于库存管理而言，我认为它主要支持商品存放信息的数据管理，即获得商品数量、存放位置以及更新这些信息。对于该上下文而言，操作本身比较简单，且耗时较短。若出现大规模并发，其瓶颈也不在于获取或更新仓库信息（当然需要通过测试数据验证），而在于客户下订单后向仓库管理流程控制系统发起的发货请求。</p>
 
@@ -94,7 +94,7 @@
 <p>一旦收到消息，物流控制系统作为消息队列的订阅者（或侦听器）就可以即使处理信息，进行后续的处理。</p>
 
 <p>针对库存管理而言，我认为它是一个独立的物理边界，因此在可视化手段中，我展现为一个单独的库存管理六边形，如下图所示：
-{% img center /images/2014/inventory_2.jpeg %}</p>
+<img class="center" src="/images/2014/inventory_2.jpeg"></p>
 
 <ul>
 <li>建立了针对REST服务的端口，对应的适配器为Controller，其目的是支持E-Commerce系统。事实上，我们对E-Commerce系统进行过分析，获得的六边形架构正好与此对接。</li>
@@ -104,7 +104,7 @@
 
 
 <p>物流控制与拓扑管理放在同一个边界中，它是高度可伸缩的独立系统，为展现它的可伸缩性以及它与库存管理之间的集成，我在可视化手段中，展现出两个独立的六边形，如下图所示：
-{% img center /images/2014/inventory_3.jpeg %}</p>
+<img class="center" src="/images/2014/inventory_3.jpeg"></p>
 
 <ul>
 <li>针对Queue的侦听器端口，对应的适配器为Message Handler。若有必要，如为了更好的支持并发，也可以在此引入Active Object甚至Leader/Followers。</li>

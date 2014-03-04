@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="重构最大的敌人不是技巧与能力，而是懒惰，或者说是态度。许多细小的重构看似无足轻重，例如方法重命名，提取方法，即使重构了，似乎对代码的结构也没有太大的影响，于是就决定淡然处之，心里想“事情还未到不可挽回的地步，实现功能要紧，至于重构，还是以后再做吧！”这样一想，于是就会滋生得过且过的想法， &hellip;">
+  <meta name="description" content="我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/25/tasking-in-tdd/">Tasking in TDD</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-25T12:59:00+08:00" pubdate data-updated="true">Aug 25<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/08/25/tasking-in-tdd/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/2012/12/tdd.jpg" width="240" height="293">
+我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作，第一是生成或组装Queue希望获得的消息，第二才是消息的propogation。</p>
+
+<p>消息的获得大约要经历如下步骤。首先是通过GlobalCustomer的Id，获得对应的指定产品的ProductCustomer（可能包含多个）。由于GlobalCustomer与ProductCustomer之间存在多对多的关系，我们还需要根据获得的每个ProductCustomer，逆向反推出它所对应的GlobalCustomer（可能包含多个）。在得到ProductCustomer对应的GlobalCustomer后，再调用GetConsent的Web Service，获得每个GlobalCustomer对应的Consent信息。之后，再根据Consent信息中包含的某些Indicator值，运用业务规则，获得最终external queue需要的由indicator值以及客户的基本信息组成的消息。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/08/25/tasking-in-tdd/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -509,6 +555,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/03/04/the-strength-of-reading/">阅读的力量</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/18/remote-actor-in-akka/">Akka中的Remote Actor</a>
       </li>
     
@@ -522,10 +572,6 @@
     
       <li class="post">
         <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
       </li>
     
   </ul>
@@ -599,7 +645,7 @@
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
 <a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
 <a style="font-size: 100%" href="/blog/tags/rest/">REST</a>
-<a style="font-size: 192%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
 <a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>

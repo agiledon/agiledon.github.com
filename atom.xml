@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-22T23:05:20+08:00</updated>
+  <updated>2014-03-04T20:53:00+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,35 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[阅读的力量]]></title>
+    <link href="http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading/"/>
+    <updated>2014-03-04T20:47:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2014/steiner.jpg"></p>
+
+<p>阅读，以灵魂融合的方式阅读，或许会战栗，恐惧，喜悦，哭泣，甚至紧张，却可以让你成为阅读的人存在，你既是独立的，又陷入作品中成为你臆想和理解的另一个人。这种阅读，使得你存在。</p>
+
+<p>乔治.斯坦纳(George Steiner）在《语言与沉默(Language And Silence)》的第一篇《人文素养》中如是评价阅读：</p>
+
+<blockquote><p>那么，请尽可能地与文学同道。一个人读了《伊利亚特》第十四卷（普里阿摩斯夜会阿基琉斯），读了阿廖沙.卡拉玛佐夫跪向星空那一幕，读了《蒙田随笔》的第二十章，读了哈姆雷特对这章的引用，如果他的人生没有改变，他对自己生命的领悟没有改变，他没有用一点点彻底不同的方式大量他行走其中的屋子，打量那些敲门的人，那么，他虽然是用肉眼在阅读，但他的心眼却是盲视。读了《安娜.卡列尼娜》或普鲁斯特的人，在心灵的深处，能不体验到新的虚弱或需求？</p>
+
+<p>……读了卡夫卡的《变形记》，却依然能够无畏地面对镜中的自己，这样的读者，也许从字面上说，能够识文断字，但在最根本的意义上，不过是白丁而已。</p></blockquote>
+
+<p>阅读确乎常常能打动我，当然，这也要取决于我面对的是何种作品。我的心灵并不坚强，甚而耽于安逸，每当阅读到那种让灵魂战栗或者恐慌的时候，我或许会想着逃离。我阅读卡夫卡《变形记》的感受如此，我几乎要被那种昏暗、恐慌、无助给击倒了，甚至有一种被人扼住喉咙要窒息的感觉。我在代入。我在想象当我在次日清晨突然发现自己变成一种爬虫，会是怎么样？又或者发现自己的爱人变成了丑陋的爬虫，蠕动着可以看到爬动的粘液，我会如何反应？答案是毫无疑问的步入心灵的昏暗层面，我既不能无动于衷，也不能泰然自若。在那一刻，是人生崩溃的感觉。</p>
+
+<p>通常而言，好的小说会让人不忍卒读，而我在阅读《变形记》时，我有一种甩开书本的冲动。我害怕去看结果，甚至害怕想象这种场景；然而，这场景却像有了生命，拥有着执念一般地硬要挤入我的脑袋中来。坦白说，我害怕看到自己隐藏的丑恶，害怕撕开肌肤，入眼一片血淋淋！</p>
+
+<p>我在阅读《蒙田随笔》时，就成为第三者旁观了。那些睿智充满哲思的话语，几乎无法打动我，我就像看着一个智慧老者无语的絮叨，我做出尊敬而认真倾听的样子，心里却在感叹：他，已经不是这个时代了。</p>
+
+<p>大多数时候，当我阅读完一部伟大的作品，尤其是小说，会有一种空虚感。好像自己曾经步入过小说中虚构的世界。那个世界产生的重力如此之大，压着我直不起身；直到走出，突然感觉自己已经适应了那种重量，脚步反而变得虚浮起来。重要的是我的内心会产生寂寞感。当我阅读完《不能承受的生命之轻》、《不朽》时，如是；阅读完《树上的男爵》，也如是。</p>
+
+<p>还有一种感觉就是解脱。小说描述主人公的种种形状，一定是被某种不可知的力量所牵引，规约。这种力量或许可以称之为命运，也可能是自己的性格，又或者是当时那个大时代的集体力量。巧合的是，这种作品多数是以第一人称描述。例如在读完《麦田的守望者》，《洛丽塔》，我几乎要长吁一口气，产生一种如释重负的轻松。</p>
+
+<p>这样的阅读中的我，是否斯坦纳笔下的“白丁”呢？</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka中的Remote Actor]]></title>
@@ -1805,121 +1834,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <h5>Enterprise Integation Patterns</h5>
 
 <p><strong>推荐理由：</strong>本书关注企业级软件系统的本质问题，那就是集成。对于采用异步消息传递的集成方案，本书针对不同场景给出了不同的解决方案，并以模式的方式进行概述与归纳。倘若你在设计软件系统时，需要使用异步消息传递的方式对系统进行集成，本书可以成为你的最佳指南。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[代码是如何腐化的]]></title>
-    <link href="http://agiledon.github.com/blog/2013/07/05/corrupt-code/"/>
-    <updated>2013-07-05T14:26:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/07/05/corrupt-code</id>
-    <content type="html"><![CDATA[<p>代码是如何腐化的？这是一个很大的话题，因为这种腐化的代码样本可能会体现不同的特征，若要彻底总结，可能会又是一本《重构》。我自然没有这个能力和知识。好在有一个简便的说法，即可以诉诸于“破窗理论”的威力。无论多少坏味道识别，重构手法运用，提高代码质量的最佳实践，以及运用诸多甄别代码质量体征的工具，都仅仅限于“术”的运用而已。若未能在开发人员内心树立整洁代码的习惯，时时刻刻对各种代码臭味保持敏感，且具有一颗期待卓越代码之心，那么，随着项目的演进，时间的推移，代码最终还是会慢慢腐烂。</p>
-
-<p>这几日在开发一个User Story时，从诸多测试代码（包括集成测试与验收测试）中，观察到了一些接近腐烂的代码坏味。这些代码虽然不是产品代码，但同样是我们交付工件的一部分。最关键之处在于：它让我察觉到一种危险的趋势，若不能及时扭转，可能会让代码陷入腐烂的泥沼。若能及时解决这些糟糕代码，其实仅仅需要一些简单的重构手法，付出几个小时时间即可。</p>
-
-<p>首先是针对集成测试的数据准备。我们要编写的集成测试针对Spring Batch Job，这些Job需要访问数据库，以验证Job的执行是否符合期望。我们发现在之前已有与Spring Batch Job相关的集成测试存在，并提供了访问数据库，以及启动、访问和停止Ftp服务器的功能。其中，与数据准备有关的功能放到单独定义的Fixture类中。这些Fixture是为特定目的编写的数据准备，可是，随着越来越多的Batch Job出现，有诸多集成测试都需要准备数据，于是开始慢慢产生了测试数据的重叠，逐步浮现出违背DRY原则的征兆了。</p>
-
-<!--more-->
-
-
-<p>对于多数程序员而言，并非不重视重用，但多数却不愿意为了重用付出一些代价。例如针对一些具备差异性的功能，一些程序员更愿意使用Copy And Paste，然后再针对自己的需求对实现进行修改或调整。观察目前的一些集成测试，正是这样一些陋习导致的。</p>
-
-<p>在这些集成测试中，使用了继承的方式来重用数据准备的功能。如下图所示：
-<img class="center" src="http://agiledon.github.com/images/2013/07/datafixture.png"></p>
-
-<p>在CustomerIntegratedDataFixture中，提供了相关方法实现了对Customer数据的创建。由于需要提供访问FtpServer的功能，因此又定义了CustomerIntegratedDataAndFtpPrepareFixture类，使其继承CustomerIntegratedDataFixture。它定义了startFtpServer()和stopFtpServer()方法，并在JUnit中，运用了@BeforeClass与@AfterClass标记，使其避免为每个测试启动和停止专有的FtpServer。现在，我们编写的集成测试同样需要与Customer有关的数据，但并不需要Ftp功能。换言之，我们希望重用CustomerIntegratedDataFixture。现在看来，似乎并没有问题。例如，我们可以让新增的测试直接继承CustomerIntegratedDataFixture。然而，就在同样的集成测试模块中，我们还发现了其他集成测试同样编写了自己的数据准备类。这些数据准备与Spring Batch Job无关，却同样提供了准备Customer数据的功能。存在的差异是它除了提供Customer数据外，还提供了依赖Customer的Consent数据。</p>
-
-<p>我们没有着急去重用CustomerIntegratedDataFixture，因为我们察觉到代码会随着这种继承体系的延伸，会变得越来越难以重用。如上图的继承体系，使得数据准备与Spring Batch Job紧耦合了，同时又在CustomerIntegratedDataAndFtpPrepareFixture子类中引入了与Ftp有关的耦合，明显违背了单一职责原则。我们需要单独剥离出数据准备的类，它即可以作为超类被集成测试类继承，也可以通过组合的方式被继承了JobLauncherTestUtils的测试子类所调用。这符合Bridge模式的设计原则。因此，我们运用了“Replace Inheritance with Delegation”手法，对其进行了简单重构：
-<img class="center" src="http://agiledon.github.com/images/2013/07/datafixtureafterrefactor.png"></p>
-
-<p>之后，我们对Customer和Consent对应的数据准备类进行了相应的重构与修改，使得这些数据的准备更为内聚，并去除一些不必要的重复，使之更容易被重用。
-<img class="center" src="http://agiledon.github.com/images/2013/07/customerfixture.png"></p>
-
-<p>第二个例子是在JBehave的Story中，我看到了这样的Steps类的组织，如图：
-<img class="center" src="http://agiledon.github.com/images/2013/07/steps.png"></p>
-
-<p>我们看到了什么？——一个“扁平组织”的Steps类。显然，促成这样的结果是一个渐进的过程。由于在之前编写相关的Steps类时，还看不到分类的概念，因此，只是简单地将自己的Steps类放到step之下即可。然后，不断有开发人员增加自己的Steps类，他们找到了step位置，却没有仔细思考是否需要更好地对Steps类进行组织。这就使得Steps类略显零乱，没有展现出好的结构。我们重新组织了这些Steps类：
-<img class="center" src="http://agiledon.github.com/images/2013/07/stepsafterrefactor.png"></p>
-
-<p>只需要简单地归类，调整结构，整个Steps类就变得更加清晰了。于是，我们发现了可以重用的可能。观察重新组织之后的batch包，这里面包含的UpdateCustomerTypeSteps，ProductSystemLinkLoaderSteps与DeleteOrphanedRecordsSteps，都是与Btach Job有关的Steps类。MaintainProspectsSteps类则是我们新增的类，它同样需要用到启动Batch Job的方法。在之前存在的Steps类中，已经存在相似的代码了。例如在UpdateCustomerTypeSteps类中：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">waitAndGetSatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">params</span><span class="o">);</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">db2JdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;and jobParam.KEY_NAME = &#39;retry&#39; &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;retry&quot;</span><span class="o">));</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>再看DeleteOrphanedRecordsSteps类：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">waitAndGetSatus</span><span class="o">(</span><span class="n">String</span> <span class="n">currentTime</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">currentTime</span><span class="o">);</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">String</span> <span class="n">currentTime</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;and jobParam.KEY_NAME = &#39;time&#39; &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">currentTime</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>比较这些方法，除了jobParam的key与value存在细微区别，其余实现完全相同。若按照这样一个态势发展，随着与Batch Job有关的Story逐渐增多，不发现这种代码的臭味并即刻解决，这些代码就会逐渐蔓延，最后变得“无法自拔”。想要修改，已经变得极为困难了。</p>
-
-<p>我们为这些Steps类提供了一个抽象的超类AbstractBatchJobSteps，并将这些可能重用的方法提取到这个超类中：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AbstractBatchJobSteps</span> <span class="kd">extends</span> <span class="n">AbstractSteps</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">WAIT_INTERVAL</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">MAX_TRY_TIME</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">protected</span> <span class="n">String</span> <span class="nf">waitAndGetSatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">,</span> <span class="n">String</span> <span class="n">paraKey</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">params</span><span class="o">,</span> <span class="n">paraKey</span><span class="o">);</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">,</span> <span class="n">String</span> <span class="n">paraKey</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;and jobParam.KEY_NAME = &#39;&quot;</span> <span class="o">+</span> <span class="n">paraKey</span> <span class="o">+</span> <span class="s">&quot;&#39; &quot;</span> <span class="o">+</span>
-</span><span class='line'>                <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">paraKey</span><span class="o">));</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如上的例子都可以通过一些细小的重构手法改进代码，使得代码的结构更加清晰，并有利于代码的重用。我深信大多数开发人员都具备这样的技能，且只需要稍加思索，即能发现这些代码的坏味。然而，我们总是因为种种原因，对这种还不太严重的“破窗”风景视而不见。殊不知当我们开始对这种不够整洁的代码采取纵容态度时，就可能会是代码腐化之始。一旦真正腐化，就将积重难返，到了那时，我们就可能真正无能为力了。</p>
-
-<p>你是否遭遇过这样的情形？面对一个承担了无数职责似乎无所不能的上帝类，它被无数多的Client调用，且又没有足够覆盖率的测试，你是否会产生心有余而力不足的感慨。这时的你，是否像一位奋战沙场，出生入死却无力挽回败局的将军，面对那汹涌而来占据压倒性优势的敌军，唯有对天长叹：“某有心杀贼，却无力回天啊！”</p>
 ]]></content>
   </entry>
   

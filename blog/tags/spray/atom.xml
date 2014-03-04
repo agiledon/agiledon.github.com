@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Spray | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/spray/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-02-22T23:05:44+08:00</updated>
+  <updated>2014-03-04T20:53:00+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,16 +18,9 @@
     <link href="http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1/"/>
     <updated>2013-08-02T22:07:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/08/02/analysis-sourcecode-of-spray-1</id>
-    <content type="html"><![CDATA[<p>{% img left /images/2013/spray_logo.png %}
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/spray_logo.png">
 Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端REST/HTTP的支持。在使用上，大概可以将其视为Java平台下的Jersey；虽然它们的特性并不尽相同。从Scala语言来看，它提供的Future与Promise可以较好地支持并发；而Akka的Actor模型无疑助推了Spray的并发处理性能。根据<a href="http://spray.io/">Spray官方网站</a>的描述，它拥有如下的特性：
-{% blockquote %}
-完全异步的，无阻塞的APIs
-基于Actor与Future
-高性能
-轻量级
-模块化
-可测试性
-{% endblockquote %}</p>
+<blockquote><p>完全异步的，无阻塞的APIs<br/>基于Actor与Future<br/>高性能<br/>轻量级<br/>模块化<br/>可测试性</p></blockquote></p>
 
 <p>之所以称其为库（library）而非框架（Framework），源于Spray的设计哲学。似乎在Spray的设计者眼中，只要沾上了“框架”这个名词，就显得不够轻量，耦合也会随之而来。虽然框架并非容器，无需管理诸多对象的生命周期，但它总会为应用添加一些框架级别的约束。框架更像是一个骨架（Skeleton），应用所要做的是将自己的内容填充到这个骨架中。应用能否运行良好，取决于框架的支撑作用。以我之浅见，大约可以如此简单分辨：框架之于应用，是一种白盒式的调用，你须得了解一些框架细节，遵循规定的约束或规范，才能更好地发挥框架的威力；而类库之于应用，则是职责向黑盒传递的委派，若要调用库，只需明晓其接口即可。</p>
 
@@ -37,10 +30,10 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 
 
 <p>诸多因子促使我选择Spray作为一个研究对象。我想，通过使用Spray，并深入挖掘其源码，定能让我受益良多。当然，在剖析其源代码之前，先让我们看看Spray的模块结构吧。
-{% img center /images/2013/spraymodules.png %}</p>
+<img class="center" src="/images/2013/spraymodules.png"></p>
 
 <p>既然Spray号称其具有松散耦合的组件结构，就让我们对这些模块间的依赖来一个先睹为快。要识别模块之间的依赖关系，最直观的方式莫过于绘制一个依赖图：
-{% img center /images/2013/spraydepencies.png %}</p>
+<img class="center" src="/images/2013/spraydepencies.png"></p>
 
 <p>整洁的依赖显得清爽，斩钉截铁，绝不拖泥带水。那种如网一般深邃的依赖关系，会让人迷失。这其中的要点，仍然在于职责的分配。借助依赖关系图可以更加直观展现，何处出现多余或繁复的依赖线与环，肉眼即可观察获得。这种图甚至可以通过直觉去感受，只要绘图得当，布局合理，会有平衡之感。</p>
 

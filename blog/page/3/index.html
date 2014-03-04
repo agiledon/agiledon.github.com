@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。 对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave() &hellip;">
+  <meta name="description" content="代码是如何腐化的？这是一个很大的话题，因为这种腐化的代码样本可能会体现不同的特征，若要彻底总结，可能会又是一本《重构》。我自然没有这个能力和知识。好在有一个简便的说法，即可以诉诸于“破窗理论”的威力。无论多少坏味道识别，重构手法运用，提高代码质量的最佳实践，以及运用诸多甄别代码质量体征的工具， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/05/corrupt-code/">代码是如何腐化的</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-05T14:26:00+08:00" pubdate data-updated="true">Jul 5<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/05/corrupt-code/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>代码是如何腐化的？这是一个很大的话题，因为这种腐化的代码样本可能会体现不同的特征，若要彻底总结，可能会又是一本《重构》。我自然没有这个能力和知识。好在有一个简便的说法，即可以诉诸于“破窗理论”的威力。无论多少坏味道识别，重构手法运用，提高代码质量的最佳实践，以及运用诸多甄别代码质量体征的工具，都仅仅限于“术”的运用而已。若未能在开发人员内心树立整洁代码的习惯，时时刻刻对各种代码臭味保持敏感，且具有一颗期待卓越代码之心，那么，随着项目的演进，时间的推移，代码最终还是会慢慢腐烂。</p>
+
+<p>这几日在开发一个User Story时，从诸多测试代码（包括集成测试与验收测试）中，观察到了一些接近腐烂的代码坏味。这些代码虽然不是产品代码，但同样是我们交付工件的一部分。最关键之处在于：它让我察觉到一种危险的趋势，若不能及时扭转，可能会让代码陷入腐烂的泥沼。若能及时解决这些糟糕代码，其实仅仅需要一些简单的重构手法，付出几个小时时间即可。</p>
+
+<p>首先是针对集成测试的数据准备。我们要编写的集成测试针对Spring Batch Job，这些Job需要访问数据库，以验证Job的执行是否符合期望。我们发现在之前已有与Spring Batch Job相关的集成测试存在，并提供了访问数据库，以及启动、访问和停止Ftp服务器的功能。其中，与数据准备有关的功能放到单独定义的Fixture类中。这些Fixture是为特定目的编写的数据准备，可是，随着越来越多的Batch Job出现，有诸多集成测试都需要准备数据，于是开始慢慢产生了测试数据的重叠，逐步浮现出违背DRY原则的征兆了。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/05/corrupt-code/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -557,50 +604,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/04/reading-scala-code-1/">阅读Scala代码之一</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-04T22:17:00+08:00" pubdate data-updated="true">Apr 4<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/04/reading-scala-code-1/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="left" src="/images/2013/04/scala.jpg">
-学习一门语言，固然需要了解这门语言的语法，但针对一些完全属于不同范式的语言，即使通过阅读书籍可以理解一些特殊的语法，若不能付诸实践，总有隔靴搔痒之感。其实，要能通过运用这门新语言开发一个项目，或能快速并深刻地了解甚至吃透这门语言。我正是这样尝试着运用Scala来开发我的一个开源框架。可是，在开发过程中，我总感觉自己像是被捆绑了一只手的程序员一般，开发过程磕磕碰碰，不够顺畅。仔细想来，还是因为缺乏对这门语言的足够了解，尤其是那些迥异于Java却又在Scala中是极为常见的惯用法，总不能做到在合适的场景信手拈来。</p>
-
-<p>关键在于，自己阅读Scala的代码太少，编写Scala的代码更少。找到症结，那就尝试去解决。当然，我可以选择一些著名的Scala开源框架，例如<a href="http://www.playframework.com/">Play Framework</a>，Kestrel或者<a href="http://kafka.apache.org/">Kafka</a>，对其进行深入阅读。可是，我发现这些框架对于目前的我而言，似乎显得困难了一点。那么，就从一些短小的代码段开始着手吧。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/04/reading-scala-code-1/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -638,6 +641,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/03/04/the-strength-of-reading/">阅读的力量</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/18/remote-actor-in-akka/">Akka中的Remote Actor</a>
       </li>
     
@@ -651,10 +658,6 @@
     
       <li class="post">
         <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/17/jump-out-of-comfort-zone/">跳出舒适区</a>
       </li>
     
   </ul>
@@ -728,7 +731,7 @@
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
 <a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
 <a style="font-size: 100%" href="/blog/tags/rest/">REST</a>
-<a style="font-size: 192%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
 <a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
