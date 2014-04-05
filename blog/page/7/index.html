@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作， &hellip;">
+  <meta name="description" content="正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。 port install sbt 或者： brew install sbt &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,59 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/11/use-sbt-in-intellij/">在MAC的IntelliJ下使用SBT与ScalaTest</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-11T12:34:00+08:00" pubdate data-updated="true">Oct 11<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/10/11/use-sbt-in-intellij/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>brew install sbt</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: &#8216;idea&#8217;，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/10/11/use-sbt-in-intellij/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -555,6 +608,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/04/05/spark-overview/">Spark概览</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/03/04/the-strength-of-reading/">阅读的力量</a>
       </li>
     
@@ -568,10 +625,6 @@
     
       <li class="post">
         <a href="/blog/2014/02/07/painting-in-huangjueping-street/">黄桷坪美院的涂鸦街</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/21/implicit-conversion-between-java-and-scala/">Scala支持与Java的隐式转换</a>
       </li>
     
   </ul>
@@ -613,7 +666,7 @@
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 144%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
-<a style="font-size: 100%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 128%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 100%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
@@ -626,7 +679,7 @@
 <a style="font-size: 100%" href="/blog/tags/go/">GO</a>
 <a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
 <a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
-<a style="font-size: 128%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
 <a style="font-size: 177%" href="/blog/tags/java/">Java</a>
 <a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
