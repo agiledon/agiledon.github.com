@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-04-05T10:02:44+08:00</updated>
+  <updated>2014-04-18T22:02:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,303 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[基于Akka的REST框架Spray]]></title>
+    <link href="http://agiledon.github.com/blog/2014/04/17/rest-framework-spray-based-on-akka/"/>
+    <updated>2014-04-17T21:37:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/04/17/rest-framework-spray-based-on-akka</id>
+    <content type="html"><![CDATA[<p>基于Akka的REST框架Spray，由于采用Akka提供的Actor模型，写出来的代码与通常的REST有很大的区别。从Spray-Can接收Http请求，到处理具体的HTTP动词以实现业务逻辑，都是通过传递消息的方式。这些消息再交由Akka Actor接收处理。消息皆定义为Scala提供的样例类（Case Class），从而保证消息为immutable。既然如此，当我们在运用Spray时，就需要转换思想，从传统的面向对象中解放出来，充分理解Event、Command，及其传递的Message。这近似于事件驱动（Event Driven），因而在对领域建模时，也需要将Event看做是领域模型的一等公民，并将领域逻辑建模为一种状态机。</p>
+
+<p>我们可以首先根据Http请求，确定需要哪些消息。这样的Request消息几乎与Http动词以及Resource对应，例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">RequestMessage</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">case</span> <span class="k">class</span> <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="n">customer</span><span class="k">:</span> <span class="kt">Customer</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">dueDate</span><span class="k">:</span> <span class="kt">Date</span><span class="o">,</span> <span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>现在可以定义一个Actor来响应客户端请求。该Actor要求派生自Akka Actor，同时还要实现Spray提供的HttpService trait。若要支持Json格式，还需实现Spray-Json提供的Json4sSupport。例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">CustomerServiceActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">HttpService</span> <span class="k">with</span> <span class="nc">CustomerRequestCreator</span> <span class="k">with</span> <span class="nc">Json4sSupport</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">actorRefFactory</span> <span class="k">=</span> <span class="n">context</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">json4sFormats</span> <span class="k">=</span> <span class="nc">DefaultFormats</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="n">runRoute</span><span class="o">(</span><span class="n">customerRoute</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">customerRoute</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span> <span class="o">/</span> <span class="nc">LongNumber</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">id</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">rejectEmptyResponse</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>          <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">put</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customer</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">delete</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="o">~</span> <span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nc">AllCustomers</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="o">~</span> <span class="n">post</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customer</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">handleRequest</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span><span class="k">:</span> <span class="kt">Route</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">ctx</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">customerRequest</span><span class="o">(</span><span class="n">ctx</span><span class="o">,</span> <span class="nc">Props</span><span class="o">[</span><span class="kt">CustomerActor</span><span class="o">],</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该Actor与其他Akka Actor的不同之处在于它的receive方法调用了Spray提供的runRoute()方法。传入的参数customerRoute是Spray提供的DSL格式的Route。Route中对应支持Http动词。其中，get先调用了Spray提供的rejectEmptyResponse来过滤掉空的响应消息；而post方法则调用entity将url中的消息转换为Customer消息：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">birthDate</span><span class="k">:</span> <span class="kt">Date</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>在Route中，可以定义多个Path，不同的Path支持不同的Http动词。在接受到请求后，通过handleRequest()方法来处理请求。这里的实现是将RequestMessage消息再转交到了另一个Actor。我会在后面介绍。</p>
+
+<!-- more -->
+
+
+<p>不过，这里的CustomerServiceActor事实上是将支持Route的CustomerService与Actor合并在了一起，职责显得不够单一。因此，更好地做法是为CustomerService单独定义trait，并使其派生自HttpService，从而将实现代码从Actor中分开。分开的这个CustomerService，更类似于一个Controller。例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">CustomerServiceActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">CustomerService</span> <span class="k">with</span> <span class="nc">CustomerRequestCreator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">actorRefFactory</span> <span class="k">=</span> <span class="n">context</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="n">runRoute</span><span class="o">(</span><span class="n">customerRoute</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">handleRequest</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span><span class="k">:</span> <span class="kt">Route</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">ctx</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">customerRequest</span><span class="o">(</span><span class="n">ctx</span><span class="o">,</span> <span class="nc">Props</span><span class="o">[</span><span class="kt">CustomerActor</span><span class="o">],</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">trait</span> <span class="nc">CustomerService</span> <span class="k">extends</span> <span class="nc">HttpService</span> <span class="k">with</span> <span class="nc">Json4sSupport</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">json4sFormats</span> <span class="k">=</span> <span class="nc">DefaultFormats</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">customerRoute</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span> <span class="o">/</span> <span class="nc">LongNumber</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">id</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">rejectEmptyResponse</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>          <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">put</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customer</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">delete</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="o">~</span> <span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nc">AllCustomers</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="o">~</span> <span class="n">post</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customer</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">handleRequest</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span><span class="k">:</span> <span class="kt">Route</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这样分离的好处还在于可以定义多个包含不同Route的Controller，然后在Actor中用~ combinator操作符将它们合并起来。例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="n">handleTimeouts</span> <span class="n">orElse</span> <span class="n">runRoute</span><span class="o">(</span>
+</span><span class='line'>  <span class="k">new</span> <span class="nc">CustomerService1</span><span class="o">.</span><span class="n">customerService1</span> <span class="o">~</span>  <span class="k">new</span> <span class="nc">CustomerService2</span><span class="o">.</span><span class="n">customerService2</span><span class="o">)&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Spray使用了Akka IO来支持Request、Reponse流的输入输出。IO实质上也是一个Akka Actor。所以在程序的主入口，既需要创建提供了REST服务的Actor，又需要通过Akka IO发出绑定Http的消息。与Akka一样，我们可以定义一个类派生自App：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">Boot</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;spray-demo&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">CustomerServiceActor</span><span class="o">],</span> <span class="s">&quot;customer-service&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="nc">IO</span><span class="o">(</span><span class="nc">Http</span><span class="o">)</span> <span class="o">!</span> <span class="nc">Http</span><span class="o">.</span><span class="nc">Bind</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">interface</span> <span class="k">=</span> <span class="s">&quot;localhost&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">8080</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>要启动ActorSystem，需要配置Akka，而要绑定Spray服务容器，也需要配置Spray-Can。一个简单的配置文件application.conf为：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>akka {
+</span><span class='line'>  loglevel = INFO
+</span><span class='line'>}&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>spray.can.server {
+</span><span class='line'>  request-timeout = 1s
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>现在再来看CustomerService中的handlRequest()方法的实现。该方法负责将对应的RequestMessage，例如GetCustomer、UpdateCustomer等转交给其下的Actor，即CustomerActor。它相当于是从RequestMessage到Domain Event的一个协调器（或控制器，也可以看做是Command）。同样，还是将Actor与具体的业务分离，因此定义了CustomerActor与CustomerOperation。
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">CustomerOperations</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getById</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">OneCustomer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">(</span><span class="mi">1000</span><span class="o">),</span> <span class="s">&quot;item1&quot;</span><span class="o">))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">all</span><span class="o">()</span> <span class="k">=</span>  <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">try</span><span class="o">{</span>
+</span><span class='line'>  <span class="nc">ListCustomers</span><span class="o">(</span><span class="nc">List</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="mi">100</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">(</span><span class="mi">1000</span><span class="o">),</span> <span class="s">&quot;item1&quot;</span><span class="o">)))</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="n">e</span><span class="k">:</span><span class="kt">Exception</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="n">getMessage</span><span class="o">())</span>
+</span><span class='line'>    <span class="nc">List</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">delete</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">Success</span><span class="o">(</span><span class="s">&quot;deleted successfully&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">create</span> <span class="o">(</span><span class="n">dueDate</span><span class="k">:</span> <span class="kt">Date</span><span class="o">,</span> <span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span>  <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">Created</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">update</span> <span class="o">(</span><span class="n">customer</span><span class="k">:</span> <span class="kt">Customer</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">getById</span><span class="o">(</span><span class="n">customer</span><span class="o">.</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">CustomerActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">CustomerOperations</span><span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">log</span> <span class="k">=</span> <span class="nc">Logging</span><span class="o">(</span><span class="n">context</span><span class="o">.</span><span class="n">system</span><span class="o">,</span> <span class="k">this</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">case</span> <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">getById</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="n">item</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">update</span><span class="o">(</span><span class="n">item</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">delete</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">dueDate</span><span class="o">,</span> <span class="n">text</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">create</span><span class="o">(</span><span class="n">dueDate</span><span class="o">,</span> <span class="n">text</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">AllCustomers</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">all</span><span class="o">()</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>CustomerActor会作为CustomerRequest（同样是一个Actor）内部的Actor，即CustomerRequest中的target。CustomerActor实例是在CustomerRequest伴生对象中创建的：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">CustomerRequest</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">Json4sSupport</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">requestContext</span><span class="k">:</span> <span class="kt">RequestContext&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">target</span><span class="k">:</span> <span class="kt">ActorRef&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">import</span> <span class="nn">context._&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">target</span> <span class="o">!</span> <span class="n">message</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">case</span> <span class="nc">Created</span><span class="o">(</span><span class="n">location</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="n">spray</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="nc">StatusCodes</span><span class="o">.</span><span class="nc">Created</span><span class="o">,</span> <span class="n">location</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">OneCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">OK</span><span class="o">,</span> <span class="n">customer</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">ListCustomers</span><span class="o">(</span><span class="n">customers</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">OK</span><span class="o">,</span> <span class="n">customers</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">message</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">OK</span><span class="o">,</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">Error</span><span class="o">(</span><span class="n">message</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">BadRequest</span><span class="o">,</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">ReceiveTimeout</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">GatewayTimeout</span><span class="o">,</span> <span class="s">&quot;Request Timeout&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">complete</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;status:%20StatusCode,%20obj:%20T&quot;</span><span class="o">&gt;</span><span class="n">T</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">:</span> <span class="kt">AnyRef&lt;/a&gt;</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">requestContext</span><span class="o">.</span><span class="n">complete</span><span class="o">(</span><span class="n">status</span><span class="o">,</span> <span class="n">obj</span><span class="o">)</span>
+</span><span class='line'><span class="n">stop</span><span class="o">(</span><span class="n">self</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">val</span> <span class="n">supervisorStrategy</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">OneForOneStrategy</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="n">e</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">complete</span><span class="o">(</span><span class="nc">InternalServerError</span><span class="o">,</span> <span class="nc">Error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="n">getMessage</span><span class="o">))</span>
+</span><span class='line'>    <span class="nc">Stop</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">object</span> <span class="nc">CustomerRequest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">case</span> <span class="k">class</span> <span class="nc">WithProps</span><span class="o">(</span><span class="n">requestContext</span><span class="k">:</span> <span class="kt">RequestContext</span><span class="o">,</span> <span class="n">props</span><span class="k">:</span> <span class="kt">Props</span><span class="o">,</span> <span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">CustomerRequest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">lazy</span> <span class="k">val</span> <span class="n">target</span> <span class="k">=</span> <span class="n">context</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="n">props</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">implicit</span> <span class="k">def</span> <span class="n">json4sFormats</span> <span class="k">=</span> <span class="nc">DefaultFormats</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>由于target在CustomerRequest中为lazy变量，所以只有在需要的时候才会创建CustomerActor。CustomerRequest定义了工厂：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">CustomerRequestCreator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">this:</span> <span class="kt">Actor</span> <span class="o">=&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">customerRequest</span><span class="o">(</span><span class="n">requestContext</span><span class="k">:</span> <span class="kt">RequestContext</span><span class="o">,</span> <span class="n">props</span><span class="k">:</span> <span class="kt">Props</span><span class="o">,</span> <span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">context</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">WithProps</span><span class="o">(</span><span class="n">requestContext</span><span class="o">,</span> <span class="n">props</span><span class="o">,</span> <span class="n">message</span><span class="o">)))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>而在CustomerRequest的定义中，会首先通过target发送message，这个message即CustomerService的Route中传递过来的RequestMessage。此时的target是CustomerActor，所以CustomerActor会接收到这些RequestMessage，然后调用CustomerOperation的相关操作，并由CustomerActor的sender发送消息。之后CustomerRequest会收到这些消息。</p>
+
+<p>这种Actor的模型不同于传统的编程模型，但遵循的设计原则是一脉相承的，同样需要遵循单一职责原则。在编写Spray的代码时，需要事先分析清楚消息的传递路径，并分辨出承担这些消息传递与消息处理的Actor。同时，还应该尽量保证Actor与REST服务及操作分离，以保证REST服务与Actor的单一性。</p>
+
+<p>示例代码在github上可以<a href="https://github.com/agiledon/SprayExample">下载</a>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Akka中的Remote Actor]]></title>
@@ -579,158 +876,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <p>如果Supervisor不能简单地重启其Children，又必须终止他们，例如在初始化Actor时出现了错误，就可以使用Monitoring。此时，可以侦听这些children，然后重新创建他们，或者安排时间重试。</p>
 
 <p>使用Monitoring的另一种常见情形是，在缺乏外部资源，且该外部资源属于该Actor的一个children，Actor需要失败。如果第三方通过system.stop(child)或者发送PoisonPill去终止child，supervisor就会受到影响。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ScalaTest的测试风格]]></title>
-    <link href="http://agiledon.github.com/blog/2014/01/13/testing-styles-of-scalatest/"/>
-    <updated>2014-01-13T18:39:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2014/01/13/testing-styles-of-scalatest</id>
-    <content type="html"><![CDATA[<p>ScalaTest几乎已经成为Scala语言默认的测试框架，而在JVM平台下，无论是否使用Scala进行开发，我认为仍有尝试ScalaTest的必要。这主要源于它提供了多种表达力超强的测试风格，能够满足各种层次的需求包括单元测试、BDD、验收测试、数据驱动测试。正如ScalaTest的创建者Bill Venners所说：</p>
-
-<blockquote><p>A guiding design principle of ScalaTest is that different people on a team should be able look at each others test code and know immediately what's going on.</p>
-
-<p>ScalaTest is designed to make it easy for you to customize your testing tool to meet your current needs, and for the built-in traits at least, make it easy for anyone who comes along later to read and understand your code.</p></blockquote>
-
-<h2>UT与IT的风格选择</h2>
-
-<p>ScalaTest一共提供了七种测试风格，分别为：FunSuite，FlatSpec，FunSpec，WordSpec，FreeSpec，PropSpec和FeatureSpec。这就好像使用相同的原料做成不同美味乃至不同菜系的佳肴，你可以根据自己的口味进行选择。以我个人的偏好来看，我倾向于选择FlatSpec或FunSpec(类似Ruby下的RSpec)来编写单元测试与集成测试。虽然FunSuite的方式要更灵活，而且更符合传统测试方法的风格，区别仅在于test()方法可以接受一个闭包，但坏处恰恰就是它太灵活了。而FlatSpec和FunSpec则通过提供诸如it、should、describe等方法，来规定书写测试的一种模式，例如前者明显的<em>“主-谓-宾”结构</em>，后者清晰的<strong>分级式结构</strong>，都可以使团队的测试更加规范。如下是ScalaTest官方网站的提供的FunSuite、FlatSpec和FunSpec的三种风格样例。</p>
-
-<p>``` scala
-//FunSuite
-import org.scalatest.FunSuite</p>
-
-<p>class SetSuite extends FunSuite {</p>
-
-<pre><code>test("An empty Set should have size 0") {    
-    assert(Set.empty.size == 0)  
-}
-test("Invoking head on an empty Set should produce NoSuchElementException") {
-    intercept[NoSuchElementException] { 
-        Set.empty.head    
-    }  
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//FlatSpec
-import org.scalatest.FlatSpec</p>
-
-<p>class SetSpec extends FlatSpec {</p>
-
-<pre><code>"An empty Set" should "have size 0" in {
-    assert(Set.empty.size == 0)  
-}
-it should "produce NoSuchElementException when head is invoked" in {
-    intercept[NoSuchElementException] { 
-        Set.empty.head    
-    }  
-}
-</code></pre>
-
-<p>}</p>
-
-<p>//FunSpec
-import org.scalatest.FunSpec</p>
-
-<p>class SetSpec extends FunSpec {</p>
-
-<pre><code>describe("A Set") {
-    describe("when empty") { 
-        it("should have size 0") {
-            assert(Set.empty.size == 0)      
-        }
-            it("should produce NoSuchElementException when head is invoked") {
-            intercept[NoSuchElementException] {
-                Set.empty.head       
-            }      
-        }
-    }    
-}  
-</code></pre>
-
-<p>}
-```</p>
-
-<p>至于WordSpec和FreeSpec，要么太复杂，要么可读性稍差，要么惯用法风格有些混杂，个人认为都不是太好的选择，除非你已经习惯了这种风格。</p>
-
-<h2>数据驱动测试风格</h2>
-
-<p>JUnit对类似表数据的Fixture准备提供了Parameterized支持，但非常不直观，而且还需要为测试编写构造函数，然后定义一个带有@Parameters标记的静态方法。TestNG的DataProvider略好，但通过在测试方法上指定DataProvider的方式，仍然不尽如人意。ScalaTest提供的PropSpec充分利用了Scala函数式语言的特性，使得代码更简单，表达性也更强：
-``` scala
-import org.scalatest.<em>
-import prop.</em>
-import scala.collection.immutable._</p>
-
-<p>class SetSpec extends PropSpec with TableDrivenPropertyChecks with Matchers {
-  val examples =</p>
-
-<pre><code>Table(
-  "set", BitSet.empty, HashSet.empty[Int], TreeSet.empty[Int]
-)
-</code></pre>
-
-<p>  property("an empty Set should have size 0") {</p>
-
-<pre><code>forAll(examples) { set =&gt;
-  set.size should be(0)
-}
-</code></pre>
-
-<p>  }
-  property("invoking head on an empty set should produce NoSuchElementException") {</p>
-
-<pre><code>forAll(examples) { set =&gt;
-  a [NoSuchElementException] should be thrownBy { set.head }
-}
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<h2>验收测试风格</h2>
-
-<p>我们会推荐由PO（或者需求分析人员BA）与测试人员结对编写验收测试的业务场景，然后由开发人员和测试人员结对实现该场景。Cocumber、JBehave、Twist乃至Robot、Fitness都可以用于编写这样的验收测试（Fitness与Robot更接近实例化需求的方式）。这些工具有一个特点是业务场景与测试支持代码完全是分开的。例如Cucumber将业务场景放到feature文件中，而将测试支持代码放到rb文件中。JBehave类似。这样的好处是feature文件很干净，很纯粹，与技术实现没有任何关系，且有利于生成Living Document。然而，这种分离方式在带来良好可读性的同时，也带来维护成本的增加。</p>
-
-<p>ScalaTest在提供类似Feature的验收测试Spec时，并没有将业务场景与测试支持代码分开，而是采用了混合的方式来表现：
-``` scala
-import org.scalatest.{ShouldMatchers, GivenWhenThen, FeatureSpec}</p>
-
-<p>class TVSetTest extends FeatureSpec with GivenWhenThen with ShouldMatchers{
-  info("As a TV Set owner")
-  info("I want to be able to turn the TV on and off")
-  info("So I can watch TV when I want")
-  info("And save energy when I'm not watching TV")</p>
-
-<p>  feature("TV power button") {</p>
-
-<pre><code>scenario("User press power button when TV is off") {
-  Given("a TV set that is switched off")
-  val tv = new TVSet
-  tv.isOn should be (false)
-
-  When("The power button is pressed")
-  tv.pressPowerButton
-
-  Then("The TV should switch on")
-  tv.isOn should be (true)
-}
-</code></pre>
-
-<p>  }
-}
-```</p>
-
-<p>ScalaTest的FeatureSpec支持常见的Given-When-Then模式。在上面的代码段中，info提供了对Feature的基本描述，然后提供了feature与scenario两个层级。熟悉Cucumber和JBehave的人对此应该不会陌生。测试支持代码直接写在Given、When、Then方法下，因而针对同一个Feature，只产生一个scala文件。这就意味着测试支持代码与自然语言描述是处于同一级的，准确地说，他们其实就属于同一个测试。开发时，PO（或者需求）与测试可以先编写FeatureSpec的骨架，即info-feature-scenario以及Given-When-Then部分。一旦编写好这个FeatureSpec，就可以提交到版本管理库。当开发人员与需求、测试一起Kick Off要做的Story时，就可以根据这个FeatureSpec进行，然后，要求开发人员在完成Story的实现前，与测试结对完成它的测试实现代码。</p>
-
-<p>由于ScalaTest还提供了Tag等功能，我们还可以通过对测试提取基类或者Trait有效地对这些测试进行重用，保证测试代码的可维护性。由于只需要维护一个scala，成本会降低许多，也不需要在业务场景和测试支持代码之间跳转，降低维护的难度。唯一的缺点是它天然不支持Living Document。但是我们发现这些自然语言描述实则都集中在FeatureSpec提供的方法中，我们完全可以自行开发工具或插件，完成对场景描述以及步骤的提取，生成我们需要的文档。</p>
-
-<p>目前，我的同事杨云已经将ScalaTest作为编写验收测试的工具引入到项目中。受他启发，在我当前的项目中也选择使用了ScalaTest作为验收测试的框架。考虑到IDE支持尤其是重构等方面的工具支持，以及构建中对测试运行、测试覆盖率检查等的支持，目前我并没有考虑在单元测试和集成测试中使用ScalaTest。之所以如此，还是源于对成本与收益的考量。</p>
-
-<p><strong>说明：</strong>文章的代码片段全部来自ScalaTest官方网站。</p>
 ]]></content>
   </entry>
   
