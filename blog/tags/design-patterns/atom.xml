@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Design Patterns | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/design-patterns/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-04T13:05:21+08:00</updated>
+  <updated>2014-05-08T09:57:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns/"/>
     <updated>2013-02-22T16:52:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/22/preface-of-java-design-patterns</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/dpinjava.jpeg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/dpinjava.jpeg %}
 如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。</p>
 
 <p>是否设计模式的精妙之处，业已为这些著作所穷尽？然，又未必尽然！以模式而论，若只局限在这23种模式的范围内，几乎每种模式的变化，都可以被悉心推演出来；每种模式的结构，也已被阐述得淋漓尽致。然而，若论及设计，则如大道苍穹，实则是不可穷尽的。基本上，设计的复杂程度已不亚于一个纷繁的世界，而软件，就是我们要构造的这个世界。</p>
@@ -249,7 +249,7 @@ public void setInterceptorChain(Iterator&lt;? extends CommandHandlerInterceptor&
 ```</p>
 
 <p>在InterceptorChain类中，handler对象就是我们要包装（或者说拦截）的命令对象。注意，Interceptor对象的handle()方法，是将InterceptorChain对象作为参数传入的。于是就形成了如下的方法调用时序：
-<img class="center" src="/images/2013/02/interceptor.png"></p>
+{% img center /images/2013/02/interceptor.png %}</p>
 
 <p>只要理解了InterceptorChain起到的委派传递作用，就能很好地理解这个设计。这种方式将之前装饰器模式那种洋葱式的构造转移到列表中，并通过迭代器进行迭代。同时，它将对CommandHandler以及相关拦截器对象的依赖转移到了外面，很好地支持IoC容器对依赖的注入，从而使得代码可以变得更简单，更灵活。</p>
 

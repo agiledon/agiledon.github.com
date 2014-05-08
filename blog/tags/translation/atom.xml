@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Translation | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/translation/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-04T13:05:21+08:00</updated>
+  <updated>2014-05-08T09:57:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture/"/>
     <updated>2013-08-29T10:39:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/justenough_cn.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/justenough_cn.jpg %}
 华中科技大学出版社的徐定翔问我意见，了解我对Just Enough Software Architecture这本书的观感，看是否值得引进。时间是在2010年。从一开始，我就被书名中的Just Enough理念所吸引。它让我想起宋玉的东家姑娘，“增之一分则太长，减之一分则太短”那种不可言说的美丽。我在心里说，架构设计就需要这样。我当时并没有看到本书，只是到Amazon上找到了几篇英文原版样章。犹记得我在读到第一章介绍的RackSpace案例时那种兴奋之情。于是，我迫切地向徐定翔强烈推荐引进这本书，而我则毛遂自荐，希望能作为本书的译者。之后，我在InfoQ上看到对本书的《<a href="http://www.infoq.com/cn/articles/fairbanks-jesa">访谈和书摘</a>》，进一步加强了我翻译本书的信念。于是，出版社开始与作者Fairbanks联系，然而从此音讯如石沉大海。时针指向2011年，我对于本书是否被引进，是否由我翻译，一切未知。我觉得我可能错过了它，思之仍觉怅然。谁知到了九月，消息突然确定，而徐大编辑就不容分说地直接把原书给我寄来了。</p>
 
 <p>拿到沉甸甸的书，第一面就为本书的装帧而惊喜。心里想，我这一辈子若能写出这样一本书，绝对值得生命走过的这一遭了。我并没有迫不及待地开始翻译，这就好似遇到珍馐美味，需得先赏其色，闻其香，然后再品其味。我每天抱着这本书饶有兴味地开始阅读之旅。阅读之旅确乎如行山阴道，沿途之美，目不暇接；可一想到翻译，这种美景就成了一种折磨，因为我害怕辜负这一美景。翻译之初我就举步维艰，那些词语放在那里，我却无法解开“封印”将它们取出来，即使取出来，却又找不到存放的合适位置。一些翻译隐隐约约浮现着，当我竭力去揭开这些词语的真面目时，无论如何用力，总也不能够着。翻译就好像那些年我们一起追过的女孩——追不到，痛苦；追到了，销魂。翻译进度像蜗牛一样的爬着，我终于决定求助了。辗转寻找了好多朋友，都以各种理由拒绝或者放弃了。翻译讲解软件架构的书，确乎不是一件轻松的事儿。那个时候，我的Buddy肖鹏正从翻译《面向模式的软件架构》第五卷的泥潭中爬了出来。每一提及他的这段翻译经历，脸上就会浮现出不堪回首的表情，如看了恐怖片。终于，事情得到转机，最开始是倪健的雪中送炭，再有高翌翔的锦上添花，随着我们这个三人组的建立，翻译才算开始走向正规，我才有了交稿的信心。</p>

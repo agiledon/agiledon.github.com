@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Notes | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/notes/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-04T13:05:21+08:00</updated>
+  <updated>2014-05-08T09:57:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,20 +19,21 @@
     <updated>2013-06-16T20:06:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method</id>
     <content type="html"><![CDATA[<p>我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。
-<img class="center" src="/images/2013/06/IRepository.png"></p>
+{% img center /images/2013/06/IRepository.png %}</p>
 
 <p>对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave()的区别仅在于它要接收的参数只是一个实体对象。事实上，我们可以调用IRepository接口本身提供的BatchSave()来实现Save()方法。Save()方法的实现对于所有实现了IRepository接口的类而言，完全是一样的。那么，我们该如何为IRepository接口增加一个Save()方法，同时又能避免代码做出太多修改？由于接口自身并不能提供实现，因此唯一可以容纳这个方法实现的就是实现了IRepository接口的类。一个办法是为所有这些实现类定义一个公共的抽象父类，并让它再实现IRepository接口，于是将Save()的实现放到这个抽象父类中，就可以使得所有子类共享Save()方法的实现了。可是，为了这个Save()方法的实现与重用，专门引入一个抽象父类，是否值得呢？除非在现有的Repository继承体系中，已经存在了这样的抽象父类，否则该类的引入会导致整个继承体系发生较大的变化。</p>
 
 <p>在.NET中，我们可以巧妙地借助扩展方法来完成对Save()方法的重用，同时又能保证现有的继承体系不变。方法就是为IRepository接口提供扩展方法：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RepositoryExtensions</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">Save</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="k">this</span> <span class="n">IRepository</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">repository</span><span class="p">,</span> <span class="n">T</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">repo</span><span class="p">.</span><span class="n">BatchSave</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="n">entity</span><span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:csharp %}
+public static class RepositoryExtensions {</p>
+
+<pre><code>public static void Save&lt;T&gt;(this IRepository&lt;T&gt; repository, T entity) {
+    repo.BatchSave(new[] {entity});
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 ]]></content>
   </entry>
   
@@ -46,7 +47,7 @@
 <p>我们希望在后续版本中解决这一问题。然而，现实总是这么残酷。真正处理文件并提供下载功能的系统并不在我们的掌控之中。它是第三方Vendor提供的Web Service，我们开发的系统仅仅涉及到请求的转发，完成对该Web Service的调用；并在获得结果后，将响应（包含了文件流数据）返回给客户端。换言之，我们既不能改善文件处理的实现逻辑，以提高处理的速度；也无法对该Web Service进行水平伸缩，例如通过引入多台服务器建立集群和负载均衡的方式。</p>
 
 <p>遭遇如此场景实属无奈，要得出好的设计决策就好似戴着镣铐跳舞，只有在自己的服务端下功夫。我们首先想到的是限流（throttle）的方式，通过引入一个类似Controller角色的对象RequestHandlerPool，对客户端的请求进行控制。我们可以设定一个阈值，一旦超过该阈值，就将后续的请求放入队列进行排队。这个限流可以采用简单地在内存实现请求池全局对象。当然，也可以考虑引入消息队列中间件。改进后的时序图如下所示：
-<img class="center" src="/images/2013/06/filehandling.png"></p>
+{% img center /images/2013/06/filehandling.png %}</p>
 
 <p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
 

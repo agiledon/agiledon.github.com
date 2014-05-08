@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>Spark的硬件配置 - 简单文本</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="从MapReduce的兴起，就带来一种思路，就是希望通过大量廉价的机器来处理以前需要耗费昂贵资源的海量数据。这种方式事实上是一种架构的水平伸缩模式——真正的以量取胜。毕竟，以现在的硬件发展来看，CPU的核数、内存的容量以及海量存储硬盘，都慢慢变得低廉而高效。然而， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="简单文本" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">简单文本</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Spark的硬件配置</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-08T09:19:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>从MapReduce的兴起，就带来一种思路，就是希望通过大量廉价的机器来处理以前需要耗费昂贵资源的海量数据。这种方式事实上是一种架构的水平伸缩模式——真正的以量取胜。毕竟，以现在的硬件发展来看，CPU的核数、内存的容量以及海量存储硬盘，都慢慢变得低廉而高效。然而，对于商业应用的海量数据挖掘或分析来看，硬件成本依旧是开发商非常关注的。当然最好的结果是：既要马儿跑得快，还要马儿少吃草。</p>
+
+<p>Spark相对于Hadoop的MapReduce而言，确乎要跑得迅捷许多。然而，Spark这种In-Memory的计算模式，是否在硬件资源尤其是内存资源的消耗上，要求更高呢？我既找不到这么多机器，也无法租用多台虚拟instance，再没法测评的情况下，只要寻求Spark的官方网站，又或者通过Google搜索。从Spark官方网站，Databricks公司Patrick Wendell的演讲以及Matei Zaharia的Spark论文，找到了一些关于Spark硬件配置的支撑数据。</p>
+
+<h3>Spark与存储系统</h3>
+
+<p>如果Spark使用HDFS作为存储系统，则可以有效地运用Spark的standalone mode cluster，让Spark与HDFS部署在同一台机器上。这种模式的部署非常简单，且读取文件的性能更高。当然，Spark对内存的使用是有要求的，需要合理分配它与HDFS的资源。因此，需要配置Spark和HDFS的环境变量，为各自的任务分配内存和CPU资源，避免相互之间的资源争用。</p>
+
+<p>若HDFS的机器足够好，这种部署可以优先考虑。若数据处理的执行效率要求非常高，那么还是需要采用分离的部署模式，例如部署在Hadoop YARN集群上。</p>
+
+<h3>Spark对磁盘的要求</h3>
+
+<p>Spark是in memory的迭代式运算平台，因此它对磁盘的要求不高。Spark官方推荐为每个节点配置4-8块磁盘，且并不需要配置为RAID（即将磁盘作为单独的mount point）。然后，通过配置spark.local.dir来指定磁盘列表。</p>
+
+<h3>Spark对内存的要求</h3>
+
+<p>Spark虽然是in memory的运算平台，但从官方资料看，似乎本身对内存的要求并不是特别苛刻。官方网站只是要求内存在8GB之上即可（Impala要求机器配置在128GB）。当然，真正要高效处理，仍然是内存越大越好。若内存超过200GB，则需要当心，因为JVM对超过200GB的内存管理存在问题，需要特别的配置。</p>
+
+<p>内存容量足够大，还得真正分给了Spark才行。Spark建议需要提供至少75%的内存空间分配给Spark，至于其余的内存空间，则分配给操作系统与buffer cache。这就需要部署Spark的机器足够干净。</p>
+
+<p>考虑内存消耗问题，倘若我们要处理的数据仅仅是进行一次处理，用完即丢弃，就应该避免使用cache或persist，从而降低对内存的损耗。若确实需要将数据加载到内存中，而内存又不足以加载，则可以设置Storage Level。Spark提供了三种Storage Level：MEMORY_ONLY（这是默认值），MEMORY_AND_DISK，以及DISK_ONLY。</p>
+
+<p>关于数据的持久化，Spark默认是持久化到内存中。但它也提供了三种持久化RDD的存储方式：</p>
+
+<ul>
+<li><p>in-memory storage as deserialized Java objects</p></li>
+<li><p>in-memory storage as serialised data</p></li>
+<li><p>on-disk storage</p></li>
+</ul>
+
+
+<p>第一种存储方式性能最优，第二种方式则对RDD的展现方式（Representing）提供了扩展，第三种方式则用于内存不足时。</p>
+
+<p>注意，RDDs是Lazy的，在执行Transformation操作如map、filter时，并不会提交Job，只有在执行Action操作如count、first时，才会执行Job，此时才会进行数据的加载。要计算Spark加载的Dataset大小，可以通过Spark提供的Web UI Monitoring工具来帮助分析与判断。</p>
+
+<p>Spark对内存的消耗主要分为三部分：1. 数据集中对象的大小；2. 访问这些对象的内存消耗；3. 垃圾回收GC的消耗。一个通常的内存消耗计算方法是：内存消耗大小= 对象字段中原生数据 * (2~5)。 这是因为Spark运行在JVM之上，操作的Java对象都有定义的“object header”，而数据结构（如Map，LinkedList）对象自身也需要占用内存空间。此外，对于存储在数据结构中的基本类型，还需要装箱（Boxing）。Spark也提供了一些内存调优机制，例如执行对象的序列化，可以释放一部分内存空间。还可以通过为JVM设置flag来标记存放的字节数（选择4个字节而非8个字节）。在JDK 7下，还可以做更多优化，例如对字符编码的设置。这些配置都可以在spark-env.sh中设置。</p>
+
+<h3>Spark对网络的要求</h3>
+
+<p>Spark属于网络绑定型系统，因而建议使用10G及以上的网络带宽。</p>
+
+<h3>Spark对CPU的要求</h3>
+
+<p>Spark可以支持一台机器扩展至数十个CPU core，它实现的是线程之间最小共享。若内存足够大，则制约运算性能的就是网络带宽与CPU数。</p>
+
+<p>Spark官方利用Amazon EC2的环境对Spark进行了基准测评。例如，在交互方式下进行数据挖掘（Interative Data Mining），租用Amazon EC2的100个实例，配置为8核、68GB的内存。对1TB的维基百科页面查阅日志（维基百科两年的数据）进行数据挖掘。在查询时，针对整个输入数据进行全扫描，只需要耗费5-7秒的时间。如下图所示：
+<img class="center" src="/images/2014/sparkbenchmark.png"></p>
+
+<p>在Matei Zaharia的Spark论文中还给出了一些使用Spark的真实案例。视频处理公司Conviva，使用Spark将数据子集加载到RDD中。报道说明，对于200GB压缩过的数据进行查询和聚合操作，并运行在两台Spark机器上，占用内存为96GB，执行完全部操作需要耗费30分钟左右的时间。同比情况下，Hadoop需要耗费20小时。注意：之所以200GB的压缩数据只占用96GB内存，是因为RDD的处理方式，使得我们可以只加载匹配客户过滤的行和列，而非所有压缩数据。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-08T09:19:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/tools/'>Tools</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='tag' href='/blog/tags/big-data/'>Big Data</a>, <a class='tag' href='/blog/tags/spark/'>Spark</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/17/rest-framework-spray-based-on-akka/" title="Previous Post: 基于Akka的REST框架Spray">&laquo; 基于Akka的REST框架Spray</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/profile.png" align="center"/></p>
+  	<p><strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Senior Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/05/08/hardware-on-spark/">Spark的硬件配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/17/rest-framework-spray-based-on-akka/">基于Akka的REST框架Spray</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/05/spark-overview/">Spark概览</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/04/the-strength-of-reading/">阅读的力量</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/18/remote-actor-in-akka/">Akka中的Remote Actor</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+<section>
+  <h1>Tag Cloud</h1>
+  <ul class="tag-cloud">
+<a style="font-size: 100%" href="/blog/tags/api/">API</a>
+<a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
+<a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
+<a style="font-size: 144%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 100%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
+<a style="font-size: 164%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 202%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 100%" href="/blog/tags/go/">GO</a>
+<a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
+<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
+<a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
+<a style="font-size: 100%" href="/blog/tags/language/">Language</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
+<a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
+<a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
+<a style="font-size: 100%" href="/blog/tags/nosql/">NoSQL</a>
+<a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
+<a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
+<a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
+<a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
+<a style="font-size: 192%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
+<a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
+<a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+
+  </ul>
+</section>
+<section>
+  <h1>Sina Weibo</h1>
+    <iframe id="sina_widget_1780465612" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1780465612&height=500&skin=wd_01&showpic=1"></iframe>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/bruce.e.zhang@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+<section>
+  <h1>Visitor</h1>
+  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

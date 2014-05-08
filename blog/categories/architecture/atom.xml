@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Architecture | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-04T13:05:21+08:00</updated>
+  <updated>2014-05-08T09:57:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,89 +19,90 @@
     <updated>2014-04-05T09:39:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/04/05/spark-overview</id>
     <content type="html"><![CDATA[<p>Spark具有先进的DAG执行引擎，支持cyclic data flow和内存计算。因此，它的运行速度，在内存中是Hadoop MapReduce的100倍，在磁盘中是10倍。如下是对比图：
-<img class="center" src="/images/2014/spark-logistic-regression.png"></p>
+{% img center /images/2014/spark-logistic-regression.png %}</p>
 
 <p>这样的性能指标，真的让人心动啊！</p>
 
 <p>Spark的API更为简单，提供了80个High Level的操作，可以很好地支持并行应用。它的API支持Scala、Java和Python，并且可以支持交互式的运行Scala与Python。来看看Spark统计Word字数的程序：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">file</span> <span class="k">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">textFile</span><span class="o">(</span><span class="s">&quot;hdfs://...&quot;</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">file</span><span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="n">line</span> <span class="k">=&gt;</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">))&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">map</span><span class="o">(</span><span class="n">word</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="mi">1</span><span class="o">))</span>
-</span><span class='line'><span class="o">.</span><span class="n">reduceByKey</span><span class="o">(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+file = spark.textFile("hdfs://...")</p>
+
+<p>file.flatMap(line => line.split(" "))</p>
+
+<pre><code>.map(word =&gt; (word, 1))
+.reduceByKey(_ + _)
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>看看Hadoop的Word Count例子，简直弱爆了，爆表的节奏啊：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">WordCount</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">TokenizerMapper</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kd">extends</span> <span class="n">Mapper</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;{</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">IntWritable</span> <span class="n">one</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">Text</span> <span class="n">word</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Text</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">map</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">,</span> <span class="n">Text</span> <span class="n">value</span><span class="o">,</span> <span class="n">Context</span> <span class="n">context</span>
-</span><span class='line'>                <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">StringTokenizer</span> <span class="n">itr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-</span><span class='line'>  <span class="k">while</span> <span class="o">(</span><span class="n">itr</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">word</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">itr</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
-</span><span class='line'>    <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="n">one</span><span class="o">);</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">IntSumReducer</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kd">extends</span> <span class="n">Reducer</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span><span class="n">IntWritable</span><span class="o">,</span><span class="n">Text</span><span class="o">,</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">IntWritable</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">reduce</span><span class="o">(</span><span class="n">Text</span> <span class="n">key</span><span class="o">,</span> <span class="n">Iterable</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">values</span><span class="o">,</span>
-</span><span class='line'>                   <span class="n">Context</span> <span class="n">context</span>
-</span><span class='line'>                   <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">IntWritable</span> <span class="n">val</span> <span class="o">:</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">sum</span> <span class="o">+=</span> <span class="n">val</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
-</span><span class='line'><span class="n">String</span><span class="o">[]</span> <span class="n">otherArgs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GenericOptionsParser</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="n">args</span><span class="o">).</span><span class="na">getRemainingArgs</span><span class="o">();</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">otherArgs</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Usage: wordcount &amp;lt;in&amp;gt; &amp;lt;out&amp;gt;&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="n">Job</span> <span class="n">job</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Job</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="s">&quot;word count&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setJarByClass</span><span class="o">(</span><span class="n">WordCount</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setMapperClass</span><span class="o">(</span><span class="n">TokenizerMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setCombinerClass</span><span class="o">(</span><span class="n">IntSumReducer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setReducerClass</span><span class="o">(</span><span class="n">IntSumReducer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setOutputKeyClass</span><span class="o">(</span><span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setOutputValueClass</span><span class="o">(</span><span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">FileInputFormat</span><span class="o">.</span><span class="na">addInputPath</span><span class="o">(</span><span class="n">job</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">otherArgs</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
-</span><span class='line'><span class="n">FileOutputFormat</span><span class="o">.</span><span class="na">setOutputPath</span><span class="o">(</span><span class="n">job</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">otherArgs</span><span class="o">[</span><span class="mi">1</span><span class="o">]));</span>
-</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="n">job</span><span class="o">.</span><span class="na">waitForCompletion</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="o">);</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+public class WordCount {
+  public static class TokenizerMapper</p>
+
+<pre><code>   extends Mapper&lt;Object, Text, Text, IntWritable&gt;{
+
+private final static IntWritable one = new IntWritable(1);
+private Text word = new Text();
+
+public void map(Object key, Text value, Context context
+                ) throws IOException, InterruptedException {
+  StringTokenizer itr = new StringTokenizer(value.toString());
+  while (itr.hasMoreTokens()) {
+    word.set(itr.nextToken());
+    context.write(word, one);
+  }
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  public static class IntSumReducer</p>
+
+<pre><code>   extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; {
+private IntWritable result = new IntWritable();
+
+
+public void reduce(Text key, Iterable&lt;IntWritable&gt; values,
+                   Context context
+                   ) throws IOException, InterruptedException {
+  int sum = 0;
+  for (IntWritable val : values) {
+    sum += val.get();
+  }
+  result.set(sum);
+  context.write(key, result);
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  public static void main(String[] args) throws Exception {</p>
+
+<pre><code>Configuration conf = new Configuration();
+String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
+if (otherArgs.length != 2) {
+  System.err.println("Usage: wordcount &lt;in&gt; &lt;out&gt;");
+  System.exit(2);
+}
+Job job = new Job(conf, "word count");
+job.setJarByClass(WordCount.class);
+job.setMapperClass(TokenizerMapper.class);
+job.setCombinerClass(IntSumReducer.class);
+job.setReducerClass(IntSumReducer.class);
+job.setOutputKeyClass(Text.class);
+job.setOutputValueClass(IntWritable.class);
+FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
+FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
+System.exit(job.waitForCompletion(true) ? 0 : 1);
+</code></pre>
+
+<p>  }
+}
+{% endcodeblock %}</p>
 
 <p>当然，Hadoop有自己的一套框架，为整个的大数据处理做支持，例如HIVE，例如HDFS。Spark也不逊色，也有自己的SQL框架支持，即Shark，此外还支持流处理、机器学习以及图运算：
-<img class="center" src="/images/2014/spark-stack.png"></p>
+{% img center /images/2014/spark-stack.png %}</p>
 
 <p>Spark并没有自己的分布式存储方案。不过已经有了强悍的HDFS，同为Aparch旗下的Spark又何必再造一个差不多的轮子呢？所以Spark可以很好地与Hadoop集成。例如可以运行在Hadoop 2的YARN集群下，可以读取现有的Hadoop数据。当然，Spark自身也支持standadlone的部署，或者部署到EC2等云平台下。除了可以读取HDFS数据，它还可以读取HBase，Cassandra等NoSQL数据库。这扩大了Spark的适用范围。</p>
 
@@ -119,10 +120,10 @@
 <p>我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex Context这一点上语焉不详。</p>
 
 <p>我的初步设想是通过绘制场景图（但并不成熟）。我认为有三种绘制场景图的方式：商业画布，体验地图和流程图。我认为，商业画布可以作为需求分析（尤其针对初创产品）的起点。商业画布如下图所示：
-<img class="center" src="/images/2014/business_canvas.jpeg"></p>
+{% img center /images/2014/business_canvas.jpeg %}</p>
 
 <p>采用这种规范化的方式来推导商业模型，可以激发我们的灵感，理清我们的思路，以便我们思考为何要做这个产品，产品应该具备哪些功能。结合优点和缺点、成本等因素，我们可以藉此判断和决策功能的优先级，从而得到MVP。这个过程需要大量运用即时贴，让整个商业模型呈现。经过取舍后，就可以针对产品绘制场景图。此时，场景图可以采用Experience Map或流程图来体现。Experience Map的例子如下图所示：
-<img class="center" src="/images/2014/experience_map.gif"></p>
+{% img center /images/2014/experience_map.gif %}</p>
 
 <p>由于商业画布本身提供了“客户”项，我们应该创建Persona，找准人物角色的特征来“搜寻”需求。绘制了场景图后，就能够确定用例了，此时，可辅以ATDD帮助确定Story。在确定了用例后，可以识别Bounded Context，并通过Context Map确定上下文之间的关系。</p>
 
@@ -135,23 +136,23 @@
 
 <blockquote><p>为了更好的理解我们选择的目标消费者，我们需要对消费者进行完整的建模，即Persona。越接近于真实的Persona帮助我们更好的理解其用户目标……Persona的重要产出物是一系列用户目标，对于同一个Persona，用户目标可能有不同，有些目标是基础核心目标，有些则是衍生性的，例如一个访问网站潜在投资者的核心目标可能是了解成为投资者的过程，而衍生性目标可能是获得一些关于公司历史信息增加信任度。</p></blockquote>
 
-<p><img class="center" src="/images/2014/persona.jpg">
+<p>{% img center /images/2014/persona.jpg %}
 <strong>说明</strong>：本图摘自熊子川博客</p>
 
 <p>假设我们要开发一个电子商务网站，我们就可以通过商业画布来驱动出这个产品应该具有哪些功能，它的客户有哪些等，在绘制了场景图后，可以初步得到这样的Bounded Context:
-<img class="center" src="/images/2014/bounded_context.jpg"></p>
+{% img center /images/2014/bounded_context.jpg %}</p>
 
 <p>然后，我利用Context Map得到了各个上下文之间的关系：
-<img class="center" src="/images/2014/context_map.jpg"></p>
+{% img center /images/2014/context_map.jpg %}</p>
 
 <p>这样，一个包图的获得就水到渠成了：
-<img class="center" src="/images/2014/modules.jpeg"></p>
+{% img center /images/2014/modules.jpeg %}</p>
 
 <p>在识别了Bounded Context以及Context之间的关系后，我们可以运用Hexagon架构（Cockburn提出的六边形架构）来展现系统的整体架构。Hexagon架构并不深入关注内部边界中领域部分，仅仅是简单的划分为Application与Domain两层。但它有助于我们获得基础设施层以及相关集成点的包结构。我们要合理地运用六边形架构。它更贴近应用逻辑架构，并可以驱动我们去发现诸多集成点，寻找集成模式。内外边界的分离也有助于我们将业务逻辑与应用逻辑分离开。这实际上符合“关注点分离”的架构原则。下图展现了六边形架构中常见的Port与Adapter：
-<img class="center" src="/images/2014/Hexagon.jpg"></p>
+{% img center /images/2014/Hexagon.jpg %}</p>
 
 <p>我对“可视化架构”的理解，还是要希望多通过即时贴、白板等工具来实现可视化，而非通过绘图。至少，绘图不应该成为主要的驱动力，否则，开发人员很难接受。例如，下图就是我运用Hexagon架构，并结合可视化手段分析该电子商务系统得到的应用逻辑架构，它很好地一个展现了Hexagon架构的可视化手法。
-<img class="center" src="/images/2014/e_commerce.jpg"></p>
+{% img center /images/2014/e_commerce.jpg %}</p>
 
 <p>在这个图中，直观地展现了如何与外部的支付系统以及物流系统的集成。例如，图中展现的Port实际上为防腐层（ACL）。为何要建立这样的一个防腐层呢，原因在于：支付与物流常常存在多个供应商，因而需要解除对供应商的绑定，并避免供应商系统的变化造成对电子商务系统的腐蚀。这是切合实际的决策。</p>
 
@@ -177,7 +178,7 @@
 
 
 <p>整个架构如下图所示：
-<img class="center" src="/images/2014/inventory.jpeg"></p>
+{% img center /images/2014/inventory.jpeg %}</p>
 
 <p>对于库存管理而言，我认为它主要支持商品存放信息的数据管理，即获得商品数量、存放位置以及更新这些信息。对于该上下文而言，操作本身比较简单，且耗时较短。若出现大规模并发，其瓶颈也不在于获取或更新仓库信息（当然需要通过测试数据验证），而在于客户下订单后向仓库管理流程控制系统发起的发货请求。</p>
 
@@ -190,7 +191,7 @@
 <p>一旦收到消息，物流控制系统作为消息队列的订阅者（或侦听器）就可以即使处理信息，进行后续的处理。</p>
 
 <p>针对库存管理而言，我认为它是一个独立的物理边界，因此在可视化手段中，我展现为一个单独的库存管理六边形，如下图所示：
-<img class="center" src="/images/2014/inventory_2.jpeg"></p>
+{% img center /images/2014/inventory_2.jpeg %}</p>
 
 <ul>
 <li>建立了针对REST服务的端口，对应的适配器为Controller，其目的是支持E-Commerce系统。事实上，我们对E-Commerce系统进行过分析，获得的六边形架构正好与此对接。</li>
@@ -200,7 +201,7 @@
 
 
 <p>物流控制与拓扑管理放在同一个边界中，它是高度可伸缩的独立系统，为展现它的可伸缩性以及它与库存管理之间的集成，我在可视化手段中，展现出两个独立的六边形，如下图所示：
-<img class="center" src="/images/2014/inventory_3.jpeg"></p>
+{% img center /images/2014/inventory_3.jpeg %}</p>
 
 <ul>
 <li>针对Queue的侦听器端口，对应的适配器为Message Handler。若有必要，如为了更好的支持并发，也可以在此引入Active Object甚至Leader/Followers。</li>
@@ -248,23 +249,23 @@
 
 <h4>架构师</h4>
 
-<p><img class="left" src="/images/2013/07/nealford.png"></p>
+<p>{% img left /images/2013/07/nealford.png %}</p>
 
 <h5>Neal Ford</h5>
 
 <p>Neal Ford是全球IT咨询公司ThoughtWorks的软件架构师。除了常规工作，他做的事情还包括设计和开发应用程序、教学材料、杂志文章、课件和视频/DVD演示，同时还是各种技术书籍的作者或者编辑，其中包括著作The Productive Programmer。他专注于设计和开发大规模企业应用程序，同时，他也是世界开发人员会议的国际知名演说家。
-<img class="right" src="/images/2013/07/ericevans.png"></p>
+{% img right /images/2013/07/ericevans.png %}</p>
 
 <h5>Eric Evans</h5>
 
 <p>大型业务系统方面的领域建模和设计专家。早20世纪90年代，他就参与了很多项目，基于对象（Object）开发出许多大型的业务系统，并致力于将敏捷过程应用到现实项目中。
 此外，Eric Evans还是《领域驱动设计——软件核心复杂性应对之道》一书的作者。在书中他总结了构建上述业务系统相关的经验、原则和技术等。并介绍了一个建模和设计技术的系统，成功的团队应用这一系统可以组装有业务需求的复杂软件系统，并使系统在增大时仍然保持敏捷。
-Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。<img class="left" src="/images/2013/07/buschmann.png"></p>
+Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。{% img left /images/2013/07/buschmann.png %}</p>
 
 <h5>FranK Buschmann</h5>
 
 <p>德国慕尼黑西门子技术公司资深技术专家及负责人。Wiley软件设计模式系列图书主编。他的研究领域包括对象技术、软件架构、产品线、模型驱动软件开发和模式。他曾是ANSI C++标准化委员会x3J16的成员，于1996年发起了首届EuroPLoP会议。Frank Buschmann是Pattern-Oriented Software Architecture系列书籍的主要作者。
-<img class="right" src="/images/2013/07/george.png"></p>
+{% img right /images/2013/07/george.png %}</p>
 
 <h5>Fred George</h5>
 
@@ -272,17 +273,17 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 
 <h4>推荐书籍</h4>
 
-<p><img class="left" src="/images/2013/07/releaseit.png">#####Release It!</p>
+<p>{% img left /images/2013/07/releaseit.png %}#####Release It!</p>
 
 <p><strong>推荐理由：</strong>Michael Nygard的Releast It!可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
 
-<p><img class="right" src="/images/2013/07/beautifularchitecture.png"></p>
+<p>{% img right /images/2013/07/beautifularchitecture.png %}</p>
 
 <h5>Beautiful Architecture</h5>
 
 <p><strong>推荐理由：</strong>全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。</p>
 
-<p><img class="right" src="/images/2013/07/eip.png"></p>
+<p>{% img right /images/2013/07/eip.png %}</p>
 
 <h5>Enterprise Integation Patterns</h5>
 
@@ -300,7 +301,7 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>我们希望在后续版本中解决这一问题。然而，现实总是这么残酷。真正处理文件并提供下载功能的系统并不在我们的掌控之中。它是第三方Vendor提供的Web Service，我们开发的系统仅仅涉及到请求的转发，完成对该Web Service的调用；并在获得结果后，将响应（包含了文件流数据）返回给客户端。换言之，我们既不能改善文件处理的实现逻辑，以提高处理的速度；也无法对该Web Service进行水平伸缩，例如通过引入多台服务器建立集群和负载均衡的方式。</p>
 
 <p>遭遇如此场景实属无奈，要得出好的设计决策就好似戴着镣铐跳舞，只有在自己的服务端下功夫。我们首先想到的是限流（throttle）的方式，通过引入一个类似Controller角色的对象RequestHandlerPool，对客户端的请求进行控制。我们可以设定一个阈值，一旦超过该阈值，就将后续的请求放入队列进行排队。这个限流可以采用简单地在内存实现请求池全局对象。当然，也可以考虑引入消息队列中间件。改进后的时序图如下所示：
-<img class="center" src="/images/2013/06/filehandling.png"></p>
+{% img center /images/2013/06/filehandling.png %}</p>
 
 <p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
 
@@ -313,7 +314,7 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
     <link href="http://agiledon.github.com/blog/2013/04/24/technical-stack-migration-for-legacy-system/"/>
     <updated>2013-04-24T17:55:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/04/24/technical-stack-migration-for-legacy-system</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/04/legacy.png">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/04/legacy.png %}
 什么是遗留系统（Legacy System）？根据维基百科的定义，遗留系统是一种旧的方法、旧的技术、旧的计算机系统或应用程序[1]。这一定义事实上并没有很好地揭露遗留系统的本质。我认为，遗留系统首先是一个还在运行和使用，但已步入软件生命周期衰老期的软件系统。它符合所谓的“奶牛规则”：奶牛逐渐衰老，最终无奶可挤；然而与此同时，饲养成本却在上升。这意味着遗留系统会逐渐随着时间的推移，不断地增加维护成本。</p>
 
 <p>维护一个软件系统，就需要了解该软件系统的知识。若知识缺失，就意味着这会给维护人员带来极大的障碍和困难。从这个角度讲，所谓“遗留系统”，就是缺少了一部分重要知识，使得维护人员“知其然而不知其所以然”的软件系统。</p>
@@ -351,7 +352,13 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>George Fairbanks提出的风险驱动模型（Risk-Driven Model）非常适合遗留系统的技术栈迁移。所谓“风险驱动模型”，就是通过识别风险，对风险排定优先级；然后根据风险选定相关技术，再对风险是否得到缓解进行评估的一种架构方法[5] 。在对遗留系统进行技术栈迁移时，如果未能事先对迁移过程的风险进行有效识别，就可能为系统引入新的问题，降低系统质量，或者导致迁移的成本过高。</p>
 
 <p>根据我的经验，在对遗留系统进行技术栈迁移时，可以识别的主要风险包括：
-<blockquote><p>遗留系统本身存在的质量问题，例如紧耦合、缺乏足够的测试、系统可维护性差；<br/>缺乏足够的知识来帮助我们理解整个遗留系统；<br/>成本、时间与人力的风险；<br/>对迁移的新技术缺乏充分认识；<br/>迁移能力的不足</p></blockquote></p>
+{% blockquote %}
+遗留系统本身存在的质量问题，例如紧耦合、缺乏足够的测试、系统可维护性差；
+缺乏足够的知识来帮助我们理解整个遗留系统；
+成本、时间与人力的风险；
+对迁移的新技术缺乏充分认识；
+迁移能力的不足
+{% endblockquote %}</p>
 
 <h3>三. 选择缓解风险的技术</h3>
 
@@ -360,7 +367,7 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <h4>寻找丢失的知识</h4>
 
 <p>只有体验过去，才能谋划未来。如果缺乏对遗留系统的足够认识，这种技术栈的迁移就很难取得成功。通常来讲，一个软件系统的知识，主要体现在如下三个方面，如下图所示：
-<img class="center" src="/images/2013/04/legacy_01.png"></p>
+{% img center /images/2013/04/legacy_01.png %}</p>
 
 <p>在这三个方面中，团队成员拥有的知识无疑是最值得寄予厚望的。在迁移过程中，若有了解该系统的团队成员参与，无疑可以做到事半功倍。可惜，这部分知识又是最为脆弱的，它就好似存储在内存中的数据一般，一旦断电就会全盘丢失。遗留系统的问题恰在于此，由于系统过于陈旧，而人员的流动总是比较频繁，在对系统进行迁移时，可能许多当年参与系统开发的成员，已经很难找到。</p>
 
@@ -389,12 +396,12 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <h4>做好充分的技术预研</h4>
 
 <p>所谓“技术栈迁移”，必然是指从一种技术迁移到另一种技术。在充分了解系统当前存在的问题后，还需要深思熟虑，选择合理的目标技术。通常，我们会识别出待迁移模块（或系统）希望达到的质量属性，然后就此功能给出候选技术，建立一个用于权衡的矩阵。接着，再对这些待选技术进行技术预研（Spike），预研的结果将作为最终判断的依据。这种决策是有理有据的，可以有效地规避迁移中因为引入新技术带来的风险。下图是我们在一个项目中对文本搜索进行的技术预研结果矩阵。
-<img class="center" src="/images/2013/04/legacy_02.png"></p>
+{% img center /images/2013/04/legacy_02.png %}</p>
 
 <p>因为是技术栈迁移，必然要求目标技术一定要优于现有技术，否则就没有迁移的必要了。通过技术预研，既可以提供可以量化的数据，保证这种迁移是值得的；同时也相当于预先开始对目标技术展开学习和了解，及早发现技术难点和迁移的痛点。</p>
 
 <p>在我曾经参与的一个项目中，我们针对报告生成器模块编写了自己的一个支持并发处理的Batch Job。但随着系统用户数量的逐步增加，在生成报告的高峰期，并发请求数超过了之前架构设计预见的峰值，且每个报告生成所耗费的时间较长。于是，我们计划引入消息队列技术来替换现有的Batch Job。我们对一些候选技术进行了前期预研，这其中包括微软的MSMQ、Apache ActiveMQ以及RabbitMQ，针对并发处理、可维护性、成本、部署、安全、分布式处理以及灾备等多方面进行了综合考虑，如下表所示：
-<img class="center" src="/images/2013/04/legacy_03.png"></p>
+{% img center /images/2013/04/legacy_03.png %}</p>
 
 <p>技术选型从来都不是以单方面的高质量作为评价标准，即使某项技术在多个评判维度上都得到了最高的分数，也未必就是最佳选择。我们必须结合当前项目的具体场景，实事求是地进行判断，以期获得一个恰如其分的迁移方案。</p>
 
@@ -411,7 +418,7 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 6、再次确定采用新的调用方式是否正常，如果正常，彻底去掉原有的实现，移除Target系统。</p>
 
 <p>新旧共存并非一种妥协，而是迁移过程中必须存在的中间状态。Jez Humble介绍了ThoughtWorks产品<a href="http://www.thoughtworks-studios.com/go-continuous-delivery">GO</a>的几次技术栈迁移[7]，包括从iBatis迁移到Hibernate，从Velocity和JsTemplate转向JRuby on Rails的案例。文章提出了一种称为Branch By Abstraction（抽象分支）的迁移方法，执行步骤如下图所示：
-<img class="center" src="/images/2013/04/legacy_04.png"></p>
+{% img center /images/2013/04/legacy_04.png %}</p>
 
 <p>图中的抽象层将客户端（Consumer）与被替换的实现进行了解耦，使得这种替换可以透明地进行。在对抽象层的实现进行替换时，可以规定替换纪律，例如对于新增功能，必须运用新技术提供实现；还可以通过持续集成的验证门自动验证，例如设置旧有技术在系统中的阈值，每次提交都不允许旧有技术的代码量超过这个阈值。整个迁移过程要保证这个阈值是不断减少，绝不能增加。</p>
 
