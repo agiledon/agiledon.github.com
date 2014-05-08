@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-08T09:57:28+08:00</updated>
+  <updated>2014-05-08T10:25:26+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -21,74 +21,71 @@
     <content type="html"><![CDATA[<p>基于Akka的REST框架Spray，由于采用Akka提供的Actor模型，写出来的代码与通常的REST有很大的区别。从Spray-Can接收Http请求，到处理具体的HTTP动词以实现业务逻辑，都是通过传递消息的方式。这些消息再交由Akka Actor接收处理。消息皆定义为Scala提供的样例类（Case Class），从而保证消息为immutable。既然如此，当我们在运用Spray时，就需要转换思想，从传统的面向对象中解放出来，充分理解Event、Command，及其传递的Message。这近似于事件驱动（Event Driven），因而在对领域建模时，也需要将Event看做是领域模型的一等公民，并将领域逻辑建模为一种状态机。</p>
 
 <p>我们可以首先根据Http请求，确定需要哪些消息。这样的Request消息几乎与Http动词以及Resource对应，例如：
-{% codeblock lang:scala %}
-sealed trait RequestMessage</p>
-
-<p>case class GetCustomer(id: Long) extends RequestMessage
-case class DeleteCustomer(id: Long) extends RequestMessage
-case class UpdateCustomer(customer: Customer) extends RequestMessage
-case class CreateCustomer(dueDate: Date, text: String) extends RequestMessage
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">RequestMessage</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">case</span> <span class="k">class</span> <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="n">customer</span><span class="k">:</span> <span class="kt">Customer</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">dueDate</span><span class="k">:</span> <span class="kt">Date</span><span class="o">,</span> <span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>现在可以定义一个Actor来响应客户端请求。该Actor要求派生自Akka Actor，同时还要实现Spray提供的HttpService trait。若要支持Json格式，还需实现Spray-Json提供的Json4sSupport。例如：
-{% codeblock lang:scala %}
-class CustomerServiceActor extends Actor with HttpService with CustomerRequestCreator with Json4sSupport {
-  implicit def actorRefFactory = context</p>
-
-<p>  val json4sFormats = DefaultFormats</p>
-
-<p>  def receive = runRoute(customerRoute)</p>
-
-<p>  val customerRoute =</p>
-
-<pre><code>path("customers" / LongNumber) {
-  id: Long =&gt;
-    get {
-      rejectEmptyResponse {
-        handleRequest {
-          GetCustomer(id)
-        }
-      }
-    } ~ put {
-      entity(as[Customer]) {
-        customer =&gt;
-          handleRequest {
-            UpdateCustomer(new Customer(id, customer.birthDate, customer.name))
-          }
-      }
-    } ~ delete {
-      handleRequest {
-        DeleteCustomer(id)
-      }
-    }
-} ~ path("customers") {
-  get {
-    handleRequest {
-      AllCustomers
-    }
-  }
-} ~ post {
-  entity(as[Customer]) {
-    customer =&gt;
-      handleRequest {
-        CreateCustomer(customer.birthDate, customer.name)
-      }
-  }
-}
-</code></pre>
-
-<p>  def handleRequest(message: RequestMessage): Route =</p>
-
-<pre><code>ctx =&gt; customerRequest(ctx, Props[CustomerActor], message)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">CustomerServiceActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">HttpService</span> <span class="k">with</span> <span class="nc">CustomerRequestCreator</span> <span class="k">with</span> <span class="nc">Json4sSupport</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">actorRefFactory</span> <span class="k">=</span> <span class="n">context</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">json4sFormats</span> <span class="k">=</span> <span class="nc">DefaultFormats</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="n">runRoute</span><span class="o">(</span><span class="n">customerRoute</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">customerRoute</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span> <span class="o">/</span> <span class="nc">LongNumber</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">id</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">rejectEmptyResponse</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>          <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">put</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customer</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">delete</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="o">~</span> <span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nc">AllCustomers</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="o">~</span> <span class="n">post</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customer</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">handleRequest</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span><span class="k">:</span> <span class="kt">Route</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">ctx</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">customerRequest</span><span class="o">(</span><span class="n">ctx</span><span class="o">,</span> <span class="nc">Props</span><span class="o">[</span><span class="kt">CustomerActor</span><span class="o">],</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>该Actor与其他Akka Actor的不同之处在于它的receive方法调用了Spray提供的runRoute()方法。传入的参数customerRoute是Spray提供的DSL格式的Route。Route中对应支持Http动词。其中，get先调用了Spray提供的rejectEmptyResponse来过滤掉空的响应消息；而post方法则调用entity将url中的消息转换为Customer消息：
-{% codeblock lang:scala %}
-case class Customer(id: Long, birthDate: Date, name: String)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">birthDate</span><span class="k">:</span> <span class="kt">Date</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>在Route中，可以定义多个Path，不同的Path支持不同的Http动词。在接受到请求后，通过handleRequest()方法来处理请求。这里的实现是将RequestMessage消息再转交到了另一个Actor。我会在后面介绍。</p>
 
@@ -96,222 +93,214 @@ case class Customer(id: Long, birthDate: Date, name: String)
 
 
 <p>不过，这里的CustomerServiceActor事实上是将支持Route的CustomerService与Actor合并在了一起，职责显得不够单一。因此，更好地做法是为CustomerService单独定义trait，并使其派生自HttpService，从而将实现代码从Actor中分开。分开的这个CustomerService，更类似于一个Controller。例如：
-{% codeblock lang:scala %}
-class CustomerServiceActor extends Actor with CustomerService with CustomerRequestCreator {
-  implicit def actorRefFactory = context</p>
-
-<p>  def receive = runRoute(customerRoute)</p>
-
-<p>  def handleRequest(message: RequestMessage): Route =</p>
-
-<pre><code>ctx =&gt; customerRequest(ctx, Props[CustomerActor], message)
-</code></pre>
-
-<p>}</p>
-
-<p>trait CustomerService extends HttpService with Json4sSupport {
-  val json4sFormats = DefaultFormats</p>
-
-<p>  val customerRoute =</p>
-
-<pre><code>path("customers" / LongNumber) {
-  id: Long =&gt;
-    get {
-      rejectEmptyResponse {
-        handleRequest {
-          GetCustomer(id)
-        }
-      }
-    } ~ put {
-      entity(as[Customer]) {
-        customer =&gt;
-          handleRequest {
-            UpdateCustomer(new Customer(id, customer.birthDate, customer.name))
-          }
-      }
-    } ~ delete {
-      handleRequest {
-        DeleteCustomer(id)
-      }
-    }
-} ~ path("customers") {
-  get {
-    handleRequest {
-      AllCustomers
-    }
-  }
-} ~ post {
-  entity(as[Customer]) {
-    customer =&gt;
-      handleRequest {
-        CreateCustomer(customer.birthDate, customer.name)
-      }
-  }
-}
-</code></pre>
-
-<p>  def handleRequest(message: RequestMessage): Route
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">CustomerServiceActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">CustomerService</span> <span class="k">with</span> <span class="nc">CustomerRequestCreator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">actorRefFactory</span> <span class="k">=</span> <span class="n">context</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="n">runRoute</span><span class="o">(</span><span class="n">customerRoute</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">handleRequest</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span><span class="k">:</span> <span class="kt">Route</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">ctx</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">customerRequest</span><span class="o">(</span><span class="n">ctx</span><span class="o">,</span> <span class="nc">Props</span><span class="o">[</span><span class="kt">CustomerActor</span><span class="o">],</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">trait</span> <span class="nc">CustomerService</span> <span class="k">extends</span> <span class="nc">HttpService</span> <span class="k">with</span> <span class="nc">Json4sSupport</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">json4sFormats</span> <span class="k">=</span> <span class="nc">DefaultFormats</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">customerRoute</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span> <span class="o">/</span> <span class="nc">LongNumber</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">id</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">rejectEmptyResponse</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>          <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">put</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customer</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>          <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">delete</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="o">~</span> <span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nc">AllCustomers</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span> <span class="o">~</span> <span class="n">post</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customer</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">handleRequest</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span><span class="k">:</span> <span class="kt">Route</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这样分离的好处还在于可以定义多个包含不同Route的Controller，然后在Actor中用~ combinator操作符将它们合并起来。例如：
-{% codeblock lang:scala %}
-def receive = handleTimeouts orElse runRoute(
-  new CustomerService1.customerService1 ~  new CustomerService2.customerService2)<br/>
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="n">handleTimeouts</span> <span class="n">orElse</span> <span class="n">runRoute</span><span class="o">(</span>
+</span><span class='line'>  <span class="k">new</span> <span class="nc">CustomerService1</span><span class="o">.</span><span class="n">customerService1</span> <span class="o">~</span>  <span class="k">new</span> <span class="nc">CustomerService2</span><span class="o">.</span><span class="n">customerService2</span><span class="o">)&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>Spray使用了Akka IO来支持Request、Reponse流的输入输出。IO实质上也是一个Akka Actor。所以在程序的主入口，既需要创建提供了REST服务的Actor，又需要通过Akka IO发出绑定Http的消息。与Akka一样，我们可以定义一个类派生自App：
-{% codeblock lang:scala %}
-object Boot extends App {
-  implicit val system = ActorSystem("spray-demo")
-  val service = system.actorOf(Props[CustomerServiceActor], "customer-service")
-  IO(Http) ! Http.Bind(service, interface = "localhost", port = 8080)
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">Boot</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;spray-demo&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">service</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">CustomerServiceActor</span><span class="o">],</span> <span class="s">&quot;customer-service&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="nc">IO</span><span class="o">(</span><span class="nc">Http</span><span class="o">)</span> <span class="o">!</span> <span class="nc">Http</span><span class="o">.</span><span class="nc">Bind</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">interface</span> <span class="k">=</span> <span class="s">&quot;localhost&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">8080</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>要启动ActorSystem，需要配置Akka，而要绑定Spray服务容器，也需要配置Spray-Can。一个简单的配置文件application.conf为：
-{% codeblock %}
-akka {
-  loglevel = INFO
-}</p>
-
-<p>spray.can.server {
-  request-timeout = 1s
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>akka {
+</span><span class='line'>  loglevel = INFO
+</span><span class='line'>}&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>spray.can.server {
+</span><span class='line'>  request-timeout = 1s
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>现在再来看CustomerService中的handlRequest()方法的实现。该方法负责将对应的RequestMessage，例如GetCustomer、UpdateCustomer等转交给其下的Actor，即CustomerActor。它相当于是从RequestMessage到Domain Event的一个协调器（或控制器，也可以看做是Command）。同样，还是将Actor与具体的业务分离，因此定义了CustomerActor与CustomerOperation。
-{% codeblock lang:scala %}
-trait CustomerOperations {
-  def getById(id: Long) = {</p>
-
-<pre><code>OneCustomer(new Customer(id, new Date(1000), "item1"))
-</code></pre>
-
-<p>  }</p>
-
-<p>  def all() =  {</p>
-
-<pre><code>try{
-  ListCustomers(List(new Customer(100, new Date(1000), "item1")))
-} catch{
-  case e:Exception =&gt; {
-    println(e.getMessage())
-    List()
-  }
-}
-</code></pre>
-
-<p>  }</p>
-
-<p>  def delete(id: Long) = {</p>
-
-<pre><code>Success("deleted successfully")
-</code></pre>
-
-<p>  }</p>
-
-<p>  def create (dueDate: Date, text: String) =  {</p>
-
-<pre><code>Created("")
-</code></pre>
-
-<p>  }</p>
-
-<p>  def update (customer: Customer) = {</p>
-
-<pre><code>getById(customer.id)
-</code></pre>
-
-<p>  }
-}</p>
-
-<p>class CustomerActor extends Actor with CustomerOperations{
-  val log = Logging(context.system, this)
-  def receive = {</p>
-
-<pre><code>case GetCustomer(id) =&gt; sender ! getById(id)
-case UpdateCustomer(item) =&gt; sender ! update(item)
-case DeleteCustomer(id) =&gt; sender ! delete(id)
-case CreateCustomer(dueDate, text) =&gt; sender ! create(dueDate, text)
-case AllCustomers =&gt; sender ! all()
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">CustomerOperations</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">getById</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">OneCustomer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">(</span><span class="mi">1000</span><span class="o">),</span> <span class="s">&quot;item1&quot;</span><span class="o">))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">all</span><span class="o">()</span> <span class="k">=</span>  <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">try</span><span class="o">{</span>
+</span><span class='line'>  <span class="nc">ListCustomers</span><span class="o">(</span><span class="nc">List</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="mi">100</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">(</span><span class="mi">1000</span><span class="o">),</span> <span class="s">&quot;item1&quot;</span><span class="o">)))</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span><span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="n">e</span><span class="k">:</span><span class="kt">Exception</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">println</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="n">getMessage</span><span class="o">())</span>
+</span><span class='line'>    <span class="nc">List</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">delete</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">Success</span><span class="o">(</span><span class="s">&quot;deleted successfully&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">create</span> <span class="o">(</span><span class="n">dueDate</span><span class="k">:</span> <span class="kt">Date</span><span class="o">,</span> <span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span>  <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">Created</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">update</span> <span class="o">(</span><span class="n">customer</span><span class="k">:</span> <span class="kt">Customer</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">getById</span><span class="o">(</span><span class="n">customer</span><span class="o">.</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">CustomerActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">CustomerOperations</span><span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">log</span> <span class="k">=</span> <span class="nc">Logging</span><span class="o">(</span><span class="n">context</span><span class="o">.</span><span class="n">system</span><span class="o">,</span> <span class="k">this</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">case</span> <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">getById</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="n">item</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">update</span><span class="o">(</span><span class="n">item</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">delete</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">dueDate</span><span class="o">,</span> <span class="n">text</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">create</span><span class="o">(</span><span class="n">dueDate</span><span class="o">,</span> <span class="n">text</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">AllCustomers</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sender</span> <span class="o">!</span> <span class="n">all</span><span class="o">()</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>CustomerActor会作为CustomerRequest（同样是一个Actor）内部的Actor，即CustomerRequest中的target。CustomerActor实例是在CustomerRequest伴生对象中创建的：
-{% codeblock lang:scala %}
-trait CustomerRequest extends Actor with Json4sSupport {
-  def requestContext: RequestContext</p>
-
-<p>  def target: ActorRef</p>
-
-<p>  def message: RequestMessage</p>
-
-<p>  import context._</p>
-
-<p>  target ! message</p>
-
-<p>  def receive = {</p>
-
-<pre><code>case Created(location) =&gt; complete(spray.http.StatusCodes.Created, location)
-case OneCustomer(customer) =&gt; complete(OK, customer)
-case ListCustomers(customers) =&gt; complete(OK, customers)
-case Success(message) =&gt; complete(OK, message)
-case Error(message) =&gt; complete(BadRequest, message)
-case ReceiveTimeout =&gt; complete(GatewayTimeout, "Request Timeout")
-</code></pre>
-
-<p>  }</p>
-
-<p>  def complete<a href="status:%20StatusCode,%20obj:%20T">T &lt;: AnyRef</a> = {</p>
-
-<pre><code>requestContext.complete(status, obj)
-stop(self)
-</code></pre>
-
-<p>  }</p>
-
-<p>  override val supervisorStrategy =</p>
-
-<pre><code>OneForOneStrategy() {
-  case e =&gt; {
-    complete(InternalServerError, Error(e.getMessage))
-    Stop
-  }
-}
-</code></pre>
-
-<p>}</p>
-
-<p>object CustomerRequest {</p>
-
-<p>  case class WithProps(requestContext: RequestContext, props: Props, message: RequestMessage) extends CustomerRequest {</p>
-
-<pre><code>lazy val target = context.actorOf(props)
-
-implicit def json4sFormats = DefaultFormats
-</code></pre>
-
-<p>  }</p>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">CustomerRequest</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">Json4sSupport</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">requestContext</span><span class="k">:</span> <span class="kt">RequestContext&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">target</span><span class="k">:</span> <span class="kt">ActorRef&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">import</span> <span class="nn">context._&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">target</span> <span class="o">!</span> <span class="n">message</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">case</span> <span class="nc">Created</span><span class="o">(</span><span class="n">location</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="n">spray</span><span class="o">.</span><span class="n">http</span><span class="o">.</span><span class="nc">StatusCodes</span><span class="o">.</span><span class="nc">Created</span><span class="o">,</span> <span class="n">location</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">OneCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">OK</span><span class="o">,</span> <span class="n">customer</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">ListCustomers</span><span class="o">(</span><span class="n">customers</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">OK</span><span class="o">,</span> <span class="n">customers</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">message</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">OK</span><span class="o">,</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">Error</span><span class="o">(</span><span class="n">message</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">BadRequest</span><span class="o">,</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="k">case</span> <span class="nc">ReceiveTimeout</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">complete</span><span class="o">(</span><span class="nc">GatewayTimeout</span><span class="o">,</span> <span class="s">&quot;Request Timeout&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">complete</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;status:%20StatusCode,%20obj:%20T&quot;</span><span class="o">&gt;</span><span class="n">T</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="k">:</span> <span class="kt">AnyRef&lt;/a&gt;</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">requestContext</span><span class="o">.</span><span class="n">complete</span><span class="o">(</span><span class="n">status</span><span class="o">,</span> <span class="n">obj</span><span class="o">)</span>
+</span><span class='line'><span class="n">stop</span><span class="o">(</span><span class="n">self</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">val</span> <span class="n">supervisorStrategy</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">OneForOneStrategy</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="n">e</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">complete</span><span class="o">(</span><span class="nc">InternalServerError</span><span class="o">,</span> <span class="nc">Error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="n">getMessage</span><span class="o">))</span>
+</span><span class='line'>    <span class="nc">Stop</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">object</span> <span class="nc">CustomerRequest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">case</span> <span class="k">class</span> <span class="nc">WithProps</span><span class="o">(</span><span class="n">requestContext</span><span class="k">:</span> <span class="kt">RequestContext</span><span class="o">,</span> <span class="n">props</span><span class="k">:</span> <span class="kt">Props</span><span class="o">,</span> <span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">CustomerRequest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">lazy</span> <span class="k">val</span> <span class="n">target</span> <span class="k">=</span> <span class="n">context</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="n">props</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">implicit</span> <span class="k">def</span> <span class="n">json4sFormats</span> <span class="k">=</span> <span class="nc">DefaultFormats</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>由于target在CustomerRequest中为lazy变量，所以只有在需要的时候才会创建CustomerActor。CustomerRequest定义了工厂：
-{% codeblock lang:scala %}
-trait CustomerRequestCreator {
-  this: Actor =></p>
-
-<p>  def customerRequest(requestContext: RequestContext, props: Props, message: RequestMessage) =</p>
-
-<pre><code>context.actorOf(Props(new WithProps(requestContext, props, message)))
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">CustomerRequestCreator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">this:</span> <span class="kt">Actor</span> <span class="o">=&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">customerRequest</span><span class="o">(</span><span class="n">requestContext</span><span class="k">:</span> <span class="kt">RequestContext</span><span class="o">,</span> <span class="n">props</span><span class="k">:</span> <span class="kt">Props</span><span class="o">,</span> <span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">context</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">WithProps</span><span class="o">(</span><span class="n">requestContext</span><span class="o">,</span> <span class="n">props</span><span class="o">,</span> <span class="n">message</span><span class="o">)))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>而在CustomerRequest的定义中，会首先通过target发送message，这个message即CustomerService的Route中传递过来的RequestMessage。此时的target是CustomerActor，所以CustomerActor会接收到这些RequestMessage，然后调用CustomerOperation的相关操作，并由CustomerActor的sender发送消息。之后CustomerRequest会收到这些消息。</p>
 
@@ -345,78 +334,73 @@ trait CustomerRequestCreator {
 <p>要调用Akka的Remote Actor，则需要对Remote Actor进行部署。首先，我们可以通过Akka的<a href="http://akka.io/downloads/">官方网站</a>下载Akka的库。我这里下载的是2.2.3版本。下载后解压。与部署有关的目录包括bin和deploy。在bin目录下是运行Akka的脚本。而在deploy目录下，除了Readme文件外，此时为空。</p>
 
 <p>现在，我们可以编写一个Remote Actor。Akka要求我们定义一个Actor，以及它对应的Application。Remote Actor与普通的Actor定义没有什么区别，例如：
-{% codeblock lang:scala %}
-package com.agiledon.akka</p>
-
-<p>import akka.actor.Actor</p>
-
-<p>class RemoteActor extends Actor {
-  def receive = {</p>
-
-<pre><code>case message: String =&gt;
-  sender ! message + "got something"
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">import</span> <span class="nn">akka.actor.Actor</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">RemoteActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">case</span> <span class="n">message</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">sender</span> <span class="o">!</span> <span class="n">message</span> <span class="o">+</span> <span class="s">&quot;got something&quot;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>但对于Application而言，则要求派生自akka kernel下的Bootable。akka kernel是单独的一个包，并没有包含在akka-actor中。因此需要定义依赖，例如使用sbt：
-{% codeblock lang:scala %}
-scalaVersion := "2.10.2"</p>
-
-<p>libraryDependencies += "com.typesafe.akka" % "akka-actor_2.10" % "2.2.3"</p>
-
-<p>libraryDependencies += "com.typesafe.akka" % "akka-kernel_2.10" % "2.2.3"
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">scalaVersion</span> <span class="o">:=</span> <span class="s">&quot;2.10.2&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-actor_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-kernel_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>定义的Application如下所示：
-{% codeblock lang:scala %}
-package com.agiledon.akka</p>
-
-<p>import akka.kernel.Bootable
-import akka.actor.{Props, ActorSystem}
-import com.typesafe.config.ConfigFactory</p>
-
-<p>class RemoteNodeApplication extends Bootable {
-  val system = ActorSystem("RemoteNodeApp", ConfigFactory.load().getConfig("RemoteSys"))</p>
-
-<p>  def startup = {</p>
-
-<pre><code>system.actorOf(Props[RemoteActor], name = "remoteActor")
-</code></pre>
-
-<p>  }</p>
-
-<p>  def shutdown = {</p>
-
-<pre><code>system.shutdown()
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">import</span> <span class="nn">akka.kernel.Bootable</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">Props</span><span class="o">,</span> <span class="nc">ActorSystem</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.typesafe.config.ConfigFactory</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">RemoteNodeApplication</span> <span class="k">extends</span> <span class="nc">Bootable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;RemoteNodeApp&quot;</span><span class="o">,</span> <span class="nc">ConfigFactory</span><span class="o">.</span><span class="n">load</span><span class="o">().</span><span class="n">getConfig</span><span class="o">(</span><span class="s">&quot;RemoteSys&quot;</span><span class="o">))&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">startup</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">RemoteActor</span><span class="o">],</span> <span class="n">name</span> <span class="k">=</span> <span class="s">&quot;remoteActor&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">shutdown</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我们需要实现startup与shutdown方法。而在Application中，会加载配置文件application.conf的配置信息创建ActorSystem。配置如下：
-{% codeblock %}
-RemoteSys {</p>
-
-<pre><code>akka {
-    actor {
-        provider = "akka.remote.RemoteActorRefProvider"
-    }
-    remote {
-        enabled-transports = ["akka.remote.netty.tcp"]
-        netty.tcp {
-            hostname = "192.168.3.34"
-            port = 2552
-        }
-    }
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>RemoteSys {&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>akka {
+</span><span class='line'>    actor {
+</span><span class='line'>        provider = "akka.remote.RemoteActorRefProvider"
+</span><span class='line'>    }
+</span><span class='line'>    remote {
+</span><span class='line'>        enabled-transports = ["akka.remote.netty.tcp"]
+</span><span class='line'>        netty.tcp {
+</span><span class='line'>            hostname = "192.168.3.34"
+</span><span class='line'>            port = 2552
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>端口号2552也是Akka的默认端口号。</p>
 
@@ -426,90 +410,84 @@ RemoteSys {</p>
 ./akka com.agiledon.akka.RemoteNodeApplication</p>
 
 <p>akka命令后面是application类的full name。如果一切正常，就可以显示如下界面：
-{% img center /images/2014/akka/akka_console.png %}</p>
+<img class="center" src="/images/2014/akka/akka_console.png"></p>
 
 <h2>Client(Local) Actor</h2>
 
 <p>要调用部署了的Remote Actor，客户端的Actor可以通过将Remote Actor的address传递给actorSelection()方法（之前的版本为actorFor，目前已经被Deprecated），以此来获得Remote Actor的Ref。如下所示：
-{% codeblock lang:scala %}
-package com.agiledon.akka</p>
-
-<p>import akka.actor.{ActorLogging, Actor}
-import akka.util.Timeout
-import akka.pattern.ask
-import scala.concurrent.Await
-import scala.concurrent.duration._</p>
-
-<p>class LocalActor extends Actor with ActorLogging {
-  val remoteActor = context.actorSelection("akka.tcp://RemoteNodeApp@192.168.3.34:2552/user/remoteActor")
-  implicit val timeout = Timeout(5 seconds)</p>
-
-<p>  def receive = {</p>
-
-<pre><code>case message: String =&gt;
-  val future = (remoteActor ? message).mapTo[String]
-  val result = Await.result(future, timeout.duration)
-  log.info("Message received from server -&gt; {}", result)
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">ActorLogging</span><span class="o">,</span> <span class="nc">Actor</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.util.Timeout</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">akka.pattern.ask</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.Await</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.concurrent.duration._&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">LocalActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">ActorLogging</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">remoteActor</span> <span class="k">=</span> <span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;akka.tcp://RemoteNodeApp@192.168.3.34:2552/user/remoteActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">val</span> <span class="n">timeout</span> <span class="k">=</span> <span class="nc">Timeout</span><span class="o">(</span><span class="mi">5</span> <span class="n">seconds</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">case</span> <span class="n">message</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">future</span> <span class="k">=</span> <span class="o">(</span><span class="n">remoteActor</span> <span class="o">?</span> <span class="n">message</span><span class="o">).</span><span class="n">mapTo</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">future</span><span class="o">,</span> <span class="n">timeout</span><span class="o">.</span><span class="n">duration</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="o">(</span><span class="s">&quot;Message received from server -&amp;gt; {}&quot;</span><span class="o">,</span> <span class="n">result</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>同样需要定义配置文件，但无需指定hostname与port了：
-{% codeblock %}
-LocalSys {</p>
-
-<pre><code>akka {
-    actor {
-        provider = "akka.remote.RemoteActorRefProvider"
-    }
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>LocalSys {&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>akka {
+</span><span class='line'>    actor {
+</span><span class='line'>        provider = "akka.remote.RemoteActorRefProvider"
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>编写Application，使其可以被运行以调用Remote Actor：
-{% codeblock lang:scala %}
-package com.agiledon.akka</p>
-
-<p>import akka.actor.{Props, ActorSystem}
-import com.typesafe.config.ConfigFactory</p>
-
-<p>object LocalNodeApplication extends App {
-  val system = ActorSystem("LocalNodeApp", ConfigFactory.load().getConfig("LocalSys"))</p>
-
-<p>  val localActor = system.actorOf(Props[LocalActor], name = "localActor")
-  localActor ! "hello demo actor"</p>
-
-<p>  Thread.sleep(4000)
-  system.shutdown()</p>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">com.agiledon.akka</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span><span class="nc">Props</span><span class="o">,</span> <span class="nc">ActorSystem</span><span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">com.typesafe.config.ConfigFactory</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">object</span> <span class="nc">LocalNodeApplication</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;LocalNodeApp&quot;</span><span class="o">,</span> <span class="nc">ConfigFactory</span><span class="o">.</span><span class="n">load</span><span class="o">().</span><span class="n">getConfig</span><span class="o">(</span><span class="s">&quot;LocalSys&quot;</span><span class="o">))&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">localActor</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">[</span><span class="kt">LocalActor</span><span class="o">],</span> <span class="n">name</span> <span class="k">=</span> <span class="s">&quot;localActor&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">localActor</span> <span class="o">!</span> <span class="s">&quot;hello demo actor&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="nc">Thread</span><span class="o">.</span><span class="n">sleep</span><span class="o">(</span><span class="mi">4000</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">system</span><span class="o">.</span><span class="n">shutdown</span><span class="o">()&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>在客户端模块的根目录下创建build.sbt文件：
-{% codeblock lang:scala %}
-name := "actor-local"</p>
-
-<p>version := "1.0"</p>
-
-<p>scalaVersion := "2.10.2"</p>
-
-<p>libraryDependencies += "com.typesafe.akka" % "akka-actor_2.10" % "2.2.3"</p>
-
-<p>libraryDependencies += "com.typesafe.akka" % "akka-remote_2.10" % "2.2.3"</p>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">name</span> <span class="o">:=</span> <span class="s">&quot;actor-local&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">version</span> <span class="o">:=</span> <span class="s">&quot;1.0&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">scalaVersion</span> <span class="o">:=</span> <span class="s">&quot;2.10.2&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-actor_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.typesafe.akka&quot;</span> <span class="o">%</span> <span class="s">&quot;akka-remote_2.10&quot;</span> <span class="o">%</span> <span class="s">&quot;2.2.3&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>转移到客户端模块的根目录下，执行sbt命令，进入SBT。执行compile命令编译客户端模块actor-local。然后执行run命令，若运行成功，即可看到如下信息：
-{% codeblock %}
-[info] Running com.agiledon.akka.LocalNodeApplication
-[INFO] [02/18/2014 19:11:47.461] [run-main] [Remoting] Starting remoting
-[INFO] [02/18/2014 19:11:47.725] [run-main] [Remoting] Remoting started; listening on addresses :[akka.tcp://LocalNodeApp@192.168.3.38:2552]
-[INFO] [02/18/2014 19:11:48.066] [LocalNodeApp-akka.actor.default-dispatcher-3] [akka://LocalNodeApp/user/localActor] Message received from server -> hello demo actor got something
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>[info] Running com.agiledon.akka.LocalNodeApplication
+</span><span class='line'>[INFO] [02/18/2014 19:11:47.461] [run-main] [Remoting] Starting remoting
+</span><span class='line'>[INFO] [02/18/2014 19:11:47.725] [run-main] [Remoting] Remoting started; listening on addresses :[akka.tcp://LocalNodeApp@192.168.3.38:2552]
+</span><span class='line'>[INFO] [02/18/2014 19:11:48.066] [LocalNodeApp-akka.actor.default-dispatcher-3] [akka://LocalNodeApp/user/localActor] Message received from server -> hello demo actor got something</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   
@@ -518,7 +496,7 @@ name := "actor-local"</p>
     <link href="http://agiledon.github.com/blog/2014/02/16/actor-system-in-akka/"/>
     <updated>2014-02-16T20:36:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/02/16/actor-system-in-akka</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/akka/actorsystem.png %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/akka/actorsystem.png">
 图中表示的是一个Actor System，它显示了在这个Actor System中最重要实体之间的关系。</p>
 
 <h2>Actor Reference</h2>
@@ -530,14 +508,12 @@ name := "actor-local"</p>
 <p>可以认为Actor Path是通过字符串对Actor层级关系进行组合用以标识唯一Actor的一种方式。我们在创建Actor Path时，不用创建Actor；但如果没有创建对应的Actor，则不能创建Actor Reference。还可以创建一个Actor，再终止它，然后再以相同的Actor Path再创建一个新的Actor。新创建的Actor是Actor的新化身（Incarnation），但与旧的Actor并不是同一个。对于这个新化身而言，持有旧Actor的Actor Reference并不是有效的。消息发送给旧的Actor Reference，但不会被传递给新化身，即使它们具有相同的路径。</p>
 
 <p>Actor Path包含协议、位置和actor的层级。如下是一些Actor Path的实例：
-{% codeblock %}
-//purely local
-"akka://my-sys/user/service-a/worker1"</p>
-
-<p>// remote"akka.tcp://my-sys@host.example.com:5678/user/service-b"</p>
-
-<p>//clustered (Future Extension)"cluster://my-cluster/service-c"                       <br/>
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>//purely local
+</span><span class='line'>"akka://my-sys/user/service-a/worker1"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>// remote"akka.tcp://my-sys@host.example.com:5678/user/service-b"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>//clustered (Future Extension)"cluster://my-cluster/service-c"                       &lt;br/></span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>有两种方式可以获得Actor Reference：创建Actor或查找。</p>
 
@@ -546,19 +522,16 @@ name := "actor-local"</p>
 <p>要查找Actor Reference，则可调用ActorSystem.actorSelection()方法。要获得限定到特定Actor的生命周期中的ActorRef，可以使用sender引用来发送一条消息如内建的Identity消息给Actor。</p>
 
 <p>在查找ActorRef时，可以使用绝对路径或相对路径。如果是相对路径，可以用两个点（..）表示parent actor。例如：
-{% codeblock lang:scala %}
-context.actorSelection("../brother") ! msg
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../brother&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>使用绝对路径的例子：
-{% codeblock lang:scala %}
-context.actorSelection("/user/ServiceA") ! msg
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;/user/ServiceA&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>还可以使用通配符查询逻辑的Actor层级，例如下面的例子就是发送消息给除当前Actor之外的所有同级Actor（因为..代表parent，所以这里就意味找当前Actor的parent的下级Actor）：
-{% codeblock lang:scala %}
-context.actorSelection("../*") ! msg
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../*&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h2>区别：actorOf vs. actorSelection vs. actorFor</h2>
 
@@ -572,7 +545,7 @@ context.actorSelection("../*") ! msg
 <h2>远程部署的相互影响</h2>
 
 <p>当一个Actor创建一个Child时，Actor的系统部署器会决定这个新的Actor究竟属于同一个JVM，还是另一个节点。如果是后一种情况，Actor的创建就会通过在不同JVM的网络连接而触发，这属于不同的Actor系统。远程系统会将新的Actor放在一个特定的路径下，且新Actor的Supervisor应该是一个远程的Actor引用。而且，context.parent（Supervisor的引用）与context.path.parent（actor path的父节点）表示的不是同一个Actor。如下图所示：
-{% img center /images/2014/akka/remote_actor.png %}</p>
+<img class="center" src="/images/2014/akka/remote_actor.png"></p>
 
 <p>注意图中展现的两个不同的Actor系统之间的Route关系。在左边的Actor系统中，Child Actor属于Remote ActorRef，它指向了右边远端Actor系统中的一个Actor节点，该Actor对于右边的Actor系统而言，属于Local ActorRef，但它的Parent Actor却是一个Remote ActorRef，它指向了左边对应的Local ActorRef。</p>
 
@@ -603,215 +576,195 @@ context.actorSelection("../*") ! msg
 <h3>Scala调用Java库</h3>
 
 <p>为了享用Scala提供的集合特性，在Scala程序中若要调用Java库，通常需要将其转换。例如，JavaXmlConfigure为一个Java类，它的readSoftInfos()方法返回的是一个Java的List。现在，我在Scala中调用该方法（这里以ScalaTest编写的测试来表现Scala程序）：
-{% codeblock lang:scala %}
-class XmlConfigureSpec extends FlatSpec with ShouldMatchers {</p>
-
-<pre><code>it should "load all package soft nodes for version config" in {
-  val configure = new JavaXmlConfigure
-  val result = configure.readSoftInfos("/config.xml", "version number")
-  result.foreach {
-    softInfo =&gt; println(softInfo)
-  }
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">XmlConfigureSpec</span> <span class="k">extends</span> <span class="nc">FlatSpec</span> <span class="k">with</span> <span class="nc">ShouldMatchers</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">it</span> <span class="n">should</span> <span class="s">&quot;load all package soft nodes for version config&quot;</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">configure</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JavaXmlConfigure</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">softInfo</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">println</span><span class="o">(</span><span class="n">softInfo</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这时，编译器会提示无法找到result的foreach方法。因为这里的result的类型为java.util.List。若要将其转换为Scala的集合，就需要增加如下语句：
-{% codeblock lang:scala %}
-import scala.collection.JavaConversions._
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.JavaConversions._</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意，经过隐式转换后，这里的result类型为Seq[SoftInfo]。如果像下面这样显式指定为Scala的List或Set类型，则无法转换：
-{% codeblock lang:scala %}
-val result:Set[SoftInfo] = configure.readSoftInfos("/config.xml", "version number") //or
-val result:List[SoftInfo] = configure.readSoftInfos("/config.xml", "version number")
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">result</span><span class="k">:</span><span class="kt">Set</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span> <span class="c1">//or</span>
+</span><span class='line'><span class="k">val</span> <span class="n">result</span><span class="k">:</span><span class="kt">List</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h3>Scala的代码以Java库的形式提供给Java调用者</h3>
 
 <p>在JVM平台下进行多语言开发时，多数情况下会以Java为主，而对于一些特定场景，能够更好发挥Scala特性的，例如并发处理等，则会选择Scala。此时，若要做到对Java友好，则对于Scala的方法返回值，应尽量屏蔽Scala的类型信息。</p>
 
 <p>举例来说，我用Scala来读取一个配置文件，并对配置文件进行解析和转换，得到一个Scala的Seq集合对象，如下代码所示：
-{% codeblock lang:scala %}
-class XmlConfigure {
-  def readSoftInfos(configFileName: String, version: String)  = {</p>
-
-<pre><code>val document = XML.load(getClass.getResource(configFileName))
-
-val pkgSoftNodes = document \\ "PKGSOFT"
-
-val softInfoNodes = pkgSoftNodes.filter(node =&gt; node.attributes.get("version").mkString.equalsIgnoreCase(version))
-
-(softInfoNodes \\ "SOFTINFO").map {
-  softInfoNode =&gt; {
-    val attributes = softInfoNode.attributes
-    new SoftInfo(attributes.get("fileName").mkString,
-    attributes.get("softType").mkString,
-    attributes.get("softUseType").mkString,
-    attributes.get("size").mkString.toLong)
-  }
-}
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">XmlConfigure</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">readSoftInfos</span><span class="o">(</span><span class="n">configFileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">version</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>  <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">document</span> <span class="k">=</span> <span class="nc">XML</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="n">getClass</span><span class="o">.</span><span class="n">getResource</span><span class="o">(</span><span class="n">configFileName</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">pkgSoftNodes</span> <span class="k">=</span> <span class="n">document</span> <span class="o">\\</span> <span class="s">&quot;PKGSOFT&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">softInfoNodes</span> <span class="k">=</span> <span class="n">pkgSoftNodes</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">node</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">equalsIgnoreCase</span><span class="o">(</span><span class="n">version</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">(</span><span class="n">softInfoNodes</span> <span class="o">\\</span> <span class="s">&quot;SOFTINFO&quot;</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">softInfoNode</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">attributes</span> <span class="k">=</span> <span class="n">softInfoNode</span><span class="o">.</span><span class="n">attributes</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nc">SoftInfo</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;fileName&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softUseType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toLong</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>如上的readSoftInfos方法返回的是对xml节点进行map的结果，类型为scala的Seq[SoftInfo]。倘若Java代码需要调用这个方法，则还需要对其进行转换，即要求调用者必须具备Scala的知识，这未必友好。</p>
 
 <p>那么应该怎样改善呢？直接的做法就是让readSoftInfos方法返回Java的List，这时候需要使用Scala提供的隐式转换：
-{% codeblock lang:scala %}
-import scala.collection.JavaConversions._</p>
-
-<p>class XmlConfigure {
-  def readSoftInfos(configFileName: String, version: String) : java.util.List[SoftInfo] = {</p>
-
-<pre><code>val document = XML.load(getClass.getResource(configFileName))
-
-val pkgSoftNodes = document \\ "PKGSOFT"
-
-val softInfoNodes = pkgSoftNodes.filter(node =&gt; node.attributes.get("version").mkString.equalsIgnoreCase(version))
-
-(softInfoNodes \\ "SOFTINFO").map {
-  softInfoNode =&gt; {
-    val attributes = softInfoNode.attributes
-    new SoftInfo(attributes.get("fileName").mkString,
-    attributes.get("softType").mkString,
-    attributes.get("softUseType").mkString,
-    attributes.get("size").mkString.toLong)
-  }
-}
-</code></pre>
-
-<p>  }
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.JavaConversions._&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">XmlConfigure</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">readSoftInfos</span><span class="o">(</span><span class="n">configFileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">version</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="kt">SoftInfo</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">document</span> <span class="k">=</span> <span class="nc">XML</span><span class="o">.</span><span class="n">load</span><span class="o">(</span><span class="n">getClass</span><span class="o">.</span><span class="n">getResource</span><span class="o">(</span><span class="n">configFileName</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">pkgSoftNodes</span> <span class="k">=</span> <span class="n">document</span> <span class="o">\\</span> <span class="s">&quot;PKGSOFT&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">softInfoNodes</span> <span class="k">=</span> <span class="n">pkgSoftNodes</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="n">node</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">equalsIgnoreCase</span><span class="o">(</span><span class="n">version</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">(</span><span class="n">softInfoNodes</span> <span class="o">\\</span> <span class="s">&quot;SOFTINFO&quot;</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">softInfoNode</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">attributes</span> <span class="k">=</span> <span class="n">softInfoNode</span><span class="o">.</span><span class="n">attributes</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nc">SoftInfo</span><span class="o">(</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;fileName&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;softUseType&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">).</span><span class="n">mkString</span><span class="o">.</span><span class="n">toLong</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>此时，只需要导入scala.collection.JavaConversions._，我们并不需要将map返回的Seq显式地转换为java.util.List。对于Java的调用者而言，可以直接认为XmlConfigure就是一个Java类。</p>
 
 <h2>Java中操作Scala集合</h2>
 
 <p>Java要调用Scala代码，而不幸的，这个需要调用的Scala代码不够体贴，直接返回了Scala的集合类型。由于Java不提供自定义隐式转换的功能，因此，只能调用Scala提供的转换类进行显式转换。例如Scala中的XmlConfigure类，其readSoftInfos()返回的是Scala的Seq：
-{% codeblock lang:java %}
-import scala.collection.JavaConversions;</p>
-
-<p>import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;</p>
-
-<p>public class XmlConfigureJavaTest {</p>
-
-<pre><code>@Test
-public void should_load_xml_file() {
-    XmlConfigure xmlConfigure = new XmlConfigure();
-    List&lt;SoftInfo&gt; softInfos = JavaConversions.asJavaList(xmlConfigure.readSoftInfos("/config.xml", "version number"));
-    assertThat(softInfos.size(), is(7));
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">scala.collection.JavaConversions</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">hamcrest</span><span class="o">.</span><span class="na">MatcherAssert</span><span class="o">.</span><span class="na">assertThat</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">hamcrest</span><span class="o">.</span><span class="na">core</span><span class="o">.</span><span class="na">Is</span><span class="o">.</span><span class="na">is</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">XmlConfigureJavaTest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_load_xml_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">XmlConfigure</span> <span class="n">xmlConfigure</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XmlConfigure</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">SoftInfo</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">softInfos</span> <span class="o">=</span> <span class="n">JavaConversions</span><span class="o">.</span><span class="na">asJavaList</span><span class="o">(</span><span class="n">xmlConfigure</span><span class="o">.</span><span class="na">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">softInfos</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">7</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>在readSoftInfos()函数返回的为Scala集合类型的情况下，若不进行显示转换，则无法通过编译。</p>
 
 <h2>Scala的隐式转换</h2>
 
 <p>Scala对Java集合与Scala集合之间的互相转换都用到了Scala提供的隐式转换功能。我们导入的JavaConversions就是承担这种转换的一个Facade Object。它扩展了两个trait：WrapAsScala和WrapAsJava。在JavaConversions对象中定义的方法实际上是将请求委派自它继承的trait的隐式转换函数。例如将Seq转换为java的List：
-{% codeblock lang:scala %}
-object JavaConversions extends WrapAsScala with WrapAsJava {
-  def asJavaList<a href="b%20:%20Seq[A]">A</a>: ju.List[A] = seqAsJavaList<a href="b">A</a>
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">object</span> <span class="nc">JavaConversions</span> <span class="k">extends</span> <span class="nc">WrapAsScala</span> <span class="k">with</span> <span class="nc">WrapAsJava</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">asJavaList</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;b%20:%20Seq[A]&quot;</span><span class="o">&gt;</span><span class="n">A</span><span class="o">&lt;/</span><span class="n">a</span><span class="k">&gt;:</span> <span class="n">ju</span><span class="o">.</span><span class="nc">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="n">seqAsJavaList</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;b&quot;</span><span class="o">&gt;</span><span class="n">A</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>seqAsJavaList就是定义在WrapAsJava中的隐式转换函数。在这个函数中又作了一个模式匹配。如果匹配JListWrapper，则调用传入的wrapped参数的asInstanseOf进行类型转换；否则，就将该seq作为参数传递给包装器SeqWrapper。包装器SeqWrapper是Scala定义的样例类（case class），扩展自Java的AbstractList：
-{% codeblock lang:scala %}
-//WrapAsJava
-import java.{ lang => jl, util => ju }, java.util.{ concurrent => juc }
-import scala.language.implicitConversions</p>
-
-<p>trait WrapAsJava {
-  import Wrappers._
-  implicit def seqAsJavaList<a href="seq:%20Seq[A]">A</a>: ju.List[A] = seq match {</p>
-
-<pre><code>case JListWrapper(wrapped) =&gt; wrapped.asInstanceOf[ju.List[A]]
-case _ =&gt; new SeqWrapper(seq)
-</code></pre>
-
-<p>  }
-}</p>
-
-<p>//Wrappers
-import java.{ lang => jl, util => ju }, java.util.{ concurrent => juc }
-import WrapAsScala.<em>
-import WrapAsJava.</em></p>
-
-<p>private[collection] trait Wrappers {
-  case class SeqWrapper<a href="underlying:%20Seq[A]">A</a> extends ju.AbstractList[A] with IterableWrapperTrait[A] {</p>
-
-<pre><code>def get(i: Int) = underlying(i)
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">//WrapAsJava</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.</span><span class="o">{</span> <span class="n">lang</span> <span class="k">=&gt;</span> <span class="n">jl</span><span class="o">,</span> <span class="n">util</span> <span class="k">=&gt;</span> <span class="n">ju</span> <span class="o">},</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.{</span> <span class="n">concurrent</span> <span class="k">=&gt;</span> <span class="n">juc</span> <span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.language.implicitConversions</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">trait</span> <span class="nc">WrapAsJava</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">import</span> <span class="nn">Wrappers._</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">seqAsJavaList</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;seq:%20Seq[A]&quot;</span><span class="o">&gt;</span><span class="n">A</span><span class="o">&lt;/</span><span class="n">a</span><span class="k">&gt;:</span> <span class="n">ju</span><span class="o">.</span><span class="nc">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="n">seq</span> <span class="k">match</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">case</span> <span class="nc">JListWrapper</span><span class="o">(</span><span class="n">wrapped</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">wrapped</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">ju.List</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span>
+</span><span class='line'><span class="k">case</span> <span class="k">_</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="k">new</span> <span class="nc">SeqWrapper</span><span class="o">(</span><span class="n">seq</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;//</span><span class="nc">Wrappers</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">java.</span><span class="o">{</span> <span class="n">lang</span> <span class="k">=&gt;</span> <span class="n">jl</span><span class="o">,</span> <span class="n">util</span> <span class="k">=&gt;</span> <span class="n">ju</span> <span class="o">},</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.{</span> <span class="n">concurrent</span> <span class="k">=&gt;</span> <span class="n">juc</span> <span class="o">}</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">WrapAsScala.</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">WrapAsJava.</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">private</span><span class="o">[</span><span class="kt">collection</span><span class="o">]</span> <span class="k">trait</span> <span class="nc">Wrappers</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">case</span> <span class="k">class</span> <span class="nc">SeqWrapper</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;underlying:%20Seq[A]&quot;</span><span class="o">&gt;</span><span class="n">A</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="k">extends</span> <span class="n">ju</span><span class="o">.</span><span class="nc">AbstractList</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">with</span> <span class="nc">IterableWrapperTrait</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">get</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="n">underlying</span><span class="o">(</span><span class="n">i</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h2>隐式转换与扩展方法</h2>
 
 <p>在前面我们提到，在Scala中如果导入了JavaConversions，那么即使得到的是Java的List对象，我们仍然可以对其调用foreach函数。即如下代码：
-{% codeblock lang:scala %}</p>
-
-<pre><code>  val result = configure.readSoftInfos("/config.xml", "version number")
-  result.foreach {
-    softInfo =&gt; println(softInfo)
-  }
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">configure</span><span class="o">.</span><span class="n">readSoftInfos</span><span class="o">(</span><span class="s">&quot;/config.xml&quot;</span><span class="o">,</span> <span class="s">&quot;version number&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">softInfo</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">println</span><span class="o">(</span><span class="n">softInfo</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>若为result加上类型，应该会更清晰：
-{% codeblock lang:scala %}
-import scala.collection.JavaConversions._
-//.…..</p>
-
-<pre><code>  val result: java.util.List[SoftInfo] = configure.readSoftInfos("/versionConfig.xml", "4.13.10.01T09")
-  result.foreach {
-    softInfo =&gt; println(softInfo)
-  }
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+Liquid error: invalid byte sequence in US-ASCII</p>
 
 <p>显然，这里的result为java.util.List类型，为何却可以调用foreach函数呢？这种形式让我想起C#提供的扩展方法。例如在C# 3.0之前的集合类型，如List，并没有例如first()，where()等方法，但通过引入的扩展方法机制，我们可以对List进行静态扩展，但调用的时候却好像是集合对象自身拥有的实例方法那样。这一实现与动态语言的直接扩展不同，而是C#的一种语法糖。通过使用隐式转换，Scala也可以做到这一点。</p>
 
 <p>上面代码中的result，实则是通过隐式转换，将其转换为一个扩展自scala的Iterable[+A]，而最终扩展自trait IterableLike，其中定义了foreach()函数。当然，在这个foreach()函数中，实则又调用了object Iterator的foreach()函数：
-{% codeblock lang:scala %}
-trait IterableLike[+A, +Repr] extends Any with Equals with TraversableLike[A, Repr] with GenIterableLike[A, Repr] {
-self =></p>
-
-<p>  def foreach<a href="f:%20A%20=>%20U">U</a>: Unit =</p>
-
-<pre><code>iterator.foreach(f)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">IterableLike</span><span class="o">[</span><span class="kt">+A</span>, <span class="kt">+Repr</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">Any</span> <span class="k">with</span> <span class="nc">Equals</span> <span class="k">with</span> <span class="nc">TraversableLike</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">Repr</span><span class="o">]</span> <span class="k">with</span> <span class="nc">GenIterableLike</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">Repr</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'><span class="n">self</span> <span class="o">=&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">foreach</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20A%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="o">&lt;/</span><span class="n">a</span><span class="k">&gt;:</span> <span class="nc">Unit</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">iterator</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我们可以利用这种机制为已定义好的无法修改的类（尤其是Java提供的类）进行扩展。例如为java.io.File进行扩展，使其支持read功能：
-{% codeblock lang:scala %}
-class RichFile(val from: File) {</p>
-
-<pre><code>def read = Source.fromFile(from.getPath).mkString
-</code></pre>
-
-<p>}</p>
-
-<p>implicit def file2RichFile(from: File) = new RichFile(from)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">RichFile</span><span class="o">(</span><span class="k">val</span> <span class="n">from</span><span class="k">:</span> <span class="kt">File</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">read</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromFile</span><span class="o">(</span><span class="n">from</span><span class="o">.</span><span class="n">getPath</span><span class="o">).</span><span class="n">mkString</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">implicit</span> <span class="k">def</span> <span class="n">file2RichFile</span><span class="o">(</span><span class="n">from</span><span class="k">:</span> <span class="kt">File</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">RichFile</span><span class="o">(</span><span class="n">from</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>直接import该隐式转换，File就可以像真正提供read方法那样调用了：
-{% codeblock lang:scala %}
-val fileContent = new File("README.txt").read
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">fileContent</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">&quot;README.txt&quot;</span><span class="o">).</span><span class="n">read</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   
@@ -849,10 +802,7 @@ val fileContent = new File("README.txt").read
 <p>AKKA与其他Actor模型不同的是：当前的行为总是会处理下一个出队的消息，而不会去扫描Mailbox，获得下一个匹配的消息。因此，当处理消息失败，就会认为是失败，除非这个行为被重写了。</p>
 
 <p>每个Actor都是一个潜在的Supervisor：如果该Actor创建了一个Child去执行子任务，就会自动来管理这些Child。Children的列表放在Actor的Context中，Actor可以访问他们。创建或停止的操作分别为：
-{% codeblock lang:scala %}
-context.actorOf(…)
-context.stop(child)
-{% endcodeblock %}</p>
+Liquid error: invalid byte sequence in US-ASCII</p>
 
 <p>看起来，这种变更会实时反映出来；但事实上是以异步的方式在后台执行，它并不会阻塞Supervisor。</p>
 
@@ -881,7 +831,7 @@ context.stop(child)
 <h2>Top-Level Supervisors</h2>
 
 <p>一个Actor系统在创建之初，至少有三个Actor，如下图所示：
-{% img center /images/2014/supervisor.png %}</p>
+<img class="center" src="/images/2014/supervisor.png"></p>
 
 <p><strong>1.The Guardian Actor</strong></p>
 

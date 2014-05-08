@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Ruby | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/ruby/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-08T09:57:28+08:00</updated>
+  <updated>2014-05-08T10:25:26+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -282,10 +282,8 @@ end</p>
 ```</p>
 
 <p>Octopress是将Category写到了blog/categories下，因此我将Tag写到了blog/tags下。这就是上面代码中tag_dir的值。这个值应该配置在_config.yml下：如下所示：
-{% codeblock %}
-category_dir: blog/categories
-tag_dir: blog/tags
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>category_dir: blog/categories
+</span><span class='line'>tag_dir: blog/tags</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>同样的，你也可以把custom\asides下的category_cloud.html改为tag_cloud.html。当然，要记住，改名后，还需要到_config.yml的asides设置中做相应修改。</p>
 
@@ -294,7 +292,7 @@ tag_dir: blog/tags
 <p>现在，博客右侧的Tag Cloud应该可以工作了。但是，当你去单击某个Tag时，会出现404页面。此外，每篇博客下面仅显示了Category的信息。该怎么解决？</p>
 
 <p>首先，你需要转到source/_layouts/文件夹下，复制category_index.html文件，更名为tag_index.html文件，将div内的内容修改为：
-{% raw %}
+
 ```html tag_index.html</p>
 
 <div id="blog-archives" class="category">
@@ -312,10 +310,10 @@ tag_dir: blog/tags
 
 
 <p>```
-{% endraw %}</p>
+</p>
 
 <p>仍然在该文件夹下，打开post.html文件，在footer节对应的Category下方，增加如下内容：
-{% raw %}
+
 ```html post.html</p>
 
 <pre><code>&lt;p class="meta"&gt;
@@ -324,10 +322,10 @@ tag_dir: blog/tags
 </code></pre>
 
 <p>```
-{% endraw %}</p>
+</p>
 
 <p>接下来，转到source/_includes/post/目录下，创建tags.html文件，内容为：
-{% raw %}
+
 ```html tags.html
 {% capture tag %}{% if post %}{{ post.tags | tag_links | size }}{% else %}{{ page.tags | tag_links | size }}{% endif %}{% endcapture %}
 {% unless tag == '0' %}
@@ -346,7 +344,7 @@ tag_dir: blog/tags
 </span>
 {% endunless %}
 ```
-{% endraw %}</p>
+</p>
 
 <p>若要支持Tag的Feed，还可以在source/_includes/custom目录下模仿category_feed.xml，创建一个tag_feed.xml。这里就不再赘述。</p>
 ]]></content>
@@ -367,19 +365,18 @@ tag_dir: blog/tags
 <p>我最初是在octopress的plugin目录下创建了post_weibo.rb文件。后来发现，当我们执行rake generate时，它事实上会去执行jekyll命令。而该命令则会去遍历plugin目录下的ruby文件，并执行之。这显然不是我希望看到的。我希望在发表的新博客完全就绪时，我再考虑发送通知到新浪微博。于是，我单独建立了一个新的文件夹"_custom"，并将post_weibo.rb文件放进去。</p>
 
 <p>post_weibo.rb文件实现了这个插件的所有功能，主要方法为post_weibo()，如下所示：
-{% codeblock lang:ruby %}
-  def post_weibo</p>
-
-<pre><code>conn = Faraday.new(:url =&gt; "https://api.weibo.com")
-
-result = conn.post '/2/statuses/update.json',
-                   :access_token =&gt; @weibo_config['access_token'],
-                   :status =&gt; generate_post
-puts "post successful"
-</code></pre>
-
-<p>  end
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">post_weibo</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;conn = Faraday.new(:url =&amp;gt; &quot;https:/</span><span class="o">/</span><span class="n">api</span><span class="o">.</span><span class="n">weibo</span><span class="o">.</span><span class="n">com</span><span class="s2">&quot;)</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">result = conn.post &#39;/2/statuses/update.json&#39;,</span>
+</span><span class='line'><span class="s2">                   :access_token =&amp;gt; @weibo_config[&#39;access_token&#39;],</span>
+</span><span class='line'><span class="s2">                   :status =&amp;gt; generate_post</span>
+</span><span class='line'><span class="s2">puts &quot;</span><span class="n">post</span> <span class="n">successful</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="s2">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&lt;p&gt;  end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>它使用了faraday来发送post请求到新浪api。发送请求时需要获得access_token。该值可以到新浪申请。具体API说明请查阅<a href="http://open.weibo.com/wiki/2/statuses/update">开发文档</a>。</p>
 

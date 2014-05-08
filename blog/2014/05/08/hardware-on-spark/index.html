@@ -130,6 +130,8 @@
 
 <p>注意，RDDs是Lazy的，在执行Transformation操作如map、filter时，并不会提交Job，只有在执行Action操作如count、first时，才会执行Job，此时才会进行数据的加载。要计算Spark加载的Dataset大小，可以通过Spark提供的Web UI Monitoring工具来帮助分析与判断。</p>
 
+<p>Spark的RDD是具有分区（partition）的，Spark并非是将整个RDD一次性加载到内存中。Spark针对partition提供了eviction policy，这一Policy采用了LRU（Least Recently Used）机制。当一个新的RDD分区需要计算时，如果没有合适的空间存储，就会根据LRU策略，将最少访问的RDD分区弹出，除非这个新分区与最少访问的分区属于同一个RDD。这也在一定程度上缓和了对内存的消耗。</p>
+
 <p>Spark对内存的消耗主要分为三部分：1. 数据集中对象的大小；2. 访问这些对象的内存消耗；3. 垃圾回收GC的消耗。一个通常的内存消耗计算方法是：内存消耗大小= 对象字段中原生数据 * (2~5)。 这是因为Spark运行在JVM之上，操作的Java对象都有定义的“object header”，而数据结构（如Map，LinkedList）对象自身也需要占用内存空间。此外，对于存储在数据结构中的基本类型，还需要装箱（Boxing）。Spark也提供了一些内存调优机制，例如执行对象的序列化，可以释放一部分内存空间。还可以通过为JVM设置flag来标记存放的字节数（选择4个字节而非8个字节）。在JDK 7下，还可以做更多优化，例如对字符编码的设置。这些配置都可以在spark-env.sh中设置。</p>
 
 <h3>Spark对网络的要求</h3>

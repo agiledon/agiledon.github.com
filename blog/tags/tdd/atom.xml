@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: TDD | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/tdd/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-08T09:57:28+08:00</updated>
+  <updated>2014-05-08T10:25:26+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -121,263 +121,262 @@
 <p>这就是我要谈PowerMock的前提！</p>
 
 <p>现在，轮到玩花招的PowerMock出场了。有了它，什么静态方法，方法内部实例，乃至私有方法，统统都是浮云。而且，它对Mockito与EasyMock的扩展，使得我们更容易熟悉它的语法。要使用它很简单，需先设置对它的依赖。我选择了PowerMock针对Mockito的扩展：
-{% codeblock lang:xml %}</p>
-
-<pre><code>    &lt;dependency&gt;
-        &lt;groupId&gt;org.powermock&lt;/groupId&gt;
-        &lt;artifactId&gt;powermock-api-mockito&lt;/artifactId&gt;
-        &lt;version&gt;1.5.1&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.powermock&lt;/groupId&gt;
-        &lt;artifactId&gt;powermock-module-junit4&lt;/artifactId&gt;
-        &lt;version&gt;1.5.1&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.mockito&lt;/groupId&gt;
-        &lt;artifactId&gt;mockito-all&lt;/artifactId&gt;
-        &lt;version&gt;1.9.5&lt;/version&gt;
-    &lt;/dependency&gt;
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.powermock<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>powermock-api-mockito<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.5.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.powermock<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>powermock-module-junit4<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.5.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.mockito<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>mockito-all<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.9.5<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>让我先给出如下的一份奇奇怪怪的设计，它主要是为了迎合之前提到的代码臭味。
-{% codeblock lang:java %}
-public class EmployeeTableUtil {</p>
-
-<pre><code>public int count() {
-    return 0;
-}
-
-public static final List&lt;Employee&gt; findAll() {
-    return new ArrayList&lt;Employee&gt;();
-}
-
-public void insert(Employee employee) {
-    if (existed(employee.getId())) {
-        throw new ExistedEmployeeException();
-    }
-
-    //insert employee
-}
-
-public static final void update(Employee employee) {
-    if (employee == null) {
-        throw new NullEmployeeException();
-    }
-}
-
-public boolean delete(Employee employee) {
-    if (existed(employee.getId())) {
-        //delete employee
-        return true;
-    }
-    return false;
-}
-
-private boolean existed(String id) {
-    return false;
-}
-</code></pre>
-
-<p>}</p>
-
-<p>public class EmployeeRepository {</p>
-
-<pre><code>private EmployeeTableUtil tableUtil;
-
-public int count() {
-    return new EmployeeTableUtil().count();
-}
-
-public List&lt;Employee&gt; findAll() {
-    return EmployeeTableUtil.findAll();
-}
-
-public boolean insert(Employee employee) {
-    try {
-        tableUtil.insert(employee);
-        return true;
-    } catch (ExistedEmployeeException e) {
-        return false;
-    }
-}
-
-public boolean update(Employee employee) {
-    try {
-        EmployeeTableUtil.update(employee);
-        return true;
-    } catch (NullEmployeeException e) {
-        return false;
-    }
-}
-
-public boolean delete(Employee employee) {
-    return tableUtil.delete(employee);
-}
-
-private double bonus(Employee employee) {
-    return employee.getSalary() * 0.1d;
-}
-
-public void setTableUtil(EmployeeTableUtil tableUtil) {
-    this.tableUtil = tableUtil;
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeTableUtil</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">int</span> <span class="n">count</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Employee</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">findAll</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Employee</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">insert</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">existed</span><span class="o">(</span><span class="n">employee</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">ExistedEmployeeException</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//insert employee</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">employee</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullEmployeeException</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">existed</span><span class="o">(</span><span class="n">employee</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//delete employee</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">existed</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeRepository</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">EmployeeTableUtil</span> <span class="n">tableUtil</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">count</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nf">EmployeeTableUtil</span><span class="o">().</span><span class="na">count</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Employee</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">findAll</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">findAll</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">insert</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">tableUtil</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ExistedEmployeeException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">update</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NullEmployeeException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">tableUtil</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kt">double</span> <span class="nf">bonus</span><span class="o">(</span><span class="n">Employee</span> <span class="n">employee</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">employee</span><span class="o">.</span><span class="na">getSalary</span><span class="o">()</span> <span class="o">*</span> <span class="mf">0.1d</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTableUtil</span><span class="o">(</span><span class="n">EmployeeTableUtil</span> <span class="n">tableUtil</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">tableUtil</span> <span class="o">=</span> <span class="n">tableUtil</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>现在，我要针对EmployeeRepository编写测试，它协作的服务类为EmployeTableUtil，主要承担了访问数据库的职责。在测试EmployeeRepository时，我们需要去Mock协作对象EmployeeTableUtil的行为。</p>
 
 <p>在使用PowerMock编写测试时，首先需要在测试类上运用框架提供的Annotation：@PrepareForTest，以及一个Runner：PowerMockRunner。因为我们要Mock的对象为EmployeeTableUtil，故而测试类的定义为：
-{% codeblock lang:java %}
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(EmployeeTableUtil.class)
-public class EmployeeRepositoryTest {</p>
-
-<pre><code>private EmployeeRepository repository;
-
-@Before
-public void setUp() throws Exception {
-    repository = new EmployRepository();
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">PowerMockRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@PrepareForTest</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeRepositoryTest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">EmployeeRepository</span> <span class="n">repository</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Before</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EmployRepository</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>现在我要使用PowerMock去Mock静态方法，如EmployeeTableUtil的findAll()方法，至于要测试的方法则为EmployeeRepository的findAll()方法。则编写的单元测试为：
-{% codeblock lang:java %}</p>
-
-<pre><code>@Test
-public void should_mock_static_method() {
-    List&lt;Employee&gt; employee = new ArrayList&lt;Employee&gt;();
-    employee.add(new Employee("1"));
-    employee.add(new Employee("2"));
-
-    PowerMockito.mockStatic(EmployeeTableUtil.class);
-    when(EmployeeTableUtil.findAll()).thenReturn(employee);
-
-    List&lt;Employee&gt; employees = repository.findAll();
-    assertThat(employees.size(), is(2));
-    assertThat(employees.get(0).getId(), is("1"));
-    assertThat(employees.get(1).getId(), is("2"));
-
-    PowerMockito.verifyStatic();
-    EmployeeTableUtil.findAll();
-}
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_mock_static_method</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Employee</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">employee</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Employee</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
+</span><span class='line'>    <span class="n">employee</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">employee</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;2&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">PowerMockito</span><span class="o">.</span><span class="na">mockStatic</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">when</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">findAll</span><span class="o">()).</span><span class="na">thenReturn</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Employee</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">employees</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">findAll</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">employees</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">employees</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getId</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">employees</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">getId</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;2&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">PowerMockito</span><span class="o">.</span><span class="na">verifyStatic</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">findAll</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>Mock静态方法的关键是先要调用框架定义的PowerMockito类的mockStatic()方法（针对EasyMock有相似的类）。方法接收的参数就是我们要Mock的类的类型。接下来就可以调用Mockito框架的方法，对我们要模拟的方法findAll()进行模拟，这里主要的工作是为模拟方法的返回值设置一个stub。之后就是单元测试的验证逻辑。如果需要验证被Mock的方法是否被调用，则需要调用PowerMockito.verifyStatic()方法，紧随其后的是被mock的方法。</p>
 
 <p>如果要Mock的方法是一个命令方法（即没有返回值的方法），做法又有不同。倘若熟悉Mockito，可以看出PowerMock完全沿袭了Mockito的风格（当然，针对EasyMock的扩展则会沿袭EasyMock的风格，这是PowerMock体贴人的地方）：
-{% codeblock lang:java %}</p>
-
-<pre><code>@Test
-public void should_mock_exception_for_command_method_in_mock_object() {
-    Employee employee = new Employee("1");
-
-    PowerMockito.mockStatic(EmployeeTableUtil.class);
-    PowerMockito.doThrow(new NullEmployeeException()).when(EmployeeTableUtil.class);
-    EmployeeTableUtil.update(employee);
-
-    assertThat(repository.update(employee), is(false));
-}
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_mock_exception_for_command_method_in_mock_object</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Employee</span> <span class="n">employee</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">PowerMockito</span><span class="o">.</span><span class="na">mockStatic</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">PowerMockito</span><span class="o">.</span><span class="na">doThrow</span><span class="o">(</span><span class="k">new</span> <span class="n">NullEmployeeException</span><span class="o">()).</span><span class="na">when</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">repository</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">employee</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="kc">false</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>PowerMock还可以Mock私有方法，当然只能是实例的私有方法。这主要发生在当我们不希望Mock服务的公开方法时（例如，公开方法的逻辑没有Mock的必要），但这些公开方法的内部又调用了自己的私有方法，而私有方法却需要Mock。例如，EmployeeTableUtil的insert()和delete()方法调用了私有的existed()方法。假设insert()和delete()方法不需要我们Mock，此时就需要对私有方法existed()进行Mock。因为是实例方法，所以下面的测试方法通过调用setTableUtil()方法将被模拟的对象注入到EmployeeRepository对象中：
-{% codeblock lang:java %}</p>
-
-<pre><code>@Test
-public void should_mock_private_method() throws Exception {
-    Employee employee = new Employee("1");
-
-    EmployeeTableUtil util = PowerMockito.spy(new EmployeeTableUtil());
-    PowerMockito.when(util,"existed", anyString())
-            .thenReturn(true);
-
-    repository.setTableUtil(util);
-
-    assertThat(repository.insert(employee), is(false));
-    assertThat(repository.delete(employee), is(true));
-}
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_mock_private_method</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Employee</span> <span class="n">employee</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">EmployeeTableUtil</span> <span class="n">util</span> <span class="o">=</span> <span class="n">PowerMockito</span><span class="o">.</span><span class="na">spy</span><span class="o">(</span><span class="k">new</span> <span class="n">EmployeeTableUtil</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">PowerMockito</span><span class="o">.</span><span class="na">when</span><span class="o">(</span><span class="n">util</span><span class="o">,</span><span class="s">&quot;existed&quot;</span><span class="o">,</span> <span class="n">anyString</span><span class="o">())</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">thenReturn</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">repository</span><span class="o">.</span><span class="na">setTableUtil</span><span class="o">(</span><span class="n">util</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">repository</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">employee</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="kc">false</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">repository</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">employee</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="kc">true</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>PowerMock顺带还提供了测试私有方法的便捷办法（注意是测试，而不是Mock）。例如，测试EmployeeReployee类的私有方法bonus()：
-{% codeblock lang:java %}</p>
-
-<pre><code>@Test
-public void should_test_private_method() throws Exception {
-    Employee employee = new Employee("1");
-    employee.setSalary(8000);
-
-    double result = Whitebox.&lt;Double&gt;invokeMethod(repository, "bonus", employee);
-    assertThat(result, is(800d));
-}
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_test_private_method</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Employee</span> <span class="n">employee</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">employee</span><span class="o">.</span><span class="na">setSalary</span><span class="o">(</span><span class="mi">8000</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Whitebox</span><span class="o">.&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Double</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span><span class="n">invokeMethod</span><span class="o">(</span><span class="n">repository</span><span class="o">,</span> <span class="s">&quot;bonus&quot;</span><span class="o">,</span> <span class="n">employee</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="mi">800</span><span class="n">d</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>最后再来看看另外一种诡异的手段。假设我们要测试的方法其内部调用了协作对象的方法，而该协作对象不是在外部注入的，而是在方法中直接实例化。例如在前面例子中，EmployeeRepository的count()方法：
-{% codeblock lang:java %}
-public class EmployeeRepository {</p>
-
-<pre><code>private EmployeeTableUtil tableUtil;
-
-public int count() {
-    return new EmployeeTableUtil().count();
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeRepository</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">EmployeeTableUtil</span> <span class="n">tableUtil</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">count</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nf">EmployeeTableUtil</span><span class="o">().</span><span class="na">count</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>要针对这样一种情形进行Mock，做法有所不同。因为它实际针对的是待测类——即这里的EmployeeRepository——执行count()方法，这就需要在count()方法内部形成一个拦截点。因此，需要在@PrepareForTest标记中指向EmployeeRepository类的类型，而非我们要Mock的EmployeeTableUtil。故而，我们需要为这个测试定义一个新的测试类：
-{% codeblock lang:java %}
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(EmployeeRepository.class)
-public class ConstructionEmployeeRepositoryTest {</p>
-
-<pre><code>@Test
-public void should_mock_construction_object() throws Exception {
-    EmployeeTableUtil util = mock(EmployeeTableUtil.class);
-    when(util.count()).thenReturn(100);
-
-    PowerMockito.whenNew(EmployeeTableUtil.class).withNoArguments().thenReturn(util);
-
-    EmployeeRepository repository = new EmployeeRepository();
-    assertThat(repository.count(), is(100));
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">PowerMockRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@PrepareForTest</span><span class="o">(</span><span class="n">EmployeeRepository</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConstructionEmployeeRepositoryTest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_mock_construction_object</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">EmployeeTableUtil</span> <span class="n">util</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">when</span><span class="o">(</span><span class="n">util</span><span class="o">.</span><span class="na">count</span><span class="o">()).</span><span class="na">thenReturn</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">PowerMockito</span><span class="o">.</span><span class="na">whenNew</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">withNoArguments</span><span class="o">().</span><span class="na">thenReturn</span><span class="o">(</span><span class="n">util</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">EmployeeRepository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EmployeeRepository</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">repository</span><span class="o">.</span><span class="na">count</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">100</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意，测试方法的前两行代码调用的mock()与when()方法都是Mockito提供的方法，与PowerMock无关。</p>
 
 <p>我虽然没有看过PowerMock的源代码，但我猜测，当我们在使用PowerMock去Mock静态方法时，定然是结合反射与代理的方式来完成对该方法的调用，其中必然需要初始化该类。由于是静态方法，更多的是需要静态初始化。此外，还有一种情形时，你所要测试的类声明和初始化了一个静态的字段。这些都可能需要调用静态初始化。我们在开发中就碰到一种情形是，我们希望Mock的一个类，定义了一个static块，其中又调用了私有的静态方法。在这个私有静态方法中，依赖了其他的一些对象，这些对象还牵扯到服务容器的问题。即使以静态的方式Mock了该类，仍然逃不过运行static块的命运，换言之，仍然需要依赖服务容器。这时，又可以祭出PowerMock的杀器了。它提供了@SuppressStaticInitializationFor的标注，在该标注中需要传入字符串类型的目标类型的全名。假设EmployeeTableUtil有一个static块是我们需要绕过的，它的类全名为com.agiledon.powermock.EmployeeTableUtil：
-{% codeblock lang:java %}
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(EmployeeTableUtil.class)
-@SuppressStaticInitializationFor("com.agiledon.powermock.EmployeeTableUtil")
-public class EmployeeRepositoryTest {}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">PowerMockRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@PrepareForTest</span><span class="o">(</span><span class="n">EmployeeTableUtil</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@SuppressStaticInitializationFor</span><span class="o">(</span><span class="s">&quot;com.agiledon.powermock.EmployeeTableUtil&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeRepositoryTest</span> <span class="o">{}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>此外，对于@PrepareForTest以及@SuppressStaticInitializationFor标记而言，如果需要针对多个类型，则需要传入一个数组，例如：
-{% codeblock lang:java %}
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MockedObjectA.class, MockObjectB.class})
-@SuppressStaticInitializationFor({"com.agiledon.powermock.MockedObjectA", "com.agiledon.powermock.MockedObjectB"})
-public class OneTest {}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RunWith</span><span class="o">(</span><span class="n">PowerMockRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@PrepareForTest</span><span class="o">({</span><span class="n">MockedObjectA</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">MockObjectB</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+</span><span class='line'><span class="nd">@SuppressStaticInitializationFor</span><span class="o">({</span><span class="s">&quot;com.agiledon.powermock.MockedObjectA&quot;</span><span class="o">,</span> <span class="s">&quot;com.agiledon.powermock.MockedObjectB&quot;</span><span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OneTest</span> <span class="o">{}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>或许我已经变得像祥林嫂一般的唠叨，但我还是必须再次申明，以上Mock方式所针对的情形皆为设计与代码的坏味道。优先情况下，我们应该重构，使得它遵循DIP原则，解除对服务类的耦合，使其具有良好的可测试性；而不能因为有了强大的PowerMock而“姑息养奸”。换言之，让我们仅仅将PowerMock耍弄的种种花招，看做是压箱底的手段。实在走投无路了，再祭出你的杀手锏吧！</p>
 ]]></content>
@@ -388,111 +387,109 @@ public class OneTest {}
     <link href="http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/"/>
     <updated>2013-03-28T20:30:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/03/learning_perception.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/learning_perception.jpg">
 几天后，新手又一次提交了一份代码。由于改动较大，新手重新创建了一个项目。在这份代码中，新手接受了我的建议，改为使用Spring提供的JdbcTemplate。包的结构也得到了一定程度的改善。这充分说明他认识到了问题所在，并能够快速准确地采取行动去纠正这些问题。但或许是我提出的问题太多，给出的建议不够具体，在新提交的这份代码中，我还是看到了一些问题，且某些问题在上一次Review代码时，我曾经提及。</p>
 
 <p>来看看如下两段代码。首先，是CustomerService，它定义了目前Story要求的基本业务：
-{% codeblock lang:java %}
-@Service("customerService")
-public class CustomerService {</p>
-
-<pre><code>@Autowired
-@Qualifier("customerDAO")
-private CustomerDAO customerDAO;
-
-private final String defaultTableNameForCustomer = "customer";
-private String tableName = defaultTableNameForCustomer;
-
-public void setTableName(String tableName) {
-    this.tableName = tableName;
-}
-
-@Transactional
-public void addCustomer(Customer customer) throws DuplicateCustomerException {
-    customerDAO.addCustomer(customer, tableName);
-}
-
-public Customer getCustomer(String nickname) throws CustomerNotFoundException {
-    return customerDAO.getCustomer(nickname, tableName);
-}
-
-public void withdraw(String nickname, double balanceToWithdraw) throws BalanceOverdrawException {
-    customerDAO.withdrawBalance(nickname, balanceToWithdraw, tableName);
-}
-
-public void deposit(String nickname, double balance) {
-    customerDAO.deposit(nickname, balance, tableName);
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Service</span><span class="o">(</span><span class="s">&quot;customerService&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerService</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Autowired</span>
+</span><span class='line'><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">CustomerDAO</span> <span class="n">customerDAO</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">defaultTableNameForCustomer</span> <span class="o">=</span> <span class="s">&quot;customer&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="n">defaultTableNameForCustomer</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTableName</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">tableName</span> <span class="o">=</span> <span class="n">tableName</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Transactional</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">addCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">customerDAO</span><span class="o">.</span><span class="na">getCustomer</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdraw</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balance</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">deposit</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balance</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>在CustomerService类中，调用了CustomerDAO类的相关方法：
-{% codeblock lang:java %}
-@Component
-@Repository("customerDAO")
-public class CustomerDAO {</p>
-
-<pre><code>@Autowired
-private JdbcTemplate jdbcTemplate;
-
-public void createTable(String tableName) {
-    jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
-    jdbcTemplate.execute("CREATE TABLE " + tableName + "(" + "nickname VARCHAR(45) NOT NULL ," +
-            "dateOfBirth DATETIME NOT NULL," + "balance DOUBLE NOT NULL, " + "PRIMARY KEY(nickname)" + ");");
-}
-
-public void addCustomer(Customer customer, String tableName) throws DuplicateCustomerException {
-    String SQL = "insert into " + tableName + "(nickname, dateOfBirth, balance) values (?, ?, ?)";
-    try {
-        jdbcTemplate.update(SQL, new Object[]{customer.getNickname(), customer.getDateOfBirth(), customer.getBalance()});
-    } catch (DuplicateKeyException exception) {
-        throw new DuplicateCustomerException("Customer with nickname " + customer.getNickname() + " has already existed");
-    }
-}
-
-public Customer getCustomer(String nickname, String tableName) throws CustomerNotFoundException {
-    String SQL = "select * from " + tableName + " where nickname = ?";
-    Customer customer;
-    try {
-        customer = jdbcTemplate.queryForObject(SQL, new Object[]{nickname}, new CustomerMapper());
-    } catch (EmptyResultDataAccessException exception) {
-        throw new CustomerNotFoundException("Customer with nickname " + nickname + " is not found");
-    }
-    return customer;
-}
-
-public Double getBalance(String nickname, String tableName) {
-    String SQL = "select balance from " + tableName + " where nickname = ?";
-    double balance = jdbcTemplate.queryForObject(SQL, new Object[]{nickname}, Double.class);
-    return balance;
-}
-
-public void withdrawBalance(String nickname, double balanceToWithdraw, String tableName) throws BalanceOverdrawException {
-    double balanceBefore = getBalance(nickname, tableName);
-    double balanceAfter = balanceBefore - balanceToWithdraw;
-
-    if (balanceAfter &lt; 0) {
-        throw new BalanceOverdrawException("You have only " + balanceBefore + "$. You can not withdraw " + balanceToWithdraw + "$");
-    }
-
-    String SQL = "update " + tableName + " set balance = ? where nickname = ?";
-
-    jdbcTemplate.update(SQL, new Object[]{balanceAfter, nickname});
-}
-
-public void deposit(String nickname, double balanceToDeposit, String tableName) {
-    double balanceBefore = getBalance(nickname, tableName);
-    double balanceAfter = balanceBefore + balanceToDeposit;
-
-    String SQL = "update " + tableName + " set balance = ? where nickname = ?";
-    jdbcTemplate.update(SQL, new Object[]{balanceAfter, nickname});
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span>
+</span><span class='line'><span class="nd">@Repository</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDAO</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Autowired</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">JdbcTemplate</span> <span class="n">jdbcTemplate</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">createTable</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;DROP TABLE IF EXISTS &quot;</span> <span class="o">+</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;CREATE TABLE &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="s">&quot;nickname VARCHAR(45) NOT NULL ,&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;dateOfBirth DATETIME NOT NULL,&quot;</span> <span class="o">+</span> <span class="s">&quot;balance DOUBLE NOT NULL, &quot;</span> <span class="o">+</span> <span class="s">&quot;PRIMARY KEY(nickname)&quot;</span> <span class="o">+</span> <span class="s">&quot;);&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;insert into &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(nickname, dateOfBirth, balance) values (?, ?, ?)&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">()});</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">DuplicateKeyException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">DuplicateCustomerException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; has already existed&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select * from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">Customer</span> <span class="n">customer</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customer</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="k">new</span> <span class="n">CustomerMapper</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">EmptyResultDataAccessException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">CustomerNotFoundException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">nickname</span> <span class="o">+</span> <span class="s">&quot; is not found&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">customer</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Double</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select balance from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="n">Double</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">balance</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">-</span> <span class="n">balanceToWithdraw</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">balanceAfter</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">BalanceOverdrawException</span><span class="o">(</span><span class="s">&quot;You have only &quot;</span> <span class="o">+</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="s">&quot;$. You can not withdraw &quot;</span> <span class="o">+</span> <span class="n">balanceToWithdraw</span> <span class="o">+</span> <span class="s">&quot;$&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToDeposit</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="n">balanceToDeposit</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这两段代码存在什么问题？</p>
 
@@ -509,7 +506,7 @@ public void deposit(String nickname, double balanceToDeposit, String tableName) 
     <link href="http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man/"/>
     <updated>2013-03-14T20:37:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/03/growup.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/growup.jpg">
 我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。它要求创建一个电子银行系统，提供银行的一些基本功能，例如客户管理、存取款等业务逻辑。</p>
 
 <p>最初我并不知道新手的真实水平，不过，可以假设他只具备基础的Java编程知识，对TDD、Refactoring以及OO有最初步的了解，但处于懵懵懂懂之间。我最初希望新手仅仅针对业务层进行设计与编码，但新手坚持要加上数据库访问以及Web页面。我认为这种做法有利于新手学习到更多的Java框架和库，便同意了这种请求。</p>
@@ -521,135 +518,135 @@ public void deposit(String nickname, double balanceToDeposit, String tableName) 
 
 <p>首先，项目没有使用任何构建工具，例如Maven或者Gradle。项目依赖的一些Java包，例如JUnit和Mockito，使用了直接依赖的方式。没有构建工具来创建构建脚本，就无法使用最快捷的方式来编译、构建以及运行测试，从而使得开发者懒于在提交前进行构建，以确保代码没有引入问题。没有自动化构建，更谈不上持续集成了（我打算在项目中期要求新手搭建CI环境）。</p>
 
-<p>{% img center /images/2013/03/coach01.png %}
+<p><img class="center" src="/images/2013/03/coach01.png">
 新手对代码包的划分，以及相关类的命名，有些惨不忍睹。上图是对该项目包结构以及相关类分布的截图。infoTracker包的命名让人觉得莫名其妙，打开其中的类查看代码，发现它事实上是调用DBTransaction类，执行对数据表的CRUD操作。例如代码：
-{% codeblock lang:java infoTracker.CustomerAccountUpdater.java %}
-public class CustomerAccountUpdater {</p>
-
-<pre><code>private static DBTransaction transaction = new DBTransaction();
-
-public static void addBalance(double money, Customer customer) {
-    transaction.addBalance(money, customer);
-}
-
-public static void withdrawBalance(double money, Customer customer) throws CustomerBalanceInvalid {
-    transaction.withdrawBalance(money, customer);
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>infoTracker.CustomerAccountUpdater.java </span></figcaption>
+ <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerAccountUpdater</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="n">DBTransaction</span> <span class="n">transaction</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DBTransaction</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">addBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">transaction</span><span class="o">.</span><span class="na">addBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerBalanceInvalid</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">transaction</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>database包的DBTransaction类的命名更是容易引起歧义，以为是对事务的处理，实则是DAO对象：
-{% codeblock lang:java database.DBTransaction.java %}
-public class DBTransaction {</p>
-
-<pre><code>public static Connection connection;
-private PreparedStatement pstmt;
-
-public DBTransaction() {
-    this.connection = DBConnection.getConnection();
-}
-
-public void addCustomer(Customer customer) {
-    String nickname = customer.getNickname();
-    Date dateOfBirth = customer.getDateOfBirth();
-    String properName = customer.getProperName();
-    Date joiningDate = customer.getJoiningDate();
-    double balance = customer.getBalance();
-    boolean isBonusAdded = customer.isBonusAdded();
-
-    String sql = "insert into userinfo values (?, ?, ?, ?, ?, ?)";
-
-    try {
-        pstmt = connection.prepareStatement(sql);
-        pstmt.setString(1, nickname);
-        pstmt.setObject(2, dateOfBirth);
-        pstmt.setString(3, properName);
-        pstmt.setObject(4, joiningDate);
-        pstmt.setDouble(5, balance);
-        pstmt.setBoolean(6, isBonusAdded);
-
-        pstmt.executeUpdate();
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>database.DBTransaction.java </span></figcaption>
+ <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBTransaction</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">connection</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">PreparedStatement</span> <span class="n">pstmt</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="nf">DBTransaction</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">connection</span> <span class="o">=</span> <span class="n">DBConnection</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">nickname</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Date</span> <span class="n">dateOfBirth</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">properName</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getProperName</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Date</span> <span class="n">joiningDate</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getJoiningDate</span><span class="o">();</span>
+</span><span class='line'>    <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">();</span>
+</span><span class='line'>    <span class="kt">boolean</span> <span class="n">isBonusAdded</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">isBonusAdded</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;insert into userinfo values (?, ?, ?, ?, ?, ?)&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nickname</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">dateOfBirth</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">properName</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">joiningDate</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setDouble</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">balance</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setBoolean</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">isBonusAdded</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>新手并没有使用我建议的Spring JDBC Template，而是直接使用了JDBC，因而充斥了大量的冗余代码。再看他实现的DBConnection，居然将连接的相关属性硬编码到Java类中了：
-{% codeblock lang:java database.DBConnection.java %}
-public class DBConnection {</p>
-
-<pre><code>private static Connection conn;
-
-public static Connection getConnection() {
-    String driver = "com.mysql.jdbc.Driver";
-    String url = "jdbc:mysql://127.0.0.1:3306/test_01";
-    String username = "root";
-    String password = "";
-
-    try {
-        Class.forName(driver);
-        conn = DriverManager.getConnection(url, username, password);
-    } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-
-    return conn;
-}
-
-public static void disconnect() {
-    try {
-        conn.close();
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>database.DBConnection.java </span></figcaption>
+ <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBConnection</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">conn</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="nf">getConnection</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">driver</span> <span class="o">=</span> <span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;jdbc:mysql://127.0.0.1:3306/test_01&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">driver</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">disconnect</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>再看测试，没有单元测试和集成测试的概念。一些本来可以进行单元测试的逻辑，例如针对Customer Nickname的验证逻辑，并没有得到足够的测试覆盖。由于没有构建脚本帮助搭建本地测试环境，在获得系统源代码后，根本无法运行集成测试。</p>
 
 <p>整体来看，新手对一个项目如何进行分层以及分包缺乏基本的概念，没有自动化构建的意识。对于如何编写数据库访问的类也缺乏足够的知识。不了解单元测试与集成测试之间的区别，没有开发环境和测试环境的基本认识。</p>
 
 <p>我首先考虑引入gradle实现基本的自动化构建，它可以通过引入一些插件就可以比较容易地实现java编译、测试以及自动化打包的功能，还能比较容易地运行Jetty。
-{% codeblock lang:groovy build.gradle %}
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'war'
-apply plugin: 'jetty'</p>
-
-<p>repositories {</p>
-
-<pre><code>mavenCentral()
-</code></pre>
-
-<p>}</p>
-
-<p>dependencies {</p>
-
-<pre><code>compile (
-        'joda-time:joda-time:2.1'
-)
-testCompile (
-        'junit:junit:4.11',
-        'org.mockito:mockito-all:1.9.5'
-)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>build.gradle </span></figcaption>
+ <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;idea&#39;</span>
+</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;java&#39;</span>
+</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;war&#39;</span>
+</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;jetty&#39;</span><span class="o">&lt;</span><span class="s">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&lt;p&gt;repositories {&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">mavenCentral</span><span class="o">()</span>
+</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="s">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&lt;p&gt;dependencies {&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">compile</span> <span class="o">(</span>
+</span><span class='line'>        <span class="s1">&#39;joda-time:joda-time:2.1&#39;</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'><span class="n">testCompile</span> <span class="o">(</span>
+</span><span class='line'>        <span class="s1">&#39;junit:junit:4.11&#39;</span><span class="o">,</span>
+</span><span class='line'>        <span class="s1">&#39;org.mockito:mockito-all:1.9.5&#39;</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我修改了之前定义的infoTracker包，将其重命名为repository包，并放到domain包下，并对其下的类也同样进行了重命名。修改后的包结构如下图所示：
-{% img center /images/2013/03/coach02.png %}</p>
+<img class="center" src="/images/2013/03/coach02.png"></p>
 
 <p>我没有修改数据库访问层的代码，而是要求新手使用JDBC Template，并着重给他讲解了数据库访问的基础知识，并要求他将数据库属性放置到配置文件中。我想，到了下一周，他又会提交一份什么样的代码呢？</p>
 ]]></content>
@@ -660,7 +657,7 @@ testCompile (
     <link href="http://agiledon.github.com/blog/2012/08/25/tasking-in-tdd/"/>
     <updated>2012-08-25T12:59:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/08/25/tasking-in-tdd</id>
-    <content type="html"><![CDATA[<p>{% img left /images/2012/12/tdd.jpg 240 293 %}
+    <content type="html"><![CDATA[<p><img class="left" src="/images/2012/12/tdd.jpg" width="240" height="293">
 我和同事李彦辉今天结对实现了一个User Story，这个故事的需求在昨天已经讨论得比较清楚，其中一部分工作因为数据安全以及部署基础设施的原因，由澳洲的客户来实现完成。因此，我们的工作就变成为将消息propogate到指定的external queue。这事实上可以理解为两部分工作，第一是生成或组装Queue希望获得的消息，第二才是消息的propogation。</p>
 
 <p>消息的获得大约要经历如下步骤。首先是通过GlobalCustomer的Id，获得对应的指定产品的ProductCustomer（可能包含多个）。由于GlobalCustomer与ProductCustomer之间存在多对多的关系，我们还需要根据获得的每个ProductCustomer，逆向反推出它所对应的GlobalCustomer（可能包含多个）。在得到ProductCustomer对应的GlobalCustomer后，再调用GetConsent的Web Service，获得每个GlobalCustomer对应的Consent信息。之后，再根据Consent信息中包含的某些Indicator值，运用业务规则，获得最终external queue需要的由indicator值以及客户的基本信息组成的消息。</p>
@@ -669,47 +666,44 @@ testCompile (
 
 
 <p>在分解任务时，我的直觉告诉我可以通过这个分析出来的执行步骤来划分任务，而且我们事先已经获知，查询GlobalCustomer与ProductCustomer之间的信息可以通过调用系统已有的EjbBean来实现。根据这样的任务分解，我们进行测试驱动，似乎可以编写的第一个测试用例为：
-{% codeblock lang:java %}
-@Test
-public void should_retieve_associate_product_customers_by_global_customer_id(){
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_retieve_associate_product_customers_by_global_customer_id</span><span class="o">(){</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>然而，在开始测试驱动时，我首先想到的是我们自己的Service如何与已有的CustomerDao(其内部又调用了FindProfile的EjbBean）进行交互，所以我打算先写一个基础的测试用例，表现这种对象的协作关系，例如：
-{% codeblock lang:java %}
-@Test
-public void should_invoke_CustomerDao(){</p>
-
-<pre><code>CustomerDao dao = createMock(CustomerDao.class);
-expect(dao.findProductCustomersBy(customerId).andReturn(productCustomers);
-replay(dao);
-
-retrieveService = new RetrieveCustomerService(dao);
-retrieveService.retrieve(customerId);
-
-verify();
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_invoke_CustomerDao</span><span class="o">(){&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">CustomerDao</span> <span class="n">dao</span> <span class="o">=</span> <span class="n">createMock</span><span class="o">(</span><span class="n">CustomerDao</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">expect</span><span class="o">(</span><span class="n">dao</span><span class="o">.</span><span class="na">findProductCustomersBy</span><span class="o">(</span><span class="n">customerId</span><span class="o">).</span><span class="na">andReturn</span><span class="o">(</span><span class="n">productCustomers</span><span class="o">);</span>
+</span><span class='line'><span class="n">replay</span><span class="o">(</span><span class="n">dao</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">retrieveService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RetrieveCustomerService</span><span class="o">(</span><span class="n">dao</span><span class="o">);</span>
+</span><span class='line'><span class="n">retrieveService</span><span class="o">.</span><span class="na">retrieve</span><span class="o">(</span><span class="n">customerId</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">verify</span><span class="o">();</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>然而，这似乎只是一个简单的职责委派，编写这样的一个测试用例并没有任何价值。同事认为，我们在分解任务时，应该从功能上分析，即根据指定的GlobalCustomer的id获得一个具有ProductCustomer与GlobalCustomer映射关系的最终对象，这个映射关系需要一个概念来表示。经过分析，这个概念其实就是最终我们要得到的GlobalCustomer，区别在于这个retrieve的行为，它需要表现领域特征。这个行为的输入是GlobalCustomerId，输出则是List<GlobalCustomer>。这样分解的好处是可以直接寻找到我们需要的接口，再通过这个测试用例去驱动我们的设计。例如，我们编写出这样的测试用例：
-{% codeblock lang:java %}
-@Test
-public void should_retrieve_associate_global_customers_which_have_same_product_customer() {</p>
-
-<pre><code>List&lt;GlobalCustomer&gt; gCustomers = service.retrieve(gCustomerId);
-assertThat(gCustomers.size(), is(5);
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_retrieve_associate_global_customers_which_have_same_product_customer</span><span class="o">()</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">GlobalCustomer</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">gCustomers</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="na">retrieve</span><span class="o">(</span><span class="n">gCustomerId</span><span class="o">);</span>
+</span><span class='line'><span class="n">assertThat</span><span class="o">(</span><span class="n">gCustomers</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我们对retrieve()这个名称并不满意，但目前我们没有找到合适的行为概念，所以就保留了这一定义。因为我们有测试保证，一旦找到正确的行为特征，我们可以及时重构。在这个测试用例中，我们对返回结果进行的断言是不合理的，因为这个断言断定了返回的结果数目。这可能是不稳定的。为了保证测试的稳定性，我们需要为其准备数据。我们分别为GlobalCustomer与ProductCustomer定义了Builder来构建测试数据。而随着对这个测试用例的逐渐完善，我们发现了在CustomerDao中还需要提供一个方法findGlobalCustomerBy(productId, productCustomerId)。我们可以继续对CustomerDao提供Mock实现，但最好的方式是转移阵地，先为CustomerDao编写单元测试。</p>
 
 <p>我忠实地记录了今天结对时，进行任务分解的过程。然而我一直在思考，可否通过我建立的职责模型来帮助我们进行业务分解呢？这个职责模型如下图所示：</p>
 
-<p>{% img center /images/2012/12/responsibility.png 191 181 %}</p>
+<p><img class="center" src="/images/2012/12/responsibility.png" width="191" height="181"></p>
 
 <p>我在这个模型中将职责分为三个层次：业务价值、业务功能与业务实现。这里有个前提，就是在划分职责时，需要基于某个特定的场景。就好像我们在识别用例时，需要识别用例的边界一般。通常意义上，业务价值就是在实现这个需求时，你的消费者（可以是UI的视图、控制器，又或者是领域层，或者客户端）所希望调用的接口。这个消费者可以理解为角色，它是参与这个场景的入口，识别职责就是从角色的视角出发，理解需求。</p>
 

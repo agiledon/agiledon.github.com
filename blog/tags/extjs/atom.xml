@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: ExtJS | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/extjs/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-08T09:57:28+08:00</updated>
+  <updated>2014-05-08T10:25:26+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,25 +19,24 @@
     <updated>2012-02-10T11:27:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/02/10/post-data-to-server-side-to-generate-file</id>
     <content type="html"><![CDATA[<p>我们希望将客户端（ExtJS 4.0）浏览器中选择的记录post到服务端（ASP.NET MVC 3.0），然后在服务端将这些数据导出到CSV文件中，并传到客户端进行保存。最初，我们希望在客户端采用AJAX请求，将json数据post到服务端。例如：
-{% codeblock lang:js %}
-postSelectedItems: function(gridId, callback) {</p>
-
-<pre><code>var me = this;
-Ext.Ajax.request({
-    method: 'POST',
-    jsonData: Ext.encode(
-        Ext.getCmp(gridId).getSelectedRecords().map(function (item){
-            return item.data;
-            })
-    ),
-    success: function(){
-        callback();
-    }
-);
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">postSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'><span class="nx">Ext</span><span class="p">.</span><span class="nx">Ajax</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">jsonData</span><span class="o">:</span> <span class="nx">Ext</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span>
+</span><span class='line'>        <span class="nx">Ext</span><span class="p">.</span><span class="nx">getCmp</span><span class="p">(</span><span class="nx">gridId</span><span class="p">).</span><span class="nx">getSelectedRecords</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">item</span><span class="p">){</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">})</span>
+</span><span class='line'>    <span class="p">),</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>        <span class="nx">callback</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>在服务端，Controller中的Action可以处理post过来的json数据，然后以FileResult的方式返回。为了更好地处理CSV文件，我们定义了一个CsvActionResult，它继承自FileResult，并重写了它的WriteFile()方法。浏览器就可以获得CsvActionResult返回的Stream，从而就可以完成文件的下载和保存了。</p>
 
@@ -47,84 +46,80 @@ Ext.Ajax.request({
 <p>然而，这种AJAX异步请求的方式是不工作的。因为发起者是AJAX，这种异步方式会导致浏览器无法收到处理后的Stream。我们在网上搜索了许多资料，都没有很好地解决这种异步方式对json数据的处理，完成文件下载。经过分析，我们大致想到有两种解决思路。</p>
 
 <p>一是方案将导出文件的请求分为两步：一步是异步post数据，让服务端获得客户端传来的json数据，并将其存放到Session中；第二步则是在post成功之后，在异步回调中再次发出一个同步的Get请求，并定义对应的控制器Action响应该Get请求。例如，我们在ExtJS中的postSelectedItems()函数的success()回调中，执行downloadFile()函数，由该函数发出Get请求。同时，在服务端的Controller中定义DownloadFile()方法响应该请求。例如：
-{% codeblock lang:csharp %}
-[AcceptVerbs(HttpVerbs.Post)]
-public ActionResult Export(int environmentId, List<SearchResult> selectedItems) {</p>
-
-<pre><code>Session["SelectedItems"] = selectedItems;
-return new EmptyResult();
-</code></pre>
-
-<p>}</p>
-
-<p>public ActionResult DownloadFile(int environmentId){</p>
-
-<pre><code>var selectedItems = Session["SelectedItems"] as List&lt;SearchResult&gt;;
-var data = selectedItems.ExportCsvData();
-var metaData = CsvExportMeta.ExportMetaData();
-var exportTime = DateTime.Now;
-var fileName = String.Format("export_{0}.csv",exportTime.ToString("yyyyMMddHHmm"));
-return new CsvActionResult&lt;SearchResultCsvView&gt;(data) {
-    FileDownloadName = fileName,
-    MetaData = metaData;
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[AcceptVerbs(HttpVerbs.Post)]</span>
+</span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Export</span><span class="p">(</span><span class="kt">int</span> <span class="n">environmentId</span><span class="p">,</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">SearchResult</span><span class="p">&gt;</span> <span class="n">selectedItems</span><span class="p">)</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Session</span><span class="p">[</span><span class="s">&quot;SelectedItems&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="n">selectedItems</span><span class="p">;</span>
+</span><span class='line'><span class="k">return</span> <span class="k">new</span> <span class="nf">EmptyResult</span><span class="p">();</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">public</span> <span class="n">ActionResult</span> <span class="n">DownloadFile</span><span class="p">(</span><span class="kt">int</span> <span class="n">environmentId</span><span class="p">){&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">selectedItems</span> <span class="p">=</span> <span class="n">Session</span><span class="p">[</span><span class="s">&quot;SelectedItems&quot;</span><span class="p">]</span> <span class="k">as</span> <span class="n">List</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">SearchResult</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;;</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">data</span> <span class="p">=</span> <span class="n">selectedItems</span><span class="p">.</span><span class="n">ExportCsvData</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">metaData</span> <span class="p">=</span> <span class="n">CsvExportMeta</span><span class="p">.</span><span class="n">ExportMetaData</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">exportTime</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">;</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">fileName</span> <span class="p">=</span> <span class="n">String</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;export_{0}.csv&quot;</span><span class="p">,</span><span class="n">exportTime</span><span class="p">.</span><span class="n">ToString</span><span class="p">(</span><span class="s">&quot;yyyyMMddHHmm&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="k">return</span> <span class="k">new</span> <span class="n">CsvActionResult</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">SearchResultCsvView</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">FileDownloadName</span> <span class="p">=</span> <span class="n">fileName</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">MetaData</span> <span class="p">=</span> <span class="n">metaData</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 比较理想的一点是，由于我们在Global.asax.cs的Application_Start()方法中已经添加了如下代码：
-{% codeblock lang:js %}
-ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">ValueProviderFactories</span><span class="p">.</span><span class="nx">Factories</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="k">new</span> <span class="nx">JsonValueProviderFactory</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>所以，客户端发过来的json数据可以转换为Export()方法接收的List<SearchResult>对象。但是，这种方式将数据存放到了Session中，可能存在隐患。一方面，如果需要导出的数据较多，就可能占用过多的内存空间。一旦访问量增长，就会影响到服务器的稳定性和性能。如果服务端采用集群，则Session还要共享，否则二次请求的时候，可能会被Load Balancer路由到其他服务器。倘若同一个用户连续两次Post，也可能导致导出功能出现问题。整体而言，这种方案并不稳定。</p>
 
 <p>第二种解决思路就是放弃AJAX异步请求的方式，而转用Form表单的Post请求。我们采用了临时编写表单的方式，将post的数据塞到Input的Value中，然后Submit表单。例如在ExtJS的Controller中，我们定义了这样的函数：
-{% codeblock lang:js %}
-exportSelectedItems: function(gridId) {</p>
-
-<pre><code>var exportWindow = window.open('');
-var exportDocument = exportWindow.document;
-var form = exportDocument.createElement('form');
-form.setAttribute('method', 'post');
-form.setAttribute('action', url);
-
-var hiddenField = exportDocument.createElement('input');
-hiddenField.setAttribute('value', Ext.encode(
-    Ext.getCmp(gridId).getSelectedRecords().map(function (item)) {
-        return item.data;
-    }
-)));
-hiddenField.setAttribute('name','selectedItems');
-hiddenField.setAttribute('type','hidden');
-form.appendChild(hiddenField);
-exportDocument.body.appendChild(form);
-form.submit();
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">exportSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">pre</span><span class="o">&gt;&lt;</span><span class="nx">code</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">exportWindow</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">exportDocument</span> <span class="o">=</span> <span class="nx">exportWindow</span><span class="p">.</span><span class="nb">document</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">exportDocument</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;form&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">form</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">,</span> <span class="s1">&#39;post&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">form</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;action&#39;</span><span class="p">,</span> <span class="nx">url</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">hiddenField</span> <span class="o">=</span> <span class="nx">exportDocument</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">hiddenField</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="nx">Ext</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span>
+</span><span class='line'>    <span class="nx">Ext</span><span class="p">.</span><span class="nx">getCmp</span><span class="p">(</span><span class="nx">gridId</span><span class="p">).</span><span class="nx">getSelectedRecords</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">item</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">)));</span>
+</span><span class='line'><span class="nx">hiddenField</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;selectedItems&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">hiddenField</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span><span class="s1">&#39;hidden&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">form</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">hiddenField</span><span class="p">);</span>
+</span><span class='line'><span class="nx">exportDocument</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">form</span><span class="p">);</span>
+</span><span class='line'><span class="nx">form</span><span class="p">.</span><span class="nx">submit</span><span class="p">();</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>现在就可以在服务端的Controller中，只定义一个Export()方法了。此时的Export()方法不再需要List<SearchResult>参数，因为客户端Post过来的数据是放在Request的Form中。我们可以根据设定的name值获得该数据。这个数据是json数组的字符串。现在，有另外一个问题又钻出来了。我们必须将该字符串转换为我们需要的List<SearchResult>对象，然后就可以重用该对象的扩展方法ExportCsvData()方法，将其再转换为CsvActionResult可以接受的类型。回顾之前异步post的方式，在该种方式下，客户端post过来的json数据并没有进行转换，其原因在于我们在Global中，我们向ValueProviderFactories的Factories中注册了JsonValueProviderFactory对象，转换的执行过程事实上是一种反序列化。在JsonValueProviderFactory的私有静态方法GetDeserializedObject()方法中，调用了JavaScriptSerializer对象的DeserializeObject()方法。就是在这个类中，同时还定义了Deserialize<T>泛型方法，而它正是我们所需要的：
-{% codeblock lang:csharp %}
-[AcceptVerbs(HttpVerbs.Post)]
-public ActionResult Export(int environmentId) {</p>
-
-<pre><code>var result = Request.Form.Get("selectedItems");
-var selectedItems = new JavaScriptSerializer().
-    Deserialize&lt;List&lt;SearchResult&gt;&gt;(result);
-var data = selectedItems.ExportCsvData();
-var metaData = CsvExportMeta.ExportMetaData();
-var exportTime = DateTime.Now;
-var fileName = String.Format("export_{0}.csv",exportTime.ToString("yyyyMMddHHmm"));
-return new CsvActionResult&lt;SearchResultCsvView&gt;(data) {
-    FileDownloadName = fileName,
-    MetaData = metaData;
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[AcceptVerbs(HttpVerbs.Post)]</span>
+</span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Export</span><span class="p">(</span><span class="kt">int</span> <span class="n">environmentId</span><span class="p">)</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Form</span><span class="p">.</span><span class="n">Get</span><span class="p">(</span><span class="s">&quot;selectedItems&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">selectedItems</span> <span class="p">=</span> <span class="k">new</span> <span class="n">JavaScriptSerializer</span><span class="p">().</span>
+</span><span class='line'>    <span class="n">Deserialize</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">List</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">SearchResult</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="n">result</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">data</span> <span class="p">=</span> <span class="n">selectedItems</span><span class="p">.</span><span class="n">ExportCsvData</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">metaData</span> <span class="p">=</span> <span class="n">CsvExportMeta</span><span class="p">.</span><span class="n">ExportMetaData</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">exportTime</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">;</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">fileName</span> <span class="p">=</span> <span class="n">String</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;export_{0}.csv&quot;</span><span class="p">,</span><span class="n">exportTime</span><span class="p">.</span><span class="n">ToString</span><span class="p">(</span><span class="s">&quot;yyyyMMddHHmm&quot;</span><span class="p">));</span>
+</span><span class='line'><span class="k">return</span> <span class="k">new</span> <span class="n">CsvActionResult</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">SearchResultCsvView</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">FileDownloadName</span> <span class="p">=</span> <span class="n">fileName</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">MetaData</span> <span class="p">=</span> <span class="n">metaData</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>现在这种方式不再需要向Session存放数据，并且只用了一次请求来完成。虽然是用同步的方式进行Post，但由于post的数据最多不会超过200k，用户不会感受到很明显的阻塞现象，是完全可以接受的。</p>
 ]]></content>

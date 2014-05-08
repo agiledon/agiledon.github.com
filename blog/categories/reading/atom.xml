@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Reading | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/categories/reading/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-08T09:57:28+08:00</updated>
+  <updated>2014-05-08T10:25:26+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading/"/>
     <updated>2014-03-04T20:47:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/steiner.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/steiner.jpg"></p>
 
 <p>阅读，以灵魂融合的方式阅读，或许会战栗，恐惧，喜悦，哭泣，甚至紧张，却可以让你成为阅读的人存在，你既是独立的，又陷入作品中成为你臆想和理解的另一个人。这种阅读，使得你存在。</p>
 
@@ -47,7 +47,7 @@
     <link href="http://agiledon.github.com/blog/2014/01/11/excerpt-from-barone-rampante/"/>
     <updated>2014-01-11T19:32:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/01/11/excerpt-from-barone-rampante</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/barone_rampante.jpeg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/barone_rampante.jpeg"></p>
 
 <p>卡尔维诺《树上的男爵》书写了这么一段难以言说、无可名状的美丽的段落，让我惊叹，甚至是那种心悸的喜悦。这样的笔下的景色，仿佛让我身临其境，又似乎另有一种魔力，如夕阳之下各色景观都涂上了一层金色的光亮。这一段落并非那种精致的美，但却自有一种纤细与磅礴，很奇怪的矛盾杂糅，然后蹦出一种奇异的美。</p>
 
@@ -62,7 +62,7 @@
     <link href="http://agiledon.github.com/blog/2014/01/10/reading-the-captive-mind/"/>
     <updated>2014-01-10T22:24:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/01/10/reading-the-captive-mind</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/captivemind.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/captivemind.jpg">
 米沃什在《被禁锢的头脑》中，描述了战时东欧的白色恐怖：</p>
 
 <blockquote><p>此时带着套马索的骑马者就会出现。那就是‘囚车’，即停在街角，用帆布遮盖着的大卡车。行人根本预见不到那里会有危险，当他们路过那个街角时，会突然感觉有一支枪顶住他。它也许会被关进集中营，或者会被推到墙下，用胶布封上嘴巴以防止他喊出反对占领国的口号，然后就被枪毙。这一切都令城市居民心惊胆战，迫使他们俯首帖耳。为了避免这种不幸，最好的办法就是足不出户。但是作为一家之主的父亲必须外出挣钱，弄点供养他的妻儿老小的面包和菜汤。每到晚上，家里人就开始心绪不宁，担心父亲是否还回得来。这种情况已经持续多年，所以人们渐渐觉得他们居住的这座城市简直就是危机四伏的原始森林，20世纪人的命运，与那些每天跟毒蛇猛兽作生死搏斗的穴居人的命运没什么两样。</p></blockquote>
@@ -109,7 +109,7 @@
     <link href="http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture/"/>
     <updated>2013-08-29T10:39:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/justenough_cn.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/justenough_cn.jpg">
 华中科技大学出版社的徐定翔问我意见，了解我对Just Enough Software Architecture这本书的观感，看是否值得引进。时间是在2010年。从一开始，我就被书名中的Just Enough理念所吸引。它让我想起宋玉的东家姑娘，“增之一分则太长，减之一分则太短”那种不可言说的美丽。我在心里说，架构设计就需要这样。我当时并没有看到本书，只是到Amazon上找到了几篇英文原版样章。犹记得我在读到第一章介绍的RackSpace案例时那种兴奋之情。于是，我迫切地向徐定翔强烈推荐引进这本书，而我则毛遂自荐，希望能作为本书的译者。之后，我在InfoQ上看到对本书的《<a href="http://www.infoq.com/cn/articles/fairbanks-jesa">访谈和书摘</a>》，进一步加强了我翻译本书的信念。于是，出版社开始与作者Fairbanks联系，然而从此音讯如石沉大海。时针指向2011年，我对于本书是否被引进，是否由我翻译，一切未知。我觉得我可能错过了它，思之仍觉怅然。谁知到了九月，消息突然确定，而徐大编辑就不容分说地直接把原书给我寄来了。</p>
 
 <p>拿到沉甸甸的书，第一面就为本书的装帧而惊喜。心里想，我这一辈子若能写出这样一本书，绝对值得生命走过的这一遭了。我并没有迫不及待地开始翻译，这就好似遇到珍馐美味，需得先赏其色，闻其香，然后再品其味。我每天抱着这本书饶有兴味地开始阅读之旅。阅读之旅确乎如行山阴道，沿途之美，目不暇接；可一想到翻译，这种美景就成了一种折磨，因为我害怕辜负这一美景。翻译之初我就举步维艰，那些词语放在那里，我却无法解开“封印”将它们取出来，即使取出来，却又找不到存放的合适位置。一些翻译隐隐约约浮现着，当我竭力去揭开这些词语的真面目时，无论如何用力，总也不能够着。翻译就好像那些年我们一起追过的女孩——追不到，痛苦；追到了，销魂。翻译进度像蜗牛一样的爬着，我终于决定求助了。辗转寻找了好多朋友，都以各种理由拒绝或者放弃了。翻译讲解软件架构的书，确乎不是一件轻松的事儿。那个时候，我的Buddy肖鹏正从翻译《面向模式的软件架构》第五卷的泥潭中爬了出来。每一提及他的这段翻译经历，脸上就会浮现出不堪回首的表情，如看了恐怖片。终于，事情得到转机，最开始是倪健的雪中送炭，再有高翌翔的锦上添花，随着我们这个三人组的建立，翻译才算开始走向正规，我才有了交稿的信心。</p>
@@ -127,7 +127,7 @@
     <link href="http://agiledon.github.com/blog/2013/08/06/methodologies-of-reading-radar/"/>
     <updated>2013-08-06T10:41:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/08/06/methodologies-of-reading-radar</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/readingradar03.png %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/readingradar03.png"></p>
 
 <p>方法学（Methodology）看似与开发技能无关，常为程序员忽略。忽略意味着未曾察觉，却不等于它的无关紧要。我们每时每刻呼吸的空气同样会被我们忽略，但空气不重要么？不要等到我们开始戴上口罩，每日关心PM 2.5指数时，方才察觉原来空气的质量已经积重难返了。在我们的读书雷达中，方法学象限囊括的书籍多与开发过程相关。如果说开发技能是程序员修炼过程中必须加强的显式的力，则开发过程的这些思想与实践，就是隐藏的推手。你若不动，它会推你前行，然而缓慢；若你后退，则推动的阻力就大，暗流汹涌。只有自愿向前，这种助力才能如鱼得水，使你能够优游地前行。</p>
 
