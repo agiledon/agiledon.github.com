@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="不管语言的变化有多大，关于程序设计的基本编程思想和设计本质，应是殊途同归。两年前阅读了Jonathan Snook的著作《Javascript捷径教程Accelerated DOM Scripting with Ajax, APIs, and Libraries》。在书中， &hellip;">
+  <meta name="description" content="职责分配不仅限于对象之间。如果将对象看做是细粒度的封装，则模块作为组合多个对象的设计元素，可以看做是粗粒度的封装。倘若在模块之间分配职责失当，带来的影响会比对象职责分配不合理更大。这是因为只要在OO设计中进行了适度的封装，在一定程度上体现了隐藏细节的设计理念，对象的职责分配失当就不会溢出边界， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/03/assigning-responsibility-between-modules/">模块间的职责分配</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-03T20:19:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2013</time>
+        
+         | <a href="/blog/2013/03/03/assigning-responsibility-between-modules/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/03/module.png"></p>
+
+<p>职责分配不仅限于对象之间。如果将对象看做是细粒度的封装，则模块作为组合多个对象的设计元素，可以看做是粗粒度的封装。倘若在模块之间分配职责失当，带来的影响会比对象职责分配不合理更大。这是因为只要在OO设计中进行了适度的封装，在一定程度上体现了隐藏细节的设计理念，对象的职责分配失当就不会溢出边界，对其余对象不会产生太大的影响。</p>
+
+<p>模块间的职责分配好似对对象进行一种归类，只有属于同一类别的对象才能被分配到一个模块中。这可以说是对“高内聚”原则的简单理解。注意，模块常常是对架构层次结构的横向切割，不同的模块可能处于不同的逻辑层。因此，大的设计问题可能牵涉到分层问题。从架构层面来讲，或许我们有必要在获得模块的详细设计之前，审慎地给出一个系统逻辑架构，会有助于模块间的职责分配。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/03/03/assigning-responsibility-between-modules/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -490,53 +537,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/02/change-of-design-patterns/">设计模式的一些变化</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-02T22:28:00+08:00" pubdate data-updated="true">Feb 2<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/02/change-of-design-patterns/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>经历了几次过度设计，我对一些设计模式开始抱有谨慎的戒惧。我希望能够合理地运用设计模式，而非为模式而模式。事实上，现在的我较少会有意识地运用设计模式；更多地是通过职责来驱动，以期获得合理的职责分配。之后，再通过辨别代码的坏味道，运用重构来改善设计。大多数情况下，这种方式对于设计而言，已经足够。不过，有时我们仍有必要根据具体场景，做出合理判断和决策。</p>
-
-<p>我曾经遭遇的一个Story，是要实现一个Web Service，提供update的服务接口。需求要求对服务的Request进行验证。这一验证功能并非Story的核心功能，但其逻辑却比核心逻辑复杂数倍。它需要针对不同情况，遵循多个规则验证Request。这些验证逻辑如此的复杂，以至于我们可以在第一时间做出判断，它必须是单独的职责，绝对不适合放到Service对象中。</p>
-
-<p>这种职责分离还不够。因为每一条验证规则，都可以视为一个单独的验证职责。若将每种验证规则封装为一个验证对象，就能很好地满足SRP。每个验证对象只需要做好自己的事情即可，结果只有两个，要么错误，要么通过。若当验证逻辑为一个整体，则可以理解为：只要违背了一条验证规则，出现错误，则可以视为验证不通过；否则将继续验证下一条规则。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/02/change-of-design-patterns/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -574,6 +574,10 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/06/18/magic-scala-1-call-by-name/">Magic Scala(1): Call By Name</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/08/hardware-on-spark/">Spark的硬件配置</a>
       </li>
     
@@ -587,10 +591,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     
       <li class="post">
         <a href="/blog/2014/03/04/the-strength-of-reading/">阅读的力量</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/18/remote-actor-in-akka/">Akka中的Remote Actor</a>
       </li>
     
   </ul>
@@ -628,7 +628,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <section>
   <h1>Tag Cloud</h1>
   <ul class="tag-cloud">
-<a style="font-size: 100%" href="/blog/tags/api/">API</a>
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
@@ -669,7 +668,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 192%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 195%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
@@ -678,6 +677,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
 
   </ul>
 </section>

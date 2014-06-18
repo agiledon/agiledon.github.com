@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-05-08T10:25:26+08:00</updated>
+  <updated>2014-06-19T00:05:02+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,84 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Magic Scala(1): Call By Name]]></title>
+    <link href="http://agiledon.github.com/blog/2014/06/18/magic-scala-1-call-by-name/"/>
+    <updated>2014-06-18T23:57:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/06/18/magic-scala-1-call-by-name</id>
+    <content type="html"><![CDATA[<p>在Scala中，调用函数有两种形式：Call by value（按值调用）和call by name（按名称调用）。若是call by value，会先计算参数的值，然后再传递给被调用的函数；若是call by name，参数会到实际使用的时候才计算。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">logEnable</span> <span class="k">=</span> <span class="kc">false</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">logEnable</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="nc">MSG</span> <span class="k">=</span> <span class="s">&quot;programing is running&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">log</span><span class="o">(</span><span class="nc">MSG</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">0</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此时的log函数是call by value。因此在调用log函数时，会先计算传入的参数，此时会计算MSG + 1/0。由于表达式中有0作为被除数，因此会抛出异常：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Exception in thread "main" java.lang.ArithmeticException: / by zero
+</span><span class='line'>        at Main$.main(scala-script352098905369979205.scala:16)
+</span><span class='line'>        at Main.main(scala-script352098905369979205.scala)
+</span><span class='line'>exit value is 1
+</span><span class='line'>Program exited.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果修改log的定义为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">String</span><span class="o">)</span> <span class="k">=</span>
+</span><span class='line'>     <span class="k">if</span> <span class="o">(</span><span class="n">logEnable</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当调用log函数：log(MSG + 1/0)时，它首先并不会计算MSG + 1/0表达式，而是先执行log的函数体，即判断logEnable的值。此时logEnable值为false，此时就不会执行该分支println(msg)。既然不会执行println，就不会计算MSG + 1/0。因此就不会抛出异常。</p>
+
+<p>再看另外一个例子。首先定义一个函数：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">getOneWhatever</span><span class="o">()</span><span class="k">:</span><span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;calling getOneWhatever&quot;</span><span class="o">)</span>
+</span><span class='line'>     <span class="mi">1</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后，再定义两个函数，分别用call by value和call by name的方式：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">callByValue</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;x1=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;x2=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">callByName</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;x1=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;x2=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果执行callByValue(getOneWhatever())，则结果为：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>calling getOneWhatever
+</span><span class='line'>x1=1
+</span><span class='line'>x2=1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>若执行callByName(getOneWhatever())，则结果为：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>calling getOneWhatever
+</span><span class='line'>x1=1
+</span><span class='line'>calling getOneWhatever
+</span><span class='line'>x2=1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意看二者的区别，采用by name的方式，getOneWhatever函数被执行了两次，这是因为在callByName函数中，传入的参数被调用了两次。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Spark的硬件配置]]></title>
@@ -2089,24 +2167,6 @@ revert命令可以撤销已经提交的快照，但它并不会将该提交从�
 
 
 <p>经过这样的处理，程序的主体逻辑变得清晰了许多，而且也能够有效地避免日志方法的重复。当然，这里也可以使用checkNotNull()方法来处理ProcessData与List<FavoratePolicy>的null情形。但由于它抛出的异常为NullPointerException，用在这里会增加一个异常捕获（因为它无法处理isEmpty()的情况），所以就一致地选择了checkArgument()方法。不过，在使用这一方法时，要注意它传入的条件表达式与原有实现的表达式是相反的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[关于《恰如其分的软件架构》]]></title>
-    <link href="http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture/"/>
-    <updated>2013-08-29T10:39:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2013/justenough_cn.jpg">
-华中科技大学出版社的徐定翔问我意见，了解我对Just Enough Software Architecture这本书的观感，看是否值得引进。时间是在2010年。从一开始，我就被书名中的Just Enough理念所吸引。它让我想起宋玉的东家姑娘，“增之一分则太长，减之一分则太短”那种不可言说的美丽。我在心里说，架构设计就需要这样。我当时并没有看到本书，只是到Amazon上找到了几篇英文原版样章。犹记得我在读到第一章介绍的RackSpace案例时那种兴奋之情。于是，我迫切地向徐定翔强烈推荐引进这本书，而我则毛遂自荐，希望能作为本书的译者。之后，我在InfoQ上看到对本书的《<a href="http://www.infoq.com/cn/articles/fairbanks-jesa">访谈和书摘</a>》，进一步加强了我翻译本书的信念。于是，出版社开始与作者Fairbanks联系，然而从此音讯如石沉大海。时针指向2011年，我对于本书是否被引进，是否由我翻译，一切未知。我觉得我可能错过了它，思之仍觉怅然。谁知到了九月，消息突然确定，而徐大编辑就不容分说地直接把原书给我寄来了。</p>
-
-<p>拿到沉甸甸的书，第一面就为本书的装帧而惊喜。心里想，我这一辈子若能写出这样一本书，绝对值得生命走过的这一遭了。我并没有迫不及待地开始翻译，这就好似遇到珍馐美味，需得先赏其色，闻其香，然后再品其味。我每天抱着这本书饶有兴味地开始阅读之旅。阅读之旅确乎如行山阴道，沿途之美，目不暇接；可一想到翻译，这种美景就成了一种折磨，因为我害怕辜负这一美景。翻译之初我就举步维艰，那些词语放在那里，我却无法解开“封印”将它们取出来，即使取出来，却又找不到存放的合适位置。一些翻译隐隐约约浮现着，当我竭力去揭开这些词语的真面目时，无论如何用力，总也不能够着。翻译就好像那些年我们一起追过的女孩——追不到，痛苦；追到了，销魂。翻译进度像蜗牛一样的爬着，我终于决定求助了。辗转寻找了好多朋友，都以各种理由拒绝或者放弃了。翻译讲解软件架构的书，确乎不是一件轻松的事儿。那个时候，我的Buddy肖鹏正从翻译《面向模式的软件架构》第五卷的泥潭中爬了出来。每一提及他的这段翻译经历，脸上就会浮现出不堪回首的表情，如看了恐怖片。终于，事情得到转机，最开始是倪健的雪中送炭，再有高翌翔的锦上添花，随着我们这个三人组的建立，翻译才算开始走向正规，我才有了交稿的信心。</p>
-
-<p>自从开始翻译这本书后，我与人谈架构，动辄就会提及“Just Enough，恰如其分”。我像祥林嫂一般地推介着Fairbanks提出的风险驱动模型，并认真地实践着这一模型。我开始对演进的架构有了更深入的理解。我写了《<a href="http://agiledon.github.io/blog/2011/10/10/design-just-enough-architecture/">设计恰如其分的架构</a>》这篇博客来详细阐述我对演进式架构的理解。在2011年我参加的技术会议上，我也反复讲解了如何遵循简单之美的原则，运用风险驱动模型设计恰如其分的架构。2012年，在我参加的一个项目中需要针对遗留系统进行技术栈迁移。我撰写了文章《<a href="http://www.infoq.com/cn/articles/legacy-system-migration">遗留系统的技术栈迁移</a>》，提到了“风险驱动模型”，并在2013年的Scrum Gathering会议上分享了我的一些想法。当然，这个模型并不是锤子，更不是银弹。它更近似于质量属性驱动的架构设计，我们要满足的质量属性，可能就是我们在做架构时需要面对的风险；而在Roy Fielding的那篇关于REST的著名论文中，也提到了对约束的识别，并演示了如何从一个空约束，通过逐步添加约束演化为REST风格的架构。从某种程度上，架构的约束可能是一种风险，也可能成为设计的驱动力。</p>
-
-<p>前几天，我参加Agile China 2013，与我新认识的一位朋友范钢聊到了关于架构重构的问题。事实上，面向对象软件开发到现在，已有十余年之久；各种经验、模式与原则甚嚣尘上并得到较好的推广。然而新的方法、新的语言乃至新的思想仍然层出不穷，尤其是在互联网开发、大数据处理以及移动开发的冲击下，传统软件开发似乎已经开始走向末路。“只见新人笑，不见旧人哭”！？？是，也不是。实际上，在传统的企业开发领域，各种大型系统仍然像一艘庞大如巨型海兽一般的船舰在海面缓缓行驶，它或许就是沉没之前的泰坦尼克，一切还都安然无恙，你甚至可以听到船头甲板传来的悠扬的小提琴声；然而，冰川就在远处出没，船长还未察觉。我们该怎么办？这样的巨型船舰，自然不可能如艨艟快艇那般的敏捷，即使是360度的转身，也可以玩得如此漂亮、优雅。这些大型的企业级软件系统已经走过了漫长的历程，它们如此巨大以至于我们只能看到它的一角，它们的零部件如此复杂以至于没有人能够彻底弄懂。我们必须认识到，这些系统是最有权力的系统，它们很有可能掌握了人类生活的根本命脉——金融管理、股市交易、生命健康、医疗管理、机械制造、国防安全、航空、航天……它们就像政治界、金融界的那些巨头，要是患了病咳嗽两声，也许世界都要抖一抖。它们可以轻易改变吗？不能！然而若是不寻求改变，这些系统会宿命地走向衰亡。若我们无法承受重写的成本，唯一的办法或许就是架构的重构。我们必须清晰地认识到这一点。而我认为，风险驱动模型恰恰可以作为架构重构的指导原则。在进行重构之前，我们需要充分评估重构的价值，回答“为什么我们需要重构”的问题；然后去识别风险。在开始重构之前，我们需要尽可能做到万无一失。风险自然是不可避免的，但如果我们能事先识别出这些风险，就能有的放矢地选择正确的技术。风险驱动模型的第三步，则是评估风险是否得到有效缓解。不要轻视这一步！重构往往意味着还债。可是，我们该用什么来说服管理者们付出成本去做一些看似没有产生直接利益的任务呢？答案就是用数据来说话，通过比较重构前后的系统健康指标，可以加重说服老板的砝码。当然，毫无疑问，这个过程一定是迭代的。</p>
-
-<p>我想，通过这次交谈，我进一步找到了“风险驱动模型”适用的场景。而这正是我翻译并推荐本书的根本意义。本书可以在<a href="http://product.dangdang.com/product.aspx?product_id=23320387">当当网</a>购买。</p>
 ]]></content>
   </entry>
   
