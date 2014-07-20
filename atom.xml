@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-07-08T11:13:21+08:00</updated>
+  <updated>2014-07-20T22:35:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,52 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Scala学习资源]]></title>
+    <link href="http://agiledon.github.com/blog/2014/07/20/scala-resource/"/>
+    <updated>2014-07-20T22:17:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/07/20/scala-resource</id>
+    <content type="html"><![CDATA[<h2>网站</h2>
+
+<p>Twitter提供的<a href="http://twitter.github.io/scala_school/zh_cn/basics.html">Scala School</a>：讲解简洁，可以作为快速入门</p>
+
+<p>Twitter编写的如何有效开发Scala的文档——<a href="http://twitter.github.io/effectivescala/index.html">Effective Scala</a></p>
+
+<p>一个非常棒的<a href="http://zh.scala-tour.com">Scala网上教程</a>：可以直接在网页上修改程序和运行程序</p>
+
+<p>很好的<a href="http://www.artima.com/index.jsp">Scala社区网站</a>：只是最近似乎很少更新</p>
+
+<p>当然，不能忘记了Scala的<a href="http://www.scala-lang.org/documentation/">官方网站提供的文档</a>：这或许可以说是最权威的内容，同时，也会提供最新的内容</p>
+
+<p>我自己整理的<a href="https://github.com/agiledon/scala_coding_convention">Scala编码规范与最佳实践</a>：是我结合项目情况并参考相关书籍和文章，以及个人的体会整理的。内容在不断更新中。若愿意贡献一份力量，可以和我联系，我可以加你为Contributor。</p>
+
+<h2>博客</h2>
+
+<p>Alvin Alexander的<a href="http://alvinalexander.com/scala">博客</a>：内有诸多Scala文章，Alvin是Scala Cookbook一书的作者</p>
+
+<p>阿里巴巴Hongjiang的<a href="http://hongjiang.info/scala/">博客</a>：有很多成系列的Scala文章</p>
+
+<h2>视频与教程</h2>
+
+<p>Scala之父Martin Odersky在<a href="https://www.coursera.org/course/progfun">Scala教学视频</a>。你还可以在<a href="http://www.gtan.com/welfare05.html">国内的这个网站</a>上在线观看，在这个网站上，你还能阅读到Akka文档的中文版。</p>
+
+<p>你还可以通过<a href="http://www.typesafe.com/activator">下载Activator</a>，然后通过运行activator，生成各式各样的Scala开发模板（包括Play、Akka、Spray、Spark）。生成的模板有代码和简明教程。</p>
+
+<p>若想更扎实的掌握函数式编程，可以在学习Scala之前，先学习Heskell。
+学习<a href="http://learnyouahaskell.com/chapters">Heskell的在线书</a>：写得简洁易懂，很生动。可以作为heskell的入门书籍</p>
+
+<h2>书籍</h2>
+
+<p>如果你希望快速地了解Scala的语法，可以阅读《<a href="http://book.douban.com/subject/19971952/">快学Scala</a>》，即Scala for the I&#8217;mpatient；但是，如果你希望了解真正的Scala精髓，那么奉劝大家不要阅读此书，而应该阅读Scala宝典，由Martin Odersky亲自撰写的著作<a href="http://book.douban.com/subject/3338669/">Programming in Scala</a>。不要阅读此书的中文版，翻译实在糟糕。</p>
+
+<p>如果你想要深入理解Scala的内在机制，可以阅读<a href="http://book.douban.com/subject/6962379/">Scala in Depth</a>；我的同事<a href="http://kaopua.com/blog/">诺铁</a>翻译了此书，即日出版。</p>
+
+<p>如果你想了解更多Scala的案例运用，可以阅读<a href="http://book.douban.com/subject/20876182/">Scala Cookbook</a>。书中提供了大量的案例。</p>
+
+<p>如果你想了解Scala的函数式运用，请阅读Paul Chiusano撰写的<a href="http://book.douban.com/subject/20488750/">Functional Programming in Scala</a>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ListBuffer vs List in Scala]]></title>
@@ -2153,182 +2199,6 @@ revert命令可以撤销已经提交的快照，但它并不会将该提交从�
 
 
 <p>或许我已经变得像祥林嫂一般的唠叨，但我还是必须再次申明，以上Mock方式所针对的情形皆为设计与代码的坏味道。优先情况下，我们应该重构，使得它遵循DIP原则，解除对服务类的耦合，使其具有良好的可测试性；而不能因为有了强大的PowerMock而“姑息养奸”。换言之，让我们仅仅将PowerMock耍弄的种种花招，看做是压箱底的手段。实在走投无路了，再祭出你的杀手锏吧！</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用Maven为一个项目生成多个Jar包]]></title>
-    <link href="http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven/"/>
-    <updated>2013-11-10T22:43:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/11/10/create-two-jars-from-one-project-using-maven</id>
-    <content type="html"><![CDATA[<p>虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代，它因为提供了较为灵活的编写Task的功能，而忽略了制定一套看似呆板，实则有效的标准模板。于是，在不同的企业，不同的Java项目，出现了各种各样奇怪的目录结构与打包要求。拖着这些沉重的历史包袱，我们自然希望彻底革命，把那些看不顺眼的东西全部改造，让整个项目焕然一新。这是好事儿，所谓长痛不如短痛，一下子把问题肿瘤给割了，痛快！可是现实总有那么一些阻力会让我们缩手缩脚，我们不能挥起革命的利刃一阵乱砍，这弄不好会砍伤自己的手。于是乎，我们需要做战略性的撤退。退一步海阔天空嘛。</p>
-
-<p>我面对的就是这样一个软件系统。这个Java开发的软件系统一直没有依赖管理，仅仅编写了Ant任务用于发布打包。我们的任务是渐进地引入Maven，并在从Build到deploy的整个生命周期中，逐步替换Ant，与持续集成搭配起来。这个系统的多数模块都划分了服务端与客户端。然而不巧的是，各个模块的服务端和客户端都集中在一个模块中。同时，这个项目的目录结构并非标准的Maven结构，如下图所示。因此，还需要自定义Source与TestSource的目录结构。在原来的Ant任务中，是将它们打包成了两个Jar包。现在，我们需要在Maven中同样做到这一点。</p>
-
-<!-- more -->
-
-
-<p><img class="left" src="http://agiledon.github.com/images/2013/folder-structure.png"></p>
-
-<p>分析这个目录结构，无非是在打包时，对文件进行include或exclude。我查阅到Maven的一位开发者Tim O&#8217;Brien写的一篇博客<a href="http://blog.sonatype.com/people/2010/01/how-to-create-two-jars-from-one-project-and-why-you-shouldnt/#.Un9DKpTN_Gp">Sonatype的博客</a>，详细介绍了具体的做法。当然，在博客中，他一再强调了这种做法的不可取，建议在项目模块上做出好的分解，保证一个Module对应一个Jar包。这篇博客介绍了两种做法，一个是在Profile中定义，一个则是在build中定义，使用的插件皆为maven-jar-plugin。对于我要解决的问题，可以考虑选择使用第二种做法，因为它只需要执行一条mvn package命令就能同时得到Server和Client的Jar包。具体的做法就是在插件的配置中，include各自的文件夹即可。配置如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>src<span class="nt">&lt;/sourceDirectory&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-jar-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>server<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;goals&gt;&lt;goal&gt;</span>jar<span class="nt">&lt;/goal&gt;&lt;/goals&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;classifier&gt;</span>server<span class="nt">&lt;/classifier&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;includes&gt;</span>
-</span><span class='line'>                                <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;/includes&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>client<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;goals&gt;&lt;goal&gt;</span>jar<span class="nt">&lt;/goal&gt;&lt;/goals&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>package<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;classifier&gt;</span>client<span class="nt">&lt;/classifier&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;includes&gt;</span>
-</span><span class='line'>                                <span class="nt">&lt;include&gt;</span>**/client/**<span class="nt">&lt;/include&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;/includes&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过这样的配置，运行mvn package可以生成三个包，其中testmaven-1.0-SNAPSHOT.jar同时包含了服务端和客户端的类；而服务端和客户端对应的Jar则为testmaven-1.0-SNAPSHOT-server.jar和testmaven-1.0-SNAPSHOT-client.jar。</p>
-
-<p>在前面的配置中，我们并没有为server和client包定义自己的坐标，而是沿用了统一的一个。这就意味着依赖这个包的其他Module，可能无法通过Dependency来精确定位Server或Client。这对于部署来说，是没有问题的，但却无法进行依赖管理；除非在依赖的时候，去依赖整个大的模块。</p>
-
-<p>要保证依赖管理，就意味着需要为server和client分别指定各自的坐标。看来需要另辟蹊径。其实，Maven是支持在一个项目中建立多个子模块的。我们可以考虑在项目中引入两个子模块，分别对应server和client，并在这两个子模块中建立自己的pom.xml文件。这在本质上是与Maven多模块支持是相同的，唯一不同的是代码结构。而且这种新建模块并没有影响原有的目录结构，对于遗留系统而言，还是可以接受的。因此，我们建立了如下图所示的模块结构：
-<img class="center" src="http://agiledon.github.com/images/2013/module-structure.png"></p>
-
-<p>在新的结构中，除了原有模块外，我还引入了另外两个新的模块server和client，它们除了拥有自己的pom.xml文件，没有其他任何内容。而在原有模块下，同样定义了一个pom.xml文件，它将作为整个项目的parent。定义如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;packaging&gt;</span>pom<span class="nt">&lt;/packaging&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;modules&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;module&gt;</span>server<span class="nt">&lt;/module&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;module&gt;</span>client<span class="nt">&lt;/module&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/modules&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里定义的坐标是整个项目的坐标，同时指定了packaging的类型为pom。在这个pom.xml文件中还包括了两个子模块，其中的值应该与模块的名称对应。接下来配置server模块的pom.xml：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;parent&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/parent&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>../src<span class="nt">&lt;/sourceDirectory&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>../testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;version&gt;</span>3.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;includes&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;/includes&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>首先声明了parent指向了主模块的坐标。接下来，声明当前模块的artifact id为testmaven-server。这就为server指定了独立的坐标。一旦部署后，在maven的Repository中会得到这样的文件：com/test/maven/testmaven-server/1.0-SNAPSHOT/testmaven-server-1.0-SNAPSHOT.jar。我们就可以在依赖中这样声明：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;dependencies&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;dependency&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/dependency&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/dependencies&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行mvn package，oops……竟然出现问题了。什么问题呢？单元测试无法通过。报告的错误为：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.1:testCompile (default-testCompile) on project testmaven-server: Compilation failure: Compilation failure:
-</span><span class='line'>[ERROR] /Users/twer/learn/testmaven/testSrc/com/test/maven/client/HelloMavenTest.java:[11,9] cannot find symbol
-</span><span class='line'>[ERROR] symbol  : class HelloMaven
-</span><span class='line'>[ERROR] location: class com.test.maven.client.HelloMavenTest</span></code></pre></td></tr></table></div></figure>
-
-
-<p>仔细分析，原来是在执行编译server包时，报告无法编译client包对应的测试类。怎么会在编译server包时，去编译client包对应的测试呢？仔细观察我们的pom.xml文件，在maven-compiler-plugin插件中，我们配置了对server文件的引入，这就意味着在编译server包时，不会引入client文件夹下的所有文件（当然在这里就是Java类文件）。但是，我们并没有在test-compile阶段排除client对应的测试文件。这就导致client的测试无法找到对应的实现类。找到根源，问题就好解决了，显然我们需要在test-compile阶段排除client文件夹。所以，server模块下正确的pom.xml配置为：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;parent&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;groupId&gt;</span>com.test.maven<span class="nt">&lt;/groupId&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;artifactId&gt;</span>testmaven<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/parent&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>testmaven-server<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nt">&lt;build&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;sourceDirectory&gt;</span>../src<span class="nt">&lt;/sourceDirectory&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;testSourceDirectory&gt;</span>../testSrc<span class="nt">&lt;/testSourceDirectory&gt;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="nt">&lt;plugins&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;plugin&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;version&gt;</span>3.1<span class="nt">&lt;/version&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;includes&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;include&gt;</span>**/server/**<span class="nt">&lt;/include&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;/includes&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;executions&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;execution&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;id&gt;</span>default-testCompile<span class="nt">&lt;/id&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;phase&gt;</span>test-compile<span class="nt">&lt;/phase&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;configuration&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;testExcludes&gt;</span>
-</span><span class='line'>                                <span class="nt">&lt;exclude&gt;</span>**/client/**<span class="nt">&lt;/exclude&gt;</span>
-</span><span class='line'>                            <span class="nt">&lt;/testExcludes&gt;</span>
-</span><span class='line'>                        <span class="nt">&lt;/configuration&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;/execution&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;/executions&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/plugin&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/plugins&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/build&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意：我在IntelliJ配置execution下的configuration节时，碰到一个问题，那就是针对testExcludes配置节没有智能提示。由于其他maven配置节在正确情况下都有智能提示，因而让我产生错误，认为这个配置项不支持testExcludes，这让我纠结了好半天。</p>
-
-<p>对于client模块而言，如法炮制，只是包含以及过滤的文件夹反转了一个个儿而已。当我们进行install甚至deploy时，在repository下的test/maven文件夹中，看到了三个文件夹，如图所示：
-<img class="center" src="http://agiledon.github.com/images/2013/maven-repository.png"></p>
-
-<p>其中的testmaven/1.0-SNAPSHOT文件夹下并没有jar包，因为它对应的配置为主模块的配置，也就是parent配置。在这个配置中，我们将packaging的类型设置为pom了。</p>
 ]]></content>
   </entry>
   
