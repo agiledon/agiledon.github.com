@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Neal Ford在几年前提出的“Poly Programming”思想，已经逐渐成为主流。这种思想并非是为了炫耀多语言的技能，然后选择“高大上”。真正的目的在于更好地利用各种语言处理不同场景、不同问题的优势。 由于都运行在JVM上，Java与Scala之间基本能做到无缝的集成， &hellip;">
+  <meta name="description" content="昨天去黄桷坪的美院涂鸦一条街。虽然楼宇有些破破烂烂，墙上的涂鸦显得色彩浓厚而杂乱，但那种艺术的氛围还是让我感觉到愉悦。这种涂鸦原本就是要用颜色来描绘一种情绪，又或是依据建筑的外观涂抹一种符合其风格的自然肖像，当然也可以是卡通人物，将凸起的阳台，匍匐的树藤，蔓延的冰冷水管， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,57 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/07/painting-in-huangjueping-street/">黄桷坪美院的涂鸦街</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-07T17:56:00+08:00" pubdate data-updated="true">Feb 7<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/02/07/painting-in-huangjueping-street/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>昨天去黄桷坪的美院涂鸦一条街。虽然楼宇有些破破烂烂，墙上的涂鸦显得色彩浓厚而杂乱，但那种艺术的氛围还是让我感觉到愉悦。这种涂鸦原本就是要用颜色来描绘一种情绪，又或是依据建筑的外观涂抹一种符合其风格的自然肖像，当然也可以是卡通人物，将凸起的阳台，匍匐的树藤，蔓延的冰冷水管，或屋顶废弃的烟囱连接为一个魔幻世界。这就是艺术让人着迷的地方了，那就是所谓的“创造”。</p>
+
+<p>这幅的颜色涂抹并不张扬，在绿树下显得线条更柔和又抽象：</p>
+
+<p><img class="center" src="/images/2014/tuya01.jpg"></p>
+
+<p>下面这幅让我产生建筑密集症：
+<img class="center" src="/images/2014/tuya02.jpg"></p>
+
+<p>这一幅具有萌趣，但很破烂，那些外挂的空调外机反而成了装饰：
+<img class="center" src="/images/2014/tuya03.jpg"></p>
+
+<p>这种蓝色是我最爱的，虽然破旧，我反而觉得更融洽：
+<img class="center" src="/images/2014/tuya04.jpg"></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -734,51 +785,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/21/play-trick-with-powermock/">玩花招的PowerMock</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-21T12:42:00+08:00" pubdate data-updated="true">Nov 21<span>st</span>, 2013</time>
-        
-         | <a href="/blog/2013/11/21/play-trick-with-powermock/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>当我们面对一个遗留系统时，常见的问题是没有测试。正如Michael Feathers在Working Effectively with Legacy Code一书中对“遗留代码”的定义。他将其简单归纳为“没有测试的代码”。真是太贴切了！正是因为没有测试，使得我们对遗留代码的任何重构都有些战战兢兢，甚至成为开发人员抵制重构的借口。从收益与成本的比例来看，对于这样的系统，我一贯认为不要盲目进行重构。因为重构的真正适用场景其实是发生在开发期间，而非维护期间。当然，提升自己的重构能力，尤其学会运用IDE提供的自动重构工具，可以在一定程度上保障重构的质量。然而，安全的做法，还是需要为其编写测试。</p>
-
-<p>测试是分层的，即使是针对自动化测试。面对遗留系统，成本相对较低的是针对功能特性编写的功能测试（或者说是验收测试），这可以运用一些BDD框架如Cucumber、JBehave等。由于它的测试粒度较粗，可以以较少的测试用例覆盖系统的主要功能。然而，它的缺点同样存在，那就是反馈周期相对较长。这就好像你置身一个陌生的城市，在找不到路的情况下，只是跟着感觉走。走了数十公里之后，方才幡然醒悟，想起要翻一翻带在手上的地图。倘若发现方向走错，再要回转就已经晚了。反馈周期最短的自然是单元测试。同样根据Michael Feather的定义，单元测试一定要快，一定要不依赖于外部资源。单元测试的粒度自然是最小的，但不要直观地认为单元测试就是针对方法。若只是针对方法来编写单元测试，就会陷入为测试而测试的怪圈。即使是位于技术象限的单元测试，我们仍然要按照业务规则来编写。一个测试方法应该对应一个粒度最小的原子功能。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/21/play-trick-with-powermock/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -816,6 +822,10 @@ Liquid error: invalid byte sequence in US-ASCII</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/07/20/scala-resource/">Scala学习资源</a>
       </li>
     
@@ -829,10 +839,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
     
       <li class="post">
         <a href="/blog/2014/05/08/hardware-on-spark/">Spark的硬件配置</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/17/rest-framework-spray-based-on-akka/">基于Akka的REST框架Spray</a>
       </li>
     
   </ul>
@@ -874,7 +880,7 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
 <a style="font-size: 144%" href="/blog/tags/big-data/">Big Data</a>
-<a style="font-size: 100%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 128%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
@@ -911,7 +917,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
 <a style="font-size: 199%" href="/blog/tags/scala/">Scala</a>
-<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
@@ -919,6 +924,7 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
 <a style="font-size: 100%" href="/blog/tags/translation/">Translation</a>
 
   </ul>

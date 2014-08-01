@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="我们希望将客户端（ExtJS 4.0）浏览器中选择的记录post到服务端（ASP.NET MVC 3.0），然后在服务端将这些数据导出到CSV文件中，并传到客户端进行保存。最初，我们希望在客户端采用AJAX请求，将json数据post到服务端。例如： postSelectedItems: &hellip;">
+  <meta name="description" content="说明：以下获得的设计思考，是阅读《GAE编程指南》时的一些简单体会。主要针对的是一些设计细节（非架构）的考量。 简单与灵活。在对API进行设计决策时，需充分考虑API的简单性和全面性。此二者都是站在调用者的角度来思考，即需要提供一种默认的简单调用形式，也可以根据实际情况提供可选的方式。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/11/the-design-of-gae/">GAE的设计</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-11T10:55:00+08:00" pubdate data-updated="true">Feb 11<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/02/11/the-design-of-gae/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2012/02/Google-App-Engine.jpg" width="537" height="251"></p>
+
+<p>说明：以下获得的设计思考，是阅读《GAE编程指南》时的一些简单体会。主要针对的是一些设计细节（非架构）的考量。</p>
+
+<p>简单与灵活。在对API进行设计决策时，需充分考虑API的简单性和全面性。此二者都是站在调用者的角度来思考，即需要提供一种默认的简单调用形式，也可以根据实际情况提供可选的方式。这是简单性和灵活性的共同体现。在Google App Engine中，对数据存储区的实体存储，可以在创建实体对象时指定主键；如果不指定主键，就会生成唯一的ID。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/02/11/the-design-of-gae/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -369,6 +416,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/07/20/scala-resource/">Scala学习资源</a>
       </li>
     
@@ -382,10 +433,6 @@
     
       <li class="post">
         <a href="/blog/2014/05/08/hardware-on-spark/">Spark的硬件配置</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/17/rest-framework-spray-based-on-akka/">基于Akka的REST框架Spray</a>
       </li>
     
   </ul>
@@ -427,7 +474,7 @@
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
 <a style="font-size: 144%" href="/blog/tags/big-data/">Big Data</a>
-<a style="font-size: 100%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 128%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
@@ -464,7 +511,6 @@
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
 <a style="font-size: 199%" href="/blog/tags/scala/">Scala</a>
-<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
@@ -472,6 +518,7 @@
 <a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
 <a style="font-size: 100%" href="/blog/tags/translation/">Translation</a>
 
   </ul>

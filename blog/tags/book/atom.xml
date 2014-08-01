@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Book | 简单文本]]></title>
   <link href="http://agiledon.github.com/blog/tags/book/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-07-20T22:35:28+08:00</updated>
+  <updated>2014-08-01T23:48:37+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,19 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ThoughtWorks中国区文集出版]]></title>
+    <link href="http://agiledon.github.com/blog/2014/08/01/thoughtworks-china-book/"/>
+    <updated>2014-08-01T23:25:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/08/01/thoughtworks-china-book</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/tw_book.png"></p>
+
+<p>这次参加TID会议，居然看到了这本耗时达3年的书《<a href="http://product.china-pub.com/4243605">软件开发践行录——ThoughtWorks中国区文集</a>》——终于出版了。很早以前，凯峰就提出这个想法，当时他作为InfoQ中文站原创社区的主编，着实策划了不少优秀的原创技术文章。凯峰作为ThoughtWorks的一份子，很好地搭建了ThoughtWorks实践与社区的分享桥梁。不少由TWer撰写的优秀文章陆续在InfoQ发表。然而，从想法到本书出版经历了如此漫长的时间，却也出乎我意料之外。大约一年前，在我提供了个人信息给负责此事的同事后，就没再关心此事，差不多就要淡忘了。如今看到这本漂亮的汇集了中国区TWer心得体会的小书，真是莫名的惊喜啊。就好似那些珍贵的东西你会忘记，却在再次遇见时，忽然发现这种珍贵一点都没有减少。</p>
+
+<p>无论如何，我都为加入ThoughtWorks感到开心而自豪；我也为能有文章选入这本文集而感到荣幸。这是一本散文集，是我们书写在IT边上的日志，又或是一种对技术的诠释与注解，未必必然美丽，却是心灵的一种悸动，一声叹息，是因为技术的狂热而挑动的心弦。这份执着，更是一种美——必然是美！</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ThoughtWorks(中国)程序员读书雷达]]></title>
