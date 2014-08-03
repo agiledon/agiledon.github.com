@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>测试数据准备框架 - 简单文本</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="这是我去年写的一个小框架，专为自动化测试准备数据。以我个人的经验，进行自动化测试尤其是单元测试，除了技能的障碍外，最大的障碍有两点：1)难以解除依赖，因而无法为相关功能编写独立的测试；2)数据准备困难，导致编写测试的成本高。在我的一篇博客《推行TDD的思考》中有相关总结。尤其在企业级软件系统中， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="简单文本" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">简单文本</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">测试数据准备框架</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T21:25:00+08:00" pubdate data-updated="true">Aug 3<span>rd</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><img class="center" src="/images/2014/sisyphus.jpg"></p>
+
+<p>这是我去年写的一个小框架，专为自动化测试准备数据。以我个人的经验，进行自动化测试尤其是单元测试，除了技能的障碍外，最大的障碍有两点：1)难以解除依赖，因而无法为相关功能编写独立的测试；2)数据准备困难，导致编写测试的成本高。在我的一篇博客《<a href="http://agiledon.github.io/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>》中有相关总结。尤其在企业级软件系统中，面对的领域相对复杂，被测接口常常需要输入复杂的数据，然后再返回复杂的数据。在面向对象开发中，这些数据常常被建模为对象。我们该怎么实例化这些对象？在单元测试中，我们常常会引入Builder模式，通过Fluent Interface的方式建立类似DSL的构建接口，以便于自由、流畅而可任意组合的方式，帮助编写测试的人实例化他想要创建的对象。然而，一旦这个对象内嵌了多层，或具有极多的属性时，创建就变得极为艰难了。</p>
+
+<p>在ThoughtWorks的一些项目中，尝试使用Yaml来准备数据。有一个极好的框架snakeyaml可以很好地支持我们处理yaml文件。正是基于此，启发我开发了这样一个小框架Sisyphus。它可以帮助更方便地以各种文件形式来准备数据，并提供了统一的接口。目前，支持的格式为我们最常使用的yaml与json。</p>
+
+<p>框架的开发并没有什么技术含量，但框架提供的功能却是基于实际项目中面临的困难逐步演化出来的。例如框架提供的模板功能，数据分节功能，在一开始并没有想到。正是因为这两个功能，让我觉得这个框架还有一些用处。之所以将这个框架命名为Sisyphus，缘由在于我将测试数据视为西西弗推动的那一块大石头，无法承受的如命运一般的沉重，却又不得不用力去承受，如此往返以致时时刻刻。</p>
+
+<!-- more -->
+
+
+<p>要使用Sisyphus，可以在build.gradle的构建脚本中添加sonatype提供的Repository依赖：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">repositories</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">maven</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">url</span> <span class="s1">&#39;https://oss.sonatype.org/content/groups/public&#39;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">mavenCentral</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">test</span> <span class="o">(</span>
+</span><span class='line'>            <span class="s1">&#39;junit:junit:4.11&#39;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s1">&#39;com.github.agiledon:sisyphus:1.0-SNAPSHOT&#39;</span>
+</span><span class='line'>        <span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>针对Yaml文件，我选择了snakeyaml框架。而对于Json数据，我尝试了两种框架Jackson和Gson。我发现这两个框架各有不足之处。倘若使用Jackson，它要求你要反序列化的类型必须定义默认的构造函数，如果没有定义，则必须声明Annotation：@JsonCreate和@JsonProperty。可是，有时候我们要准备的数据对象，或许是自动生成的，并不能修改该定义。何况，为了进行测试而改变产品代码，是邪恶的，不可取。Gson没有这样的约束，但当我尝试将一段字符串解析为byte[]类型时，发现Gson并不支持。为此，Sisyphus为Json数据提供了两种实现，为了区分，若是Gson实现，则要求测试数据文件的扩展名必须为“.gson”。</p>
+
+<p>模板功能使用了ST4的StringTemplate。我没有使用该框架提供的默认变量标识，而是要求将变量用$符号包裹起来。如果不需要模板，则只需提供一个测试数据文件即可；否则还要定义模板文件，它的扩展名为“.template”。例如针对Json格式的数据，倘若定义了这样的User类：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">enum</span> <span class="n">Gender</span> <span class="o">{</span> <span class="n">MALE</span><span class="o">,</span> <span class="n">FEMALE</span> <span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Name</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">private</span> <span class="n">String</span> <span class="n">_first</span><span class="o">,</span> <span class="n">_last</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirst</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_first</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLast</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_last</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirst</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_first</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLast</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_last</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Gender</span> <span class="n">_gender</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Name</span> <span class="n">_name</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">_isVerified</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">_userImage</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Name</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_name</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isVerified</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_isVerified</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Gender</span> <span class="nf">getGender</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_gender</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUserImage</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_userImage</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">Name</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span> <span class="n">_name</span> <span class="o">=</span> <span class="n">n</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVerified</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_isVerified</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setGender</span><span class="o">(</span><span class="n">Gender</span> <span class="n">g</span><span class="o">)</span> <span class="o">{</span> <span class="n">_gender</span> <span class="o">=</span> <span class="n">g</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserImage</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_userImage</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则可以准备模板文件为：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name" : { "first" : $firstName$, "last" : $lastName$ },
+</span><span class='line'>  "gender" : "MALE",
+</span><span class='line'>  "verified" : false,
+</span><span class='line'>  "userImage" : "Rm9vYmFyIQ=="
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而数据文件则可以是：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'># This is multi section sample
+</span><span class='line'>firstName = "Joe"
+</span><span class='line'>lastName = "Sixpack"
+</span><span class='line'>
+</span><span class='line'>///
+</span><span class='line'>
+</span><span class='line'>firstName = "Bruce"
+</span><span class='line'>lastName = "Zhang"
+</span><span class='line'>
+</span><span class='line'>///
+</span><span class='line'>
+</span><span class='line'>firstName = "Yi"
+</span><span class='line'>lastName = "Zhang"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>符号///是分节的标识符，而符号#则为注释，读取数据时会忽略该符号后的所有字符。使用Sisyphus框架，就可以很方便地加载数据文件，从而获得三个User实例。如下测试：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_multi_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="n">Fixture</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="s">&quot;userWithMultiSections.json&quot;</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">.</span><span class="na">withTemplate</span><span class="o">(</span><span class="s">&quot;template/user.template&quot;</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">.</span><span class="na">toList</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Yi&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Zhang&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sisyphus框架还提供了将实例化好的对象输出为对应格式数据文件的功能。这个功能算是框架提供的一个辅助功能，可以避免手动去准备数据文件。例如我们可以先创建一个User实例，将其输出为yaml格式的数据文件，从而将该文件作为测试数据文件：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>   <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_serialize_specific_object_to_string_with_yaml_format</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">createUser</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">FixtureAssist</span><span class="o">.</span><span class="na">yaml</span><span class="o">().</span><span class="na">print</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="s">&quot;outputUser&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;!!com.github.agiledon.sisyphus.domain.json.User\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;gender: MALE\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;name: {first: Yi, last: Zhang}\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;userImage: !!binary |-\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;  MDAwMDExMTE=\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;verified: true\n&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>框架在加载数据文件时，本身提供了缓存功能，如果重复加载同一个文件，则第二次加载时，并不需要真正去读取文件，从而在一定程度上提高了测试的效率。</p>
+
+<p>框架的入口为Fixture类。若要使用Sisyphus准备数据，通常应调用Fixture的静态方法。框架也提供了对JUnit的支持，通过框架自定义的Rule来加载测试数据，使用方式为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataProviderRuleTest</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Rule</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">DataProviderRule</span> <span class="n">dataProvider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataProviderRule</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;user.json&quot;</span><span class="o">,</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_User_data_with_json_format</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;userWithTemplate.json&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="n">templateName</span> <span class="o">=</span> <span class="s">&quot;template/user.template&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但我个人并不推荐这种方式。使用Fixture更直观，甚至更简单。Sisyphus的源代码可以从<a href="https://github.com/agiledon/sisyphus">我的Github</a>上获得，在其Repository主页，有更多实例介绍。你也可以clone代码后，通过测试代码学习框架的使用。clone代码到本地后，将当前目录转到sisyphus，然后运行gradle build，即可对代码进行编译。若需运行测试，可运行gradle test。由于我使用的IDE为IntelliJ Idea，因此，框架的构建脚本中仅支持IDEA。你可以通过运行gradle idea来生成IntelliJ的项目。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T21:25:00+08:00" pubdate data-updated="true">Aug 3<span>rd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='tag' href='/blog/tags/coding/'>Coding</a>, <a class='tag' href='/blog/tags/opensource/'>OpenSource</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/01/thoughtworks-china-book/" title="Previous Post: ThoughtWorks中国区文集出版">&laquo; ThoughtWorks中国区文集出版</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/profile.png" align="center"/></p>
+  	<p><strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Senior Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/20/scala-resource/">Scala学习资源</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/07/using-listbuffer-vs-list/">ListBuffer vs List in Scala</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/18/magic-scala-1-call-by-name/">Magic Scala(1): Call By Name</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+<section>
+  <h1>Tag Cloud</h1>
+  <ul class="tag-cloud">
+<a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
+<a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
+<a style="font-size: 144%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 128%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
+<a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 202%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 100%" href="/blog/tags/go/">GO</a>
+<a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
+<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
+<a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
+<a style="font-size: 100%" href="/blog/tags/language/">Language</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
+<a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
+<a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
+<a style="font-size: 100%" href="/blog/tags/nosql/">NoSQL</a>
+<a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
+<a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
+<a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
+<a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
+<a style="font-size: 199%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
+<a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
+<a style="font-size: 100%" href="/blog/tags/translation/">Translation</a>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Visitor</h1>
+  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

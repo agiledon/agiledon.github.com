@@ -4,7 +4,7 @@
   <title><![CDATA[简单文本]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-08-01T23:48:37+08:00</updated>
+  <updated>2014-08-03T22:36:04+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,168 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[测试数据准备框架]]></title>
+    <link href="http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/"/>
+    <updated>2014-08-03T21:25:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2014/sisyphus.jpg"></p>
+
+<p>这是我去年写的一个小框架，专为自动化测试准备数据。以我个人的经验，进行自动化测试尤其是单元测试，除了技能的障碍外，最大的障碍有两点：1)难以解除依赖，因而无法为相关功能编写独立的测试；2)数据准备困难，导致编写测试的成本高。在我的一篇博客《<a href="http://agiledon.github.io/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>》中有相关总结。尤其在企业级软件系统中，面对的领域相对复杂，被测接口常常需要输入复杂的数据，然后再返回复杂的数据。在面向对象开发中，这些数据常常被建模为对象。我们该怎么实例化这些对象？在单元测试中，我们常常会引入Builder模式，通过Fluent Interface的方式建立类似DSL的构建接口，以便于自由、流畅而可任意组合的方式，帮助编写测试的人实例化他想要创建的对象。然而，一旦这个对象内嵌了多层，或具有极多的属性时，创建就变得极为艰难了。</p>
+
+<p>在ThoughtWorks的一些项目中，尝试使用Yaml来准备数据。有一个极好的框架snakeyaml可以很好地支持我们处理yaml文件。正是基于此，启发我开发了这样一个小框架Sisyphus。它可以帮助更方便地以各种文件形式来准备数据，并提供了统一的接口。目前，支持的格式为我们最常使用的yaml与json。</p>
+
+<p>框架的开发并没有什么技术含量，但框架提供的功能却是基于实际项目中面临的困难逐步演化出来的。例如框架提供的模板功能，数据分节功能，在一开始并没有想到。正是因为这两个功能，让我觉得这个框架还有一些用处。之所以将这个框架命名为Sisyphus，缘由在于我将测试数据视为西西弗推动的那一块大石头，无法承受的如命运一般的沉重，却又不得不用力去承受，如此往返以致时时刻刻。</p>
+
+<!-- more -->
+
+
+<p>要使用Sisyphus，可以在build.gradle的构建脚本中添加sonatype提供的Repository依赖：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">repositories</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">maven</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">url</span> <span class="s1">&#39;https://oss.sonatype.org/content/groups/public&#39;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">mavenCentral</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">test</span> <span class="o">(</span>
+</span><span class='line'>            <span class="s1">&#39;junit:junit:4.11&#39;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s1">&#39;com.github.agiledon:sisyphus:1.0-SNAPSHOT&#39;</span>
+</span><span class='line'>        <span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>针对Yaml文件，我选择了snakeyaml框架。而对于Json数据，我尝试了两种框架Jackson和Gson。我发现这两个框架各有不足之处。倘若使用Jackson，它要求你要反序列化的类型必须定义默认的构造函数，如果没有定义，则必须声明Annotation：@JsonCreate和@JsonProperty。可是，有时候我们要准备的数据对象，或许是自动生成的，并不能修改该定义。何况，为了进行测试而改变产品代码，是邪恶的，不可取。Gson没有这样的约束，但当我尝试将一段字符串解析为byte[]类型时，发现Gson并不支持。为此，Sisyphus为Json数据提供了两种实现，为了区分，若是Gson实现，则要求测试数据文件的扩展名必须为“.gson”。</p>
+
+<p>模板功能使用了ST4的StringTemplate。我没有使用该框架提供的默认变量标识，而是要求将变量用$符号包裹起来。如果不需要模板，则只需提供一个测试数据文件即可；否则还要定义模板文件，它的扩展名为“.template”。例如针对Json格式的数据，倘若定义了这样的User类：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">enum</span> <span class="n">Gender</span> <span class="o">{</span> <span class="n">MALE</span><span class="o">,</span> <span class="n">FEMALE</span> <span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Name</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">private</span> <span class="n">String</span> <span class="n">_first</span><span class="o">,</span> <span class="n">_last</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirst</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_first</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLast</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_last</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirst</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_first</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLast</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_last</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Gender</span> <span class="n">_gender</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Name</span> <span class="n">_name</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">_isVerified</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">_userImage</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Name</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_name</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isVerified</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_isVerified</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Gender</span> <span class="nf">getGender</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_gender</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUserImage</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_userImage</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">Name</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span> <span class="n">_name</span> <span class="o">=</span> <span class="n">n</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVerified</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_isVerified</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setGender</span><span class="o">(</span><span class="n">Gender</span> <span class="n">g</span><span class="o">)</span> <span class="o">{</span> <span class="n">_gender</span> <span class="o">=</span> <span class="n">g</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserImage</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_userImage</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则可以准备模板文件为：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name" : { "first" : $firstName$, "last" : $lastName$ },
+</span><span class='line'>  "gender" : "MALE",
+</span><span class='line'>  "verified" : false,
+</span><span class='line'>  "userImage" : "Rm9vYmFyIQ=="
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而数据文件则可以是：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'># This is multi section sample
+</span><span class='line'>firstName = "Joe"
+</span><span class='line'>lastName = "Sixpack"
+</span><span class='line'>
+</span><span class='line'>///
+</span><span class='line'>
+</span><span class='line'>firstName = "Bruce"
+</span><span class='line'>lastName = "Zhang"
+</span><span class='line'>
+</span><span class='line'>///
+</span><span class='line'>
+</span><span class='line'>firstName = "Yi"
+</span><span class='line'>lastName = "Zhang"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>符号///是分节的标识符，而符号#则为注释，读取数据时会忽略该符号后的所有字符。使用Sisyphus框架，就可以很方便地加载数据文件，从而获得三个User实例。如下测试：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_multi_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="n">Fixture</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="s">&quot;userWithMultiSections.json&quot;</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">.</span><span class="na">withTemplate</span><span class="o">(</span><span class="s">&quot;template/user.template&quot;</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">.</span><span class="na">toList</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Yi&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Zhang&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sisyphus框架还提供了将实例化好的对象输出为对应格式数据文件的功能。这个功能算是框架提供的一个辅助功能，可以避免手动去准备数据文件。例如我们可以先创建一个User实例，将其输出为yaml格式的数据文件，从而将该文件作为测试数据文件：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>   <span class="nd">@Test</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_serialize_specific_object_to_string_with_yaml_format</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">createUser</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">FixtureAssist</span><span class="o">.</span><span class="na">yaml</span><span class="o">().</span><span class="na">print</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="s">&quot;outputUser&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;!!com.github.agiledon.sisyphus.domain.json.User\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;gender: MALE\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;name: {first: Yi, last: Zhang}\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;userImage: !!binary |-\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;  MDAwMDExMTE=\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;verified: true\n&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>框架在加载数据文件时，本身提供了缓存功能，如果重复加载同一个文件，则第二次加载时，并不需要真正去读取文件，从而在一定程度上提高了测试的效率。</p>
+
+<p>框架的入口为Fixture类。若要使用Sisyphus准备数据，通常应调用Fixture的静态方法。框架也提供了对JUnit的支持，通过框架自定义的Rule来加载测试数据，使用方式为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataProviderRuleTest</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Rule</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">DataProviderRule</span> <span class="n">dataProvider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataProviderRule</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;user.json&quot;</span><span class="o">,</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_User_data_with_json_format</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Test</span>
+</span><span class='line'>    <span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;userWithTemplate.json&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="n">templateName</span> <span class="o">=</span> <span class="s">&quot;template/user.template&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但我个人并不推荐这种方式。使用Fixture更直观，甚至更简单。Sisyphus的源代码可以从<a href="https://github.com/agiledon/sisyphus">我的Github</a>上获得，在其Repository主页，有更多实例介绍。你也可以clone代码后，通过测试代码学习框架的使用。clone代码到本地后，将当前目录转到sisyphus，然后运行gradle build，即可对代码进行编译。若需运行测试，可运行gradle test。由于我使用的IDE为IntelliJ Idea，因此，框架的构建脚本中仅支持IDEA。你可以通过运行gradle idea来生成IntelliJ的项目。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ThoughtWorks中国区文集出版]]></title>
@@ -1822,120 +1984,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <p>最后说说单元测试的基本设施。很多时候，这可能不是问题；但很多时候，这可能会成为大问题。面对诸如测试数据准备等问题，需要认真分析，找到应对方案。原则上最好能找到一些开源的测试框架，包括生成测试数据，模拟测试行为等……多数情况下，这些开源框架都已经提供了。因为你遇到的问题，别人可能早已遇见过。这个世界上有很多聪明而又乐于分享的程序员，不要局限在自己公司一隅。睁大眼睛看看满世界吧。所谓“君子生非异也，善假于物也”。好程序员，也要这样。</p>
 
 <p>说不定，你会抛弃TDD，因为你找到了更好的适合你的做法。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Git的使用场景]]></title>
-    <link href="http://agiledon.github.com/blog/2013/12/24/the-scenarios-for-using-git/"/>
-    <updated>2013-12-24T21:38:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/12/24/the-scenarios-for-using-git</id>
-    <content type="html"><![CDATA[<p>无论学习什么技术，都需要了解该技术的本质。若是靠死记硬背该技术提供的方法或者语法，终归是知其然而不知其所以然，当发现错误时，你根本不知道是什么原因导致的。我在使用Git时，就处于这种知其然而不知其所以然的状态。现在，再来补补课。</p>
-
-<p>Git有三个工作区域，分别为：工作目录（Working Directory）、暂存区（Stage或Index）以及资源库（Repository或Git Directory）。下图是文件在这三个工作区域之间的关系：
-<img class="center" src="images/2013/lifecycle.png"></p>
-
-<p>参考Pro Git一书，它给出了Git的几个要点：
-* 直接快照，而非比较差异：Git与其他版本管理系统的主要差别在于，Git只关心文件数据的整体是否发生了变化，而其他多数版本管理系统则只关心文件内容的具体差异。Git并不保存文件前后变化的差异数据，更像是把变化的文件做一个快照，然后记录在一个微型的文件系统中。每次提交更新时，会比较这个快照。若文件没有变化，Git则只对上次保存的快照作一个链接。你可以理解Git就是一个小型的文件系统。
-* 近乎所有操作都可本地执行：无需多说，这本身就是分布式版本管理系统的特征。
-* 时刻保持数据完整性：保存到Git前，所有数据都要进行内容的校验和（checksum），并将该结果作为数据的唯一标识。Git使用了SHA-1算法计算数据的校验和，并将该结果作为索引，而非文件名。
-<img class="center" src="images/2013/git-hash.png">
-* 多数操作仅添加数据</p>
-
-<!--more-->
-
-
-<p>Pro Git一书认为任何一个文件在Git内部可以被分为三种状态：已提交（Committed）、已修改（Modified）和已暂存（Staged）。然而，这并不足以说明一个文件在不同的工作区域所展现的状态。我认为两种状态足以表达Git中的文件，即：未跟踪（Untracked）和已跟踪（Tracked）。而对于已跟踪状态，我又将其分为：未修改的（Unmodified），Modified（已修改的），暂存的（Staged）和已提交的（committed）。下图基本表达了我的思路：
-<img class="center" src="images/2013/file-lifecycle.png"></p>
-
-<p>这个图表现了多种场景，满足了我们在使用Git时耳濡目染的操作情形。</p>
-
-<h2>场景1：暂存文件以及取消已暂存的文件</h2>
-
-<p>可以参考上图中上面部分黑色箭头标示。当我们通过git init在本地初始化了Git工作目录后，新增了一个README.txt文件时，此时该文件处于Untracked状态。接下来执行命令：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git add README.txt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>add命令可以暂存此文件，此时，状态变更为Staged状态，被放到了Git暂存区中。若我们要提交此文件到Git资源库，就可以执行git commit命令，文件状态变为committed。例如：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git commit -m "first commit"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有时候，我们希望取消已暂存的文件。例如说，我在工作目录中增加了两个文件，然后暂存了它们。后来发现其中一个文件并不需要在Git中管理，希望能够取消暂存。由于此时的文件处于Staged状态，我们只需要删掉Stage中对此文件的跟踪即可。这时需要执行的命令是：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git rm --cached README.txt</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注意：此时取消暂存的文件从来就不曾提交过，也即是说没有在Git Repository留下过它的身影。这时的取消暂存实则是删掉暂存的信息。与后面场景演示的取消暂存并不相同。</strong></p>
-
-<h2>场景2：修改已提交文件以及取消已暂存的内容</h2>
-
-<p>一旦文件被提交，就会在Git Repository形成提交记录（以hash作为键）。倘若我们此时push提交到远程Git服务器，Git服务器应与本地库保持一致。</p>
-
-<p>现在，让我们看看图中红色箭头展现的流程。我们修改了已提交的README.txt文件，于是文件状态就变更为Modified。这部分修改的内容并没有被放入暂存区，若要提交此次修改，就还需要再次执行git add命令，将这次新的修改放入到暂存区。这个流程包括后面的提交都与场景1相似。唯一不同的是“取消已暂存的内容”。</p>
-
-<p>虽然同样是取消暂存，但它与场景1是完全不同的概念。场景1实则是要取消暂存区的文件，因此使用了git rm &#8211;cached，本质上讲其实是删除。而这里的取消，其实是希望取消暂存区中已经被添加的修改内容，文件本身仍然保留在暂存区中。故而执行的命令为：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git reset HEAD README.txt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>HEAD是何意呢？在Git中，HEAD是一个特别的指针，指向你正在工作的本地分支。当前分支就是master。如下图所示：
-<img class="center" src="images/2013/git_head.png"></p>
-
-<p>而reset命令的意思是重新设置当前的HEAD指针到特定的状态。由于当前的README.txt还没有提交到master分支的Repository中。因此，这条命令实则就是将HEAD指向README.txt文件在当前master分支的Repository状态，从而保证了对README.txt文件而言，暂存区与Repository的一致——取消了README.txt文件在暂存区的内容。</p>
-
-<h2>场景3：修改文件以及撤销修改内容</h2>
-
-<p>再看图中的绿色箭头与蓝色箭头展现的流程。我们不是初始化git工作目录，而是通过git clone从远程Repository克隆了项目，此时会在当前目录建立git工作目录。此时的文件全部处于Unmodified状态。</p>
-
-<p>现在，我们修改文件，例如hello.java。一旦被修改，文件状态就迁移到Modified状态。倘若需要暂存此次修改，甚至提交到Git Repository，则执行的流程与场景1相同（如蓝色箭头线所示）。</p>
-
-<p>然而，我们可能希望放弃此次修改，即不将修改的内容放入暂存区。这时，应执行checkout命令：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git checkout -- hello.java</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在执行checkout命令时要慎重。因为它要撤销的内容并没有被放入到暂存区或Repository。一旦撤销，就一去不复返了。</p>
-
-<h2>概念区分：fetch vs. pull</h2>
-
-<p>fetch命令只是将远端数据拉到本地仓库，并不自动合并到当前工作分支。若要合并，还需手动合并。例如，执行git fetch origin，就会抓取自上次克隆以来别人上传到此远程仓库中的所有更新。</p>
-
-<p>pull命令则除了会抓取数据，还能将远端分支自动合并到本地仓库中当前分支。</p>
-
-<h2>场景4：撤销提交</h2>
-
-<p>在Git中若要撤销提交，可以使用reset或者revert命令。但二者有着显著的区别：
-<img class="left" src="images/2013/git_revert_vs_reset.png">
-revert命令可以撤销已经提交的快照，但它并不会将该提交从项目的提交历史中移除，而是会判断要撤销的这次提交引入了哪些变化，然后将此变化撤销（此次撤销事实上还是一种变化），再将这次撤销作为一个提交。因此，在执行revert命令后，如果通过git log查看提交历史，可以看到会新增一个revert提交。命令为：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git revert &lt;commit&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个commit可以是指定提交对应的hash code。我们也可以用HEAD指针：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git revert HEAD~n</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果是revert当前提交，则不需要HEAD后的~n。</p>
-
-<p>reset命令就字面意义已经表达了该操作的含义为“重置”。由于Git的提交记录是由HEAD指针指向当前分支。重置就是搬动这个指针到指定的snapshot。如果说revert是一种<strong>安全</strong>的撤销方式，则reset就是一种<strong>危险</strong>的撤销方式。默认情况下，如果使用reset命令，会将当前的分支回退到指定commit，然后自指定commit到最新commit之间的内容会放在工作目录下，使得我们可以再提交。这个命令为：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git reset &lt;commit&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>与前相同，这个commit就是提交对应的hash code。同样，也可以使用HEAD指针。不过如果是撤销当前提交，与revert不同的是，需要指定为：HEAD~1。这是因为HEAD指针指向了当前提交。reset与revert的意义不一样。revert对应的commit为目标提交，意思为：“撤销目标提交”，因而git revert HEAD，代表的就是“将当前提交撤销”。而reset对应的commit表示将指针移向给定的Commit。如果执行git reset HEAD，代表的就是“将当前指针指向当前提交”，相当于没做任何操作。所以应该执行git reset HEAD~1。</p>
-
-<p>如果确实要撤销操作，而前面的内容并不需要，在使用reset命令时，可以添加&#8211;hard参数：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>git reset --hard &lt;commit&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>**注意：针对远程的提交记录，应尽量避免使用git reset命令。倘若在本地进行了reset之后，又进行了另外的修改并提交。此时，本地的提交记录与远程的提交记录在reset的那个点产生了分叉。如下图所示：
-<img class="center" src="images/2013/git_reset_commit.png"></p>
-
-<p>此时，如果执行git push，会在本地合并后提交，并同步远程提交记录。则团队其他成员会因为这个变化的提交记录而困惑。由于一部分变更消失，甚至可能导致一些数据被破坏。因此，使用reset命令要格外当心，通常情况，应尽量针对本地提交（未push到远程）进行reset。优先考虑使用revert命令。</p>
 ]]></content>
   </entry>
   
