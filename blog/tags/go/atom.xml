@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Tag: GO | 简单文本]]></title>
+  <title><![CDATA[Tag: GO | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/go/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-08-03T22:36:04+08:00</updated>
+  <updated>2014-08-05T17:38:27+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
