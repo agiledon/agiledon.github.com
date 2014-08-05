@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="无论诗人的意图是什么，我既不愿意去管窥蠡测，只愿意在诗意的文字中体会自己感悟的诗意就好。这有时候看起来仿佛是文字游戏，尤其是当诗歌经过文字的转换后，这层意思本身隔了一层，可只要我对这些文字产生了某种难以言说的感觉，又引我思考，我就觉得极好。因为这会让我感到自己似乎穿梭在幽玄奥妙的星空之路中， &hellip;">
+  <meta name="description" content="重构最大的敌人不是技巧与能力，而是懒惰，或者说是态度。许多细小的重构看似无足轻重，例如方法重命名，提取方法，即使重构了，似乎对代码的结构也没有太大的影响，于是就决定淡然处之，心里想“事情还未到不可挽回的地步，实现功能要紧，至于重构，还是以后再做吧！”这样一想，于是就会滋生得过且过的想法， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/28/refactoring-from-beginning/">重构-勿以善小而不为</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-28T16:36:00+08:00" pubdate data-updated="true">Jun 28<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/28/refactoring-from-beginning/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/2012/12/refactoring.jpg" width="400" height="200">
+重构最大的敌人不是技巧与能力，而是懒惰，或者说是态度。许多细小的重构看似无足轻重，例如方法重命名，提取方法，即使重构了，似乎对代码的结构也没有太大的影响，于是就决定淡然处之，心里想“事情还未到不可挽回的地步，实现功能要紧，至于重构，还是以后再做吧！”这样一想，于是就会滋生得过且过的想法，等到代码开始变得一团糟时，重构已经变得无比困难了。此时需要的重构技巧，将百倍难于发现坏味道之初。</p>
+
+<p>在我参加的前一个项目中，我们定义了一个处理OrderSet的Controller。刚刚开始开发时，对于OrderSet的操作并不多，主要是Search与Count操作。OrderSet分为WithDetails与WithoutDetail两种类型。为了实现的简单，我们将这两种类型的操作都放在一个Controller中。随着操作的逐渐增多，这个Controller就变得越来越庞大，逐渐变得臃肿起来。每当我需要调用或者修改Controller时，我都在想：“嗯，这个代码太糟糕了，什么时候给它重构一下。”想是这么想，却一直扮演着说话的巨人，行动的矮子。即使兴起这样的念头，又因为其他的工作将此念头浇灭。直到有一天，这个Controller的代码已经到了忍无可忍的地步，我和我的Pair终于达成一致意见，决定对此代码进行手术。我们花费了近一天的时间对Controller以及相关的Repository进行了彻底的重构。重构前后的代码天差地别，我终于可以不用像吃了苍蝇那般看着代码恶心了。这种重构后体验到的愉悦简直无与伦比，最关键是结果令人满意，重构后的代码变得更可读，更简单，也更容易增加新的功能。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/06/28/refactoring-from-beginning/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -463,6 +509,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a>
       </li>
     
@@ -476,10 +526,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/07/using-listbuffer-vs-list/">ListBuffer vs List in Scala</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/06/18/magic-scala-1-call-by-name/">Magic Scala(1): Call By Name</a>
       </li>
     
   </ul>
@@ -521,11 +567,12 @@
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
 <a style="font-size: 144%" href="/blog/tags/big-data/">Big Data</a>
-<a style="font-size: 128%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 144%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
 <a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 128%" href="/blog/tags/ddd/">DDD</a>
 <a style="font-size: 202%" href="/blog/tags/design/">Design</a>
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
@@ -536,7 +583,6 @@
 <a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
 <a style="font-size: 177%" href="/blog/tags/java/">Java</a>
-<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
 <a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
@@ -550,7 +596,6 @@
 <a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
-<a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
 <a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
 <a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
 <a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
@@ -558,6 +603,7 @@
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
 <a style="font-size: 199%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>

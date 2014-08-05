@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="一 偶然的时间图形 时间是一幅充满神秘暗含玄奥的几何图形。点与线的纷繁组合，凸显宇宙的奥秘，然而，无知的我们却无法将其解密。时间无意作弄我们，我们却自主地愿意接受时间对我们的安排，心甘情愿沦为奴隶。时间冷冰冰地俯瞰这个世界，看到蚁群在他的几何世界中，因为某种偶然发生碰撞，上演的那些喜怒哀乐的话剧 &hellip;">
+  <meta name="description" content="HDFS(Hadoop Distributed File System)作为Hadoop下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/16/architecture-of-hdfs/">HDFS的架构</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-16T15:33:00+08:00" pubdate data-updated="true">Feb 16<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/02/16/architecture-of-hdfs/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/2013/02/hdfs.jpg">
+HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Hadoop</a>下的一个子项目，是目前使用极为广泛的分布式文件系统。它的设计目的是提供一个高容错，且能部署在廉价硬件的分布式系统；同时，它能支持高吞吐量，适合大规模数据集应用。这一目标可以看做是HDFS的架构目标。显然，这样的架构设计主要还是满足系统的质量属性，包括如何保证分布式存储的可靠性，如何很好地支持硬件的水平扩展，如何支持对大数据处理的高性能以及客户端请求的高吞吐量。所以，HDFS的架构设计颇有参考价值，在Hadoop的Apache官方网站上也给出了<a href="http://hadoop.apache.org/docs/current/hdfs_design.html">HDFS的架构指南</a>。在<a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>卷I的第8章也详细介绍了HDFS的架构。</p>
+
+<p>HDFS的高层设计看起来很简单，主要包含NameNode与DataNode，它们之间的通信，包括客户端与HDFS NameNode服务器的通信则基于TCP/IP。客户端通过一个可配置的TCP端口连接到NameNode，通过ClientProtocol协议与NameNode交互。而DataNode使用DatanodeProtocol协议与NameNode交互。一个远程过程调用(RPC)模型被抽象出来封装ClientProtocol和Datanodeprotocol协议。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/02/16/architecture-of-hdfs/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -510,69 +556,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/28/mock-log/">对Log进行mock</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-28T11:13:00+08:00" pubdate data-updated="true">Dec 28<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/28/mock-log/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在我们进行的一个项目中，需要测试是否按照要求正确写入到日志中。例如，我们定义了这样的类和方法：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceClient</span> <span class="o">{</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="o">&lt;</span><span class="n">S</span><span class="o">,</span> <span class="n">D</span><span class="o">&gt;</span> <span class="n">D</span> <span class="n">sendRequest</span><span class="o">(</span><span class="n">S</span> <span class="n">request</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">responseType</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">Source</span> <span class="n">source</span> <span class="o">=</span> <span class="n">jaxbUtil</span><span class="o">.</span><span class="na">marshall</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
-</span><span class='line'>          <span class="k">return</span> <span class="nf">sendRequest</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">responseType</span><span class="o">);</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>     <span class="kd">private</span> <span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">D</span> <span class="n">sendRequest</span><span class="o">(</span><span class="n">Source</span> <span class="n">source</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">responseType</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">webServiceTemplate</span><span class="o">.</span><span class="na">sendSourceAndReceive</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">SourceExtractor</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>               <span class="nd">@Override</span>
-</span><span class='line'>               <span class="kd">public</span> <span class="n">D</span> <span class="nf">extractData</span><span class="o">(</span><span class="n">Source</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">TransformerException</span> <span class="o">{</span>
-</span><span class='line'>                      <span class="k">if</span> <span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                           <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;Received response: %s&quot;</span><span class="o">,</span> <span class="n">XmlSourceUtil</span><span class="o">.</span><span class="na">toXml</span><span class="o">(</span><span class="n">response</span><span class="o">)));</span>
-</span><span class='line'>                      <span class="o">}</span>
-</span><span class='line'>                      <span class="k">return</span> <span class="n">jaxbUtil</span><span class="o">.</span><span class="na">unmarshall</span><span class="o">(</span><span class="n">response</span><span class="o">,</span> <span class="n">responseType</span><span class="o">);</span>
-</span><span class='line'>               <span class="o">}</span>
-</span><span class='line'>     <span class="o">});</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>现在，我们要测试在Debug被enable的情况下，是否真正写了日志。我们不可能在单元测试中去访问日志文件，然后判断日志是否写入。一方面，这影响了单元测试的速度，另一方面也会造成对日志文件的依赖。我们的做法是在测试时，获得该日志，然后将该日志的所有Appenders去掉，然后加入属于内存中的Appender，即WriterAppender，然后获得该Appender写入的日志内容，对这个内容进行断言。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/12/28/mock-log/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -610,6 +593,10 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a>
       </li>
     
@@ -623,10 +610,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
     
       <li class="post">
         <a href="/blog/2014/07/07/using-listbuffer-vs-list/">ListBuffer vs List in Scala</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/06/18/magic-scala-1-call-by-name/">Magic Scala(1): Call By Name</a>
       </li>
     
   </ul>
@@ -668,11 +651,12 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
 <a style="font-size: 144%" href="/blog/tags/big-data/">Big Data</a>
-<a style="font-size: 128%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 144%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
 <a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 128%" href="/blog/tags/ddd/">DDD</a>
 <a style="font-size: 202%" href="/blog/tags/design/">Design</a>
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
@@ -683,7 +667,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
 <a style="font-size: 177%" href="/blog/tags/java/">Java</a>
-<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
 <a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
@@ -697,7 +680,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
-<a style="font-size: 100%" href="/blog/tags/poem/">Poem</a>
 <a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
 <a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
 <a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
@@ -705,6 +687,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
 <a style="font-size: 199%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>

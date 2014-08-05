@@ -6,11 +6,11 @@
 <head>
   <meta charset="utf-8">
   <meta property="wb:webmaster" content="65cd5fda62d66878" />
-  <title>Spark的硬件配置 - 逸言</title>
+  <title>如何实现领域驱动设计 - 逸言</title>
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="从MapReduce的兴起，就带来一种思路，就是希望通过大量廉价的机器来处理以前需要耗费昂贵资源的海量数据。这种方式事实上是一种架构的水平伸缩模式——真正的以量取胜。毕竟，以现在的硬件发展来看，CPU的核数、内存的容量以及海量存储硬盘，都慢慢变得低廉而高效。然而， &hellip;">
+  <meta name="description" content="从Eric Evans写下经典名著Domain-Driven Design: Tackling Complexity in the Heart of Software至今，DDD刚好发展了十年的时间。它几乎成了开发复杂软件系统主要的领域设计方法，既是面向对象（组件）设计的补充，又超越了面向对象（ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/">
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/08/05/how-to-implement-ddd/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -70,7 +70,7 @@
   
   <header>
     
-      <h1 class="entry-title">Spark的硬件配置</h1>
+      <h1 class="entry-title">如何实现领域驱动设计</h1>
     
     
       <p class="meta">
@@ -86,7 +86,7 @@
   
 
 
-<time datetime="2014-05-08T09:19:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2014</time>
+<time datetime="2014-08-05T19:34:00+08:00" pubdate data-updated="true">Aug 5<span>th</span>, 2014</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -95,57 +95,27 @@
   </header>
 
 
-<div class="entry-content"><p>从MapReduce的兴起，就带来一种思路，就是希望通过大量廉价的机器来处理以前需要耗费昂贵资源的海量数据。这种方式事实上是一种架构的水平伸缩模式——真正的以量取胜。毕竟，以现在的硬件发展来看，CPU的核数、内存的容量以及海量存储硬盘，都慢慢变得低廉而高效。然而，对于商业应用的海量数据挖掘或分析来看，硬件成本依旧是开发商非常关注的。当然最好的结果是：既要马儿跑得快，还要马儿少吃草。</p>
+<div class="entry-content"><p><img class="center" src="/images/2014/iddd.png">
+从Eric Evans写下经典名著Domain-Driven Design: Tackling Complexity in the Heart of Software至今，DDD刚好发展了十年的时间。它几乎成了开发复杂软件系统主要的领域设计方法，既是面向对象（组件）设计的补充，又超越了面向对象（组件）设计。DDD中提出的诸多概念如实体、值对象、聚合等，已经成为了耳熟能详的设计术语。DDD社区的发展也如火如荼，似乎并没有被层出不穷的设计思想所取代，相反，它仍在强劲地发展，吸收了许多新的概念与方法，例如函数式编程思想、Event Source、CQRS等。然而，就我个人所观察到的情况来看，许多项目虽然号称应用了DDD设计，但主要都停留在Eric所谓的“战术设计”层面。即使是战术层面，依旧有许多程序员没有弄明白实体与值对象之间的区别，不知道该怎么定义聚合以及聚合根，更谈不上合理地划分上下文（Context）。</p>
 
-<p>Spark相对于Hadoop的MapReduce而言，确乎要跑得迅捷许多。然而，Spark这种In-Memory的计算模式，是否在硬件资源尤其是内存资源的消耗上，要求更高呢？我既找不到这么多机器，也无法租用多台虚拟instance，再没法测评的情况下，只要寻求Spark的官方网站，又或者通过Google搜索。从Spark官方网站，Databricks公司Patrick Wendell的演讲以及Matei Zaharia的Spark论文，找到了一些关于Spark硬件配置的支撑数据。</p>
+<p>我不明白其中内含的真实原因，只能冒昧地揣测是否DDD显得高高在上？究其原因，会否还是Eric惹的祸，他的那本经典之作美则美矣，却显得有些不接地气？至少，我的阅读感受正是如此。虽然在之后，国内也引进了其他一些与DDD相关的著作，例如Jimmy Nilsson的著作《领域驱动设计与模式实战》。这些书好虽好，却并没有全面深入地阐述领域驱动设计，更谈不上完整地实践，直到Vaughn Vernon的《实现领域驱动设计（Implementing Domain-Driven Design）》的出现。</p>
 
-<h3>Spark与存储系统</h3>
+<p>这本书首先吸引我的是书中的第2章至第4章。虽然书中内容几乎忠实地反映了Eric Evans的DDD理论，但作者却创造性地在一开始就着眼于DDD的战略性设计，包括领域（Domain）、子域（Subdomain）、受限上下文（Unbounded Context）、上下文映射（Context Map）以及架构。以第4章架构为例，书中对DDD经典的分层架构进行了深入探讨与分析，并颠覆性地提出将基础设施层（Infrastructure Layer）置于用户接口层（User Interface Layer）之上。最初读来，简直让我莫名惊诧，然而仔细思索，从依赖倒置原则的角度来分析，实在是合乎情理。坦白说，它彻底解决了之前一直纠缠在我心底的一个问题：若我们视实体为Repository以及数据访问的对象，应将实体置于哪一层？在DDD中，实体对象承担了领域业务行为，但同时又可能通过ORM与数据表产生映射。基础设施层的数据访问对象（即传统的DAO）需要调用这些实体对象。若它处于最底层，则会造成业务行为与基础设施的混合。若将实体与数据映射对象分离，既会造成对象之间的重复，又会导致不好的贫血对象。而将基础设施层放在分层架构的上端，非常巧妙地解决了这一问题。</p>
 
-<p>如果Spark使用HDFS作为存储系统，则可以有效地运用Spark的standalone mode cluster，让Spark与HDFS部署在同一台机器上。这种模式的部署非常简单，且读取文件的性能更高。当然，Spark对内存的使用是有要求的，需要合理分配它与HDFS的资源。因此，需要配置Spark和HDFS的环境变量，为各自的任务分配内存和CPU资源，避免相互之间的资源争用。</p>
-
-<p>若HDFS的机器足够好，这种部署可以优先考虑。若数据处理的执行效率要求非常高，那么还是需要采用分离的部署模式，例如部署在Hadoop YARN集群上。</p>
-
-<h3>Spark对磁盘的要求</h3>
-
-<p>Spark是in memory的迭代式运算平台，因此它对磁盘的要求不高。Spark官方推荐为每个节点配置4-8块磁盘，且并不需要配置为RAID（即将磁盘作为单独的mount point）。然后，通过配置spark.local.dir来指定磁盘列表。</p>
-
-<h3>Spark对内存的要求</h3>
-
-<p>Spark虽然是in memory的运算平台，但从官方资料看，似乎本身对内存的要求并不是特别苛刻。官方网站只是要求内存在8GB之上即可（Impala要求机器配置在128GB）。当然，真正要高效处理，仍然是内存越大越好。若内存超过200GB，则需要当心，因为JVM对超过200GB的内存管理存在问题，需要特别的配置。</p>
-
-<p>内存容量足够大，还得真正分给了Spark才行。Spark建议需要提供至少75%的内存空间分配给Spark，至于其余的内存空间，则分配给操作系统与buffer cache。这就需要部署Spark的机器足够干净。</p>
-
-<p>考虑内存消耗问题，倘若我们要处理的数据仅仅是进行一次处理，用完即丢弃，就应该避免使用cache或persist，从而降低对内存的损耗。若确实需要将数据加载到内存中，而内存又不足以加载，则可以设置Storage Level。Spark提供了三种Storage Level：MEMORY_ONLY（这是默认值），MEMORY_AND_DISK，以及DISK_ONLY。</p>
-
-<p>关于数据的持久化，Spark默认是持久化到内存中。但它也提供了三种持久化RDD的存储方式：</p>
-
-<ul>
-<li><p>in-memory storage as deserialized Java objects</p></li>
-<li><p>in-memory storage as serialised data</p></li>
-<li><p>on-disk storage</p></li>
-</ul>
+<!-- more -->
 
 
-<p>第一种存储方式性能最优，第二种方式则对RDD的展现方式（Representing）提供了扩展，第三种方式则用于内存不足时。</p>
+<p>我尤其喜欢本书引荐的由Corkburn提出的六边形（Hexagonal）架构。它完全突破了传统分层架构的窠臼，以独到的边界划分手法指导我们遵循关注点分离原则。该架构模式对端口（Port）与适配器（Adapter）的强调，使得我们可以在架构分析与设计时，更加关注系统之间的集成点，从而形成可视性极强的物理架构。这对于建立可伸缩的分布式架构尤有价值。我已在多个项目的架构设计中，运用了六边形架构模式，可谓收获颇丰。书中还提到了相对较新的RESTful架构，CQRS架构以及事件驱动的架构模式和网格分布式计算。该书的附录还进一步探讨了聚合对象与事件源的组合设计。这些内容有助于我们树立整体的DDD架构观，可以说弥补了Eric书中对这些内容的空白。</p>
 
-<p>注意，RDDs是Lazy的，在执行Transformation操作如map、filter时，并不会提交Job，只有在执行Action操作如count、first时，才会执行Job，此时才会进行数据的加载。要计算Spark加载的Dataset大小，可以通过Spark提供的Web UI Monitoring工具来帮助分析与判断。</p>
+<p>Vaughn Vernon是真正懂得写作的技术专家，他非常懂得如何“讨好”读者。翻开书，阅读第一章，你就会爱上它，爱上DDD。书中给出的例子实在太棒了。看看他对saveCustomer()方法的版本演进，你会幡然醒悟，原来代码应该这样写。领域对象是一位谨慎的保密者，他严格地谨守着自己的秘密，只把业务外部行为暴露给你，使得你可以读懂它，却不应该干扰它的内部实现。这正是DDD中通用语言的价值。身为一名技术人员，我们精通Java、C#、Scala、Ruby等等语言，却忘了在企业开发中，真正需要展现的其实是业务通用语言。写代码首先是与人交流，而不是机器。</p>
 
-<p>Spark的RDD是具有分区（partition）的，Spark并非是将整个RDD一次性加载到内存中。Spark针对partition提供了eviction policy，这一Policy采用了LRU（Least Recently Used）机制。当一个新的RDD分区需要计算时，如果没有合适的空间存储，就会根据LRU策略，将最少访问的RDD分区弹出，除非这个新分区与最少访问的分区属于同一个RDD。这也在一定程度上缓和了对内存的消耗。</p>
+<p>本书的精彩章节有很多，几乎阅读每篇都会有感悟。但我个人认为，尤其彰显本书价值的是第8章与第10章。并非其他章节不够好，但相对于实体、值对象等容易理解的概念而言，聚合总是被人所误用，又或者让人茫然不知所措。第10章总结了非常实用的聚合设计原则。例如，在一致性边界之内对真正的不变量进行建模的原则；设计小聚合的原则；通过唯一标识引用其他聚合的原则。在边界之外使用最终一致性的原则。</p>
 
-<p>Spark对内存的消耗主要分为三部分：1. 数据集中对象的大小；2. 访问这些对象的内存消耗；3. 垃圾回收GC的消耗。一个通常的内存消耗计算方法是：内存消耗大小= 对象字段中原生数据 * (2~5)。 这是因为Spark运行在JVM之上，操作的Java对象都有定义的“object header”，而数据结构（如Map，LinkedList）对象自身也需要占用内存空间。此外，对于存储在数据结构中的基本类型，还需要装箱（Boxing）。Spark也提供了一些内存调优机制，例如执行对象的序列化，可以释放一部分内存空间。还可以通过为JVM设置flag来标记存放的字节数（选择4个字节而非8个字节）。在JDK 7下，还可以做更多优化，例如对字符编码的设置。这些配置都可以在spark-env.sh中设置。</p>
+<p>至于第8章介绍的Domain Event，则是因为它不同于Eric的著作，将事件当做了与实体同等地位的头等公民。结合本书对事件驱动以及事件源的讲解，相信你在之后的领域建模时，会重视对领域事件的识别。若能正确地理解事件，则可以更好地掌握CQRS模式，并因地制宜地运用这一模式。</p>
 
-<h3>Spark对网络的要求</h3>
+<p>该书书名为Implementing（实现） Domain-Driven Design，就说明作者的意图是要让DDD真正落地。怎么做到？——上实例！书中给出的虽然是虚拟案例，却非常接近真实。作者甚至按照一种演进设计的方式深入浅出地介绍了这两个完整案例。最能够帮助人理解的是，他在讲授DDD时，还结合案例给出了之前欠佳的反面案例，并通过识别设计的坏味道，运用DDD方式对其进行改进。作者甚至创造了虚拟的场景，使得我们在阅读这些内容时，就好像真正参与了设计师的讨论，甚至能听到他们的唇枪舌剑，最后是DDD专家的总结陈词，真好比身临其境地加入了这个虚拟团队，一起学习，一起分享，共同成长。</p>
 
-<p>Spark属于网络绑定型系统，因而建议使用10G及以上的网络带宽。</p>
-
-<h3>Spark对CPU的要求</h3>
-
-<p>Spark可以支持一台机器扩展至数十个CPU core，它实现的是线程之间最小共享。若内存足够大，则制约运算性能的就是网络带宽与CPU数。</p>
-
-<p>Spark官方利用Amazon EC2的环境对Spark进行了基准测评。例如，在交互方式下进行数据挖掘（Interative Data Mining），租用Amazon EC2的100个实例，配置为8核、68GB的内存。对1TB的维基百科页面查阅日志（维基百科两年的数据）进行数据挖掘。在查询时，针对整个输入数据进行全扫描，只需要耗费5-7秒的时间。如下图所示：
-<img class="center" src="/images/2014/sparkbenchmark.png"></p>
-
-<p>在Matei Zaharia的Spark论文中还给出了一些使用Spark的真实案例。视频处理公司Conviva，使用Spark将数据子集加载到RDD中。报道说明，对于200GB压缩过的数据进行查询和聚合操作，并运行在两台Spark机器上，占用内存为96GB，执行完全部操作需要耗费30分钟左右的时间。同比情况下，Hadoop需要耗费20小时。注意：之所以200GB的压缩数据只占用96GB内存，是因为RDD的处理方式，使得我们可以只加载匹配客户过滤的行和列，而非所有压缩数据。</p>
+<p>坦白说，我在阅读本书时方才发觉自己在DDD上的浅薄无知。或许是自己的悟性不够，未能很好地理解Eric提出的DDD概念。阅读此书，让我有醍醐灌顶之感。现在，对于DDD，我已渐窥门径。若能多结合项目实践，定能登堂入室，甚至走得更远。</p>
 </div>
 
 
@@ -168,12 +138,12 @@
   
 
 
-<time datetime="2014-05-08T09:19:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2014</time>
+<time datetime="2014-08-05T19:34:00+08:00" pubdate data-updated="true">Aug 5<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/tools/'>Tools</a>
+    <a class='category' href='/blog/categories/reading/'>Reading</a>
   
 </span>
 
@@ -184,7 +154,7 @@
 
 <span class="categories">
   
-    <a class='tag' href='/blog/tags/big-data/'>Big Data</a>, <a class='tag' href='/blog/tags/spark/'>Spark</a>
+    <a class='tag' href='/blog/tags/book/'>Book</a>, <a class='tag' href='/blog/tags/ddd/'>DDD</a>
   
 </span>
 
@@ -193,7 +163,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2014/08/05/how-to-implement-ddd/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2014/08/05/how-to-implement-ddd/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -204,10 +174,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/04/17/rest-framework-spray-based-on-akka/" title="Previous Post: 基于Akka的REST框架Spray">&laquo; 基于Akka的REST框架Spray</a>
+        <a class="basic-alignment left" href="/blog/2014/08/03/test-data-prepare-framework/" title="Previous Post: 测试数据准备框架">&laquo; 测试数据准备框架</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/06/18/magic-scala-1-call-by-name/" title="Next Post: Magic Scala(1): Call By Name">Magic Scala(1): Call By Name &raquo;</a>
       
     </p>
   </footer>
@@ -382,8 +350,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/';
-        var disqus_url = 'http://agiledon.github.com/blog/2014/05/08/hardware-on-spark/';
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/08/05/how-to-implement-ddd/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/08/05/how-to-implement-ddd/';
         var disqus_script = 'embed.js';
       
     (function () {
