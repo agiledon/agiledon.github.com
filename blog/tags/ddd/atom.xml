@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: DDD | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/ddd/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-08-05T19:57:03+08:00</updated>
+  <updated>2014-08-09T13:47:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,30 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[可视化设计工作坊]]></title>
+    <link href="http://agiledon.github.com/blog/2014/08/09/visualize-design-workshop/"/>
+    <updated>2014-08-09T12:55:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/08/09/visualize-design-workshop</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/workshop.jpg">
+之所以选择可视化手段来进行软件设计——非UI或UX的设计——是基于我对设计的理解：<strong>设计并非文档，而是交流</strong>。那种依靠一位英雄来完成所有的设计，并编撰为详尽的文档，然后让程序员连蒙带猜按图索骥的设计方式，完全不可取。尤其在一个自组织的开发团队中，我们希望人人都是程序员，人人都是软件设计师，人人都是架构师。</p>
+
+<p>那么，该如何做到充分的交流，就像风吹过树林，不分彼此的摇动每一片树叶？我想到最简单直截的方式：可视化。然而，此可视化非UML之所谓的“一图胜千言”。没错，我们当然需要绘制设计图，而且必须绘制设计图，但我们更希望是以草图的形式，并辅以视觉引导，来推着团队的每个成员，渐进地完善设计，直到抵达设计的真相。我们没有门派偏见，亦不愿邯郸学步，因而我们既信奉“拿来主义”，又会依据设计的本质原则与真谛，进行了细微的创新。创新未必一定是无中生有，“旧瓶装新酒”或是对经典的追随，“新瓶装旧酒”又何尝不能看作是创意的包装！</p>
+
+<p>此次在TID会议上的可视化设计工作坊算是我与姜志辉针对此主题的一次彩排吧。我们从未就此话题有过深度合作，但是，我们对设计的理解是志同道合的，说得肉麻点，有心有灵犀的感觉。下图是整个工作坊的路径缩影：
+<img class="center" src="/images/2014/visulaizationdesign.jpg"></p>
+
+<p>我们的主线就是设计的可视化，整个过程我们通过草图、即时贴、画布等多种方式来触发团队成员之间的交流与讨论。至于方法工具箱，则几乎等同于一个大杂烩了。我们使用经典的用例图进行需求分析（我们会以商业画布为需求的起点，因为时间关系省去了此步骤），继而根据用例的边界获得DDD中所谓的Bounded Context。通过运用DDD的Context Map，我们辨别出Context之间的上下游关系与各种集成方式，继而利用Cockburn的六边形架构以及传统的分层架构，驱动出系统的应用逻辑架构与物理架构。然后，我们跳入Context的内部，开始领域建模。我们尝试了两种领域建模方式：健壮性分析与四色建模，以此为起点，我们可以得到粗略的CRC草图，之后就进入了我和姜志辉提出的设计画布。
+<img class="center" src="/images/2014/contextmap.jpg">
+<img class="center" src="/images/2014/haxagon_workshop.jpg">
+<img class="center" src="/images/2014/designcanvas.jpg"></p>
+
+<p>我们希望看到的是这样的交流场景，如此才可碰撞出好设计的火花。
+<img class="center" src="/images/2014/workshop01.jpg">
+<img class="center" src="/images/2014/workshop02.jpg"></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[如何实现领域驱动设计]]></title>

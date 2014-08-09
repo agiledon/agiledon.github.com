@@ -10,11 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="目前来看，推行TDD的障碍大约有如下几点： 1. 开发人员的质量意识；
-2. 分析需求并进行任务分解的能力；
-3. 将测试作为开发起点的开发习惯；
-4. 开发人员的重构能力，包括如何识别坏味道和如何运用重构手法；
-5. 单元测试的基础设施，尤其是测试数据准备； 开发人员的质量意识 &hellip;">
+  <meta name="description" content="从DDD的角度，领域逻辑的分析可以运用战略方法Bounded Context。可是，一个问题是：如何获得Bounded Context ？ 我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +67,59 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/09/visualization-architecture-and-ddd/">可视化架构与DDD</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-09T13:57:00+08:00" pubdate data-updated="true">Jan 9<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/01/09/visualization-architecture-and-ddd/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>从DDD的角度，领域逻辑的分析可以运用战略方法Bounded Context。可是，一个问题是：<strong>如何获得Bounded Context ？</strong></p>
+
+<p>我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex Context这一点上语焉不详。</p>
+
+<p>我的初步设想是通过绘制场景图（但并不成熟）。我认为有三种绘制场景图的方式：商业画布，体验地图和流程图。我认为，商业画布可以作为需求分析（尤其针对初创产品）的起点。商业画布如下图所示：
+<img class="center" src="/images/2014/business_canvas.jpeg"></p>
+
+<p>采用这种规范化的方式来推导商业模型，可以激发我们的灵感，理清我们的思路，以便我们思考为何要做这个产品，产品应该具备哪些功能。结合优点和缺点、成本等因素，我们可以藉此判断和决策功能的优先级，从而得到MVP。这个过程需要大量运用即时贴，让整个商业模型呈现。经过取舍后，就可以针对产品绘制场景图。此时，场景图可以采用Experience Map或流程图来体现。Experience Map的例子如下图所示：
+<img class="center" src="/images/2014/experience_map.gif"></p>
+
+<p>由于商业画布本身提供了“客户”项，我们应该创建Persona，找准人物角色的特征来“搜寻”需求。绘制了场景图后，就能够确定用例了，此时，可辅以ATDD帮助确定Story。在确定了用例后，可以识别Bounded Context，并通过Context Map确定上下文之间的关系。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/01/09/visualization-architecture-and-ddd/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -565,53 +614,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/05/corrupt-code/">代码是如何腐化的</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-05T14:26:00+08:00" pubdate data-updated="true">Jul 5<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/07/05/corrupt-code/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>代码是如何腐化的？这是一个很大的话题，因为这种腐化的代码样本可能会体现不同的特征，若要彻底总结，可能会又是一本《重构》。我自然没有这个能力和知识。好在有一个简便的说法，即可以诉诸于“破窗理论”的威力。无论多少坏味道识别，重构手法运用，提高代码质量的最佳实践，以及运用诸多甄别代码质量体征的工具，都仅仅限于“术”的运用而已。若未能在开发人员内心树立整洁代码的习惯，时时刻刻对各种代码臭味保持敏感，且具有一颗期待卓越代码之心，那么，随着项目的演进，时间的推移，代码最终还是会慢慢腐烂。</p>
-
-<p>这几日在开发一个User Story时，从诸多测试代码（包括集成测试与验收测试）中，观察到了一些接近腐烂的代码坏味。这些代码虽然不是产品代码，但同样是我们交付工件的一部分。最关键之处在于：它让我察觉到一种危险的趋势，若不能及时扭转，可能会让代码陷入腐烂的泥沼。若能及时解决这些糟糕代码，其实仅仅需要一些简单的重构手法，付出几个小时时间即可。</p>
-
-<p>首先是针对集成测试的数据准备。我们要编写的集成测试针对Spring Batch Job，这些Job需要访问数据库，以验证Job的执行是否符合期望。我们发现在之前已有与Spring Batch Job相关的集成测试存在，并提供了访问数据库，以及启动、访问和停止Ftp服务器的功能。其中，与数据准备有关的功能放到单独定义的Fixture类中。这些Fixture是为特定目的编写的数据准备，可是，随着越来越多的Batch Job出现，有诸多集成测试都需要准备数据，于是开始慢慢产生了测试数据的重叠，逐步浮现出违背DRY原则的征兆了。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/07/05/corrupt-code/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -627,7 +629,8 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
     <section>
   <div align="center">
   	<p><img src="/images/profile/profile.png" align="center"/></p>
-  	<p><strong>Company: </strong>ThoughtWorks<br>
+  	<p>
+    <strong>Company: </strong>ThoughtWorks<br>
   	<strong>Role: </strong>Senior Consultant</p>  
   </div>
   <script type="text/javascript">
@@ -649,6 +652,10 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a>
       </li>
     
@@ -662,10 +669,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
     
       <li class="post">
         <a href="/blog/2014/07/20/scala-resource/">Scala学习资源</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/07/using-listbuffer-vs-list/">ListBuffer vs List in Scala</a>
       </li>
     
   </ul>
@@ -712,8 +715,8 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
 <a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
-<a style="font-size: 128%" href="/blog/tags/ddd/">DDD</a>
-<a style="font-size: 202%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 144%" href="/blog/tags/ddd/">DDD</a>
+<a style="font-size: 205%" href="/blog/tags/design/">Design</a>
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
@@ -729,7 +732,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
 <a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
 <a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
-<a style="font-size: 100%" href="/blog/tags/nosql/">NoSQL</a>
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
 <a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
@@ -753,6 +755,7 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
 <a style="font-size: 100%" href="/blog/tags/translation/">Translation</a>
+<a style="font-size: 128%" href="/blog/tags/visualization/">Visualization</a>
 
   </ul>
 </section>
