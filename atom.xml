@@ -4,7 +4,7 @@
   <title><![CDATA[逸言]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-08-09T13:47:50+08:00</updated>
+  <updated>2014-08-09T14:01:57+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -26,9 +26,13 @@
 <p>此次在TID会议上的可视化设计工作坊算是我与姜志辉针对此主题的一次彩排吧。我们从未就此话题有过深度合作，但是，我们对设计的理解是志同道合的，说得肉麻点，有心有灵犀的感觉。下图是整个工作坊的路径缩影：
 <img class="center" src="http://agiledon.github.com/images/2014/visulaizationdesign.jpg"></p>
 
-<p>我们的主线就是设计的可视化，整个过程我们通过草图、即时贴、画布等多种方式来触发团队成员之间的交流与讨论。至于方法工具箱，则几乎等同于一个大杂烩了。我们使用经典的用例图进行需求分析（我们会以商业画布为需求的起点，因为时间关系省去了此步骤），继而根据用例的边界获得DDD中所谓的Bounded Context。通过运用DDD的Context Map，我们辨别出Context之间的上下游关系与各种集成方式，继而利用Cockburn的六边形架构以及传统的分层架构，驱动出系统的应用逻辑架构与物理架构。然后，我们跳入Context的内部，开始领域建模。我们尝试了两种领域建模方式：健壮性分析与四色建模，以此为起点，我们可以得到粗略的CRC草图，之后就进入了我和姜志辉提出的设计画布。
-<img class="center" src="http://agiledon.github.com/images/2014/contextmap.jpg">
-<img class="center" src="http://agiledon.github.com/images/2014/haxagon_workshop.jpg">
+<p>我们的主线就是设计的可视化，整个过程我们通过草图、即时贴、画布等多种方式来触发团队成员之间的交流与讨论。至于方法工具箱，则几乎等同于一个大杂烩了。我们使用经典的用例图进行需求分析（我们会以商业画布为需求的起点，因为时间关系省去了此步骤），继而根据用例的边界获得DDD中所谓的Bounded Context。
+<img class="center" src="http://agiledon.github.com/images/2014/contextmap.jpg"></p>
+
+<p>通过运用DDD的Context Map，我们辨别出Context之间的上下游关系与各种集成方式，继而利用Cockburn的六边形架构以及传统的分层架构，驱动出系统的应用逻辑架构与物理架构。
+<img class="center" src="http://agiledon.github.com/images/2014/haxagon_workshop.jpg"></p>
+
+<p>然后，我们跳入Context的内部，开始领域建模。我们尝试了两种领域建模方式：健壮性分析与四色建模，以此为起点，我们可以得到粗略的CRC草图，之后就进入了我和姜志辉提出的设计画布。
 <img class="center" src="http://agiledon.github.com/images/2014/designcanvas.jpg"></p>
 
 <p>我们希望看到的是这样的交流场景，如此才可碰撞出好设计的火花。
