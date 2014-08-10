@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: DDD | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/ddd/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-08-09T14:01:57+08:00</updated>
+  <updated>2014-08-10T08:40:56+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -38,6 +38,12 @@
 <p>我们希望看到的是这样的交流场景，如此才可碰撞出好设计的火花。
 <img class="center" src="/images/2014/workshop01.jpg">
 <img class="center" src="/images/2014/workshop02.jpg"></p>
+
+<p>可视化设计并非仅能针对一个新系统，或者仅用于设计阶段。</p>
+
+<p>例如，我曾经在客户处通过运用我提出的依赖沉淀图，让团队成员以交流协作的方式完成对遗留系统模块依赖关系的梳理。这种依赖关系梳理虽然可以利用工具来生成，但采用可视化的方式却可以充分保障成员之间的知识共享。它追求的并非只是结果，而是整个协作的过程。又例如，我们也可以在Inception阶段，通过可视化设计来评估风险，或针对候选技术进行Spike，又或者运用六边形架构等方式来梳理系统与周边系统之间的关系，以便于团队理解整个软件产品的生态系统。</p>
+
+<p>其实，这种可视化设计，我更倾向于称之为“体验式设计”，但它与ThoughtWorks提出的XD并非专注同一个层面的内容。当然，这种体验式的软件设计，我还处于试验的摸索阶段。</p>
 ]]></content>
   </entry>
   
