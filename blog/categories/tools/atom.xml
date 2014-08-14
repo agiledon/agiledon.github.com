@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Tools | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/categories/tools/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-08-14T14:50:33+08:00</updated>
+  <updated>2014-08-14T14:52:47+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -51,7 +51,7 @@
 
 <p>第一种存储方式性能最优，第二种方式则对RDD的展现方式（Representing）提供了扩展，第三种方式则用于内存不足时。</p>
 
-<p>然而，在最新版（V1.0.2）的Spark中，提供了更多的Storage Level选择。一个值得注意的选项是OFF_HEAP，它能够将RDD以序列化格式存储到Tachyon中。相比MEMORY_ONLY_SER，这一选项能够减少执行垃圾回收，使Spark的执行器（executor）更小，并能共享内存池。Tachyon是一个基于内存的分布式文件系统，性能远超HDFS。Tachyon与Spark同源同宗，都烙有伯克利AMPLab的印记。目前，Tachyon的版本为0.5.0，还处于实验阶段。</p>
+<p>然而，在最新版（V1.0.2）的Spark中，提供了更多的Storage Level选择。一个值得注意的选项是OFF_HEAP，它能够将RDD以序列化格式存储到Tachyon中。相比MEMORY_ONLY_SER，这一选项能够减少执行垃圾回收，使Spark的执行器（executor）更小，并能共享内存池。<a href="http://tachyon-project.org/">Tachyon</a>是一个基于内存的分布式文件系统，性能远超HDFS。Tachyon与Spark同源同宗，都烙有伯克利AMPLab的印记。目前，Tachyon的版本为0.5.0，还处于实验阶段。</p>
 
 <p>注意，RDDs是Lazy的，在执行Transformation操作如map、filter时，并不会提交Job，只有在执行Action操作如count、first时，才会执行Job，此时才会进行数据的加载。当然，对于一些shuffle操作，例如reduceByKey，虽然仅是Transformation操作，但它在执行时会将一些中间数据进行持久化，而无需显式调用persist()函数。这是为了应对当节点出现故障时，能够避免针对大量数据进行重计算。要计算Spark加载的Dataset大小，可以通过Spark提供的Web UI Monitoring工具来帮助分析与判断。</p>
 
