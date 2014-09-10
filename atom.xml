@@ -4,7 +4,7 @@
   <title><![CDATA[逸言]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-08-14T14:52:47+08:00</updated>
+  <updated>2014-09-10T09:04:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,95 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[理解Spark的核心RDD]]></title>
+    <link href="http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/"/>
+    <updated>2014-09-10T08:54:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2014/spark_architecture.jpg">
+与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark这朵小火花让人着迷的地方。</p>
+
+<p>要理解Spark，就需得理解RDD。</p>
+
+<p><strong>RDD是什么？</strong></p>
+
+<p>RDD，全称为Resilient Distributed Datasets，是一个容错的、并行的数据结构，可以让用户显式地将数据存储到磁盘和内存中，并能控制数据的分区。同时，RDD还提供了一组丰富的操作来操作这些数据。在这些操作中，诸如map、flatMap、filter等转换操作实现了monad模式，很好地契合了Scala的集合操作。除此之外，RDD还提供了诸如join、groupBy、reduceByKey等更为方便的操作（注意，reduceByKey是action，而非transformation），以支持常见的数据运算。</p>
+
+<!-- more -->
+
+
+<p>通常来讲，针对数据处理有几种常见模型，包括：Iterative Algorithms，Relational Queries，MapReduce，Stream Processing。例如Hadoop MapReduce采用了MapReduces模型，Storm则采用了Stream Processing模型。RDD混合了这四种模型，使得Spark可以应用于各种大数据处理场景。</p>
+
+<p>RDD作为数据结构，本质上是一个只读的分区记录集合。一个RDD可以包含多个分区，每个分区就是一个dataset片段。RDD可以相互依赖。如果RDD的每个分区最多只能被一个Child RDD的一个分区使用，则称之为narrow dependency；若多个Child RDD分区都可以依赖，则称之为wide dependency。不同的操作依据其特性，可能会产生不同的依赖。例如map操作会产生narrow dependency，而join操作则产生wide dependency。</p>
+
+<p>Spark之所以将依赖分为narrow与wide，基于两点原因。</p>
+
+<p>首先，narrow dependencies可以支持在同一个cluster node上以管道形式执行多条命令，例如在执行了map后，紧接着执行filter。相反，wide dependencies需要所有的父分区都是可用的，可能还需要调用类似MapReduce之类的操作进行跨节点传递。</p>
+
+<p>其次，则是从失败恢复的角度考虑。narrow dependencies的失败恢复更有效，因为它只需要重新计算丢失的parent partition即可，而且可以并行地在不同节点进行重计算。而wide dependencies牵涉到RDD各级的多个Parent Partitions。下图说明了narrow dependencies与wide dependencies之间的区别：
+<img class="center" src="http://agiledon.github.com/images/2014/rdd_dependency.png"></p>
+
+<p>本图来自Matei Zaharia撰写的论文An Architecture for Fast and General Data Processing on Large Clusters。图中，一个box代表一个RDD，一个带阴影的矩形框代表一个partition。</p>
+
+<p><strong>RDD如何保障数据处理效率？</strong></p>
+
+<p>RDD提供了两方面的特性persistence和patitioning，用户可以通过persist与patitionBy函数来控制RDD的这两个方面。RDD的分区特性与并行计算能力(RDD定义了parallerize函数)，使得Spark可以更好地利用可伸缩的硬件资源。若将分区与持久化二者结合起来，就能更加高效地处理海量数据。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">input</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">parseArticle</span> <span class="k">_</span><span class="o">).</span><span class="n">partitionBy</span><span class="o">(</span><span class="n">partitioner</span><span class="o">).</span><span class="n">cache</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>partitionBy函数需要接受一个Partitioner对象，如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">partitioner</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HashPartitioner</span><span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="n">defaultParallelism</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
+
+<p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
+
+<p>在实现时，RDD针对transformation操作，都提供了对应的继承自RDD的类型，例如map操作会返回MappedRDD，而flatMap则返回FlatMappedRDD。当我们执行map或flatMap操作时，不过是将当前RDD对象传递给对应的RDD对象而已。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">map</span><span class="o">[</span><span class="kt">U:</span> <span class="kt">ClassTag</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="n">U</span><span class="o">)</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">U</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MappedRDD</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">sc</span><span class="o">.</span><span class="n">clean</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这些继承自RDD的类都定义了compute函数。该函数会在action操作被调用时触发，在函数内部是通过迭代器进行对应的转换操作：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MappedRDD</span><span class="o">[</span><span class="kt">U:</span> <span class="kt">ClassTag</span>, <span class="kt">T:</span> <span class="kt">ClassTag</span><span class="o">](</span><span class="n">prev</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">T</span><span class="o">],</span> <span class="n">f</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="n">U</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">RDD</span><span class="o">[</span><span class="kt">U</span><span class="o">](</span><span class="n">prev</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">getPartitions</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Partition</span><span class="o">]</span> <span class="k">=</span> <span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">partitions</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">compute</span><span class="o">(</span><span class="n">split</span><span class="k">:</span> <span class="kt">Partition</span><span class="o">,</span> <span class="n">context</span><span class="k">:</span> <span class="kt">TaskContext</span><span class="o">)</span> <span class="k">=</span>
+</span><span class='line'>    <span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">iterator</span><span class="o">(</span><span class="n">split</span><span class="o">,</span> <span class="n">context</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>RDD对容错的支持</strong></p>
+
+<p>支持容错通常采用两种方式：数据复制或日志记录。对于以数据为中心的系统而言，这两种方式都非常昂贵，因为它需要跨集群网络拷贝大量数据，毕竟带宽的数据远远低于内存。</p>
+
+<p>RDD天生是支持容错的。首先，它自身是一个不变的(immutable)数据集，其次，它能够记住构建它的操作图（Graph of Operation），因此当执行任务的Worker失败时，完全可以通过操作图获得之前执行的操作，进行重新计算。由于无需采用replication方式支持容错，很好地降低了跨网络的数据传输成本。</p>
+
+<p>不过，在某些场景下，Spark也需要利用记录日志的方式来支持容错。例如，在Spark Streaming中，针对数据进行update操作，或者调用Streaming提供的window操作时，就需要恢复执行过程的中间状态。此时，需要通过Spark提供的checkpoint机制，以支持操作能够从checkpoint得到恢复。</p>
+
+<p>针对RDD的wide dependency，最有效的容错方式同样还是采用checkpoint机制。不过，似乎Spark的最新版本仍然没有引入auto checkpointing机制。</p>
+
+<p><strong>总结</strong></p>
+
+<p>RDD是Spark的核心，也是整个Spark的架构基础。它的特性可以总结如下：
+* 它是不变的数据结构存储
+* 它是支持跨集群的分布式数据结构
+* 可以根据数据记录的key对结构进行分区
+* 提供了粗粒度的操作，且这些操作都支持分区
+* 它将数据存储在内存中，从而提供了低延迟性</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[可视化设计工作坊]]></title>
@@ -1820,53 +1909,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <blockquote><p>他的天地已经变了，这是一个由架在空中的细长而弯曲的桥，由粗糙树皮上的结节、瘤子和皱褶，由透过或疏或密的树叶挡起的帷幕而变幻着深浅的绿色阳光组成的世界，微风一吹，树叶的柄就抖动不已，而当树干摇摆时整棵树的叶子就像一方纱巾飘动起来。而我们的世界呢，是平贴在地面上的，我们看到的是比例失调的形象，我们当然不理解他在那上面的感受。夜里他倾听着树木如何用它的细胞在树干里记下代表岁月的年轮，树霉如何在北风中扩大斑点，在窝里熟睡的小鸟瑟缩着将脑袋钻进最暖和的翅膀下的羽毛里，毛毛虫蠕动，伯劳鸟腹中的蛋孕育成功。有的时候，原野静悄悄，耳膛内只有细微的响动，一声粗号，一声尖叫，一阵野草迅疾瑟瑟声，一阵流水淙淙响，一阵踏在泥土和石子上的蹄声，而蝉鸣声高出一切之上。响声一个接一个消失，听觉不断辨别出新的声音，就像那拆着一团毛线的手指，感觉到每根毛线变得越来越细，细得几乎感触不到了。同时青蛙一直在鸣唱，作为一种背景并不影响其它声音的传播，如同太阳光不因星星的不断闪烁而起变化。相反，每当风吹起或吹过，每一种声音都会起变化并成为新的声音，留在耳膛内最深处的只有隐隐约约的呼啸声或低吟声，那是大海。</p></blockquote>
 
 <p>要多么细致的观察，多么敏感的心灵，与大自然的脉搏一起跳动，放开身体的所有触觉、嗅觉与视觉，才能从灵魂中涌现出这样的文字，最后再借助一只魔笔润色，天然地凸显出来，就好像它自天地诞生以来一直就存在，只是从未有人发现，偶然的，被在天地之间嬉戏的卡尔维诺发现了。是的，是被发现了，而不是创作出来了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[读《被禁锢的头脑》]]></title>
-    <link href="http://agiledon.github.com/blog/2014/01/10/reading-the-captive-mind/"/>
-    <updated>2014-01-10T22:24:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2014/01/10/reading-the-captive-mind</id>
-    <content type="html"><![CDATA[<p><img class="center" src="http://agiledon.github.com/images/2014/captivemind.jpg">
-米沃什在《被禁锢的头脑》中，描述了战时东欧的白色恐怖：</p>
-
-<blockquote><p>此时带着套马索的骑马者就会出现。那就是‘囚车’，即停在街角，用帆布遮盖着的大卡车。行人根本预见不到那里会有危险，当他们路过那个街角时，会突然感觉有一支枪顶住他。它也许会被关进集中营，或者会被推到墙下，用胶布封上嘴巴以防止他喊出反对占领国的口号，然后就被枪毙。这一切都令城市居民心惊胆战，迫使他们俯首帖耳。为了避免这种不幸，最好的办法就是足不出户。但是作为一家之主的父亲必须外出挣钱，弄点供养他的妻儿老小的面包和菜汤。每到晚上，家里人就开始心绪不宁，担心父亲是否还回得来。这种情况已经持续多年，所以人们渐渐觉得他们居住的这座城市简直就是危机四伏的原始森林，20世纪人的命运，与那些每天跟毒蛇猛兽作生死搏斗的穴居人的命运没什么两样。</p></blockquote>
-
-<p>没有经历过这种生活的人阅读这样的文字，仍然可以体会那种惶惶的恐怖，这种恐慌如慢性毒药一般啃啮人的心灵。与其这般在极大恐惧中担惊受怕，过着如丧家犬的生活，不知什么时候会抛尸街头或者入牢笼中受非人的折磨，真还不如扛起枪冲出战壕面对冷酷而喧嚣的枪林弹火呢。</p>
-
-<!--more-->
-
-
-<p>第三章《凯特曼——伪装》描述的情景，不正是文革中诸多知识分子奉行的——美学凯特曼。同样的政治高压与知识钳制发生在同样的社会主义国家，这岂是偶然？思想正确的真理“唯一”论，已经说明了这种真理的不可信。正如奥威尔在《一九八四》借温斯顿之口说出的“所谓自由就是可以说二加二等于四的自由。承认这一点，其他一切就迎刃而解。”在真理唯一性的指导下，我们没有自由反驳老大哥的言论了，即使最蠢的傻瓜都知道这种言论的谬误。</p>
-
-<p>这样的社会主义，何异于“指鹿为马”的赵高宣泄权利的恶时代呢？阅读《被禁锢的头脑》，感觉就是《一九八四》的现实版。</p>
-
-<p>在第八章的219页，米沃什写道：“他们的研究对象是不同群体的居民。有产者阶级最不重要，他们由于工厂、矿山收归国有和农业改革而被剥夺了财产，不是供研究的主要对象。”</p>
-
-<p>“小资产阶级——小商人和手工业工作者不应受到忽略，他们是深深扎根于民众的一股强大力量。”</p>
-
-<p>然后书中以调侃方式提到什么叫“资本主义萌芽”，什么叫”资本主义复辟“，什么又叫”投机倒把者“，真是入木三分啊！</p>
-
-<p>书中描绘对农民的斗争策略，可谓摸准了人性，各种隐藏的恶与自私在显微镜下纤毫毕现，他们就好像发现了病毒，却并不思考如何寻找疫苗，反而将这种病毒扩大，扩散，以期求得对他们更为广泛的利益。——“于是把农民分为‘贫农’、‘中农’、‘富农’，因为，只有利用他们之间彼此的敌对心理，打破农村的团结，才能达到目的。”——真正是四两拨千斤的高妙手段。</p>
-
-<p>对付工人的手段仍然利用了人性，与对付农民的手段如出一辙：“总的来说，提出‘工人团结’的口号并不意味着可以放纵某一工厂工人的团结，因为这种团结会因选拔劳动‘突击手’而被瓦解——劳动‘突击手’就是超额完成任务者，这就会让其他工人感到有压力或力不从心。有两种手段可以影响工人们的思想：一方面激起他们的雄心壮志，一方面要求他们承受党组织所施加的压力。”</p>
-
-<p>米沃什的结论是：一切都导致对人的头脑的统治。于是党的宣传手段如宗教信仰一般，以某种集体仪式，达成一种心理催眠的信仰氛围，即使心有不信者，也会被慢慢潜移默化了。于是——</p>
-
-<blockquote><p>这个集合体是由个体组成的，有些人虽对这一切心怀疑虑，还是说了预先规定该说的话，唱了预先规定该唱的歌；这种行为就打造出了一种群体氛围，最后自己也被这种氛围所感染。俱乐部的影响尽管带有理性的表征，但也属于群体魔术现象之列。</p></blockquote>
-
-<p>米沃什提到了“知识庸俗化”带来的影响，可谓猛于虎矣。</p>
-
-<blockquote><p>例如，简单化和庸俗化的达尔文物种起源和物竞天择理论，都已不同于达尔文以及与他争论的学者们的理论。它已被改造成社会学理论的重要部分，带有某种感情色彩了。20世纪的领袖们，例如希特勒，其知识仅仅源于科普小册子，这就可以解释他们头脑中不可思议的知识混乱。<strong>庸俗化知识的特点是：它让人感觉一切都是明明白白的，一切都是可以解释清楚的；</strong>它也令人想起在深渊之上架设吊桥的方法，沿着吊桥可以大胆地往前走，同时自欺欺人地认为：脚下没有万丈深渊，同时要记住，眼睛千万不能往深渊看——但遗憾的是，这一切都不能改变现实中存在万丈深渊的事实。</p>
-
-<p>由苏联窜改的辩证唯物主义，不是别的，正是知识的双倍庸俗化。……辩证法的出发点是科学的——运用人文科学方面，主要在于根据一时的需要，将人文科学任意改造为它想建立的学说。——人类历史的数世纪，充满了成千上万的复杂事件，结果只用几个术语就高度概括了。<strong>毫无疑问，将过去和当代的历史作为阶级斗争的表现来进行分析，比将历史展示为那些王公贵族和国王彼此之间的私下争斗胡闹更接近真理。正是因为这种分析更接近真理，它也就更加危险：这种分析给人一种完满知识的错误，似乎能对每个问题作出回答，然而这种回答实际上只是在转着圈儿地重复几种套话，什么也解释不了，同时还让人得到表面的满足。</strong>对此还得附加一点，即借助唯物主义（例如”物质不灭“的理论）将自然科学与人文科学结合起来，而我们就会看到，当斯大林出现在我们这个星球自有生命以来的历史顶点之时，整个圆就奇妙而又合逻辑地画成了。</p></blockquote>
-
-<p>如下这一段达到了反讽的巅峰，却又如此合情合理：</p>
-
-<blockquote><p>有一种昆虫，会将自己的毒刺戳进其他科属的毛毛虫体内，并注入毒素，那些体内被注入了毒素的毛毛虫虽然还活着却已经瘫痪不能动了。这些昆虫——投毒者，就在那些毛毛虫体内产卵，于是毛毛虫的身体就变成了这些昆虫幼虫的食物储藏室。同样的，在人民民主国家，人们的头脑里也被注入了麻醉剂——那就是辩证唯物主义，虽说马克思和恩格斯从未设想过他们的学说会被如此利用。当人们的大脑被麻醉了以后，斯大林主义的解释就在他们的大脑中产卵：“既然你已经是个马克思主义者，”他们对这位患者说，“那你就必须是斯大林主义者；因为没有斯大林主义，就没有马克思主义。</p></blockquote>
-
-<p>哈，没有斯大林主义，就没有马克思主义。这是辩证唯物主义存在的意义。</p>
 ]]></content>
   </entry>
   

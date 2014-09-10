@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>理解Spark的核心RDD - 逸言</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="逸言" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">逸言</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">理解Spark的核心RDD</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-10T08:54:00+08:00" pubdate data-updated="true">Sep 10<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><img class="center" src="/images/2014/spark_architecture.jpg">
+与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark这朵小火花让人着迷的地方。</p>
+
+<p>要理解Spark，就需得理解RDD。</p>
+
+<p><strong>RDD是什么？</strong></p>
+
+<p>RDD，全称为Resilient Distributed Datasets，是一个容错的、并行的数据结构，可以让用户显式地将数据存储到磁盘和内存中，并能控制数据的分区。同时，RDD还提供了一组丰富的操作来操作这些数据。在这些操作中，诸如map、flatMap、filter等转换操作实现了monad模式，很好地契合了Scala的集合操作。除此之外，RDD还提供了诸如join、groupBy、reduceByKey等更为方便的操作（注意，reduceByKey是action，而非transformation），以支持常见的数据运算。</p>
+
+<!-- more -->
+
+
+<p>通常来讲，针对数据处理有几种常见模型，包括：Iterative Algorithms，Relational Queries，MapReduce，Stream Processing。例如Hadoop MapReduce采用了MapReduces模型，Storm则采用了Stream Processing模型。RDD混合了这四种模型，使得Spark可以应用于各种大数据处理场景。</p>
+
+<p>RDD作为数据结构，本质上是一个只读的分区记录集合。一个RDD可以包含多个分区，每个分区就是一个dataset片段。RDD可以相互依赖。如果RDD的每个分区最多只能被一个Child RDD的一个分区使用，则称之为narrow dependency；若多个Child RDD分区都可以依赖，则称之为wide dependency。不同的操作依据其特性，可能会产生不同的依赖。例如map操作会产生narrow dependency，而join操作则产生wide dependency。</p>
+
+<p>Spark之所以将依赖分为narrow与wide，基于两点原因。</p>
+
+<p>首先，narrow dependencies可以支持在同一个cluster node上以管道形式执行多条命令，例如在执行了map后，紧接着执行filter。相反，wide dependencies需要所有的父分区都是可用的，可能还需要调用类似MapReduce之类的操作进行跨节点传递。</p>
+
+<p>其次，则是从失败恢复的角度考虑。narrow dependencies的失败恢复更有效，因为它只需要重新计算丢失的parent partition即可，而且可以并行地在不同节点进行重计算。而wide dependencies牵涉到RDD各级的多个Parent Partitions。下图说明了narrow dependencies与wide dependencies之间的区别：
+<img class="center" src="/images/2014/rdd_dependency.png"></p>
+
+<p>本图来自Matei Zaharia撰写的论文An Architecture for Fast and General Data Processing on Large Clusters。图中，一个box代表一个RDD，一个带阴影的矩形框代表一个partition。</p>
+
+<p><strong>RDD如何保障数据处理效率？</strong></p>
+
+<p>RDD提供了两方面的特性persistence和patitioning，用户可以通过persist与patitionBy函数来控制RDD的这两个方面。RDD的分区特性与并行计算能力(RDD定义了parallerize函数)，使得Spark可以更好地利用可伸缩的硬件资源。若将分区与持久化二者结合起来，就能更加高效地处理海量数据。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">input</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">parseArticle</span> <span class="k">_</span><span class="o">).</span><span class="n">partitionBy</span><span class="o">(</span><span class="n">partitioner</span><span class="o">).</span><span class="n">cache</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>partitionBy函数需要接受一个Partitioner对象，如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">partitioner</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HashPartitioner</span><span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="n">defaultParallelism</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
+
+<p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
+
+<p>在实现时，RDD针对transformation操作，都提供了对应的继承自RDD的类型，例如map操作会返回MappedRDD，而flatMap则返回FlatMappedRDD。当我们执行map或flatMap操作时，不过是将当前RDD对象传递给对应的RDD对象而已。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">map</span><span class="o">[</span><span class="kt">U:</span> <span class="kt">ClassTag</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="n">U</span><span class="o">)</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">U</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MappedRDD</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">sc</span><span class="o">.</span><span class="n">clean</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这些继承自RDD的类都定义了compute函数。该函数会在action操作被调用时触发，在函数内部是通过迭代器进行对应的转换操作：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MappedRDD</span><span class="o">[</span><span class="kt">U:</span> <span class="kt">ClassTag</span>, <span class="kt">T:</span> <span class="kt">ClassTag</span><span class="o">](</span><span class="n">prev</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">T</span><span class="o">],</span> <span class="n">f</span><span class="k">:</span> <span class="kt">T</span> <span class="o">=&gt;</span> <span class="n">U</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">RDD</span><span class="o">[</span><span class="kt">U</span><span class="o">](</span><span class="n">prev</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">getPartitions</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Partition</span><span class="o">]</span> <span class="k">=</span> <span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">partitions</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">compute</span><span class="o">(</span><span class="n">split</span><span class="k">:</span> <span class="kt">Partition</span><span class="o">,</span> <span class="n">context</span><span class="k">:</span> <span class="kt">TaskContext</span><span class="o">)</span> <span class="k">=</span>
+</span><span class='line'>    <span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">iterator</span><span class="o">(</span><span class="n">split</span><span class="o">,</span> <span class="n">context</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>RDD对容错的支持</strong></p>
+
+<p>支持容错通常采用两种方式：数据复制或日志记录。对于以数据为中心的系统而言，这两种方式都非常昂贵，因为它需要跨集群网络拷贝大量数据，毕竟带宽的数据远远低于内存。</p>
+
+<p>RDD天生是支持容错的。首先，它自身是一个不变的(immutable)数据集，其次，它能够记住构建它的操作图（Graph of Operation），因此当执行任务的Worker失败时，完全可以通过操作图获得之前执行的操作，进行重新计算。由于无需采用replication方式支持容错，很好地降低了跨网络的数据传输成本。</p>
+
+<p>不过，在某些场景下，Spark也需要利用记录日志的方式来支持容错。例如，在Spark Streaming中，针对数据进行update操作，或者调用Streaming提供的window操作时，就需要恢复执行过程的中间状态。此时，需要通过Spark提供的checkpoint机制，以支持操作能够从checkpoint得到恢复。</p>
+
+<p>针对RDD的wide dependency，最有效的容错方式同样还是采用checkpoint机制。不过，似乎Spark的最新版本仍然没有引入auto checkpointing机制。</p>
+
+<p><strong>总结</strong></p>
+
+<p>RDD是Spark的核心，也是整个Spark的架构基础。它的特性可以总结如下：
+* 它是不变的数据结构存储
+* 它是支持跨集群的分布式数据结构
+* 可以根据数据记录的key对结构进行分区
+* 提供了粗粒度的操作，且这些操作都支持分区
+* 它将数据存储在内存中，从而提供了低延迟性</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-10T08:54:00+08:00" pubdate data-updated="true">Sep 10<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/architecture/'>Architecture</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='tag' href='/blog/tags/big-data/'>Big Data</a>, <a class='tag' href='/blog/tags/scala/'>Scala</a>, <a class='tag' href='/blog/tags/spark/'>Spark</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/09/visualize-design-workshop/" title="Previous Post: 可视化设计工作坊">&laquo; 可视化设计工作坊</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/profile.png" align="center"/></p>
+  	<p>
+    <strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Senior Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+<section>
+  <h1>Tag Cloud</h1>
+  <ul class="tag-cloud">
+<a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
+<a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
+<a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 144%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
+<a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 144%" href="/blog/tags/ddd/">DDD</a>
+<a style="font-size: 205%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 100%" href="/blog/tags/go/">GO</a>
+<a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
+<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
+<a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/language/">Language</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
+<a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
+<a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
+<a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
+<a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
+<a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
+<a style="font-size: 202%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
+<a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
+<a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
+<a style="font-size: 100%" href="/blog/tags/translation/">Translation</a>
+<a style="font-size: 128%" href="/blog/tags/visualization/">Visualization</a>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Visitor</h1>
+  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

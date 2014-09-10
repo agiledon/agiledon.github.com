@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Architecture | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/categories/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-08-14T14:52:47+08:00</updated>
+  <updated>2014-09-10T09:04:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,90 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[理解Spark的核心RDD]]></title>
+    <link href="http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/"/>
+    <updated>2014-09-10T08:54:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark</id>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/spark_architecture.jpg">
+与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark这朵小火花让人着迷的地方。</p>
+
+<p>要理解Spark，就需得理解RDD。</p>
+
+<p><strong>RDD是什么？</strong></p>
+
+<p>RDD，全称为Resilient Distributed Datasets，是一个容错的、并行的数据结构，可以让用户显式地将数据存储到磁盘和内存中，并能控制数据的分区。同时，RDD还提供了一组丰富的操作来操作这些数据。在这些操作中，诸如map、flatMap、filter等转换操作实现了monad模式，很好地契合了Scala的集合操作。除此之外，RDD还提供了诸如join、groupBy、reduceByKey等更为方便的操作（注意，reduceByKey是action，而非transformation），以支持常见的数据运算。</p>
+
+<!-- more -->
+
+
+<p>通常来讲，针对数据处理有几种常见模型，包括：Iterative Algorithms，Relational Queries，MapReduce，Stream Processing。例如Hadoop MapReduce采用了MapReduces模型，Storm则采用了Stream Processing模型。RDD混合了这四种模型，使得Spark可以应用于各种大数据处理场景。</p>
+
+<p>RDD作为数据结构，本质上是一个只读的分区记录集合。一个RDD可以包含多个分区，每个分区就是一个dataset片段。RDD可以相互依赖。如果RDD的每个分区最多只能被一个Child RDD的一个分区使用，则称之为narrow dependency；若多个Child RDD分区都可以依赖，则称之为wide dependency。不同的操作依据其特性，可能会产生不同的依赖。例如map操作会产生narrow dependency，而join操作则产生wide dependency。</p>
+
+<p>Spark之所以将依赖分为narrow与wide，基于两点原因。</p>
+
+<p>首先，narrow dependencies可以支持在同一个cluster node上以管道形式执行多条命令，例如在执行了map后，紧接着执行filter。相反，wide dependencies需要所有的父分区都是可用的，可能还需要调用类似MapReduce之类的操作进行跨节点传递。</p>
+
+<p>其次，则是从失败恢复的角度考虑。narrow dependencies的失败恢复更有效，因为它只需要重新计算丢失的parent partition即可，而且可以并行地在不同节点进行重计算。而wide dependencies牵涉到RDD各级的多个Parent Partitions。下图说明了narrow dependencies与wide dependencies之间的区别：
+<img class="center" src="/images/2014/rdd_dependency.png"></p>
+
+<p>本图来自Matei Zaharia撰写的论文An Architecture for Fast and General Data Processing on Large Clusters。图中，一个box代表一个RDD，一个带阴影的矩形框代表一个partition。</p>
+
+<p><strong>RDD如何保障数据处理效率？</strong></p>
+
+<p>RDD提供了两方面的特性persistence和patitioning，用户可以通过persist与patitionBy函数来控制RDD的这两个方面。RDD的分区特性与并行计算能力(RDD定义了parallerize函数)，使得Spark可以更好地利用可伸缩的硬件资源。若将分区与持久化二者结合起来，就能更加高效地处理海量数据。例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">input</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">parseArticle</span> <span class="k">_</span><span class="o">).</span><span class="n">partitionBy</span><span class="o">(</span><span class="n">partitioner</span><span class="o">).</span><span class="n">cache</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>partitionBy函数需要接受一个Partitioner对象，如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">partitioner</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HashPartitioner</span><span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="n">defaultParallelism</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
+
+<p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
+
+<p>在实现时，RDD针对transformation操作，都提供了对应的继承自RDD的类型，例如map操作会返回MappedRDD，而flatMap则返回FlatMappedRDD。当我们执行map或flatMap操作时，不过是将当前RDD对象传递给对应的RDD对象而已。例如：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">map</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20T%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="k">:</span> <span class="kt">ClassTag&lt;/a</span><span class="k">&gt;:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">U</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MappedRDD</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">sc</span><span class="o">.</span><span class="n">clean</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这些继承自RDD的类都定义了compute函数。该函数会在action操作被调用时触发，在函数内部是通过迭代器进行对应的转换操作：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MappedRDD</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;prev:%20RDD[T],%20f:%20T%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">,</span> <span class="n">T</span><span class="k">:</span> <span class="kt">ClassTag&lt;/a&gt;</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">RDD</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;prev&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">getPartitions</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Partition</span><span class="o">]</span> <span class="k">=</span> <span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">partitions</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">compute</span><span class="o">(</span><span class="n">split</span><span class="k">:</span> <span class="kt">Partition</span><span class="o">,</span> <span class="n">context</span><span class="k">:</span> <span class="kt">TaskContext</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">iterator</span><span class="o">(</span><span class="n">split</span><span class="o">,</span> <span class="n">context</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><strong>RDD对容错的支持</strong></p>
+
+<p>支持容错通常采用两种方式：数据复制或日志记录。对于以数据为中心的系统而言，这两种方式都非常昂贵，因为它需要跨集群网络拷贝大量数据，毕竟带宽的数据远远低于内存。</p>
+
+<p>RDD天生是支持容错的。首先，它自身是一个不变的(immutable)数据集，其次，它能够记住构建它的操作图（Graph of Operation），因此当执行任务的Worker失败时，完全可以通过操作图获得之前执行的操作，进行重新计算。由于无需采用replication方式支持容错，很好地降低了跨网络的数据传输成本。</p>
+
+<p>不过，在某些场景下，Spark也需要利用记录日志的方式来支持容错。例如，在Spark Streaming中，针对数据进行update操作，或者调用Streaming提供的window操作时，就需要恢复执行过程的中间状态。此时，需要通过Spark提供的checkpoint机制，以支持操作能够从checkpoint得到恢复。</p>
+
+<p>针对RDD的wide dependency，最有效的容错方式同样还是采用checkpoint机制。不过，似乎Spark的最新版本仍然没有引入auto checkpointing机制。</p>
+
+<p><strong>总结</strong></p>
+
+<p>RDD是Spark的核心，也是整个Spark的架构基础。它的特性可以总结如下：
+* 它是不变的数据结构存储
+* 它是支持跨集群的分布式数据结构
+* 可以根据数据记录的key对结构进行分区
+* 提供了粗粒度的操作，且这些操作都支持分区
+* 它将数据存储在内存中，从而提供了低延迟性</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Spark概览]]></title>
@@ -305,151 +389,6 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
 
 <p>纵观整个场景，存在太多制肘，我们也没有太多好的解决方案。而且，我们还应该保证这个解决方案足够简单，因为我们需要在尽量短的周期内对原有方案进行改善，以迎接新一期的业务高峰。这些限制不同于架构约束，它常常迫使我们在逼仄的空间中闪转腾挪。我们还必须尽快地实现方案的原型，并营造与真实业务场景相当的数据，对其进行压力测试和性能测试。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[遗留系统的技术栈迁移]]></title>
-    <link href="http://agiledon.github.com/blog/2013/04/24/technical-stack-migration-for-legacy-system/"/>
-    <updated>2013-04-24T17:55:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/04/24/technical-stack-migration-for-legacy-system</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/04/legacy.png">
-什么是遗留系统（Legacy System）？根据维基百科的定义，遗留系统是一种旧的方法、旧的技术、旧的计算机系统或应用程序[1]。这一定义事实上并没有很好地揭露遗留系统的本质。我认为，遗留系统首先是一个还在运行和使用，但已步入软件生命周期衰老期的软件系统。它符合所谓的“奶牛规则”：奶牛逐渐衰老，最终无奶可挤；然而与此同时，饲养成本却在上升。这意味着遗留系统会逐渐随着时间的推移，不断地增加维护成本。</p>
-
-<p>维护一个软件系统，就需要了解该软件系统的知识。若知识缺失，就意味着这会给维护人员带来极大的障碍和困难。从这个角度讲，所谓“遗留系统”，就是缺少了一部分重要知识，使得维护人员“知其然而不知其所以然”的软件系统。</p>
-
-<p>若要让遗留系统焕发青春，最彻底的做法自然是推倒重来，但这样付出的代价太高；而且，即使对系统重新设计和开发，仍然免不了会重蹈遗留系统的覆辙。或者，可以对遗留系统进行重构，在不修改系统功能的情况下改善系统设计。只是这种重构常常是对系统进行重大扩展或修改的前奏，如无绝对必要，并不推荐这种偿还“技术债务（Technical Debt）”的方式。重构应与开发同时进行，而不应将其作为债务推迟到最后，以至于支付高昂的利息。最后，还有一种方式，则是对遗留系统进行技术栈迁移。<!--more--></p>
-
-<h3>一. 决策技术栈迁移的因素</h3>
-
-<p>那么，为何要进行技术栈迁移呢？是否是原有技术无法满足新的业务需求？对于遗留系统而言，这种情况总是存在，即需要扩展旧有系统的功能来满足新的业务。然而，这一原因并不足以支持做出技术栈迁移的决策。因为，从技术实现的角度来看，无论采取何种技术，都可以实现各种业务功能，无非是付出的成本不同而已 。基本上，这种成本一定会低于技术栈迁移的成本。此外，当今的软件开发，常常会将一个软件系统看做是完整的生态系统，在这个生态系统圈中，完全允许有多种技术平台（包括多种语言，甚至多种数据库范式）存在，只要我们能够合理地划定各个功能（或服务）的边界。</p>
-
-<p>牵涉到架构中的任何一个重大决策，都需要综合考量和权衡，只有充分地识别了风险，才能制订有效的设计决策。个人认为，只有在如下几种情形出现时，才值得进行技术栈迁移。</p>
-
-<h4>原有技术不能保证新的质量需求</h4>
-
-<p>在一个系统的完整生命周期内，系统从诞生到发展，衰老和死亡，与人一样，是不可规避的过程。对遗留系统进行技术栈迁移，无非是希望通过新的技术给旧有系统注入活力，就像器官移植一般，对腐朽的部分进行切除与替换。系统之所以会衰老，会腐朽，原因还在于需求的变化，从而导致系统结构变得庞大而混乱。我们在进行技术决策时，常常是根据当下的需求以及目前现有的技术，结合团队技术能力做出的最符合当时场景的合理决策。因而，技术栈迁移的原因常常是是因为“此一时彼一时”。在当时场景下做出的明智决策，随着时间的推移，会显得不合时宜。这一点在质量需求的满足上，体现得尤为明显。例如，系统对可伸缩性、性能、安全的要求，都可能因为新的质量需求的提出发生变化。而这些质量属性往往靠旧有技术无法解决。RackSpace对日志处理的案例就属于这一场景[2] 。RackSpace的架构对日志的支持，先后经历了三个大版本的演化，从文件服务器到中心数据库，再到MapReduce，每次技术栈的迁移都是质量属性的驱动，不得不为之。</p>
-
-<h4>出于战略的考虑</h4>
-
-<p>这常常是因为企业架构的因素。对于一个企业而言，应该将其IT系统看作是一个整体的生态系统。对于一个正在成长中的企业而言，必然会随着整个企业组织结构、业务体系的变化而影响到IT系统。一般而言，企业IT系统的架构会存在两种情况。第一种情况是从无到有，根据企业架构师与业务架构师的设计，严格按照设计蓝图来规划所有的IT系统。第二种情况则可能是多种不同的系统并存（可能是因为企业采用了并购等方式兼并其他公司业务，也可能是因为不同的业务需要，购买了不同的软件系统）。第一种情况看似美好，但仍有可能发生规划蓝图不能满足需求的可能。第二种情况则处于龙蛇混杂的局面，最后可能导致所谓的“烟囱系统（Stovepipe System）[3]”，需要花大力气对各种系统进行整合。</p>
-
-<p>无论是哪一种情况，一旦做出技术栈迁移的决定，都必然是企业战略上的考虑。当然这种战略指的是IT战略，也可能是企业的整体战略对IT系统产生影响。</p>
-
-<p>我们的一个客户是一家大型的金融企业，提供了多种品牌的保险与银行业务。企业的战略目标是在体现品牌价值的同时，整体展现企业的平台作用。这对于IT系统而言，就意味着需要对各种业务系统进行整合、迁移。整个系统的主要核心是对客户数据的管理，这些数据的管理会影响到整个企业的服务质量、市场推广与产品维护。由于该企业在银行业与保险业的发展壮大，是通过不断的合并与兼并来促进自身的发展。因而在其IT系统中，事实上存在多种不同的系统。客户信息散落在不同系统的数据库中。客户数据的整合，不仅有利于对这些信息的管理，保证数据的一致性，还在于从市场营销角度考虑，可以通过一致的客户信息对客户的情况做出全面了解，制定更好的推广策略。</p>
-
-<h4>原有的技术提供者不再提供支持</h4>
-
-<p>这种情形最是无奈，却时有发生。一种情况是使用的技术（平台、框架）不再被供应商维护，这一点体现在开源项目上更为明显。另一种情况则是所选的技术平台进行了升级，却没有很好地提供向前兼容，使得系统难以随之而升级。在架构设计中，这种绑定具体平台与技术的做法，实际上是反模式的一种，即“供应商锁定（Vendor Lock-In）[4]”。</p>
-
-<h4>使用旧有技术的成本太高</h4>
-
-<p>IT技术并非一定是新技术成本高于旧技术，事实上，随着技术的创新和发展，技术越新，成本越能得到更好的控制。当新旧技术的成本之差，远远高于技术栈迁移的成本，就值得做出迁移的决策了。例如，我们的一个项目需要处理的遗留系统，使用了某软件公司的产品，该产品必须运行在大型服务器上。该产品主要提供客户信息的处理。这是一个存在超过十年以上的产品，之后加入的子系统并未再使用该产品。如今，该产品所支持的客户数量并不多，而每年的产品许可费用以及大型服务器的维护成本都非常高。最后，我们对该产品提供的功能进行了迁移，以渐进地方式逐渐替换了该产品，降低了系统成本。</p>
-
-<h3>二. 引入风险驱动模型</h3>
-
-<p>George Fairbanks提出的风险驱动模型（Risk-Driven Model）非常适合遗留系统的技术栈迁移。所谓“风险驱动模型”，就是通过识别风险，对风险排定优先级；然后根据风险选定相关技术，再对风险是否得到缓解进行评估的一种架构方法[5] 。在对遗留系统进行技术栈迁移时，如果未能事先对迁移过程的风险进行有效识别，就可能为系统引入新的问题，降低系统质量，或者导致迁移的成本过高。</p>
-
-<p>根据我的经验，在对遗留系统进行技术栈迁移时，可以识别的主要风险包括：
-<blockquote><p>遗留系统本身存在的质量问题，例如紧耦合、缺乏足够的测试、系统可维护性差；<br/>缺乏足够的知识来帮助我们理解整个遗留系统；<br/>成本、时间与人力的风险；<br/>对迁移的新技术缺乏充分认识；<br/>迁移能力的不足</p></blockquote></p>
-
-<h3>三. 选择缓解风险的技术</h3>
-
-<p>一旦识别出迁移过程中可能存在的风险，我们就可以有的放矢地选择相关技术，制订降低风险的解决方案。</p>
-
-<h4>寻找丢失的知识</h4>
-
-<p>只有体验过去，才能谋划未来。如果缺乏对遗留系统的足够认识，这种技术栈的迁移就很难取得成功。通常来讲，一个软件系统的知识，主要体现在如下三个方面，如下图所示：
-<img class="center" src="/images/2013/04/legacy_01.png"></p>
-
-<p>在这三个方面中，团队成员拥有的知识无疑是最值得寄予厚望的。在迁移过程中，若有了解该系统的团队成员参与，无疑可以做到事半功倍。可惜，这部分知识又是最为脆弱的，它就好似存储在内存中的数据一般，一旦断电就会全盘丢失。遗留系统的问题恰在于此，由于系统过于陈旧，而人员的流动总是比较频繁，在对系统进行迁移时，可能许多当年参与系统开发的成员，已经很难找到。</p>
-
-<p>缺乏团队成员在知识方面的传承，就只能寄希望于文档与代码。文档的问题有目共睹，无论采用多么严谨的文档管理办法，文档与真实的实现总是存在偏差。正如“尽信书不如无书”，文档可以提供参考价值，但绝对不能完全依赖于文档。毫无疑问，代码是最为真实的知识。它不会说谎，但却过于沉迷于细节，要通过代码来了解遗留系统的知识，一方面耗时耗力，另一方面也难免会产生“只见树木不见森林”之叹。</p>
-
-<p>引入自说明的可运行文档，可以有效地将文档与代码结合起来。通过运用业务语言编写功能场景来体现业务需求，完成文档的撰写；同时，它又是可以运行的代码，通过直接调用代码实现，可以完全真实地验证功能是否准确。目前，有许多框架和工具可以支持这种规格文档，例如Java平台下的<a href="http://jbehave.org/">jBehave</a>，Ruby语言编写的<a href="http://cukes.info/">Cucumber</a>，支持HTML格式的<a href="http://www.concordion.org/">Concordion</a>，以及ThoughtWorks的产品<a href="http://www.thoughtworks-studios.com/twist-agile-testing">Twist</a>[6]。</p>
-
-<p>在我们的一个项目中，需要完成系统从WebLogic到JBoss的技术栈迁移。该系统是一个长达十年以上时间的遗留系统。虽然有比较完整的文档说明，但许多具体的业务对于我们而言，还是像一个黑盒，不知道具体的交互行为。此时，我们和客户一起为其建立了一个专门的项目，通过运用jBehave为该系统的业务行为编写可以运行的Story。在编写Story时，我们参考了系统的文档，并根据文档描述的功能建立场景，确定输入和输出，判断系统的行为是否与文档描述一致。事实上，我们在编写Story的过程中，确曾发现系统的真实行为与文档描述不一致的地方。这时，我们会判断这种不一致究竟是缺陷，还是期待的真实行为。在编写Story的过程中，我们寻找回了已经丢失的知识，并进一步熟悉了系统的结构，了解到系统组件的功能以及组件之间的关系。通过这些不断完善的Story，我们逐渐建立起了一个完全反应了真实实现的可运行文档库，它甚至可以取代原来的文档，成为系统的重要知识。</p>
-
-<h4>及时验证，快速反馈</h4>
-
-<p>在对系统进行技术栈迁移时，我们常常会担心修改会破坏原有的功能。尤其是对于大多数遗留系统，普遍存在测试不足，代码紧耦合，可维护性差的特点。虽然遗留系统会因为这些缺点而受人诟病，但不可否认的是，这些遗留系统毕竟经历了长时间的考验，在功能的正确性上已经得到了充分的验证。在迁移到新的技术时，如果不慎破坏了原有功能，引入了新的缺陷，就可能得不偿失了。</p>
-
-<p>为了避免这种情况发生，我们就需要为其建立充分的测试，并通过建立持续集成（Continuous Integration）环境，提供快速反馈的通道。一旦发现新的修改破坏了系统功能，就需要马上修复或者撤销之前的提交。</p>
-
-<p>问题是我们该如何建立测试保护网？为遗留系统建立测试是一件非常痛苦的事情，为了减小工作量，我们首先应该根据技术迁移的目标，缩小和锁定系统的范围。例如，倘若我们要将系统从IBMMQ迁移到JBossMQ，那么就只需要验证那些与消息队列通信的组件。若要将报表迁移到JasperReport，就应该只检测整个系统的报表组件。另一方面，我们应尽量从粗粒度的测试开始入手。一个好消息是，在之前为了寻找失去的知识时建立的可运行文档，事实上可以看作是一种验收测试。它不仅提供了自说明的文档，同时还建立了覆盖率客观的测试保护网。这种验收测试是针对业务行为编写的完整功能场景，更接近业务需求。它的抽象层次相对较高，并不会涉及太多编程细节。即使实现模块（包括类）是紧耦合的，没有明显的单元边界，我们仍然可以为其编写测试。这就可以省去对类与模块进行解耦这一难度颇高的工作。</p>
-
-<p>通常，我们会将这些测试作为持续集成的一个单独pipeline。每次对原有系统的修改，都要触发该pipeline的运行，以期获得及时的反馈。这样，就可以为原有系统建立一个覆盖范围广泛的测试保护网，使得我们可以有信心地对系统进行技术栈迁移。</p>
-
-<p>针对一些核心场景，我们还可以为遗留系统编写集成测试。这种粗粒度的测试不需要对原有代码进行太多的调整或重构，唯一需要付出的努力是对集成测试环境的搭建。</p>
-
-<p>对于遗留系统的集成测试，最好能够支持本地构建。因为若能在本地开发环境运行集成测试，就可以通过在本地运行构建脚本，快速地获得反馈，避免一些集成错误流入到源代码服务器中，导致持续集成Pipeline频繁出现错误。这种快速失败的方式，可以更好地验证错误，降低集成风险。在搭建本地集成环境时，可以选择一些轻量级框架或容器，提高部署性能。例如我们可以在本地运行Jetty这种轻量级的Web服务器，使用HSQL内存数据库来准备数据。对于某些集成极为困难的情况，也可以适当考虑建立Stub。例如对外部服务的依赖，可以建立一个Stub的Web Service。这种方式虽然没有真实地体现集成功能，但它却可以快速地验证系统内部的功能。</p>
-
-<p>倘若因为一些外部约束，我们无法做到完全的本地构建，也应该提供足够的集成环境，采取混合的方式运行构建脚本。例如可以将正在进行迁移的系统运行在本地环境上，而将该系统需要访问的中间件或者数据库放到其他的集成环境下。我们还可以利用构建脚本如Gradle，建立多种部署环境，例如Dev、Local、Stub、Intg等，使得开发人员或测试人员可以根据不同情况运行不同环境的构建脚本。</p>
-
-<h4>做好充分的技术预研</h4>
-
-<p>所谓“技术栈迁移”，必然是指从一种技术迁移到另一种技术。在充分了解系统当前存在的问题后，还需要深思熟虑，选择合理的目标技术。通常，我们会识别出待迁移模块（或系统）希望达到的质量属性，然后就此功能给出候选技术，建立一个用于权衡的矩阵。接着，再对这些待选技术进行技术预研（Spike），预研的结果将作为最终判断的依据。这种决策是有理有据的，可以有效地规避迁移中因为引入新技术带来的风险。下图是我们在一个项目中对文本搜索进行的技术预研结果矩阵。
-<img class="center" src="/images/2013/04/legacy_02.png"></p>
-
-<p>因为是技术栈迁移，必然要求目标技术一定要优于现有技术，否则就没有迁移的必要了。通过技术预研，既可以提供可以量化的数据，保证这种迁移是值得的；同时也相当于预先开始对目标技术展开学习和了解，及早发现技术难点和迁移的痛点。</p>
-
-<p>在我曾经参与的一个项目中，我们针对报告生成器模块编写了自己的一个支持并发处理的Batch Job。但随着系统用户数量的逐步增加，在生成报告的高峰期，并发请求数超过了之前架构设计预见的峰值，且每个报告生成所耗费的时间较长。于是，我们计划引入消息队列技术来替换现有的Batch Job。我们对一些候选技术进行了前期预研，这其中包括微软的MSMQ、Apache ActiveMQ以及RabbitMQ，针对并发处理、可维护性、成本、部署、安全、分布式处理以及灾备等多方面进行了综合考虑，如下表所示：
-<img class="center" src="/images/2013/04/legacy_03.png"></p>
-
-<p>技术选型从来都不是以单方面的高质量作为评价标准，即使某项技术在多个评判维度上都得到了最高的分数，也未必就是最佳选择。我们必须结合当前项目的具体场景，实事求是地进行判断，以期获得一个恰如其分的迁移方案。</p>
-
-<h4>新旧共存，小步前行</h4>
-
-<p>技术栈迁移的某些特征与架构的演化不谋而合，我们绝对不能奢求获得一个一蹴而就的完美方案，更不能盼望整个迁移过程能够一步到位。尤其针对那些因为战略调整而驱动的技术栈迁移，可能牵涉到架构风格或整个基础设施的修改或调整，单就迁移这一项工作而言，就可能是一个浩大的工程。这时，我们必须要允许新旧共存，通过小步前行的方式逐步以新技术替换旧技术。我们必须保证前进的每一小步，都不会破坏系统的整体功能。这种新旧共存的局面，可能导致在一段时间会出现架构风格或解决方案的不一致，但只要做好整体规划，最终仍能在一致性方面获得完美的答案。</p>
-
-<p>在我们工作的一个项目中，需要将一个独立的系统彻底移除，并将该系统原有的功能集成到另一个系统。需要移除的目标系统目前以Web Service方式提供服务。我们选择的解决方案是渐进地移除该系统。假设待移除的目标系统为Target，要集成的系统为Integration，我们采用了如下的迁移步骤：
-1、修改Integration，为其创建与Target提供的Web Service一致的服务接口；
-2、让新建立的服务接口的实现调用Target提供的Web Service；
-3、修改客户端对Target服务的调用，改为指向新增的Integration服务接口；
-4、如果运行一切正常，再将Target中的实现迁移到Integration中；
-5、在迁移过程中，提供Toggle开关，可以随时通过改变Toggle的值，选择使用新或旧的调用方式；
-6、再次确定采用新的调用方式是否正常，如果正常，彻底去掉原有的实现，移除Target系统。</p>
-
-<p>新旧共存并非一种妥协，而是迁移过程中必须存在的中间状态。Jez Humble介绍了ThoughtWorks产品<a href="http://www.thoughtworks-studios.com/go-continuous-delivery">GO</a>的几次技术栈迁移[7]，包括从iBatis迁移到Hibernate，从Velocity和JsTemplate转向JRuby on Rails的案例。文章提出了一种称为Branch By Abstraction（抽象分支）的迁移方法，执行步骤如下图所示：
-<img class="center" src="/images/2013/04/legacy_04.png"></p>
-
-<p>图中的抽象层将客户端（Consumer）与被替换的实现进行了解耦，使得这种替换可以透明地进行。在对抽象层的实现进行替换时，可以规定替换纪律，例如对于新增功能，必须运用新技术提供实现；还可以通过持续集成的验证门自动验证，例如设置旧有技术在系统中的阈值，每次提交都不允许旧有技术的代码量超过这个阈值。整个迁移过程要保证这个阈值是不断减少，绝不能增加。</p>
-
-<h4>理清思路，持续改进</h4>
-
-<p>要完成遗留系统的技术栈迁移，不可避免地需要对代码实现进行修改或重构。这或许是迁移难度最大的一部分内容。我的经验是针对遗留系统进行处理时，不要从一开始就埋首于浩如烟海的代码段中，太多的细节可能会让你迷失其中。若系统是可以运行的，可以首先运行该系统，通过实际操作了解系统的各个功能点、业务流程。这样的直观感受可以最快地帮助你了解该系统：它能够做什么？它能达成什么目标？它的范围是什么？它存在什么问题？</p>
-
-<p>接下来，我们需要从系统架构出发，了解遗留系统的逻辑结构和物理分布，最好能描绘出遗留系统的轮廓图，这可以帮助你从技术的宏观角度剖析遗留系统的结构与组成；然后再结合你对该系统业务的理解，快速地掌握遗留系统。在阅读源代码时，最好能够从主程序入口开始，找到一些主要的模块，了解其大体的设计方式与编码习惯。由于之前对系统架构已有了解，阅读代码时，不应在一开始就去理解代码实现的细节，而应结合架构文档，比对代码实现是否与文档的描述一致，并充分利用自己的技术与经验，找到阅读代码的终南捷径。例如，如果我们知道该系统采用了MVC架构，就可以很容易地根据Url找到对应的Controller对象，并在该对象中寻找业务功能实现的脉络。又例如我们知道系统引入了WCF来支持分布式处理，而我们又非常熟悉WCF，就可以基本忽略系统基础设施的部分，直接了解系统的业务实现。如果系统基于EJB 2.0实现，则完全可以根据EJB提供的Bean的结构，快速地定位到对应的服务接口与实现。这是因为许多框架都规定了一些约束或规范，从这些约束与规范入手，可以做到事半功倍。</p>
-
-<p>在尝试理解代码的过程中，可以通过手工绘制或利用IDE自动生成包图、时序图等可视性强的UML图，帮助我们理解代码结构。Michael Feathers提出可以为遗留代码绘制影响结构图与特征草图[8]，从而帮助我们去梳理程序中各个对象之间的关系，尤其是帮助我们识别依赖，进而利用接缝类型、隐藏依赖等手法去解除依赖。</p>
-
-<p>了解了代码，还需要对代码进行修改。多数情况下，我们需要首先通过重构来改善代码质量。注意，技术栈的迁移并非重构，但重构可以作为迁移工具箱中一件最为重要的工具。例如，我们可以通过Extract Interface，并结合Use Interface Where Possible手法，对一些具体类进行接口提取，并改变对原来具体类对象的依赖。重构时，必须采取“分而治之，小步前进”的策略。可以首先选择实现较为容易，或者独立性较好的模块进行重构。将遗留系统逐步提取为一些可重用的模块与类。其中，对于原有类或模块的调用方，由于在重构时可能会更改接口，因而可以考虑引入Facade模式或Adapter模式，通过引入间接层对接口进行包装或适配，逐渐替换系统，最后演化为一个结构合理的良好系统。需要注意的是，在重构时一定要时刻谨记，我们之所以进行重构，其目的是为了更好地迁移遗留系统的技术栈，而非为了重构而重构，从而偏离我们之前确定的目标。故而，重构与迁移应该是两顶不同的帽子，不能同时进行。</p>
-
-<h3>四. 结束语</h3>
-
-<p>遗留系统的技术栈迁移可能是一个漫长艰苦的过程，它的难度甚至要高于新开发一个系统，这是因为我们常常会挣扎在新旧系统之间，并在不断的妥协、权衡中缓步前行。</p>
-
-<p>它是一个复杂工程，需要参与者了解迁移前后的技术栈知识，掌握或者至少善于分析与理解遗留系统。我们需要审慎地做出技术决策，通过识别迁移过程的风险来驱动整个迁移过程。在决定迁移选择的技术时，要根据这些识别出来的风险对这些候选技术做充分的预研，获得可供参考的度量矩阵。我们还可以引入BDD框架来编写可运行的功能场景，以此来寻找失去的知识，同时兼得验收测试的保护网。</p>
-
-<p>我们可以通过引入持续集成，建立快速反馈环，以避免迁移时做出的改动对原有系统造成破坏。同时，还必须具备技术迁移的能力。我们可以考虑引入一些最佳实践或迁移方法，例如抽象分支、影响结构图、特征草图，运用设计模式和重构手法来改善遗留代码，以利于技术的迁移。当然，团队协作、架构设计、组织管理、进度跟踪等一系列技术与管理实践同样重要，只是这些实践并非技术栈迁移所必须的，而是所有开发过程都必须经历的过程，因而本文不再赘述这些内容。</p>
-
-<p><strong>参考文献：</strong></p>
-
-<p>[1]：<a href="http://en.wikipedia.org/wiki/Legacy_system">http://en.wikipedia.org/wiki/Legacy_system</a>，原文为：“A legacy system is an old method, technology, computer system, or application program.”</p>
-
-<p>[2]：文章<a href="http://highscalability.com/how-rackspace-now-uses-mapreduce-and-hadoop-query-terabytes-data">How Rackspace Now Uses MapReduce And Hadoop To Query Terabytes Of Data</a></p>
-
-<p>[3]：烟囱系统，一种反模式，<a href="http://highscalability.com/how-rackspace-now-uses-mapreduce-and-hadoop-query-terabytes-data">http://sourcemaking.com/antipatterns/stovepipe-system</a>。</p>
-
-<p>[4]：供应商锁定，一种反模式，参见<a href="http://highscalability.com/how-rackspace-now-uses-mapreduce-and-hadoop-query-terabytes-data">http://sourcemaking.com/antipatterns/vendor-lock-in</a>。</p>
-
-<p>[5]：Gorge Fairbanks：<a href="http://www.amazon.com/Just-Enough-Software-Architecture-Risk-Driven/dp/0984618104">Just Enough Software Architecture</a>，参见第3章Risk Driven Model</p>
-
-<p>[6]：以上所述皆为BDD框架或整体工具。</p>
-
-<p>[7]：Jez Humble：<a href="http://continuousdelivery.com/2011/05/make-large-scale-changes-incrementally-with-branch-by-abstraction/">Make Large Scale Changes Incrementally with Branch By Abstraction</a></p>
-
-<p>[8]：Michael Feathers：<a href="http://www.amazon.com/Working-Effectively-Legacy-Michael-Feathers/dp/0131177052">Working Effectively with Legacy Code</a></p>
 ]]></content>
   </entry>
   

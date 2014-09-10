@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，它甚至可以被称为是一种架构风格，可以取得与MapReduce，REST同等的地位，对软件系统的整体架构产生重要影响。 CQRS即Command Query Responsibility Seperation（ &hellip;">
+  <meta name="description" content="使用Homebrew在Max OS下安装，一切都变得容易了许多。你只需要知道你要安装的软件或工具的名称，然后输入一条命令行即可。不过安装MySQL就有点不一样，在输入命令行安装了MySQL之后，还需要做一些配置。 首先运行命令： $ brew install mysql &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,67 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/">使用Homebrew在Mountain Lion上安装MySQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-06T13:05:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/01/Mountain-Lion.jpg"></p>
+
+<p>使用Homebrew在Max OS下安装，一切都变得容易了许多。你只需要知道你要安装的软件或工具的名称，然后输入一条命令行即可。不过安装MySQL就有点不一样，在输入命令行安装了MySQL之后，还需要做一些配置。</p>
+
+<p>首先运行命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>$ brew install mysql</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Homebrew确实安装了MySQL，但是运行mysql命令，却并不能进入MySQL。通过在Google上查询解决方案，找到博客<a href="http://madebyhoundstooth.com/blog/install-mysql-on-mountain-lion-with-homebrew/">Install MySQL on Mountain Lion with Homebrew</a>，给出了如下的步骤：</p>
+
+<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p ~/Library/LaunchAgents
+</span><span class='line'>$ cp /usr/local/Cellar/mysql/5.5.25a/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
+</span><span class='line'>$ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+</span><span class='line'>
+</span><span class='line'>$ unset TMPDIR
+</span><span class='line'>$ mysql_install_db --verbose --user=`YOUR_USER_NAME` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+</span><span class='line'>
+</span><span class='line'>$ /usr/local/Cellar/mysql/5.5.25a/bin/mysqladmin -u root password 'YOUR_NEW_PASSWORD'
+</span><span class='line'>
+</span><span class='line'>$ mysql.server start</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在，你就可以运行mysql命令使用MySQL了。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -503,59 +564,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/11/use-sbt-in-intellij/">在MAC的IntelliJ下使用SBT与ScalaTest</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-11T12:34:00+08:00" pubdate data-updated="true">Oct 11<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/10/11/use-sbt-in-intellij/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>正如我们在Java项目中会使用Maven或Gradle作为构建工具一样，在Scala中，最为流行的构建非SBT莫属。在Mac下安装SBT其实很容易，你可以用Macports或者homebrew来安装，只需要敲一条命令即可。</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>port install sbt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>brew install sbt</span></code></pre></td></tr></table></div></figure>
-
-
-<p>要在IntelliJ Idea下要使用SBT似乎也很简单，因为你可以直接在Idea中下载安装sbt的插件。这一点都不费功夫。但我现在希望sbt对依赖的管理，要能很好地集成到Idea中。就像gradle一样，我只需要在build.gradle脚本中添加：apply plugin: &#8216;idea&#8217;，就可以在命令行中运行gradle idea，然后就能更新IntelliJ中项目的依赖了。例如，我要在IntelliJ中的Scala项目中使用ScalaTest来写单元测试。为了获得该ScalaTest Repository，就可以在build.sbt中添加：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/10/11/use-sbt-in-intellij/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/8/">&larr; Older</a>
@@ -594,6 +602,10 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
       </li>
     
@@ -607,10 +619,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
     
       <li class="post">
         <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/20/scala-resource/">Scala学习资源</a>
       </li>
     
   </ul>
@@ -651,7 +659,7 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
-<a style="font-size: 144%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 144%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
@@ -686,9 +694,9 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 199%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 202%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
-<a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>

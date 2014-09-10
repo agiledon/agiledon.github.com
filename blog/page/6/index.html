@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="面向对象设计的关键，我认为是识别职责，封装合理的对象。缺乏合理的封装，就会缺少正确的领域对象，使得属于共同职责的领域信息散乱分布到系统的各个方法中，导致概念不够清晰，职责混乱，以及代码的重复。然而，如果没有正确地识别职责，又可能导致封装无从谈起，因为我们获得的需求可能是散乱的，既难以抽象概念， &hellip;">
+  <meta name="description" content="如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,54 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/22/preface-of-java-design-patterns/">Java设计模式译者序</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-22T16:52:00+08:00" pubdate data-updated="true">Feb 22<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/02/22/preface-of-java-design-patterns/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/02/dpinjava.jpeg">
+如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。</p>
+
+<p>是否设计模式的精妙之处，业已为这些著作所穷尽？然，又未必尽然！以模式而论，若只局限在这23种模式的范围内，几乎每种模式的变化，都可以被悉心推演出来；每种模式的结构，也已被阐述得淋漓尽致。然而，若论及设计，则如大道苍穹，实则是不可穷尽的。基本上，设计的复杂程度已不亚于一个纷繁的世界，而软件，就是我们要构造的这个世界。</p>
+
+<p>因此，再出现一本讲解设计模式的书，就不足为怪了。那么，它值得你去阅读吗？</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/02/22/preface-of-java-design-patterns/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -493,67 +541,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/">使用Homebrew在Mountain Lion上安装MySQL</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-06T13:05:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/01/Mountain-Lion.jpg"></p>
-
-<p>使用Homebrew在Max OS下安装，一切都变得容易了许多。你只需要知道你要安装的软件或工具的名称，然后输入一条命令行即可。不过安装MySQL就有点不一样，在输入命令行安装了MySQL之后，还需要做一些配置。</p>
-
-<p>首先运行命令：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>$ brew install mysql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Homebrew确实安装了MySQL，但是运行mysql命令，却并不能进入MySQL。通过在Google上查询解决方案，找到博客<a href="http://madebyhoundstooth.com/blog/install-mysql-on-mountain-lion-with-homebrew/">Install MySQL on Mountain Lion with Homebrew</a>，给出了如下的步骤：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p ~/Library/LaunchAgents
-</span><span class='line'>$ cp /usr/local/Cellar/mysql/5.5.25a/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
-</span><span class='line'>$ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
-</span><span class='line'>
-</span><span class='line'>$ unset TMPDIR
-</span><span class='line'>$ mysql_install_db --verbose --user=`YOUR_USER_NAME` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
-</span><span class='line'>
-</span><span class='line'>$ /usr/local/Cellar/mysql/5.5.25a/bin/mysqladmin -u root password 'YOUR_NEW_PASSWORD'
-</span><span class='line'>
-</span><span class='line'>$ mysql.server start</span></code></pre></td></tr></table></div></figure>
-
-
-<p>现在，你就可以运行mysql命令使用MySQL了。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -592,6 +579,10 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
       </li>
     
@@ -605,10 +596,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     
       <li class="post">
         <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/20/scala-resource/">Scala学习资源</a>
       </li>
     
   </ul>
@@ -649,7 +636,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
-<a style="font-size: 144%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 144%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
@@ -684,9 +671,9 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 199%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 202%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
-<a style="font-size: 128%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
