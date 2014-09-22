@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="如今，介绍和讲解设计模式的书籍可谓汗牛充栋。无论是定义、解读、延伸还是扩展，都是基于面向对象的设计原则，用了放大镜对着GOF提出的23种设计模式，如科学解剖一般，剖析每一道脉络，观察每一片纹理，细微至纤毫毕现，真可以说是道尽个中妙处；许多精妙阐述，又如黄钟大吕，振聋发聩，醍醐灌顶。 &hellip;">
+  <meta name="description" content="最近，阅读了Will Larson的文章Introduction to Architecting System for Scale，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/27/scalability-system-architecture-lessons/">可伸缩系统的架构经验</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-27T11:37:00+08:00" pubdate data-updated="true">Feb 27<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/02/27/scalability-system-architecture-lessons/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2013/02/scalability.jpg"></p>
+
+<p>最近，阅读了Will Larson的文章<a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting System for Scale</a>，感觉很有价值。作者分享了他在Yahoo!与Digg收获的设计可伸缩系统的架构经验。在我过往的架构经验中，由于主要参与开发企业软件系统，这种面向企业内部的软件系统通常不会有太大的负载量，太多的并发量，因而对于系统的可伸缩性考虑较少。大体而言，只要在系统部署上考虑集群以及负载均衡即可。本文给了我很多启发，现把本文的主要内容摘译出来，并结合自己对此的理解。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/02/27/scalability-system-architecture-lessons/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -494,53 +539,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/01/08/create-tag-for-octopress/">为Octopress创建Tag</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-08T15:55:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/01/08/create-tag-for-octopress/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Octopress本身并不支持生成Tag，而仅仅支持Category。许多为Octopress提供的Tag Cloud，事实上一种假象，乃Category Cloud。对于博客分类而言，Tag与Category完全是不同的维度。Octopress的Category原理，事实上就是在博客目录下建立对应的Category目录，我们完全可以照搬此做法，简单改造，就可以支持Tag了。当然，为了在博客上生成Tag Cloud，自然还需要使用一些现有的插件。</p>
-
-<h3>准备</h3>
-
-<p>Octopress有一个第三方插件<a href="https://github.com/bizkit/octopress-cumulus">octopress-cumulus</a>，可以生成酷酷的3D Tag Cloud。当然，本质上，这还是Category Cloud。但它的效果可以为我使用。因此，先按照该插件的要求，下载对应的文件。最重要的两个文件是source/javascripts目录下的tagcloud.swf与plugin目录下的category_cloud.rb。前者是生成3D效果的Flash；后者则是读取Category信息到swf中的插件。至于source/_includes/custom/asides/目录下的category_cloud.html文件，则是用于显示边栏的Tag Cloud效果。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/01/08/create-tag-for-octopress/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -579,6 +577,10 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
       </li>
     
@@ -592,10 +594,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     
       <li class="post">
         <a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
       </li>
     
   </ul>
@@ -671,7 +669,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 202%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>

@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="“架构演进”介绍 软件系统的架构从来都不是一蹴而就的，它需要在不断的演化中改进设计，甚至做出重要的架构迁移。尤其对于大型软件系统而言，组织管理、软件过程、需求变化、规模扩张、技术迁移、遗留系统等诸多因素都决定着架构的发展，甚至可能是诸多力量的博弈与权衡。 技术文章 演化架构与紧急设计系列 &hellip;">
+  <meta name="description" content="Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端REST/HTTP的支持。在使用上，大概可以将其视为Java平台下的Jersey；虽然它们的特性并不尽相同。从Scala语言来看，它提供的Future与Promise可以较好地支持并发； &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,57 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/02/analysis-sourcecode-of-spray-1/">Spray的模块结构</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-02T22:07:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/02/analysis-sourcecode-of-spray-1/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/2013/spray_logo.png">
+Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端REST/HTTP的支持。在使用上，大概可以将其视为Java平台下的Jersey；虽然它们的特性并不尽相同。从Scala语言来看，它提供的Future与Promise可以较好地支持并发；而Akka的Actor模型无疑助推了Spray的并发处理性能。根据<a href="http://spray.io/">Spray官方网站</a>的描述，它拥有如下的特性：</p>
+
+<blockquote><p>完全异步的，无阻塞的APIs<br/>基于Actor与Future<br/>高性能<br/>轻量级<br/>模块化<br/>可测试性</p></blockquote>
+
+
+<p>之所以称其为库（library）而非框架（Framework），源于Spray的设计哲学。似乎在Spray的设计者眼中，只要沾上了“框架”这个名词，就显得不够轻量，耦合也会随之而来。虽然框架并非容器，无需管理诸多对象的生命周期，但它总会为应用添加一些框架级别的约束。框架更像是一个骨架（Skeleton），应用所要做的是将自己的内容填充到这个骨架中。应用能否运行良好，取决于框架的支撑作用。以我之浅见，大约可以如此简单分辨：框架之于应用，是一种白盒式的调用，你须得了解一些框架细节，遵循规定的约束或规范，才能更好地发挥框架的威力；而类库之于应用，则是职责向黑盒传递的委派，若要调用库，只需明晓其接口即可。</p>
+
+<p>正如Spray的官方网站所说，Spray更像是基于Http搭建的一个集成层（Integration Layer）。因此你不必将自己的应用搭建在Spray之上，仅仅是当需要对Http的集成时，Spray可以成为你的一项选择。这种松散耦合，去除“供应商绑定”的方式，实在招人喜爱。Spray引人驻足的魅力，不仅在于Akka Actor模式对并发的良好支持，Scala语言本身也使其增色不少。Scala的语法较之Java更其灵活而先进，那些支持不变式、函数编程以及闭包等特性，总会让Java程序员垂涎三尺(至少在Java 8之前)。若再遥想不远将来Scala提供的async以及await（一如C# 5.0的语法特性），编写Scala程序应大有可为。当然，或也可能成亦Scala，败亦Scala，毕竟面对数量级庞大的Java程序员，Scala仍属小众。这会成为Spray的阿克琉斯之踝吗？</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/08/02/analysis-sourcecode-of-spray-1/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -509,52 +560,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/17/thoughtworks-developer-reading-radar/">ThoughtWorks(中国)程序员读书雷达</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-17T21:46:00+08:00" pubdate data-updated="true">Apr 17<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/17/thoughtworks-developer-reading-radar/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/04/reading-radar.jpg">
-软件业的特点是变化。若要提高软件开发的技能，就必须跟上技术发展的步伐。埋首醉心于项目开发与实战，固然能够锤炼自己的开发技巧，却难免受限于经验与学识。世界上并不存在速成的终南捷径，但阅读好的技术书籍，尤其是阅读大师们的经典著作，总能收到事半功倍之效。一位优秀的程序员，或许就是一名好的阅读者。好的阅读者，总是知道如何选择好的书籍。书海浩繁，良莠不齐。阅读技术好书，如与智者交谈，“与君一席话胜读十年书”；遭遇技术烂书，如被拐卖，“少小离家老大回，乡音无改鬓毛衰”。</p>
-
-<p>ThoughtWorks作为一家学习型组织，颇为看重每一位员工的学习能力。事实上，大多数ThoughtWorker的骨子里，都溢满了读书的基因。与书相伴，与书为伍，既是一种乐趣，又是一种习惯。当习惯成为自然时，书籍就成为生活和工作不可或缺的一部分了。如果说人文历史哲学等书籍是一碗心灵鸡汤，技术书籍大抵算得上是一味营养素，读之可以直接带来养分；可若是不了解自己究竟缺了哪一种营养，乱吃乱补，结果就可能适得其反了。有鉴于此，我和同事刘龙军结合自身的阅读经验，为新入职ThoughtWorks的程序员制作了一份读书路线图。我们将范围明确为程序员，是因为作为程序员的我们，它是我们最了解的工作角色。我们筛选出了一些大家公认的经典书籍，再结合自己的阅读体会，并广泛征集了更多ThoughtWorker的意见，包括徐昊，熊节，郑晔等资深阅读者，得到了这样一份草稿。在中国公司内部推出时，这份读书路线图得到了多数人的认可和欢迎。继而，我们在成都办公室陆续针对此读书路线图展开了读书俱乐部的活动，算是做了一次全方位大面积的试水。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/17/thoughtworks-developer-reading-radar/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -593,6 +598,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
       </li>
     
@@ -606,10 +615,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
       </li>
     
   </ul>
@@ -685,7 +690,7 @@
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 202%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>

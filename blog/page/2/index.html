@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Spark具有先进的DAG执行引擎，支持cyclic data flow和内存计算。因此，它的运行速度，在内存中是Hadoop MapReduce的100倍，在磁盘中是10倍。如下是对比图： 这样的性能指标，真的让人心动啊！ Spark的API更为简单，提供了80个High Level的操作， &hellip;">
+  <meta name="description" content="基于Akka的REST框架Spray，由于采用Akka提供的Actor模型，写出来的代码与通常的REST有很大的区别。从Spray-Can接收Http请求，到处理具体的HTTP动词以实现业务逻辑，都是通过传递消息的方式。这些消息再交由Akka Actor接收处理。消息皆定义为Scala提供的样例类 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,119 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/17/rest-framework-spray-based-on-akka/">基于Akka的REST框架Spray</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-17T21:37:00+08:00" pubdate data-updated="true">Apr 17<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/04/17/rest-framework-spray-based-on-akka/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>基于Akka的REST框架Spray，由于采用Akka提供的Actor模型，写出来的代码与通常的REST有很大的区别。从Spray-Can接收Http请求，到处理具体的HTTP动词以实现业务逻辑，都是通过传递消息的方式。这些消息再交由Akka Actor接收处理。消息皆定义为Scala提供的样例类（Case Class），从而保证消息为immutable。既然如此，当我们在运用Spray时，就需要转换思想，从传统的面向对象中解放出来，充分理解Event、Command，及其传递的Message。这近似于事件驱动（Event Driven），因而在对领域建模时，也需要将Event看做是领域模型的一等公民，并将领域逻辑建模为一种状态机。</p>
+
+<p>我们可以首先根据Http请求，确定需要哪些消息。这样的Request消息几乎与Http动词以及Resource对应，例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">RequestMessage</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="n">customer</span><span class="k">:</span> <span class="kt">Customer</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">dueDate</span><span class="k">:</span> <span class="kt">Date</span><span class="o">,</span> <span class="n">text</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">RequestMessage</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在可以定义一个Actor来响应客户端请求。该Actor要求派生自Akka Actor，同时还要实现Spray提供的HttpService trait。若要支持Json格式，还需实现Spray-Json提供的Json4sSupport。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">CustomerServiceActor</span> <span class="k">extends</span> <span class="nc">Actor</span> <span class="k">with</span> <span class="nc">HttpService</span> <span class="k">with</span> <span class="nc">CustomerRequestCreator</span> <span class="k">with</span> <span class="nc">Json4sSupport</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">implicit</span> <span class="k">def</span> <span class="n">actorRefFactory</span> <span class="k">=</span> <span class="n">context</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">json4sFormats</span> <span class="k">=</span> <span class="nc">DefaultFormats</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="n">runRoute</span><span class="o">(</span><span class="n">customerRoute</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">customerRoute</span> <span class="k">=</span>
+</span><span class='line'>    <span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span> <span class="o">/</span> <span class="nc">LongNumber</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">id</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=&gt;</span>
+</span><span class='line'>        <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">rejectEmptyResponse</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>              <span class="nc">GetCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span> <span class="o">~</span> <span class="n">put</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">customer</span> <span class="k">=&gt;</span>
+</span><span class='line'>              <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>                <span class="nc">UpdateCustomer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>              <span class="o">}</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span> <span class="o">~</span> <span class="n">delete</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nc">DeleteCustomer</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>          <span class="nc">AllCustomers</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span> <span class="o">~</span> <span class="n">post</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">Customer</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">customer</span> <span class="k">=&gt;</span>
+</span><span class='line'>          <span class="n">handleRequest</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nc">CreateCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">.</span><span class="n">birthDate</span><span class="o">,</span> <span class="n">customer</span><span class="o">.</span><span class="n">name</span><span class="o">)</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">handleRequest</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">RequestMessage</span><span class="o">)</span><span class="k">:</span> <span class="kt">Route</span> <span class="o">=</span>
+</span><span class='line'>    <span class="n">ctx</span> <span class="k">=&gt;</span> <span class="n">customerRequest</span><span class="o">(</span><span class="n">ctx</span><span class="o">,</span> <span class="nc">Props</span><span class="o">[</span><span class="kt">CustomerActor</span><span class="o">],</span> <span class="n">message</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该Actor与其他Akka Actor的不同之处在于它的receive方法调用了Spray提供的runRoute()方法。传入的参数customerRoute是Spray提供的DSL格式的Route。Route中对应支持Http动词。其中，get先调用了Spray提供的rejectEmptyResponse来过滤掉空的响应消息；而post方法则调用entity将url中的消息转换为Customer消息：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Customer</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">birthDate</span><span class="k">:</span> <span class="kt">Date</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在Route中，可以定义多个Path，不同的Path支持不同的Http动词。在接受到请求后，通过handleRequest()方法来处理请求。这里的实现是将RequestMessage消息再转交到了另一个Actor。我会在后面介绍。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/17/rest-framework-spray-based-on-akka/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -1020,50 +1133,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/01/11/excerpt-from-barone-rampante/">摘录《树上的男爵》</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-11T19:32:00+08:00" pubdate data-updated="true">Jan 11<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/01/11/excerpt-from-barone-rampante/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2014/barone_rampante.jpeg"></p>
-
-<p>卡尔维诺《树上的男爵》书写了这么一段难以言说、无可名状的美丽的段落，让我惊叹，甚至是那种心悸的喜悦。这样的笔下的景色，仿佛让我身临其境，又似乎另有一种魔力，如夕阳之下各色景观都涂上了一层金色的光亮。这一段落并非那种精致的美，但却自有一种纤细与磅礴，很奇怪的矛盾杂糅，然后蹦出一种奇异的美。</p>
-
-<blockquote><p>他的天地已经变了，这是一个由架在空中的细长而弯曲的桥，由粗糙树皮上的结节、瘤子和皱褶，由透过或疏或密的树叶挡起的帷幕而变幻着深浅的绿色阳光组成的世界，微风一吹，树叶的柄就抖动不已，而当树干摇摆时整棵树的叶子就像一方纱巾飘动起来。而我们的世界呢，是平贴在地面上的，我们看到的是比例失调的形象，我们当然不理解他在那上面的感受。夜里他倾听着树木如何用它的细胞在树干里记下代表岁月的年轮，树霉如何在北风中扩大斑点，在窝里熟睡的小鸟瑟缩着将脑袋钻进最暖和的翅膀下的羽毛里，毛毛虫蠕动，伯劳鸟腹中的蛋孕育成功。有的时候，原野静悄悄，耳膛内只有细微的响动，一声粗号，一声尖叫，一阵野草迅疾瑟瑟声，一阵流水淙淙响，一阵踏在泥土和石子上的蹄声，而蝉鸣声高出一切之上。响声一个接一个消失，听觉不断辨别出新的声音，就像那拆着一团毛线的手指，感觉到每根毛线变得越来越细，细得几乎感触不到了。同时青蛙一直在鸣唱，作为一种背景并不影响其它声音的传播，如同太阳光不因星星的不断闪烁而起变化。相反，每当风吹起或吹过，每一种声音都会起变化并成为新的声音，留在耳膛内最深处的只有隐隐约约的呼啸声或低吟声，那是大海。</p></blockquote>
-
-<p>要多么细致的观察，多么敏感的心灵，与大自然的脉搏一起跳动，放开身体的所有触觉、嗅觉与视觉，才能从灵魂中涌现出这样的文字，最后再借助一只魔笔润色，天然地凸显出来，就好像它自天地诞生以来一直就存在，只是从未有人发现，偶然的，被在天地之间嬉戏的卡尔维诺发现了。是的，是被发现了，而不是创作出来了。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1102,6 +1171,10 @@ Liquid error: invalid byte sequence in US-ASCII</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
       </li>
     
@@ -1115,10 +1188,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
     
       <li class="post">
         <a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a>
       </li>
     
   </ul>
@@ -1194,7 +1263,7 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
-<a style="font-size: 202%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
 <a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
