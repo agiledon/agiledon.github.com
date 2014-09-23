@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Essay | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/essay/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-22T20:20:11+08:00</updated>
+  <updated>2014-09-23T08:53:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading/"/>
     <updated>2014-03-04T20:47:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/steiner.jpg"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2014/steiner.jpg %}</p>
 
 <p>阅读，以灵魂融合的方式阅读，或许会战栗，恐惧，喜悦，哭泣，甚至紧张，却可以让你成为阅读的人存在，你既是独立的，又陷入作品中成为你臆想和理解的另一个人。这种阅读，使得你存在。</p>
 

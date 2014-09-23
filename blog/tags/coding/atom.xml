@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Coding | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-22T20:20:11+08:00</updated>
+  <updated>2014-09-23T08:53:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/"/>
     <updated>2014-08-03T21:25:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/sisyphus.jpg"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2014/sisyphus.jpg %}</p>
 
 <p>这是我去年写的一个小框架，专为自动化测试准备数据。以我个人的经验，进行自动化测试尤其是单元测试，除了技能的障碍外，最大的障碍有两点：1)难以解除依赖，因而无法为相关功能编写独立的测试；2)数据准备困难，导致编写测试的成本高。在我的一篇博客《<a href="http://agiledon.github.io/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>》中有相关总结。尤其在企业级软件系统中，面对的领域相对复杂，被测接口常常需要输入复杂的数据，然后再返回复杂的数据。在面向对象开发中，这些数据常常被建模为对象。我们该怎么实例化这些对象？在单元测试中，我们常常会引入Builder模式，通过Fluent Interface的方式建立类似DSL的构建接口，以便于自由、流畅而可任意组合的方式，帮助编写测试的人实例化他想要创建的对象。然而，一旦这个对象内嵌了多层，或具有极多的属性时，创建就变得极为艰难了。</p>
 
@@ -30,156 +30,161 @@
 
 
 <p>要使用Sisyphus，可以在build.gradle的构建脚本中添加sonatype提供的Repository依赖：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">repositories</span> <span class="o">{&lt;</span><span class="s">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s">&lt;pre&gt;&lt;code&gt;maven{</span>
-</span><span class='line'><span class="s">    url &#39;https://oss.sonatype.org/</span><span class="n">content</span><span class="s">/groups/</span><span class="kd">public</span><span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">}</span>
-</span><span class='line'><span class="s1">mavenCentral();</span>
-</span><span class='line'><span class="s1">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s1">&lt;p&gt;}&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s1">&lt;p&gt;dependencies {&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s1">&lt;pre&gt;&lt;code&gt;test (</span>
-</span><span class='line'><span class="s1">        &#39;</span><span class="nl">junit:junit:</span><span class="mf">4.11</span><span class="s1">&#39;,</span>
-</span><span class='line'><span class="s1">        &#39;</span><span class="n">com</span><span class="o">.</span><span class="na">github</span><span class="o">.</span><span class="na">agiledon</span><span class="o">:</span><span class="nl">sisyphus:</span><span class="mf">1.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="err">&#39;</span>
-</span><span class='line'>    <span class="o">)</span>
-</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:groovy %}
+repositories {</p>
+
+<pre><code>maven{
+    url 'https://oss.sonatype.org/content/groups/public'
+}
+mavenCentral();
+</code></pre>
+
+<p>}</p>
+
+<p>dependencies {</p>
+
+<pre><code>test (
+        'junit:junit:4.11',
+        'com.github.agiledon:sisyphus:1.0-SNAPSHOT'
+    )
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>针对Yaml文件，我选择了snakeyaml框架。而对于Json数据，我尝试了两种框架Jackson和Gson。我发现这两个框架各有不足之处。倘若使用Jackson，它要求你要反序列化的类型必须定义默认的构造函数，如果没有定义，则必须声明Annotation：@JsonCreate和@JsonProperty。可是，有时候我们要准备的数据对象，或许是自动生成的，并不能修改该定义。何况，为了进行测试而改变产品代码，是邪恶的，不可取。Gson没有这样的约束，但当我尝试将一段字符串解析为byte[]类型时，发现Gson并不支持。为此，Sisyphus为Json数据提供了两种实现，为了区分，若是Gson实现，则要求测试数据文件的扩展名必须为“.gson”。</p>
 
 <p>模板功能使用了ST4的StringTemplate。我没有使用该框架提供的默认变量标识，而是要求将变量用$符号包裹起来。如果不需要模板，则只需提供一个测试数据文件即可；否则还要定义模板文件，它的扩展名为“.template”。例如针对Json格式的数据，倘若定义了这样的User类：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">enum</span> <span class="n">Gender</span> <span class="o">{</span> <span class="n">MALE</span><span class="o">,</span> <span class="n">FEMALE</span> <span class="o">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Name</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">_first</span><span class="o">,</span> <span class="n">_last</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirst</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_first</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLast</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_last</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirst</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_first</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLast</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_last</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="n">Gender</span> <span class="n">_gender</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">Name</span> <span class="n">_name</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="n">_isVerified</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">_userImage</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">Name</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_name</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isVerified</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_isVerified</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'><span class="kd">public</span> <span class="n">Gender</span> <span class="nf">getGender</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_gender</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUserImage</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_userImage</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">Name</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span> <span class="n">_name</span> <span class="o">=</span> <span class="n">n</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVerified</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_isVerified</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setGender</span><span class="o">(</span><span class="n">Gender</span> <span class="n">g</span><span class="o">)</span> <span class="o">{</span> <span class="n">_gender</span> <span class="o">=</span> <span class="n">g</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserImage</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_userImage</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+public class User {</p>
+
+<pre><code>public enum Gender { MALE, FEMALE };
+
+public static class Name {
+    private String _first, _last;
+
+    public String getFirst() { return _first; }
+    public String getLast() { return _last; }
+
+    public void setFirst(String s) { _first = s; }
+    public void setLast(String s) { _last = s; }
+}
+
+private Gender _gender;
+private Name _name;
+private boolean _isVerified;
+private byte[] _userImage;
+
+public Name getName() { return _name; }
+public boolean isVerified() { return _isVerified; }
+public Gender getGender() { return _gender; }
+public byte[] getUserImage() { return _userImage; }
+
+public void setName(Name n) { _name = n; }
+public void setVerified(boolean b) { _isVerified = b; }
+public void setGender(Gender g) { _gender = g; }
+public void setUserImage(byte[] b) { _userImage = b; }
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>则可以准备模板文件为：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "name" : { "first" : $firstName$, "last" : $lastName$ },
-</span><span class='line'>  "gender" : "MALE",
-</span><span class='line'>  "verified" : false,
-</span><span class='line'>  "userImage" : "Rm9vYmFyIQ=="
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+{
+  "name" : { "first" : $firstName$, "last" : $lastName$ },
+  "gender" : "MALE",
+  "verified" : false,
+  "userImage" : "Rm9vYmFyIQ=="
+}
+{% endcodeblock %}</p>
 
 <p>而数据文件则可以是：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;h1>This is multi section sample&lt;/h1>
-</span><span class='line'>
-</span><span class='line'>&lt;p>firstName = "Joe"
-</span><span class='line'>lastName = "Sixpack"&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>///&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>firstName = "Bruce"
-</span><span class='line'>lastName = "Zhang"&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>///&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>firstName = "Yi"
-</span><span class='line'>lastName = "Zhang"</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}</p>
+
+<h1>This is multi section sample</h1>
+
+<p>firstName = "Joe"
+lastName = "Sixpack"</p>
+
+<p>///</p>
+
+<p>firstName = "Bruce"
+lastName = "Zhang"</p>
+
+<p>///</p>
+
+<p>firstName = "Yi"
+lastName = "Zhang"
+{% endcodeblock %}</p>
 
 <p>符号///是分节的标识符，而符号#则为注释，读取数据时会忽略该符号后的所有字符。使用Sisyphus框架，就可以很方便地加载数据文件，从而获得三个User实例。如下测试：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_multi_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">User</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">users</span> <span class="o">=</span> <span class="n">Fixture</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="s">&quot;userWithMultiSections.json&quot;</span><span class="o">)</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">withTemplate</span><span class="o">(</span><span class="s">&quot;template/user.template&quot;</span><span class="o">)</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">toList</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Yi&quot;</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Zhang&quot;</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}</p>
+
+<pre><code>@Test
+public void should_compose_multi_user_data_by_parsing_template_file() {
+    List&lt;User&gt; users = Fixture.from("userWithMultiSections.json")
+            .withTemplate("template/user.template")
+            .toList(User.class);
+    assertThat(users, not(nullValue()));
+    assertThat(users.get(0).getName().getFirst(), is("Joe"));
+    assertThat(users.get(0).getName().getLast(), is("Sixpack"));
+    assertThat(users.get(2).getName().getFirst(), is("Yi"));
+    assertThat(users.get(2).getName().getLast(), is("Zhang"));
+}
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>Sisyphus框架还提供了将实例化好的对象输出为对应格式数据文件的功能。这个功能算是框架提供的一个辅助功能，可以避免手动去准备数据文件。例如我们可以先创建一个User实例，将其输出为yaml格式的数据文件，从而将该文件作为测试数据文件：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>   <span class="nd">@Test</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">should_serialize_specific_object_to_string_with_yaml_format</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">createUser</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">FixtureAssist</span><span class="o">.</span><span class="na">yaml</span><span class="o">().</span><span class="na">print</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="s">&quot;outputUser&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;!!com.github.agiledon.sisyphus.domain.json.User\n&quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;gender: MALE\n&quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;name: {first: Yi, last: Zhang}\n&quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;userImage: !!binary |-\n&quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;  MDAwMDExMTE=\n&quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;verified: true\n&quot;</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+   @Test</p>
+
+<pre><code>public void should_serialize_specific_object_to_string_with_yaml_format() {
+    User user = createUser();
+    String result = FixtureAssist.yaml().print(user, "outputUser");
+    assertThat(result, is("!!com.github.agiledon.sisyphus.domain.json.User\n" +
+            "gender: MALE\n" +
+            "name: {first: Yi, last: Zhang}\n" +
+            "userImage: !!binary |-\n" +
+            "  MDAwMDExMTE=\n" +
+            "verified: true\n"));
+}
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>框架在加载数据文件时，本身提供了缓存功能，如果重复加载同一个文件，则第二次加载时，并不需要真正去读取文件，从而在一定程度上提高了测试的效率。</p>
 
 <p>框架的入口为Fixture类。若要使用Sisyphus准备数据，通常应调用Fixture的静态方法。框架也提供了对JUnit的支持，通过框架自定义的Rule来加载测试数据，使用方式为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataProviderRuleTest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Rule</span>
-</span><span class='line'><span class="kd">public</span> <span class="n">DataProviderRule</span> <span class="n">dataProvider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataProviderRule</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;user.json&quot;</span><span class="o">,</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_User_data_with_json_format</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;userWithTemplate.json&quot;</span><span class="o">,</span>
-</span><span class='line'>        <span class="n">templateName</span> <span class="o">=</span> <span class="s">&quot;template/user.template&quot;</span><span class="o">,</span>
-</span><span class='line'>        <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+public class DataProviderRuleTest {</p>
+
+<pre><code>@Rule
+public DataProviderRule dataProvider = new DataProviderRule();
+
+@Test
+@DataResource(resourceName = "user.json", targetClass = User.class)
+public void should_compose_User_data_with_json_format() {
+    User user = dataProvider.provideData();
+    assertThat(user, not(nullValue()));
+    assertThat(user.getName().getFirst(), is("Joe"));
+}
+
+@Test
+@DataResource(resourceName = "userWithTemplate.json",
+        templateName = "template/user.template",
+        targetClass = User.class)
+public void should_compose_user_data_by_parsing_template_file() {
+    User user = dataProvider.provideData();
+    assertThat(user, not(nullValue()));
+    assertThat(user.getName().getFirst(), is("Joe"));
+    assertThat(user.getName().getLast(), is("Sixpack"));
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>但我个人并不推荐这种方式。使用Fixture更直观，甚至更简单。Sisyphus的源代码可以从<a href="https://github.com/agiledon/sisyphus">我的Github</a>上获得，在其Repository主页，有更多实例介绍。你也可以clone代码后，通过测试代码学习框架的使用。clone代码到本地后，将当前目录转到sisyphus，然后运行gradle build，即可对代码进行编译。若需运行测试，可运行gradle test。由于我使用的IDE为IntelliJ Idea，因此，框架的构建脚本中仅支持IDEA。你可以通过运行gradle idea来生成IntelliJ的项目。</p>
 ]]></content>
@@ -197,178 +202,175 @@
 <!-- more -->
 
 
-<p><img class="left" src="/images/2013/folder-structure.png"></p>
+<p>{% img left /images/2013/folder-structure.png %}</p>
 
 <p>分析这个目录结构，无非是在打包时，对文件进行include或exclude。我查阅到Maven的一位开发者Tim O'Brien写的一篇博客<a href="http://blog.sonatype.com/people/2010/01/how-to-create-two-jars-from-one-project-and-why-you-shouldnt/#.Un9DKpTN_Gp">Sonatype的博客</a>，详细介绍了具体的做法。当然，在博客中，他一再强调了这种做法的不可取，建议在项目模块上做出好的分解，保证一个Module对应一个Jar包。这篇博客介绍了两种做法，一个是在Profile中定义，一个则是在build中定义，使用的插件皆为maven-jar-plugin。对于我要解决的问题，可以考虑选择使用第二种做法，因为它只需要执行一条mvn package命令就能同时得到Server和Client的Jar包。具体的做法就是在插件的配置中，include各自的文件夹即可。配置如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>build<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>sourceDirectory<span class="ni">&amp;gt;</span>src<span class="ni">&amp;lt;</span>/sourceDirectory<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>testSourceDirectory<span class="ni">&amp;gt;</span>testSrc<span class="ni">&amp;lt;</span>/testSourceDirectory<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>plugins<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>plugin<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>maven-jar-plugin<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>executions<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>execution<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>server<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>goals<span class="ni">&amp;gt;&amp;lt;</span>goal<span class="ni">&amp;gt;</span>jar<span class="ni">&amp;lt;</span>/goal<span class="ni">&amp;gt;&amp;lt;</span>/goals<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>phase<span class="ni">&amp;gt;</span>package<span class="ni">&amp;lt;</span>/phase<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>                        <span class="ni">&amp;lt;</span>classifier<span class="ni">&amp;gt;</span>server<span class="ni">&amp;lt;</span>/classifier<span class="ni">&amp;gt;</span>
-</span><span class='line'>                        <span class="ni">&amp;lt;</span>includes<span class="ni">&amp;gt;</span>
-</span><span class='line'>                            <span class="ni">&amp;lt;</span>include<span class="ni">&amp;gt;</span>**/server/**<span class="ni">&amp;lt;</span>/include<span class="ni">&amp;gt;</span>
-</span><span class='line'>                        <span class="ni">&amp;lt;</span>/includes<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>/execution<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>execution<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>client<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>goals<span class="ni">&amp;gt;&amp;lt;</span>goal<span class="ni">&amp;gt;</span>jar<span class="ni">&amp;lt;</span>/goal<span class="ni">&amp;gt;&amp;lt;</span>/goals<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>phase<span class="ni">&amp;gt;</span>package<span class="ni">&amp;lt;</span>/phase<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>                        <span class="ni">&amp;lt;</span>classifier<span class="ni">&amp;gt;</span>client<span class="ni">&amp;lt;</span>/classifier<span class="ni">&amp;gt;</span>
-</span><span class='line'>                        <span class="ni">&amp;lt;</span>includes<span class="ni">&amp;gt;</span>
-</span><span class='line'>                            <span class="ni">&amp;lt;</span>include<span class="ni">&amp;gt;</span>**/client/**<span class="ni">&amp;lt;</span>/include<span class="ni">&amp;gt;</span>
-</span><span class='line'>                        <span class="ni">&amp;lt;</span>/includes<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>/execution<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>/executions<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>/plugin<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/plugins<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/build<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:xml %}</p>
+
+<pre><code>&lt;groupId&gt;com.test.maven&lt;/groupId&gt;
+&lt;artifactId&gt;testmaven&lt;/artifactId&gt;
+&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+&lt;build&gt;
+    &lt;sourceDirectory&gt;src&lt;/sourceDirectory&gt;
+    &lt;testSourceDirectory&gt;testSrc&lt;/testSourceDirectory&gt;
+
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;id&gt;server&lt;/id&gt;
+                    &lt;goals&gt;&lt;goal&gt;jar&lt;/goal&gt;&lt;/goals&gt;
+                    &lt;phase&gt;package&lt;/phase&gt;
+                    &lt;configuration&gt;
+                        &lt;classifier&gt;server&lt;/classifier&gt;
+                        &lt;includes&gt;
+                            &lt;include&gt;**/server/**&lt;/include&gt;
+                        &lt;/includes&gt;
+                    &lt;/configuration&gt;
+                &lt;/execution&gt;
+                &lt;execution&gt;
+                    &lt;id&gt;client&lt;/id&gt;
+                    &lt;goals&gt;&lt;goal&gt;jar&lt;/goal&gt;&lt;/goals&gt;
+                    &lt;phase&gt;package&lt;/phase&gt;
+                    &lt;configuration&gt;
+                        &lt;classifier&gt;client&lt;/classifier&gt;
+                        &lt;includes&gt;
+                            &lt;include&gt;**/client/**&lt;/include&gt;
+                        &lt;/includes&gt;
+                    &lt;/configuration&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>通过这样的配置，运行mvn package可以生成三个包，其中testmaven-1.0-SNAPSHOT.jar同时包含了服务端和客户端的类；而服务端和客户端对应的Jar则为testmaven-1.0-SNAPSHOT-server.jar和testmaven-1.0-SNAPSHOT-client.jar。</p>
 
 <p>在前面的配置中，我们并没有为server和client包定义自己的坐标，而是沿用了统一的一个。这就意味着依赖这个包的其他Module，可能无法通过Dependency来精确定位Server或Client。这对于部署来说，是没有问题的，但却无法进行依赖管理；除非在依赖的时候，去依赖整个大的模块。</p>
 
 <p>要保证依赖管理，就意味着需要为server和client分别指定各自的坐标。看来需要另辟蹊径。其实，Maven是支持在一个项目中建立多个子模块的。我们可以考虑在项目中引入两个子模块，分别对应server和client，并在这两个子模块中建立自己的pom.xml文件。这在本质上是与Maven多模块支持是相同的，唯一不同的是代码结构。而且这种新建模块并没有影响原有的目录结构，对于遗留系统而言，还是可以接受的。因此，我们建立了如下图所示的模块结构：
-<img class="center" src="/images/2013/module-structure.png"></p>
+{% img center /images/2013/module-structure.png %}</p>
 
 <p>在新的结构中，除了原有模块外，我还引入了另外两个新的模块server和client，它们除了拥有自己的pom.xml文件，没有其他任何内容。而在原有模块下，同样定义了一个pom.xml文件，它将作为整个项目的parent。定义如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>packaging<span class="ni">&amp;gt;</span>pom<span class="ni">&amp;lt;</span>/packaging<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>modules<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>module<span class="ni">&amp;gt;</span>server<span class="ni">&amp;lt;</span>/module<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>module<span class="ni">&amp;gt;</span>client<span class="ni">&amp;lt;</span>/module<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/modules<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:xml %}</p>
+
+<pre><code>&lt;groupId&gt;com.test.maven&lt;/groupId&gt;
+&lt;artifactId&gt;testmaven&lt;/artifactId&gt;
+&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+&lt;packaging&gt;pom&lt;/packaging&gt;
+
+&lt;modules&gt;
+    &lt;module&gt;server&lt;/module&gt;
+    &lt;module&gt;client&lt;/module&gt;
+&lt;/modules&gt;
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>这里定义的坐标是整个项目的坐标，同时指定了packaging的类型为pom。在这个pom.xml文件中还包括了两个子模块，其中的值应该与模块的名称对应。接下来配置server模块的pom.xml：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>parent<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/parent<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven-server<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>build<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>sourceDirectory<span class="ni">&amp;gt;</span>../src<span class="ni">&amp;lt;</span>/sourceDirectory<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>testSourceDirectory<span class="ni">&amp;gt;</span>../testSrc<span class="ni">&amp;lt;</span>/testSourceDirectory<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>plugins<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>plugin<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>maven-compiler-plugin<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>3.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>includes<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>include<span class="ni">&amp;gt;</span>**/server/**<span class="ni">&amp;lt;</span>/include<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>/includes<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>/plugin<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/plugins<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/build<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:xml %}</p>
+
+<pre><code>&lt;parent&gt;
+    &lt;groupId&gt;com.test.maven&lt;/groupId&gt;
+    &lt;artifactId&gt;testmaven&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+&lt;/parent&gt;
+
+&lt;artifactId&gt;testmaven-server&lt;/artifactId&gt;
+
+&lt;build&gt;
+    &lt;sourceDirectory&gt;../src&lt;/sourceDirectory&gt;
+    &lt;testSourceDirectory&gt;../testSrc&lt;/testSourceDirectory&gt;
+
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.1&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;includes&gt;
+                    &lt;include&gt;**/server/**&lt;/include&gt;
+                &lt;/includes&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>首先声明了parent指向了主模块的坐标。接下来，声明当前模块的artifact id为testmaven-server。这就为server指定了独立的坐标。一旦部署后，在maven的Repository中会得到这样的文件：com/test/maven/testmaven-server/1.0-SNAPSHOT/testmaven-server-1.0-SNAPSHOT.jar。我们就可以在依赖中这样声明：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>dependencies<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven-server<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/dependencies<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:xml %}</p>
+
+<pre><code>&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.test.maven&lt;/groupId&gt;
+        &lt;artifactId&gt;testmaven-server&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>运行mvn package，oops……竟然出现问题了。什么问题呢？单元测试无法通过。报告的错误为：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.1:testCompile (default-testCompile) on project testmaven-server: Compilation failure: Compilation failure:
-</span><span class='line'>[ERROR] /Users/twer/learn/testmaven/testSrc/com/test/maven/client/HelloMavenTest.java:[11,9] cannot find symbol
-</span><span class='line'>[ERROR] symbol  : class HelloMaven
-</span><span class='line'>[ERROR] location: class com.test.maven.client.HelloMavenTest</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.1:testCompile (default-testCompile) on project testmaven-server: Compilation failure: Compilation failure:
+[ERROR] /Users/twer/learn/testmaven/testSrc/com/test/maven/client/HelloMavenTest.java:[11,9] cannot find symbol
+[ERROR] symbol  : class HelloMaven
+[ERROR] location: class com.test.maven.client.HelloMavenTest
+{% endcodeblock %}</p>
 
 <p>仔细分析，原来是在执行编译server包时，报告无法编译client包对应的测试类。怎么会在编译server包时，去编译client包对应的测试呢？仔细观察我们的pom.xml文件，在maven-compiler-plugin插件中，我们配置了对server文件的引入，这就意味着在编译server包时，不会引入client文件夹下的所有文件（当然在这里就是Java类文件）。但是，我们并没有在test-compile阶段排除client对应的测试文件。这就导致client的测试无法找到对应的实现类。找到根源，问题就好解决了，显然我们需要在test-compile阶段排除client文件夹。所以，server模块下正确的pom.xml配置为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>parent<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>com.test.maven<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/parent<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>testmaven-server<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="ni">&amp;lt;</span>build<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>sourceDirectory<span class="ni">&amp;gt;</span>../src<span class="ni">&amp;lt;</span>/sourceDirectory<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>testSourceDirectory<span class="ni">&amp;gt;</span>../testSrc<span class="ni">&amp;lt;</span>/testSourceDirectory<span class="ni">&amp;gt;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>plugins<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>plugin<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>maven-compiler-plugin<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>3.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>includes<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>include<span class="ni">&amp;gt;</span>**/server/**<span class="ni">&amp;lt;</span>/include<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>/includes<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>executions<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>execution<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>default-testCompile<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>phase<span class="ni">&amp;gt;</span>test-compile<span class="ni">&amp;lt;</span>/phase<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>                        <span class="ni">&amp;lt;</span>testExcludes<span class="ni">&amp;gt;</span>
-</span><span class='line'>                            <span class="ni">&amp;lt;</span>exclude<span class="ni">&amp;gt;</span>**/client/**<span class="ni">&amp;lt;</span>/exclude<span class="ni">&amp;gt;</span>
-</span><span class='line'>                        <span class="ni">&amp;lt;</span>/testExcludes<span class="ni">&amp;gt;</span>
-</span><span class='line'>                    <span class="ni">&amp;lt;</span>/configuration<span class="ni">&amp;gt;</span>
-</span><span class='line'>                <span class="ni">&amp;lt;</span>/execution<span class="ni">&amp;gt;</span>
-</span><span class='line'>            <span class="ni">&amp;lt;</span>/executions<span class="ni">&amp;gt;</span>
-</span><span class='line'>        <span class="ni">&amp;lt;</span>/plugin<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>/plugins<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/build<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:xml %}</p>
+
+<pre><code>&lt;parent&gt;
+    &lt;groupId&gt;com.test.maven&lt;/groupId&gt;
+    &lt;artifactId&gt;testmaven&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+&lt;/parent&gt;
+
+&lt;artifactId&gt;testmaven-server&lt;/artifactId&gt;
+
+&lt;build&gt;
+    &lt;sourceDirectory&gt;../src&lt;/sourceDirectory&gt;
+    &lt;testSourceDirectory&gt;../testSrc&lt;/testSourceDirectory&gt;
+
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.1&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;includes&gt;
+                    &lt;include&gt;**/server/**&lt;/include&gt;
+                &lt;/includes&gt;
+            &lt;/configuration&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;id&gt;default-testCompile&lt;/id&gt;
+                    &lt;phase&gt;test-compile&lt;/phase&gt;
+                    &lt;configuration&gt;
+                        &lt;testExcludes&gt;
+                            &lt;exclude&gt;**/client/**&lt;/exclude&gt;
+                        &lt;/testExcludes&gt;
+                    &lt;/configuration&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>注意：我在IntelliJ配置execution下的configuration节时，碰到一个问题，那就是针对testExcludes配置节没有智能提示。由于其他maven配置节在正确情况下都有智能提示，因而让我产生错误，认为这个配置项不支持testExcludes，这让我纠结了好半天。</p>
 
 <p>对于client模块而言，如法炮制，只是包含以及过滤的文件夹反转了一个个儿而已。当我们进行install甚至deploy时，在repository下的test/maven文件夹中，看到了三个文件夹，如图所示：
-<img class="center" src="/images/2013/maven-repository.png"></p>
+{% img center /images/2013/maven-repository.png %}</p>
 
 <p>其中的testmaven/1.0-SNAPSHOT文件夹下并没有jar包，因为它对应的配置为主模块的配置，也就是parent配置。在这个配置中，我们将packaging的类型设置为pom了。</p>
 ]]></content>
@@ -379,7 +381,7 @@
     <link href="http://agiledon.github.com/blog/2013/04/27/coding-practice-of-reading-radar/"/>
     <updated>2013-04-27T16:03:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/04/27/coding-practice-of-reading-radar</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/04/reading_radar_01.png">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/04/reading_radar_01.png %}
 期望通过四分之一的读书雷达图就能将与编码实践有关的优秀书籍一网打尽，自然是不现实的打算。因此，我们希望就我们的侧重点来推荐书籍。对于编码实践而言，我们共同认为培养良好的编码习惯，编写整洁简单而又合理的代码，是一名好程序员的基本要求。因此，这里我们更强调与程序员基本编码技能相关的知识。我们并没有给出与算法直接有关的书籍，虽然我们认为算法知识同样属于编码实践的范畴，虽然我们认为诸如《计算机程序设计的艺术》、《编程珠玑》、《算法导论》之类的书籍同样很重要很优秀；然而，我们取舍再三，仍然将它们划出了读书雷达的范围。我们认为：算法知识更应该划定到大学教育的范畴，若工作需要，则又偏向于更为专精的领域，并不适合读书雷达这种普适性的推荐。相对于具体的算法，或许我们更看重程序员的逻辑思维以及抽象建模的能力。</p>
 
 <p>在Coding Practice象限的Fundamental圈中，我们强烈推荐了Robert Martin的Clean Code《<a href="http://book.douban.com/subject/4199741/">代码整洁之道</a>》与<a href="http://book.douban.com/subject/6114900/">The Clean Coder</a>《<a href="http://book.douban.com/subject/11614538/">程序员的职业素养</a>》，以及Martin Fowler的Refactoring《<a href="http://book.douban.com/subject/4262627/">重构：改善既有代码的设计</a>》。我不知道有多少人是阅读了Clean Code之后，才开始自己的整洁代码之旅；至少在我身边，这样的例子不胜枚举。把代码写成像散文那样美好，不仅仅是对美学的追求，更重要的是它能够极大地降低维护成本。在某种程度上讲，代码可以说是软件系统的质量基石。虽然重构的重要性被一直不断地提起，但我们发现真正掌握了重构手法的程序员，仍然屈指可数。通过对Refactoring一书的阅读，弄清楚什么是代码的坏味道，继而运用正确的重构手法，就能保证代码足够的整洁，甚至优雅。Robert Martin的另一本书Clean Coder与Clean Code一字之差，内容却大相径庭。它更多地是对程序员自身修养的关注。我们之所以强烈推荐它，并将其放入Fundamental圈中，是因为它介绍的知识，能够有效地帮助新入职场的程序员从一开始就能建立良好的编码习惯与意识。我们认为，这种好的习惯与意识，甚至比掌握某种开发技能显得更为重要。</p>
@@ -404,109 +406,111 @@
     <link href="http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man/"/>
     <updated>2013-03-28T20:30:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/03/28/diary-2-for-coaching-fresh-man</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/learning_perception.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/03/learning_perception.jpg %}
 几天后，新手又一次提交了一份代码。由于改动较大，新手重新创建了一个项目。在这份代码中，新手接受了我的建议，改为使用Spring提供的JdbcTemplate。包的结构也得到了一定程度的改善。这充分说明他认识到了问题所在，并能够快速准确地采取行动去纠正这些问题。但或许是我提出的问题太多，给出的建议不够具体，在新提交的这份代码中，我还是看到了一些问题，且某些问题在上一次Review代码时，我曾经提及。</p>
 
 <p>来看看如下两段代码。首先，是CustomerService，它定义了目前Story要求的基本业务：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Service</span><span class="o">(</span><span class="s">&quot;customerService&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerService</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Autowired</span>
-</span><span class='line'><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">CustomerDAO</span> <span class="n">customerDAO</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">defaultTableNameForCustomer</span> <span class="o">=</span> <span class="s">&quot;customer&quot;</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="n">defaultTableNameForCustomer</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTableName</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">tableName</span> <span class="o">=</span> <span class="n">tableName</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Transactional</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">addCustomer</span><span class="o">(</span><span class="n">customer</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">customerDAO</span><span class="o">.</span><span class="na">getCustomer</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdraw</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balance</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">customerDAO</span><span class="o">.</span><span class="na">deposit</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">balance</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+@Service("customerService")
+public class CustomerService {</p>
+
+<pre><code>@Autowired
+@Qualifier("customerDAO")
+private CustomerDAO customerDAO;
+
+private final String defaultTableNameForCustomer = "customer";
+private String tableName = defaultTableNameForCustomer;
+
+public void setTableName(String tableName) {
+    this.tableName = tableName;
+}
+
+@Transactional
+public void addCustomer(Customer customer) throws DuplicateCustomerException {
+    customerDAO.addCustomer(customer, tableName);
+}
+
+public Customer getCustomer(String nickname) throws CustomerNotFoundException {
+    return customerDAO.getCustomer(nickname, tableName);
+}
+
+public void withdraw(String nickname, double balanceToWithdraw) throws BalanceOverdrawException {
+    customerDAO.withdrawBalance(nickname, balanceToWithdraw, tableName);
+}
+
+public void deposit(String nickname, double balance) {
+    customerDAO.deposit(nickname, balance, tableName);
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>在CustomerService类中，调用了CustomerDAO类的相关方法：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span>
-</span><span class='line'><span class="nd">@Repository</span><span class="o">(</span><span class="s">&quot;customerDAO&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDAO</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Autowired</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">JdbcTemplate</span> <span class="n">jdbcTemplate</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">createTable</span><span class="o">(</span><span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;DROP TABLE IF EXISTS &quot;</span> <span class="o">+</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;CREATE TABLE &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="s">&quot;nickname VARCHAR(45) NOT NULL ,&quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;dateOfBirth DATETIME NOT NULL,&quot;</span> <span class="o">+</span> <span class="s">&quot;balance DOUBLE NOT NULL, &quot;</span> <span class="o">+</span> <span class="s">&quot;PRIMARY KEY(nickname)&quot;</span> <span class="o">+</span> <span class="s">&quot;);&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">DuplicateCustomerException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;insert into &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot;(nickname, dateOfBirth, balance) values (?, ?, ?)&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">(),</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">()});</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">DuplicateKeyException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">DuplicateCustomerException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; has already existed&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">Customer</span> <span class="nf">getCustomer</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerNotFoundException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select * from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">Customer</span> <span class="n">customer</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">customer</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="k">new</span> <span class="n">CustomerMapper</span><span class="o">());</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">EmptyResultDataAccessException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">CustomerNotFoundException</span><span class="o">(</span><span class="s">&quot;Customer with nickname &quot;</span> <span class="o">+</span> <span class="n">nickname</span> <span class="o">+</span> <span class="s">&quot; is not found&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">customer</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">Double</span> <span class="nf">getBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;select balance from &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; where nickname = ?&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">nickname</span><span class="o">},</span> <span class="n">Double</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">balance</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToWithdraw</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BalanceOverdrawException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">-</span> <span class="n">balanceToWithdraw</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">balanceAfter</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">BalanceOverdrawException</span><span class="o">(</span><span class="s">&quot;You have only &quot;</span> <span class="o">+</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="s">&quot;$. You can not withdraw &quot;</span> <span class="o">+</span> <span class="n">balanceToWithdraw</span> <span class="o">+</span> <span class="s">&quot;$&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deposit</span><span class="o">(</span><span class="n">String</span> <span class="n">nickname</span><span class="o">,</span> <span class="kt">double</span> <span class="n">balanceToDeposit</span><span class="o">,</span> <span class="n">String</span> <span class="n">tableName</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceBefore</span> <span class="o">=</span> <span class="n">getBalance</span><span class="o">(</span><span class="n">nickname</span><span class="o">,</span> <span class="n">tableName</span><span class="o">);</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balanceAfter</span> <span class="o">=</span> <span class="n">balanceBefore</span> <span class="o">+</span> <span class="n">balanceToDeposit</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">String</span> <span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;update &quot;</span> <span class="o">+</span> <span class="n">tableName</span> <span class="o">+</span> <span class="s">&quot; set balance = ? where nickname = ?&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">SQL</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">balanceAfter</span><span class="o">,</span> <span class="n">nickname</span><span class="o">});</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+@Component
+@Repository("customerDAO")
+public class CustomerDAO {</p>
+
+<pre><code>@Autowired
+private JdbcTemplate jdbcTemplate;
+
+public void createTable(String tableName) {
+    jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
+    jdbcTemplate.execute("CREATE TABLE " + tableName + "(" + "nickname VARCHAR(45) NOT NULL ," +
+            "dateOfBirth DATETIME NOT NULL," + "balance DOUBLE NOT NULL, " + "PRIMARY KEY(nickname)" + ");");
+}
+
+public void addCustomer(Customer customer, String tableName) throws DuplicateCustomerException {
+    String SQL = "insert into " + tableName + "(nickname, dateOfBirth, balance) values (?, ?, ?)";
+    try {
+        jdbcTemplate.update(SQL, new Object[]{customer.getNickname(), customer.getDateOfBirth(), customer.getBalance()});
+    } catch (DuplicateKeyException exception) {
+        throw new DuplicateCustomerException("Customer with nickname " + customer.getNickname() + " has already existed");
+    }
+}
+
+public Customer getCustomer(String nickname, String tableName) throws CustomerNotFoundException {
+    String SQL = "select * from " + tableName + " where nickname = ?";
+    Customer customer;
+    try {
+        customer = jdbcTemplate.queryForObject(SQL, new Object[]{nickname}, new CustomerMapper());
+    } catch (EmptyResultDataAccessException exception) {
+        throw new CustomerNotFoundException("Customer with nickname " + nickname + " is not found");
+    }
+    return customer;
+}
+
+public Double getBalance(String nickname, String tableName) {
+    String SQL = "select balance from " + tableName + " where nickname = ?";
+    double balance = jdbcTemplate.queryForObject(SQL, new Object[]{nickname}, Double.class);
+    return balance;
+}
+
+public void withdrawBalance(String nickname, double balanceToWithdraw, String tableName) throws BalanceOverdrawException {
+    double balanceBefore = getBalance(nickname, tableName);
+    double balanceAfter = balanceBefore - balanceToWithdraw;
+
+    if (balanceAfter &lt; 0) {
+        throw new BalanceOverdrawException("You have only " + balanceBefore + "$. You can not withdraw " + balanceToWithdraw + "$");
+    }
+
+    String SQL = "update " + tableName + " set balance = ? where nickname = ?";
+
+    jdbcTemplate.update(SQL, new Object[]{balanceAfter, nickname});
+}
+
+public void deposit(String nickname, double balanceToDeposit, String tableName) {
+    double balanceBefore = getBalance(nickname, tableName);
+    double balanceAfter = balanceBefore + balanceToDeposit;
+
+    String SQL = "update " + tableName + " set balance = ? where nickname = ?";
+    jdbcTemplate.update(SQL, new Object[]{balanceAfter, nickname});
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>这两段代码存在什么问题？</p>
 
@@ -523,7 +527,7 @@
     <link href="http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man/"/>
     <updated>2013-03-14T20:37:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/03/14/diary-1-for-coaching-fresh-man</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/growup.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/03/growup.jpg %}
 我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。它要求创建一个电子银行系统，提供银行的一些基本功能，例如客户管理、存取款等业务逻辑。</p>
 
 <p>最初我并不知道新手的真实水平，不过，可以假设他只具备基础的Java编程知识，对TDD、Refactoring以及OO有最初步的了解，但处于懵懵懂懂之间。我最初希望新手仅仅针对业务层进行设计与编码，但新手坚持要加上数据库访问以及Web页面。我认为这种做法有利于新手学习到更多的Java框架和库，便同意了这种请求。</p>
@@ -535,135 +539,135 @@
 
 <p>首先，项目没有使用任何构建工具，例如Maven或者Gradle。项目依赖的一些Java包，例如JUnit和Mockito，使用了直接依赖的方式。没有构建工具来创建构建脚本，就无法使用最快捷的方式来编译、构建以及运行测试，从而使得开发者懒于在提交前进行构建，以确保代码没有引入问题。没有自动化构建，更谈不上持续集成了（我打算在项目中期要求新手搭建CI环境）。</p>
 
-<p><img class="center" src="/images/2013/03/coach01.png">
+<p>{% img center /images/2013/03/coach01.png %}
 新手对代码包的划分，以及相关类的命名，有些惨不忍睹。上图是对该项目包结构以及相关类分布的截图。infoTracker包的命名让人觉得莫名其妙，打开其中的类查看代码，发现它事实上是调用DBTransaction类，执行对数据表的CRUD操作。例如代码：
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>infoTracker.CustomerAccountUpdater.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerAccountUpdater</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="n">DBTransaction</span> <span class="n">transaction</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DBTransaction</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">addBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">transaction</span><span class="o">.</span><span class="na">addBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">withdrawBalance</span><span class="o">(</span><span class="kt">double</span> <span class="n">money</span><span class="o">,</span> <span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CustomerBalanceInvalid</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">transaction</span><span class="o">.</span><span class="na">withdrawBalance</span><span class="o">(</span><span class="n">money</span><span class="o">,</span> <span class="n">customer</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java infoTracker.CustomerAccountUpdater.java %}
+public class CustomerAccountUpdater {</p>
+
+<pre><code>private static DBTransaction transaction = new DBTransaction();
+
+public static void addBalance(double money, Customer customer) {
+    transaction.addBalance(money, customer);
+}
+
+public static void withdrawBalance(double money, Customer customer) throws CustomerBalanceInvalid {
+    transaction.withdrawBalance(money, customer);
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>database包的DBTransaction类的命名更是容易引起歧义，以为是对事务的处理，实则是DAO对象：
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>database.DBTransaction.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBTransaction</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">connection</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">PreparedStatement</span> <span class="n">pstmt</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="nf">DBTransaction</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">connection</span> <span class="o">=</span> <span class="n">DBConnection</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCustomer</span><span class="o">(</span><span class="n">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">nickname</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getNickname</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">Date</span> <span class="n">dateOfBirth</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">properName</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getProperName</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">Date</span> <span class="n">joiningDate</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getJoiningDate</span><span class="o">();</span>
-</span><span class='line'>    <span class="kt">double</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getBalance</span><span class="o">();</span>
-</span><span class='line'>    <span class="kt">boolean</span> <span class="n">isBonusAdded</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">isBonusAdded</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;insert into userinfo values (?, ?, ?, ?, ?, ?)&quot;</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nickname</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">dateOfBirth</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">properName</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="n">joiningDate</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setDouble</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">balance</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">setBoolean</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">isBonusAdded</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java database.DBTransaction.java %}
+public class DBTransaction {</p>
+
+<pre><code>public static Connection connection;
+private PreparedStatement pstmt;
+
+public DBTransaction() {
+    this.connection = DBConnection.getConnection();
+}
+
+public void addCustomer(Customer customer) {
+    String nickname = customer.getNickname();
+    Date dateOfBirth = customer.getDateOfBirth();
+    String properName = customer.getProperName();
+    Date joiningDate = customer.getJoiningDate();
+    double balance = customer.getBalance();
+    boolean isBonusAdded = customer.isBonusAdded();
+
+    String sql = "insert into userinfo values (?, ?, ?, ?, ?, ?)";
+
+    try {
+        pstmt = connection.prepareStatement(sql);
+        pstmt.setString(1, nickname);
+        pstmt.setObject(2, dateOfBirth);
+        pstmt.setString(3, properName);
+        pstmt.setObject(4, joiningDate);
+        pstmt.setDouble(5, balance);
+        pstmt.setBoolean(6, isBonusAdded);
+
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>新手并没有使用我建议的Spring JDBC Template，而是直接使用了JDBC，因而充斥了大量的冗余代码。再看他实现的DBConnection，居然将连接的相关属性硬编码到Java类中了：
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>database.DBConnection.java </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBConnection</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="n">conn</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">Connection</span> <span class="nf">getConnection</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">driver</span> <span class="o">=</span> <span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;jdbc:mysql://127.0.0.1:3306/test_01&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">username</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">password</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">driver</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">conn</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">username</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">disconnect</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">conn</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java database.DBConnection.java %}
+public class DBConnection {</p>
+
+<pre><code>private static Connection conn;
+
+public static Connection getConnection() {
+    String driver = "com.mysql.jdbc.Driver";
+    String url = "jdbc:mysql://127.0.0.1:3306/test_01";
+    String username = "root";
+    String password = "";
+
+    try {
+        Class.forName(driver);
+        conn = DriverManager.getConnection(url, username, password);
+    } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return conn;
+}
+
+public static void disconnect() {
+    try {
+        conn.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>再看测试，没有单元测试和集成测试的概念。一些本来可以进行单元测试的逻辑，例如针对Customer Nickname的验证逻辑，并没有得到足够的测试覆盖。由于没有构建脚本帮助搭建本地测试环境，在获得系统源代码后，根本无法运行集成测试。</p>
 
 <p>整体来看，新手对一个项目如何进行分层以及分包缺乏基本的概念，没有自动化构建的意识。对于如何编写数据库访问的类也缺乏足够的知识。不了解单元测试与集成测试之间的区别，没有开发环境和测试环境的基本认识。</p>
 
 <p>我首先考虑引入gradle实现基本的自动化构建，它可以通过引入一些插件就可以比较容易地实现java编译、测试以及自动化打包的功能，还能比较容易地运行Jetty。
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>build.gradle </span></figcaption>
- <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;idea&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;java&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;war&#39;</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;jetty&#39;</span><span class="o">&lt;</span><span class="s">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s">&lt;p&gt;repositories {&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">mavenCentral</span><span class="o">()</span>
-</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="s">/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s">&lt;p&gt;dependencies {&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">compile</span> <span class="o">(</span>
-</span><span class='line'>        <span class="s1">&#39;joda-time:joda-time:2.1&#39;</span>
-</span><span class='line'><span class="o">)</span>
-</span><span class='line'><span class="n">testCompile</span> <span class="o">(</span>
-</span><span class='line'>        <span class="s1">&#39;junit:junit:4.11&#39;</span><span class="o">,</span>
-</span><span class='line'>        <span class="s1">&#39;org.mockito:mockito-all:1.9.5&#39;</span>
-</span><span class='line'><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:groovy build.gradle %}
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'jetty'</p>
+
+<p>repositories {</p>
+
+<pre><code>mavenCentral()
+</code></pre>
+
+<p>}</p>
+
+<p>dependencies {</p>
+
+<pre><code>compile (
+        'joda-time:joda-time:2.1'
+)
+testCompile (
+        'junit:junit:4.11',
+        'org.mockito:mockito-all:1.9.5'
+)
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>我修改了之前定义的infoTracker包，将其重命名为repository包，并放到domain包下，并对其下的类也同样进行了重命名。修改后的包结构如下图所示：
-<img class="center" src="/images/2013/03/coach02.png"></p>
+{% img center /images/2013/03/coach02.png %}</p>
 
 <p>我没有修改数据库访问层的代码，而是要求新手使用JDBC Template，并着重给他讲解了数据库访问的基础知识，并要求他将数据库属性放置到配置文件中。我想，到了下一周，他又会提交一份什么样的代码呢？</p>
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Design | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/design/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-22T20:20:11+08:00</updated>
+  <updated>2014-09-23T08:53:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,26 +18,26 @@
     <link href="http://agiledon.github.com/blog/2014/08/09/visualize-design-workshop/"/>
     <updated>2014-08-09T12:55:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/08/09/visualize-design-workshop</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/workshop.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2014/workshop.jpg %}
 之所以选择可视化手段来进行软件设计——非UI或UX的设计——是基于我对设计的理解：<strong>设计并非文档，而是交流</strong>。那种依靠一位英雄来完成所有的设计，并编撰为详尽的文档，然后让程序员连蒙带猜按图索骥的设计方式，完全不可取。尤其在一个自组织的开发团队中，我们希望人人都是程序员，人人都是软件设计师，人人都是架构师。</p>
 
 <p>那么，该如何做到充分的交流，就像风吹过树林，不分彼此的摇动每一片树叶？我想到最简单直截的方式：可视化。然而，此可视化非UML之所谓的“一图胜千言”。没错，我们当然需要绘制设计图，而且必须绘制设计图，但我们更希望是以草图的形式，并辅以视觉引导，来推着团队的每个成员，渐进地完善设计，直到抵达设计的真相。我们没有门派偏见，亦不愿邯郸学步，因而我们既信奉“拿来主义”，又会依据设计的本质原则与真谛，进行了细微的创新。创新未必一定是无中生有，“旧瓶装新酒”或是对经典的追随，“新瓶装旧酒”又何尝不能看作是创意的包装！</p>
 
 <p>此次在TID会议上的可视化设计工作坊算是我与姜志辉针对此主题的一次彩排吧。我们从未就此话题有过深度合作，但是，我们对设计的理解是志同道合的，说得肉麻点，有心有灵犀的感觉。下图是整个工作坊的路径缩影：
-<img class="center" src="/images/2014/visulaizationdesign.jpg"></p>
+{% img center /images/2014/visulaizationdesign.jpg %}</p>
 
 <p>我们的主线就是设计的可视化，整个过程我们通过草图、即时贴、画布等多种方式来触发团队成员之间的交流与讨论。至于方法工具箱，则几乎等同于一个大杂烩了。我们使用经典的用例图进行需求分析（我们会以商业画布为需求的起点，因为时间关系省去了此步骤），继而根据用例的边界获得DDD中所谓的Bounded Context。
-<img class="center" src="/images/2014/contextmap.jpg"></p>
+{% img center /images/2014/contextmap.jpg %}</p>
 
 <p>通过运用DDD的Context Map，我们辨别出Context之间的上下游关系与各种集成方式，继而利用Cockburn的六边形架构以及传统的分层架构，驱动出系统的应用逻辑架构与物理架构。
-<img class="center" src="/images/2014/haxagon_workshop.jpg"></p>
+{% img center /images/2014/haxagon_workshop.jpg %}</p>
 
 <p>然后，我们跳入Context的内部，开始领域建模。我们尝试了两种领域建模方式：健壮性分析与四色建模，以此为起点，我们可以得到粗略的CRC草图，之后就进入了我和姜志辉提出的设计画布。
-<img class="center" src="/images/2014/designcanvas.jpg"></p>
+{% img center /images/2014/designcanvas.jpg %}</p>
 
 <p>我们希望看到的是这样的交流场景，如此才可碰撞出好设计的火花。
-<img class="center" src="/images/2014/workshop01.jpg">
-<img class="center" src="/images/2014/workshop02.jpg"></p>
+{% img center /images/2014/workshop01.jpg %}
+{% img center /images/2014/workshop02.jpg %}</p>
 
 <p>可视化设计并非仅能针对一个新系统，或者仅用于设计阶段。</p>
 
@@ -64,104 +64,103 @@
 <p>对于多数程序员而言，并非不重视重用，但多数却不愿意为了重用付出一些代价。例如针对一些具备差异性的功能，一些程序员更愿意使用Copy And Paste，然后再针对自己的需求对实现进行修改或调整。观察目前的一些集成测试，正是这样一些陋习导致的。</p>
 
 <p>在这些集成测试中，使用了继承的方式来重用数据准备的功能。如下图所示：
-<img class="center" src="/images/2013/07/datafixture.png"></p>
+{% img center /images/2013/07/datafixture.png %}</p>
 
 <p>在CustomerIntegratedDataFixture中，提供了相关方法实现了对Customer数据的创建。由于需要提供访问FtpServer的功能，因此又定义了CustomerIntegratedDataAndFtpPrepareFixture类，使其继承CustomerIntegratedDataFixture。它定义了startFtpServer()和stopFtpServer()方法，并在JUnit中，运用了@BeforeClass与@AfterClass标记，使其避免为每个测试启动和停止专有的FtpServer。现在，我们编写的集成测试同样需要与Customer有关的数据，但并不需要Ftp功能。换言之，我们希望重用CustomerIntegratedDataFixture。现在看来，似乎并没有问题。例如，我们可以让新增的测试直接继承CustomerIntegratedDataFixture。然而，就在同样的集成测试模块中，我们还发现了其他集成测试同样编写了自己的数据准备类。这些数据准备与Spring Batch Job无关，却同样提供了准备Customer数据的功能。存在的差异是它除了提供Customer数据外，还提供了依赖Customer的Consent数据。</p>
 
 <p>我们没有着急去重用CustomerIntegratedDataFixture，因为我们察觉到代码会随着这种继承体系的延伸，会变得越来越难以重用。如上图的继承体系，使得数据准备与Spring Batch Job紧耦合了，同时又在CustomerIntegratedDataAndFtpPrepareFixture子类中引入了与Ftp有关的耦合，明显违背了单一职责原则。我们需要单独剥离出数据准备的类，它即可以作为超类被集成测试类继承，也可以通过组合的方式被继承了JobLauncherTestUtils的测试子类所调用。这符合Bridge模式的设计原则。因此，我们运用了“Replace Inheritance with Delegation”手法，对其进行了简单重构：
-<img class="center" src="/images/2013/07/datafixtureafterrefactor.png"></p>
+{% img center /images/2013/07/datafixtureafterrefactor.png %}</p>
 
 <p>之后，我们对Customer和Consent对应的数据准备类进行了相应的重构与修改，使得这些数据的准备更为内聚，并去除一些不必要的重复，使之更容易被重用。
-<img class="center" src="/images/2013/07/customerfixture.png"></p>
+{% img center /images/2013/07/customerfixture.png %}</p>
 
 <p>第二个例子是在JBehave的Story中，我看到了这样的Steps类的组织，如图：
-<img class="center" src="/images/2013/07/steps.png"></p>
+{% img center /images/2013/07/steps.png %}</p>
 
 <p>我们看到了什么？——一个“扁平组织”的Steps类。显然，促成这样的结果是一个渐进的过程。由于在之前编写相关的Steps类时，还看不到分类的概念，因此，只是简单地将自己的Steps类放到step之下即可。然后，不断有开发人员增加自己的Steps类，他们找到了step位置，却没有仔细思考是否需要更好地对Steps类进行组织。这就使得Steps类略显零乱，没有展现出好的结构。我们重新组织了这些Steps类：
-<img class="center" src="/images/2013/07/stepsafterrefactor.png"></p>
+{% img center /images/2013/07/stepsafterrefactor.png %}</p>
 
 <p>只需要简单地归类，调整结构，整个Steps类就变得更加清晰了。于是，我们发现了可以重用的可能。观察重新组织之后的batch包，这里面包含的UpdateCustomerTypeSteps，ProductSystemLinkLoaderSteps与DeleteOrphanedRecordsSteps，都是与Btach Job有关的Steps类。MaintainProspectsSteps类则是我们新增的类，它同样需要用到启动Batch Job的方法。在之前存在的Steps类中，已经存在相似的代码了。例如在UpdateCustomerTypeSteps类中：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">String</span> <span class="n">waitAndGetSatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">params</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">params</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">db2JdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;and jobParam.KEY_NAME = &#39;retry&#39; &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;retry&quot;</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}</p>
+
+<pre><code>private String waitAndGetSatus(Map&lt;String, String&gt; params) throws InterruptedException {
+    String status = null;
+    for (int index = 0; index &lt; MAX_TRY_TIME; index++) {
+        status = getJobStatus(params);
+        if ("COMPLETED".equals(status)) {
+            break;
+        }
+        Thread.sleep(WAIT_INTERVAL);
+    }
+    return status;
+}
+
+private String getJobStatus(Map&lt;String, String&gt; params) {
+    return db2JdbcTemplate.queryForObject("select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec " +
+            "inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID " +
+            "and jobParam.KEY_NAME = 'retry' " +
+            "and jobParam.STRING_VAL = ?", String.class, params.get("retry"));
+}
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>再看DeleteOrphanedRecordsSteps类：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">String</span> <span class="n">waitAndGetSatus</span><span class="o">(</span><span class="n">String</span> <span class="n">currentTime</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">currentTime</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">String</span> <span class="n">currentTime</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;and jobParam.KEY_NAME = &#39;time&#39; &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">currentTime</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}</p>
+
+<pre><code>private String waitAndGetSatus(String currentTime) throws InterruptedException {
+    String status = null;
+    for (int index = 0; index &lt; MAX_TRY_TIME; index++) {
+        status = getJobStatus(currentTime);
+        if ("COMPLETED".equals(status)) {
+            break;
+        }
+        Thread.sleep(WAIT_INTERVAL);
+    }
+    return status;
+}
+
+private String getJobStatus(String currentTime) {
+    return jdbcTemplate.queryForObject("select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec " +
+            "inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID " +
+            "and jobParam.KEY_NAME = 'time' " +
+            "and jobParam.STRING_VAL = ?", String.class, currentTime);
+}
+</code></pre>
+
+<p>{% endcodeblock %}</p>
 
 <p>比较这些方法，除了jobParam的key与value存在细微区别，其余实现完全相同。若按照这样一个态势发展，随着与Batch Job有关的Story逐渐增多，不发现这种代码的臭味并即刻解决，这些代码就会逐渐蔓延，最后变得“无法自拔”。想要修改，已经变得极为困难了。</p>
 
 <p>我们为这些Steps类提供了一个抽象的超类AbstractBatchJobSteps，并将这些可能重用的方法提取到这个超类中：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AbstractBatchJobSteps</span> <span class="kd">extends</span> <span class="n">AbstractSteps</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">WAIT_INTERVAL</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">MAX_TRY_TIME</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">protected</span> <span class="n">String</span> <span class="nf">waitAndGetSatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">params</span><span class="o">,</span> <span class="n">String</span> <span class="n">paraKey</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">index</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">MAX_TRY_TIME</span><span class="o">;</span> <span class="n">index</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">status</span> <span class="o">=</span> <span class="n">getJobStatus</span><span class="o">(</span><span class="n">params</span><span class="o">,</span> <span class="n">paraKey</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="s">&quot;COMPLETED&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">status</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">WAIT_INTERVAL</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="nf">getJobStatus</span><span class="o">(</span><span class="n">Map</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">params</span><span class="o">,</span> <span class="n">String</span> <span class="n">paraKey</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="s">&quot;select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;and jobParam.KEY_NAME = &#39;&quot;</span> <span class="o">+</span> <span class="n">paraKey</span> <span class="o">+</span> <span class="s">&quot;&#39; &quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;and jobParam.STRING_VAL = ?&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">paraKey</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+public class AbstractBatchJobSteps extends AbstractSteps {</p>
+
+<pre><code>private static final int WAIT_INTERVAL = 1000;
+private static final int MAX_TRY_TIME = 30;
+
+protected String waitAndGetSatus(Map&lt;String, String&gt; params, String paraKey) throws InterruptedException {
+    String status = null;
+    for (int index = 0; index &lt; MAX_TRY_TIME; index++) {
+        status = getJobStatus(params, paraKey);
+        if ("COMPLETED".equals(status)) {
+            break;
+        }
+        Thread.sleep(WAIT_INTERVAL);
+    }
+    return status;
+}
+
+private String getJobStatus(Map&lt;String, String&gt; params, String paraKey) {
+    return jdbcTemplate.queryForObject("select jobExec.STATUS from TCIST_JOB_EXECUTION jobExec " +
+            "inner join TCIST_JOB_PARAMS jobParam on jobExec.JOB_INSTANCE_ID = jobParam.JOB_INSTANCE_ID " +
+            "and jobParam.KEY_NAME = '" + paraKey + "' " +
+            "and jobParam.STRING_VAL = ?", String.class, params.get(paraKey));
+} 
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>如上的例子都可以通过一些细小的重构手法改进代码，使得代码的结构更加清晰，并有利于代码的重用。我深信大多数开发人员都具备这样的技能，且只需要稍加思索，即能发现这些代码的坏味。然而，我们总是因为种种原因，对这种还不太严重的“破窗”风景视而不见。殊不知当我们开始对这种不够整洁的代码采取纵容态度时，就可能会是代码腐化之始。一旦真正腐化，就将积重难返，到了那时，我们就可能真正无能为力了。</p>
 
@@ -179,7 +178,7 @@
 <p>我们希望在后续版本中解决这一问题。然而，现实总是这么残酷。真正处理文件并提供下载功能的系统并不在我们的掌控之中。它是第三方Vendor提供的Web Service，我们开发的系统仅仅涉及到请求的转发，完成对该Web Service的调用；并在获得结果后，将响应（包含了文件流数据）返回给客户端。换言之，我们既不能改善文件处理的实现逻辑，以提高处理的速度；也无法对该Web Service进行水平伸缩，例如通过引入多台服务器建立集群和负载均衡的方式。</p>
 
 <p>遭遇如此场景实属无奈，要得出好的设计决策就好似戴着镣铐跳舞，只有在自己的服务端下功夫。我们首先想到的是限流（throttle）的方式，通过引入一个类似Controller角色的对象RequestHandlerPool，对客户端的请求进行控制。我们可以设定一个阈值，一旦超过该阈值，就将后续的请求放入队列进行排队。这个限流可以采用简单地在内存实现请求池全局对象。当然，也可以考虑引入消息队列中间件。改进后的时序图如下所示：
-<img class="center" src="/images/2013/06/filehandling.png"></p>
+{% img center /images/2013/06/filehandling.png %}</p>
 
 <p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
 
@@ -192,7 +191,7 @@
     <link href="http://agiledon.github.com/blog/2013/05/13/architecture-and-design-of-reading-radar/"/>
     <updated>2013-05-13T20:41:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/05/13/architecture-and-design-of-reading-radar</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/04/reading_radar_02.png">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/04/reading_radar_02.png %}
 编码的能力与设计的能力，二者均不可偏废。我们认为，编码事实上是设计的一部分，只不过它更多的是以代码的形式来呈现，而设计则主要由模型来组成。这种设计模型有助于知识的传递与分享，同时也可以有效地提高编码质量。至于架构，则是软件系统中重要的事物，它关乎的内容往往是难以更改的。卓越的软件设计一定拥有美的架构，也能够有助于促进架构的演化。在ThoughtWorks，并没有明确的架构师职位。如果有，我们也希望这个角色应该是Martin Folwer认为的Architectus Oryzus，这些架构师与处理最困难部分的其他开发人员合作，积极地向项目贡献代码。显然，我们认为架构师也是程序员。这正是我们要在这个读书雷达中列出Architecture &amp; Design象限的原因。</p>
 
 <p>整体概览本象限列出的书籍，若有相关读书经验的人一定会注意到，这里列出的书籍并没有脱离面向对象设计体系的范畴。我们认为，在当今的企业级软件开发领域中，面向对象的思想体系仍然占据了主要的地位。对于程序员而言，建立面向对象的设计思维仍然至关重要。但是，我们从来都不曾忽略函数式语言对设计领域带来的冲击，以及它可能产生的巨大影响。在<a href="http://www.thoughtworks.com/insights">最新的ThoughtWorks Technology Radar</a>的Languages &amp; Frameworks象限中，ThoughtWorks对Scala，Clojure，F#等函数式语言青睐有加，同时也谈到了在Java中引入高阶函数等函数式特性的Functional Java发展趋势。我们也注意到在2012年的DDD eXchange会议上，函数式语言对设计范式的转变产生的影响。遗憾的是，除了少量介绍具体函数式语言的书籍，我们很少看到如面向对象设计一般专门讲解与深入探讨函数式软件设计的书籍。与其滥竽充数，不如抱残守缺。我们选择了在这期读书雷达图中，让函数式设计范式集体缺席。</p>
@@ -231,7 +230,7 @@
     <link href="http://agiledon.github.com/blog/2013/05/04/design-decision-learning-from-go/"/>
     <updated>2013-05-04T21:12:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/05/04/design-decision-learning-from-go</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/05/decision.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/05/decision.jpg %}
 阅读了Rob Pike撰写的《<a href="http://www.oschina.net/translate/go-at-google-language-design-in-the-service-of-software-engineering">Go在谷歌：以软件工程为目的的语言设计</a>》，颇多感触。这些感触并不在于语言层面，或者Go这门语言的语法以及底层实现；而是因为语言设计者们在设计Go这门语言时，做出设计决策的合理性以及基于的事实与根据。正如此文标题所言，显然，Go的创造者们从一开始就树立了准确的愿景与目标，并且清晰地确定了该语言的适用场景，即它需要解决“由多核处理器、系统的网络化、大规模计算机集群和Web编程模型带来的编程问题”，这是理解这门语言，进而明确其设计意图的最根本所在。</p>
 
 <p>刚刚参加了公司八叉大神组织的轮子大赛，我们写了一个轻量级的IoC容器<a href="https://github.com/agiledon/melt">Melt</a>。就这个容器或者说框架本身，和八叉讨论了框架设计的特点。他提到“framework开发和功能开发的一个最大分别就在于，你需要规定在这个framework里那些是支持的，哪些是不支持的。这条线要你自己来划，或者说你的framework要有态度。”这是我非常认同的观点。Framework要有态度，这意味着你在践行并且在引导一种最佳实践。或者我们可以理解为这是一种架构的约束。我们都知道，在软件设计中，如果没有任何约束，带来的问题反而会更大。约束是一种驱动力，例如我们需要可伸缩性的约束，就需要我们设计的服务不应该是有状态的。框架的态度大意如此。</p>
@@ -242,7 +241,11 @@
 
 
 <p>再看Go语言的依赖处理，它施加了一个看似比较独裁的约束，即“不允许其依赖图中有循环性的包含关系，编译器和链接器都会对此进行检查以确保不存在循环依赖”。设计者并不否认循环依赖存在一定的价值，然而在大规模程序的前提下，它带来的问题远远超过了可能存在的价值。文中提到：
-<blockquote><p>循环依赖要求编译器同时处理大量源文件，从而会减慢增量式build的速度。更重要的是，如果允许循环依赖，我们的经验告诉我们，这种依赖最后会形成大片互相纠缠不清的源代码树，从而让树中各部分也变得很大，难以进行独立管理，最后二进制文件会膨胀，使得软件开发中的初始化、测试、重构、发布以及其它一些任务变得过于复杂。</p></p><p><p>不支持循环import偶尔会让人感到苦恼，但却能让依赖树保持清晰明了，对package的清晰划分也提了个更高的要求。就象Go中其它许多设计决策一样，这会迫使程序员早早地就对一些大规模程序里的问题提前进行思考（在这种情况下，指的是package的边界），而这些问题一旦留给以后解决往往就会永远得不到满意的解决。</p></blockquote></p>
+{% blockquote %}
+循环依赖要求编译器同时处理大量源文件，从而会减慢增量式build的速度。更重要的是，如果允许循环依赖，我们的经验告诉我们，这种依赖最后会形成大片互相纠缠不清的源代码树，从而让树中各部分也变得很大，难以进行独立管理，最后二进制文件会膨胀，使得软件开发中的初始化、测试、重构、发布以及其它一些任务变得过于复杂。</p>
+
+<p>不支持循环import偶尔会让人感到苦恼，但却能让依赖树保持清晰明了，对package的清晰划分也提了个更高的要求。就象Go中其它许多设计决策一样，这会迫使程序员早早地就对一些大规模程序里的问题提前进行思考（在这种情况下，指的是package的边界），而这些问题一旦留给以后解决往往就会永远得不到满意的解决。
+{% endblockquote %}</p>
 
 <p>显然，Go语言的设计者并不是要设计一门大而全，兼容并包的全能语言，它严格而合理地压制着设计时可能膨胀的欲望，不与设计愿景相悖，并时刻从工程学的角度看待设计。设计一门语言如此，开发一个产品或项目更应如此。例如对于产品而言，当下流行的Lean Startup对于产品的理念，正是这种实效的工程主义。MVP（最小可验证产品）的划分将精简与避免浪费做到了极致，严格避免功能盲目的扩大化。</p>
 
@@ -251,7 +254,9 @@
 <p>看来，我们有必要正视依赖与重用之间存在的鱼与熊掌不可兼得的问题。我的意见是当出现此类问题时，我们可以考虑职责分配上是否出现问题。如果模块的分解遵循了“高内聚”原则，可能此类依赖就只会发生在模块的内部。另一种思路是考虑我提出的所谓“依赖的沉淀”，即随时绘制组件图或包图，清晰地标明依赖的关系和方向，并根据权值来判断该模块应该位于纵向的物理分布层级的哪一层。具体细节可参考我写的一篇文章《<a href="http://agiledon.github.io/blog/2013/03/03/assigning-responsibility-between-modules/">模块间的职责分配</a>》。</p>
 
 <p>文中还提到了Go语言故意缺失的一个特性就是不支持缺省参数。设计者认为：
-<blockquote><p>缺省参数太容易通过添加更多的参数来给API设计缺陷打补丁，进而导致太多使程序难以理清深圳费解的交互参数。默认参数的缺失要求更多的函数或方法被定义，因为一个函数不能控制整个接口，但这使得一个API更清晰易懂。哪些函数也都需要独立的名字， 使程序更清楚存在哪些组合，同时也鼓励更多地考虑命名--一个有关清晰性和可读性的关键因素。</p></blockquote></p>
+{% blockquote %}
+缺省参数太容易通过添加更多的参数来给API设计缺陷打补丁，进而导致太多使程序难以理清深圳费解的交互参数。默认参数的缺失要求更多的函数或方法被定义，因为一个函数不能控制整个接口，但这使得一个API更清晰易懂。哪些函数也都需要独立的名字， 使程序更清楚存在哪些组合，同时也鼓励更多地考虑命名--一个有关清晰性和可读性的关键因素。
+{% endblockquote %}</p>
 
 <p>姑且不谈这一设计的驱动因素是否可取，这里显然教会了我们在软件设计时应该懂得如何去权衡。权衡的能力是架构师必备的技能，就好像老婆和老妈同时落水了，你该去救哪一个，这个命题总是让人不舒服，因而不肯回答。说来简单，在进行设计决策时，如果要权衡多个指标，一定要以最重要的哪个指标为主。问题是当我们不知道哪个指标更重要时，应该怎么办？我想，答案还是应该从愿景中去寻找。根据Go语言的愿景，对于大规模程序而言，清晰易懂的API会降低维护成本，并在一定程度上保障软件的质量，这显然比API的兼容性更为重要。</p>
 

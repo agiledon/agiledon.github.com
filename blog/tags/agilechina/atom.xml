@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: AgileChina | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/agilechina/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-22T20:20:11+08:00</updated>
+  <updated>2014-09-23T08:53:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -45,23 +45,23 @@
 
 <h4>架构师</h4>
 
-<p><img class="left" src="/images/2013/07/nealford.png"></p>
+<p>{% img left /images/2013/07/nealford.png %}</p>
 
 <h5>Neal Ford</h5>
 
 <p>Neal Ford是全球IT咨询公司ThoughtWorks的软件架构师。除了常规工作，他做的事情还包括设计和开发应用程序、教学材料、杂志文章、课件和视频/DVD演示，同时还是各种技术书籍的作者或者编辑，其中包括著作The Productive Programmer。他专注于设计和开发大规模企业应用程序，同时，他也是世界开发人员会议的国际知名演说家。
-<img class="right" src="/images/2013/07/ericevans.png"></p>
+{% img right /images/2013/07/ericevans.png %}</p>
 
 <h5>Eric Evans</h5>
 
 <p>大型业务系统方面的领域建模和设计专家。早20世纪90年代，他就参与了很多项目，基于对象（Object）开发出许多大型的业务系统，并致力于将敏捷过程应用到现实项目中。
 此外，Eric Evans还是《领域驱动设计——软件核心复杂性应对之道》一书的作者。在书中他总结了构建上述业务系统相关的经验、原则和技术等。并介绍了一个建模和设计技术的系统，成功的团队应用这一系统可以组装有业务需求的复杂软件系统，并使系统在增大时仍然保持敏捷。
-Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。<img class="left" src="/images/2013/07/buschmann.png"></p>
+Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。{% img left /images/2013/07/buschmann.png %}</p>
 
 <h5>FranK Buschmann</h5>
 
 <p>德国慕尼黑西门子技术公司资深技术专家及负责人。Wiley软件设计模式系列图书主编。他的研究领域包括对象技术、软件架构、产品线、模型驱动软件开发和模式。他曾是ANSI C++标准化委员会x3J16的成员，于1996年发起了首届EuroPLoP会议。Frank Buschmann是Pattern-Oriented Software Architecture系列书籍的主要作者。
-<img class="right" src="/images/2013/07/george.png"></p>
+{% img right /images/2013/07/george.png %}</p>
 
 <h5>Fred George</h5>
 
@@ -69,17 +69,17 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 
 <h4>推荐书籍</h4>
 
-<p><img class="left" src="/images/2013/07/releaseit.png">#####Release It!</p>
+<p>{% img left /images/2013/07/releaseit.png %}#####Release It!</p>
 
 <p><strong>推荐理由：</strong>Michael Nygard的Releast It!可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
 
-<p><img class="right" src="/images/2013/07/beautifularchitecture.png"></p>
+<p>{% img right /images/2013/07/beautifularchitecture.png %}</p>
 
 <h5>Beautiful Architecture</h5>
 
 <p><strong>推荐理由：</strong>全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。</p>
 
-<p><img class="right" src="/images/2013/07/eip.png"></p>
+<p>{% img right /images/2013/07/eip.png %}</p>
 
 <h5>Enterprise Integation Patterns</h5>
 

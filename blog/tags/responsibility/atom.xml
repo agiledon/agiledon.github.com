@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Responsibility | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/responsibility/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-22T20:20:11+08:00</updated>
+  <updated>2014-09-23T08:53:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/03/03/assigning-responsibility-between-modules/"/>
     <updated>2013-03-03T20:19:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/03/03/assigning-responsibility-between-modules</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/module.png"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2013/03/module.png %}</p>
 
 <p>职责分配不仅限于对象之间。如果将对象看做是细粒度的封装，则模块作为组合多个对象的设计元素，可以看做是粗粒度的封装。倘若在模块之间分配职责失当，带来的影响会比对象职责分配不合理更大。这是因为只要在OO设计中进行了适度的封装，在一定程度上体现了隐藏细节的设计理念，对象的职责分配失当就不会溢出边界，对其余对象不会产生太大的影响。</p>
 
@@ -32,17 +32,17 @@
 <p>另一种坏味道我称之为“爱屋及乌”，简单说来，其实就是违背了Robert Martin提出的有关包设计的“共同复用原则（CRP）”，即“一个包中的所有类应该是共同重用的。”如果一个包的职责分配出现问题，违背了这种共同重用，就可能导致一个包为了使用另一个包的某一个特性，必须把整个包都放进来，哪怕这个包中的其他特性对于使用的包而言完全无用。这就好像我贪恋钱财，娶了一个垂垂老矣的富婆，为了钱，也不在乎丑陋的容颜和高我数倍的年龄了。</p>
 
 <p>例如在我之前设计的一个系统中，出现了这样的包图：
-<img class="center" src="/images/2013/03/module01.png"></p>
+{% img center /images/2013/03/module01.png %}</p>
 
 <p>该系统属于基于元数据的报表系统，engine.report包负责读取定义在配置文件中的报表模板，并在运行时绑定数据，最终输出报表。报表的数据则由engine.data包来承担，它会根据配置的元数据生成SQL语句，访问数据库，动态得到报表所需的数据。engine.entity是在之后引入的一个包，它承担了类似ORM的功能，能够将engine.data包返回的数据，通过配置的映射信息，生成Entity对象。而该Entity对象则作为报表数据绑定的基本元素。至于tool.reportdesigner，则是一个Swing界面的报表设计器应用程序，用户通过界面的设计操作，可以生成我们需要的报表模板。</p>
 
 <p>倘若没有绘制这个包图，而是直接阅读代码，或许很难发现这其中蕴含的设计问题。包图清晰直观，首先我们看到了engine.report与engine.entity之间存在双向依赖（它是循环依赖的特殊形式），并在engine.report、engine.entity与engine.data三者之间发现了循环依赖。其次，我们发现tool.reportdesigner依赖于engine.report，但由于它只负责报表模板的设计，并不需要engine.report包中的运行时数据绑定，以及报表导出功能。显然，前者违背了“循环依赖”，后者违背了“爱屋及乌”。</p>
 
 <p>究其原因，我们发现罪魁祸首就在于engine.report包中的xml组件。该组件的功能与配置相关，其中还包含了许多配置在xsd文件中自动生成的jaxb对象。它并不仅仅是Report独有的功能，相反，这个包图的所有包事实上都需要用到这个功能。换言之，这些包均需要依赖于xml。最简洁的改进方案就是将它抽离出来，放到一个单独的包中。改进后的包图如下：
-<img class="center" src="/images/2013/03/module02.png"></p>
+{% img center /images/2013/03/module02.png %}</p>
 
 <p>为何我将xml设计为infrastructure.xml包？这完全是因为依赖的关系。假设我们将每个依赖都设置其权值为1，则一个包被依赖得越多，其依赖权值就越大。假设这些权值就等同于重量，然后我们设想将这些包都丢到一湖秋水中，分次浮沉。显然，权值越多的包就会慢慢沉淀下去，而权值越少的包最后会浮在上面。我称这种现象为“依赖沉淀”。通过这种方式，可以在一定程度上帮助我们对软件系统的层进行有效划分。
-<img class="center" src="/images/2013/03/module03.png"></p>
+{% img center /images/2013/03/module03.png %}</p>
 
 <p>依赖管理是开发者可能面临的地狱。如果还加上对各种版本包的依赖，这个地狱就可能处于十八层的水深火热中了。依赖管理是一个大课题，但如果模块间的职责分配合理，或许会是一个不错的开始。</p>
 ]]></content>
@@ -54,7 +54,7 @@
     <updated>2013-02-20T21:49:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/20/responsibility-and-encapsulation</id>
     <content type="html"><![CDATA[<p>面向对象设计的关键，我认为是识别职责，封装合理的对象。缺乏合理的封装，就会缺少正确的领域对象，使得属于共同职责的领域信息散乱分布到系统的各个方法中，导致概念不够清晰，职责混乱，以及代码的重复。然而，如果没有正确地识别职责，又可能导致封装无从谈起，因为我们获得的需求可能是散乱的，既难以抽象概念，又缺乏层次。故而，职责与封装是相辅相成的概念。如下图所示：
-<img class="center" src="/images/2013/02/responsibility01.png"></p>
+{% img center /images/2013/02/responsibility01.png %}</p>
 
 <p>我们不能简单地将封装当做是“信息隐藏”。所谓隐藏信息以及具体行为的细节，确实是封装的本质所在，但面向对象思想中的封装，其目的还在于对领域概念以及设计概念的识别。前者是对业务模型的抽象，如电子商务系统中的Product、Order、OrderItem等概念；后者是对设计模型的改进，如在设计模式中引入策略对象、命令对象，DDD中提倡的Repository、Factory对象。这也是为何许多设计者很容易理解封装的概念，但却始终无法做到合理封装的根本原因。</p>
 
@@ -62,146 +62,148 @@
 
 
 <p>此时，我们需要运用职责驱动设计，通过对职责的识别来提炼这些概念。概念可以起到分类的作用，根据职责对行为与数据进行分类，找到其应该归属的对象，散乱的逻辑就会变得清晰起来。就好似我们对彩球按照颜色进行分类，并放置到不同的位置：
-<img class="center" src="/images/2013/02/responsibility02.png"></p>
+{% img center /images/2013/02/responsibility02.png %}</p>
 
 <p>不同的颜色有分明不同的特征，只要不是色盲，分类自然水到渠成。现实中的系统需求自然不如颜色这般泾渭分明，要从纷繁复杂的混沌需求中超脱出来，最好的办法就是按照不同的角度或层次去寻找职责，并用最简单的语言一句话描述这些职责。根据职责的特征，我大致将职责分为三个层次，由外自内分别为：业务价值、业务功能与业务实现，如下图所示：
-<img class="center" src="/images/2013/02/responsibility03.png"></p>
+{% img center /images/2013/02/responsibility03.png %}</p>
 
 <p>业务价值基本上体现了这个需求用例（或用户故事）存在的目的，即解释了需求的Why。简言之，只有提供了该职责，则此需求对于客户才是有价值的。这也符合用户故事INVEST原则中的V（Valuable）。没有价值的需求，自然是应该放弃的。故而在识别业务价值时，常常从用户的视角来分析，辨别。</p>
 
 <p>业务价值是职责驱动的入口，因为在寻找到了业务价值之后，我们就可以剖析该价值需要哪些支撑功能（它可以解释需求的What），再由功能继续深入分析，找到实现功能的职责（它可以解释需求的How）。因此，这个模型是一个层层推进的过程。</p>
 
 <p>职责驱动不仅仅可以从文字需求入手，同样可以针对已经实现的代码。甚至我们可以将这种职责驱动看做是一种阅读代码的技巧，通过寻找业务价值，进而分析业务功能和业务实现，对代码形成一个整体的感观，进而通过合理地分配职责改善原有代码。如下代码是《修改代码的艺术》一书中给出的例子：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>import javax.mail.&lt;em>;
-</span><span class='line'>import javax.mail.internet.&lt;/em>;&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>public class MailingListServer {&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>public static final String SUBJECT_MARKER = "[list]";
-</span><span class='line'>public static final String LOOP_HEADER = "X-LOOP";
-</span><span class='line'>
-</span><span class='line'>public static void main(String[] args) {
-</span><span class='line'>    if (args.length != 8) {
-</span><span class='line'>        System.err.println("Usage: java MailingList &lt;popHost&gt; " + 
-</span><span class='line'>        "&lt;smtpHost&gt; &lt;pop3user&gt; &lt;pop3password&gt; &lt;smtpuser&gt; &lt;smtppassword&gt; &lt;listname&gt; " +
-</span><span class='line'>        "&lt;relayinterval");
-</span><span class='line'>    }
-</span><span class='line'>    return;
-</span><span class='line'>
-</span><span class='line'>    HostInformation host = new HostInformation(arg[0]);
-</span><span class='line'>    String listAddress = args[6];
-</span><span class='line'>    int interval = new Integer(args[7]).intValue();
-</span><span class='line'>    Roster roster = null;
-</span><span class='line'>    try {
-</span><span class='line'>        roster = new FileRoster("roster.txt");
-</span><span class='line'>    }catch(Exception e) {
-</span><span class='line'>
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    try {
-</span><span class='line'>        do {
-</span><span class='line'>            try {
-</span><span class='line'>                Properties properties = System.getProperties();
-</span><span class='line'>                Session session = Session.getDefaultInstance(properties, null);
-</span><span class='line'>                Store store = session.getStore("pop3");
-</span><span class='line'>                store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
-</span><span class='line'>                Folder defaultFolder = store.getDefaultFolder();
-</span><span class='line'>                if (defaultFolder == null) {
-</span><span class='line'>                    return;
-</span><span class='line'>                }
-</span><span class='line'>                Folder folder = defaultFolder.getFolder("INBOX");
-</span><span class='line'>                if (folder == null) {
-</span><span class='line'>                    return;
-</span><span class='line'>                }
-</span><span class='line'>                folder.open(FOLDER.READ_WRITE);
-</span><span class='line'>                process(host, listAddress, roster, session, store, folder);
-</span><span class='line'>            }catch () {
-</span><span class='line'>
-</span><span class='line'>            }
-</span><span class='line'>            try {
-</span><span class='line'>                Thread.sleep(interval * 1000);
-</span><span class='line'>            } catch() {
-</span><span class='line'>
-</span><span class='line'>            }
-</span><span class='line'>
-</span><span class='line'>        } while (true)
-</span><span class='line'>    }catch () {
-</span><span class='line'>
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static void process(
-</span><span class='line'>    HostInformation host, String listAddress, Roster roster,
-</span><span class='line'>    Session session, Store store, Folder folder) throws MessagingException {
-</span><span class='line'>    try {
-</span><span class='line'>        if (folder.getMessageCount() != 0) {
-</span><span class='line'>            Message[] messages = folder.getMessages();
-</span><span class='line'>            doMessage(host, listAddress, roster, session, folder, messages);
-</span><span class='line'>        }
-</span><span class='line'>    }catch () {
-</span><span class='line'>
-</span><span class='line'>    }finally {
-</span><span class='line'>        folder.close(true);
-</span><span class='line'>        store.close();
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>private static void doMessage(
-</span><span class='line'>    HostInformation host,
-</span><span class='line'>    String listAddress,
-</span><span class='line'>    Roster roster,
-</span><span class='line'>    Session session,
-</span><span class='line'>    Folder folder,
-</span><span class='line'>    Message[] messages) throws MessageingException {
-</span><span class='line'>    FetchProfile fp = new FetchProfile();
-</span><span class='line'>    fp.add(FetchProfile.Item.ENVELOPE);
-</span><span class='line'>    fp.add(FetchProfile.Item.FLAGS);
-</span><span class='line'>    fp.add("X-Mailer");
-</span><span class='line'>    folder.fetch(messages, fp);
-</span><span class='line'>    for (int i = 0; i &lt; messages.length; i++) {
-</span><span class='line'>        Message message = messages[i];
-</span><span class='line'>        if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
-</span><span class='line'>        System.out.println("message received: " + message.getSubject());
-</span><span class='line'>        if (!roster.constainsOneOf(message.getFrom())) continue;
-</span><span class='line'>        MimeMessage forward = new MimeMessage(session);
-</span><span class='line'>        Address[] fromAddress = message.getFrom();
-</span><span class='line'>        InternetAddress from = null;
-</span><span class='line'>        if (fromAddress != null &amp;&amp; fromAdress.length &gt; 0) {
-</span><span class='line'>            from = new InternetAddress(fromAddress[0].toString());
-</span><span class='line'>        }
-</span><span class='line'>        forward.setFrom(from);
-</span><span class='line'>        forward.setReplyTo(new Address[] {
-</span><span class='line'>            new InternetAddress(listAddress)
-</span><span class='line'>        });
-</span><span class='line'>
-</span><span class='line'>        forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
-</span><span class='line'>        String subject = message.getSubject();
-</span><span class='line'>        if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
-</span><span class='line'>            subject = SUBJECT_MARKER + " " + message.getSubject();
-</span><span class='line'>        }
-</span><span class='line'>        forward.setSubject(subject);
-</span><span class='line'>        forward.setSentDate(message.getSentDate());
-</span><span class='line'>        forward.addHeader(LOOP_HEADER, listAddress);
-</span><span class='line'>        Object content = message.getContent();
-</span><span class='line'>        if (content instanceof Multipart) {
-</span><span class='line'>            forward.setContent((Multipart)content);
-</span><span class='line'>        } else {
-</span><span class='line'>            forward.setText((String)content);
-</span><span class='line'>        }
-</span><span class='line'>
-</span><span class='line'>        Properties props = new Properties();
-</span><span class='line'>        props.put("mail.smtp.host", host.smtpHost);
-</span><span class='line'>
-</span><span class='line'>        Session smtpSession = Session.getDefaultInstance(props, null);
-</span><span class='line'>        Transport transport = smtpSession.getTransport("smtp");
-</span><span class='line'>        transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
-</span><span class='line'>        transport.sendMessage(forward, roster.getAddresses());
-</span><span class='line'>        message.setFlag(Flags.Flag.DELETED, true);
-</span><span class='line'>    }
-</span><span class='line'>}
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+import javax.mail.<em>;
+import javax.mail.internet.</em>;</p>
+
+<p>public class MailingListServer {</p>
+
+<pre><code>public static final String SUBJECT_MARKER = "[list]";
+public static final String LOOP_HEADER = "X-LOOP";
+
+public static void main(String[] args) {
+    if (args.length != 8) {
+        System.err.println("Usage: java MailingList &lt;popHost&gt; " + 
+        "&lt;smtpHost&gt; &lt;pop3user&gt; &lt;pop3password&gt; &lt;smtpuser&gt; &lt;smtppassword&gt; &lt;listname&gt; " +
+        "&lt;relayinterval");
+    }
+    return;
+
+    HostInformation host = new HostInformation(arg[0]);
+    String listAddress = args[6];
+    int interval = new Integer(args[7]).intValue();
+    Roster roster = null;
+    try {
+        roster = new FileRoster("roster.txt");
+    }catch(Exception e) {
+
+    }
+
+    try {
+        do {
+            try {
+                Properties properties = System.getProperties();
+                Session session = Session.getDefaultInstance(properties, null);
+                Store store = session.getStore("pop3");
+                store.connect(host.pop3Host, -1, host.pop3User, host.pop3Password);
+                Folder defaultFolder = store.getDefaultFolder();
+                if (defaultFolder == null) {
+                    return;
+                }
+                Folder folder = defaultFolder.getFolder("INBOX");
+                if (folder == null) {
+                    return;
+                }
+                folder.open(FOLDER.READ_WRITE);
+                process(host, listAddress, roster, session, store, folder);
+            }catch () {
+
+            }
+            try {
+                Thread.sleep(interval * 1000);
+            } catch() {
+
+            }
+
+        } while (true)
+    }catch () {
+
+    }
+}
+
+private static void process(
+    HostInformation host, String listAddress, Roster roster,
+    Session session, Store store, Folder folder) throws MessagingException {
+    try {
+        if (folder.getMessageCount() != 0) {
+            Message[] messages = folder.getMessages();
+            doMessage(host, listAddress, roster, session, folder, messages);
+        }
+    }catch () {
+
+    }finally {
+        folder.close(true);
+        store.close();
+    }
+}
+
+private static void doMessage(
+    HostInformation host,
+    String listAddress,
+    Roster roster,
+    Session session,
+    Folder folder,
+    Message[] messages) throws MessageingException {
+    FetchProfile fp = new FetchProfile();
+    fp.add(FetchProfile.Item.ENVELOPE);
+    fp.add(FetchProfile.Item.FLAGS);
+    fp.add("X-Mailer");
+    folder.fetch(messages, fp);
+    for (int i = 0; i &lt; messages.length; i++) {
+        Message message = messages[i];
+        if (message.getFlags().contains(Flags.Flag.DELETED)) continue;
+        System.out.println("message received: " + message.getSubject());
+        if (!roster.constainsOneOf(message.getFrom())) continue;
+        MimeMessage forward = new MimeMessage(session);
+        Address[] fromAddress = message.getFrom();
+        InternetAddress from = null;
+        if (fromAddress != null &amp;&amp; fromAdress.length &gt; 0) {
+            from = new InternetAddress(fromAddress[0].toString());
+        }
+        forward.setFrom(from);
+        forward.setReplyTo(new Address[] {
+            new InternetAddress(listAddress)
+        });
+
+        forward.addRecipients(Message.RecipientType.BCC, roster.getAddresses());
+        String subject = message.getSubject();
+        if (-1 == message.getSubject().indexOf(SUBJECT_MARKER)) {
+            subject = SUBJECT_MARKER + " " + message.getSubject();
+        }
+        forward.setSubject(subject);
+        forward.setSentDate(message.getSentDate());
+        forward.addHeader(LOOP_HEADER, listAddress);
+        Object content = message.getContent();
+        if (content instanceof Multipart) {
+            forward.setContent((Multipart)content);
+        } else {
+            forward.setText((String)content);
+        }
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", host.smtpHost);
+
+        Session smtpSession = Session.getDefaultInstance(props, null);
+        Transport transport = smtpSession.getTransport("smtp");
+        transport.connect(host.smtpHost, host.smtpUser, host.smtpPassword);
+        transport.sendMessage(forward, roster.getAddresses());
+        message.setFlag(Flags.Flag.DELETED, true);
+    }
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>这段代码集中了所有劣质代码的特性，如可读性差，可测试性差，可重用性差，可扩展性差，也很难体现设计者的意图。</p>
 
@@ -216,7 +218,7 @@
 </code></pre>
 
 <p>面对如此简短的职责描述，再要识别对象所要封装的概念就变得非常容易了。下图是根据识别出来的职责获得的类图结构：
-<img class="center" src="/images/2013/02/responsibility04.png"></p>
+{% img center /images/2013/02/responsibility04.png %}</p>
 
 <p>比较这个设计模型与之前的代码，新的模型无疑在职责分配上占了胜场。并且，每个对象的名称都很好地传达了它所能完成的功能。由于封装将职责的实现细节有效地隐藏，并为它们各自划分了空间，形成各自的职责单元，然后再以弱耦合的形式进行协作。因而，我们可以很容易地对它们进行单元测试，或者对参与协作的行为进行Mock。接口的引入则是为了未来的功能扩展，例如我们不再使用javax.mail库来实现邮件收发，就可以提供不同的实现类。可独立封装的MessageReceiver与MessageSender还可以为系统的其他模块所重用。职责与封装相得益彰，有效地改善了整个设计模型。</p>
 ]]></content>
@@ -227,7 +229,7 @@
     <link href="http://agiledon.github.com/blog/2013/02/05/role-of-object/"/>
     <updated>2013-02-05T21:55:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/02/05/role-of-object</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/02/roleofobject.png"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2013/02/roleofobject.png %}</p>
 
 <p>若要获得良好的对象设计，就必须对职责进行合理的分配。每个对象承担的职责不能太多，也不能太少，恰如其分即可。职责分配如乐谱中对音符的组织，高明的音乐家总是能让不同的音符放在合理的位置，奏成悦耳的心曲，表达音乐家的内心感情。然而，即使设计师明确职责分配的重要性，在面临纷乱复杂的需求时，常常被乱花迷了眼，或者无法识别正确的职责，又或者顾此失彼，将职责放错了位置，变成了对职责混乱的涂鸦。</p>
 
@@ -243,14 +245,14 @@
 <p>首先来看信息持有者。顾名思义，这种角色的对象必然持有相关的信息。不过，俯瞰对象世界，除了某些特殊的行为对象而言，大多数对象都必然持有相关的信息。所以，这里的角色划定，其主要意图在于让设计者明确，与信息相关的行为，如处理信息的方式，信息变化造成的影响等，都应首先考虑是否由该信息的持有者来承担。这近似于Larman在<a href="http://book.360buy.com/10057823.html">Applying UML and Patterns</a>一书中提到的“信息专家模式”。</p>
 
 <p>例如，我们需要设计一个Web服务器，它提供了一个对象HttpProcessor，能够接收由HttpConnector发送来的Socket请求，对Request进行处理，并在处理后将相关信息放入Response中。请求和响应被封装在对应的HttpRequest和HttpResponse对象中。在处理请求和响应信息时，需要对Socket消息进行处理，并为Request和Response对象设置相关属性。我们当然可以在HttpProcessor中处理对这些消息的解析工作，但涉及到Request和Response自身的信息，遵循信息持有者角色的要求，最好还是将这些处理逻辑封装到各自对象中。如下图所示：
-<img class="center" src="/images/2013/02/infoholder.png"></p>
+{% img center /images/2013/02/infoholder.png %}</p>
 
 <p>遵循信息持有者的特征，HttpProcessor、HttpRequest与HttpResponse之间的权责变得更加清晰。此外，这一设计方式还有利于改善性能。某些Http请求解析可能牵涉到系统开销较大的字符串操作，而解析的内容并不是在一开始就需要使用。将解析职责转移到HttpRequest中，就使得HttpProcessor的process()操作可以快速完成，并将相关请求数据流塞到HttpRequest对象中。只有真正需要相关请求信息时，才向HttpRequest对象发出解析的请求消息。这种方式颇像是对象的Lazy Load。</p>
 
 <h4>构造者角色</h4>
 
 <p>构造者角色主要承担对象的创建，以及对复合对象的组装。如果熟悉设计模式，可以发现构造者角色基本上囊括了构造型模式的意图。例如创建对象，组合对象，以及选择对象构造的方式。此外，还有一种特殊的构造者角色对象，即它可能具有双重角色，一方面作为构造者角色，另一方面也作为构造者所创建出来的产品。这种双重角色的构造者角色，常常会形成一条构造链。例如，在JMS中，若要获得Queue对象，就可能由ConnectionFactory对象创建出Connection对象，则通过该对象创建Session对象，最后由Session对象创建的Queue。如下图所示：
-<img class="center" src="/images/2013/02/constructor.png"></p>
+{% img center /images/2013/02/constructor.png %}</p>
 
 <p>为何我们需要构造者角色？毕竟对象自身可以拥有构造函数，以提供给调用者完成对象的创建。通常情况下，之所以引入构造者角色，主要是为了：</p>
 
@@ -265,14 +267,14 @@
 <p>关于服务提供者，一个重要认识是：它能提供具有“业务价值”的行为。所谓“业务价值”，即一定是实现业务逻辑中不可缺少的，且相对独立完整的功能。这就意味着，担任服务提供者角色的对象，常常是一个职责完备地，实现了某个业务关注点的可重用对象。此外，业务价值是有层次之分的。在最外层，可能意味着一个完整的业务流程，此时服务对象暴露给客户端的，是一个封装了服务实现细节的对象（可能是接口）；而为了实现该外层服务，又可能在整个实现中，需要更为细粒度的内层服务对象提供各个实现步骤的支撑。例如系统需要生成税务报表，假设它的业务流程是读取报表数据后，对数据流进行处理，并以HTML格式呈现，然后生成PDF文件。对外而言，税务报表的生成就应该是一个完整的服务，且对于客户端的调用者而言，其实根本不需要了解其实现细节。此时，我们可以定义一个TaxReportGenerator对象，它能够接收报表数据，并生成报表的PDF文件。显然，它具有非常重要的业务价值。</p>
 
 <p>接下来考虑该对象的内部实现。由于报表生成需要执行多个业务步骤，如果将这些职责均交给TaxReportGenerator来处理，无疑会导致该对象承担过重的职责。此外，呈现HTML格式与PDF文件生成对于报表生成而言，不过是整个业务流程中的一环；但从单个职责而言，无疑它们也是独立的。可以设想，倘若系统还有其他业务功能需要生成PDF文件，又或者需要按照规定形式呈现为HTML页面，将这些职责封装到单独的职责中，就可能很好地支持重用。从“业务价值”的角度看，它们无疑具备了服务提供者的能力。整个TaxReportGenerator对象的内部协作如下图所示：
-<img class="center" src="/images/2013/02/serviceprovider.png"></p>
+{% img center /images/2013/02/serviceprovider.png %}</p>
 
 <h4>协调者角色</h4>
 
 <p>协调者有些像设计模式的Mediator模式所要承担的职责，即用于协调对象职责的协作，又或者负责转发或委派请求。协调者是孜孜不倦助人为乐的居委会大妈，既善于也乐于协调邻里之间的纠纷。除了可以以中间人的身份协调对象，从而简化对象之间的协作，以降低复杂的依赖关系外，协调者还能很好地隐藏这些交互细节。这就使得调用者变得简单，还能让这种关系协调的实现集中在一处，即使将来协调关系发生了变化，也可以做到仅修改一处，即可应对变化。从这一点来看，似乎协调者又体现了Facade模式。</p>
 
 <p>在一个大型复杂系统中，提供了许多Web Service。不同的Web Service可能需要支持不同的消费者，而这些服务的部署位置也可能并不相同。消费者需要准确定位到相关服务，然后通过一些相对复杂的实现逻辑，完成对服务的调用。这类逻辑就牵涉到消费者、服务以及服务调用与服务位置之间的协作。如果没有合适的对象去封装，既可能导致细节暴露，增加复杂度，也无法做到有效重用。一旦协作的逻辑发生变化，可能还会导致这种变化蔓延到系统的各个地方。这时，就是体现协调者角色价值所在了。在这个场景下，我们可以引入ServiceLocator对象来负责整个协调逻辑，它能够根据消费者请求的服务类型，定位服务，然后找到服务端口，发送服务请求。下图展示了这种协调逻辑的具体做法，注意不同的服务消费者都经由相同的ServiceLocator角色完成了不同的服务调用：
-<img class="center" src="/images/2013/02/colaborator.png"></p>
+{% img center /images/2013/02/colaborator.png %}</p>
 
 <h4>控制者角色</h4>
 
@@ -281,7 +283,7 @@
 <p>当然，在设计时，有时似乎也很难泾渭分明地界定这二者。这就好似用例中的使用与扩展关系，许多设计者还在孜孜以求，绞尽脑汁地要分辨出二者的不同，以保证正确地运用用例关系，求得完美的设计，孰知早有用例专家给出忠言，不必一定区分使用与扩展，它对用例的编写不会产生直接的重大影响。参考此例，我也希望设计师不必去钻牛角尖，只需明白此两种角色，其本质还在于隐藏对象的协作或交互细节，降低复杂度，保证重用以及对变化的应对。</p>
 
 <p>在软件设计中，我们经常遇到控制者角色。一个常见的例子是由控制者角色承担判断逻辑，根据不同的请求，经由不同的分支，调用不同的对象来应对此请求。例如在一个系统中，我们需要对页面的内容合法性进行验证。不同的内容对验证的要求不尽相同。一个简单的判断是看内容是否只需要对页面头进行验证。我们在设计时，引入了ValidationProcessor来控制这种验证逻辑。站在调用者的角度，验证的事情交给ValidationProcessor去处理就好。管它是否仅是一个控制枢纽，真正的验证却是它要委派的对象呢？
-<img class="center" src="/images/2013/02/controller.png"></p>
+{% img center /images/2013/02/controller.png %}</p>
 
 <p>当然，在这里的ContentController同样属于控制者角色，它事实上就是MVC模式中的Controller，用于控制Content与ContentView之间的交互。ValidatorProcessor与MVC风马牛不相及，但它仍可以看做是控制者角色。</p>
 

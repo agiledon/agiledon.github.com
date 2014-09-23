@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Architecture | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-22T20:20:11+08:00</updated>
+  <updated>2014-09-23T08:53:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -23,10 +23,10 @@
 <p>我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex Context这一点上语焉不详。</p>
 
 <p>我的初步设想是通过绘制场景图（但并不成熟）。我认为有三种绘制场景图的方式：商业画布，体验地图和流程图。我认为，商业画布可以作为需求分析（尤其针对初创产品）的起点。商业画布如下图所示：
-<img class="center" src="/images/2014/business_canvas.jpeg"></p>
+{% img center /images/2014/business_canvas.jpeg %}</p>
 
 <p>采用这种规范化的方式来推导商业模型，可以激发我们的灵感，理清我们的思路，以便我们思考为何要做这个产品，产品应该具备哪些功能。结合优点和缺点、成本等因素，我们可以藉此判断和决策功能的优先级，从而得到MVP。这个过程需要大量运用即时贴，让整个商业模型呈现。经过取舍后，就可以针对产品绘制场景图。此时，场景图可以采用Experience Map或流程图来体现。Experience Map的例子如下图所示：
-<img class="center" src="/images/2014/experience_map.gif"></p>
+{% img center /images/2014/experience_map.gif %}</p>
 
 <p>由于商业画布本身提供了“客户”项，我们应该创建Persona，找准人物角色的特征来“搜寻”需求。绘制了场景图后，就能够确定用例了，此时，可辅以ATDD帮助确定Story。在确定了用例后，可以识别Bounded Context，并通过Context Map确定上下文之间的关系。</p>
 
@@ -39,23 +39,23 @@
 
 <blockquote><p>为了更好的理解我们选择的目标消费者，我们需要对消费者进行完整的建模，即Persona。越接近于真实的Persona帮助我们更好的理解其用户目标……Persona的重要产出物是一系列用户目标，对于同一个Persona，用户目标可能有不同，有些目标是基础核心目标，有些则是衍生性的，例如一个访问网站潜在投资者的核心目标可能是了解成为投资者的过程，而衍生性目标可能是获得一些关于公司历史信息增加信任度。</p></blockquote>
 
-<p><img class="center" src="/images/2014/persona.jpg">
+<p>{% img center /images/2014/persona.jpg %}
 <strong>说明</strong>：本图摘自熊子川博客</p>
 
 <p>假设我们要开发一个电子商务网站，我们就可以通过商业画布来驱动出这个产品应该具有哪些功能，它的客户有哪些等，在绘制了场景图后，可以初步得到这样的Bounded Context:
-<img class="center" src="/images/2014/bounded_context.jpg"></p>
+{% img center /images/2014/bounded_context.jpg %}</p>
 
 <p>然后，我利用Context Map得到了各个上下文之间的关系：
-<img class="center" src="/images/2014/context_map.jpg"></p>
+{% img center /images/2014/context_map.jpg %}</p>
 
 <p>这样，一个包图的获得就水到渠成了：
-<img class="center" src="/images/2014/modules.jpeg"></p>
+{% img center /images/2014/modules.jpeg %}</p>
 
 <p>在识别了Bounded Context以及Context之间的关系后，我们可以运用Hexagon架构（Cockburn提出的六边形架构）来展现系统的整体架构。Hexagon架构并不深入关注内部边界中领域部分，仅仅是简单的划分为Application与Domain两层。但它有助于我们获得基础设施层以及相关集成点的包结构。我们要合理地运用六边形架构。它更贴近应用逻辑架构，并可以驱动我们去发现诸多集成点，寻找集成模式。内外边界的分离也有助于我们将业务逻辑与应用逻辑分离开。这实际上符合“关注点分离”的架构原则。下图展现了六边形架构中常见的Port与Adapter：
-<img class="center" src="/images/2014/Hexagon.jpg"></p>
+{% img center /images/2014/Hexagon.jpg %}</p>
 
 <p>我对“可视化架构”的理解，还是要希望多通过即时贴、白板等工具来实现可视化，而非通过绘图。至少，绘图不应该成为主要的驱动力，否则，开发人员很难接受。例如，下图就是我运用Hexagon架构，并结合可视化手段分析该电子商务系统得到的应用逻辑架构，它很好地一个展现了Hexagon架构的可视化手法。
-<img class="center" src="/images/2014/e_commerce.jpg"></p>
+{% img center /images/2014/e_commerce.jpg %}</p>
 
 <p>在这个图中，直观地展现了如何与外部的支付系统以及物流系统的集成。例如，图中展现的Port实际上为防腐层（ACL）。为何要建立这样的一个防腐层呢，原因在于：支付与物流常常存在多个供应商，因而需要解除对供应商的绑定，并避免供应商系统的变化造成对电子商务系统的腐蚀。这是切合实际的决策。</p>
 
@@ -81,7 +81,7 @@
 
 
 <p>整个架构如下图所示：
-<img class="center" src="/images/2014/inventory.jpeg"></p>
+{% img center /images/2014/inventory.jpeg %}</p>
 
 <p>对于库存管理而言，我认为它主要支持商品存放信息的数据管理，即获得商品数量、存放位置以及更新这些信息。对于该上下文而言，操作本身比较简单，且耗时较短。若出现大规模并发，其瓶颈也不在于获取或更新仓库信息（当然需要通过测试数据验证），而在于客户下订单后向仓库管理流程控制系统发起的发货请求。</p>
 
@@ -94,7 +94,7 @@
 <p>一旦收到消息，物流控制系统作为消息队列的订阅者（或侦听器）就可以即使处理信息，进行后续的处理。</p>
 
 <p>针对库存管理而言，我认为它是一个独立的物理边界，因此在可视化手段中，我展现为一个单独的库存管理六边形，如下图所示：
-<img class="center" src="/images/2014/inventory_2.jpeg"></p>
+{% img center /images/2014/inventory_2.jpeg %}</p>
 
 <ul>
 <li>建立了针对REST服务的端口，对应的适配器为Controller，其目的是支持E-Commerce系统。事实上，我们对E-Commerce系统进行过分析，获得的六边形架构正好与此对接。</li>
@@ -104,7 +104,7 @@
 
 
 <p>物流控制与拓扑管理放在同一个边界中，它是高度可伸缩的独立系统，为展现它的可伸缩性以及它与库存管理之间的集成，我在可视化手段中，展现出两个独立的六边形，如下图所示：
-<img class="center" src="/images/2014/inventory_3.jpeg"></p>
+{% img center /images/2014/inventory_3.jpeg %}</p>
 
 <ul>
 <li>针对Queue的侦听器端口，对应的适配器为Message Handler。若有必要，如为了更好的支持并发，也可以在此引入Active Object甚至Leader/Followers。</li>
@@ -125,7 +125,7 @@
     <link href="http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture/"/>
     <updated>2013-08-29T10:39:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/justenough_cn.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/justenough_cn.jpg %}
 华中科技大学出版社的徐定翔问我意见，了解我对Just Enough Software Architecture这本书的观感，看是否值得引进。时间是在2010年。从一开始，我就被书名中的Just Enough理念所吸引。它让我想起宋玉的东家姑娘，“增之一分则太长，减之一分则太短”那种不可言说的美丽。我在心里说，架构设计就需要这样。我当时并没有看到本书，只是到Amazon上找到了几篇英文原版样章。犹记得我在读到第一章介绍的RackSpace案例时那种兴奋之情。于是，我迫切地向徐定翔强烈推荐引进这本书，而我则毛遂自荐，希望能作为本书的译者。之后，我在InfoQ上看到对本书的《<a href="http://www.infoq.com/cn/articles/fairbanks-jesa">访谈和书摘</a>》，进一步加强了我翻译本书的信念。于是，出版社开始与作者Fairbanks联系，然而从此音讯如石沉大海。时针指向2011年，我对于本书是否被引进，是否由我翻译，一切未知。我觉得我可能错过了它，思之仍觉怅然。谁知到了九月，消息突然确定，而徐大编辑就不容分说地直接把原书给我寄来了。</p>
 
 <p>拿到沉甸甸的书，第一面就为本书的装帧而惊喜。心里想，我这一辈子若能写出这样一本书，绝对值得生命走过的这一遭了。我并没有迫不及待地开始翻译，这就好似遇到珍馐美味，需得先赏其色，闻其香，然后再品其味。我每天抱着这本书饶有兴味地开始阅读之旅。阅读之旅确乎如行山阴道，沿途之美，目不暇接；可一想到翻译，这种美景就成了一种折磨，因为我害怕辜负这一美景。翻译之初我就举步维艰，那些词语放在那里，我却无法解开“封印”将它们取出来，即使取出来，却又找不到存放的合适位置。一些翻译隐隐约约浮现着，当我竭力去揭开这些词语的真面目时，无论如何用力，总也不能够着。翻译就好像那些年我们一起追过的女孩——追不到，痛苦；追到了，销魂。翻译进度像蜗牛一样的爬着，我终于决定求助了。辗转寻找了好多朋友，都以各种理由拒绝或者放弃了。翻译讲解软件架构的书，确乎不是一件轻松的事儿。那个时候，我的Buddy肖鹏正从翻译《面向模式的软件架构》第五卷的泥潭中爬了出来。每一提及他的这段翻译经历，脸上就会浮现出不堪回首的表情，如看了恐怖片。终于，事情得到转机，最开始是倪健的雪中送炭，再有高翌翔的锦上添花，随着我们这个三人组的建立，翻译才算开始走向正规，我才有了交稿的信心。</p>
@@ -170,23 +170,23 @@
 
 <h4>架构师</h4>
 
-<p><img class="left" src="/images/2013/07/nealford.png"></p>
+<p>{% img left /images/2013/07/nealford.png %}</p>
 
 <h5>Neal Ford</h5>
 
 <p>Neal Ford是全球IT咨询公司ThoughtWorks的软件架构师。除了常规工作，他做的事情还包括设计和开发应用程序、教学材料、杂志文章、课件和视频/DVD演示，同时还是各种技术书籍的作者或者编辑，其中包括著作The Productive Programmer。他专注于设计和开发大规模企业应用程序，同时，他也是世界开发人员会议的国际知名演说家。
-<img class="right" src="/images/2013/07/ericevans.png"></p>
+{% img right /images/2013/07/ericevans.png %}</p>
 
 <h5>Eric Evans</h5>
 
 <p>大型业务系统方面的领域建模和设计专家。早20世纪90年代，他就参与了很多项目，基于对象（Object）开发出许多大型的业务系统，并致力于将敏捷过程应用到现实项目中。
 此外，Eric Evans还是《领域驱动设计——软件核心复杂性应对之道》一书的作者。在书中他总结了构建上述业务系统相关的经验、原则和技术等。并介绍了一个建模和设计技术的系统，成功的团队应用这一系统可以组装有业务需求的复杂软件系统，并使系统在增大时仍然保持敏捷。
-Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。<img class="left" src="/images/2013/07/buschmann.png"></p>
+Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。{% img left /images/2013/07/buschmann.png %}</p>
 
 <h5>FranK Buschmann</h5>
 
 <p>德国慕尼黑西门子技术公司资深技术专家及负责人。Wiley软件设计模式系列图书主编。他的研究领域包括对象技术、软件架构、产品线、模型驱动软件开发和模式。他曾是ANSI C++标准化委员会x3J16的成员，于1996年发起了首届EuroPLoP会议。Frank Buschmann是Pattern-Oriented Software Architecture系列书籍的主要作者。
-<img class="right" src="/images/2013/07/george.png"></p>
+{% img right /images/2013/07/george.png %}</p>
 
 <h5>Fred George</h5>
 
@@ -194,17 +194,17 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 
 <h4>推荐书籍</h4>
 
-<p><img class="left" src="/images/2013/07/releaseit.png">#####Release It!</p>
+<p>{% img left /images/2013/07/releaseit.png %}#####Release It!</p>
 
 <p><strong>推荐理由：</strong>Michael Nygard的Releast It!可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
 
-<p><img class="right" src="/images/2013/07/beautifularchitecture.png"></p>
+<p>{% img right /images/2013/07/beautifularchitecture.png %}</p>
 
 <h5>Beautiful Architecture</h5>
 
 <p><strong>推荐理由：</strong>全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。</p>
 
-<p><img class="right" src="/images/2013/07/eip.png"></p>
+<p>{% img right /images/2013/07/eip.png %}</p>
 
 <h5>Enterprise Integation Patterns</h5>
 
@@ -222,7 +222,7 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>我们希望在后续版本中解决这一问题。然而，现实总是这么残酷。真正处理文件并提供下载功能的系统并不在我们的掌控之中。它是第三方Vendor提供的Web Service，我们开发的系统仅仅涉及到请求的转发，完成对该Web Service的调用；并在获得结果后，将响应（包含了文件流数据）返回给客户端。换言之，我们既不能改善文件处理的实现逻辑，以提高处理的速度；也无法对该Web Service进行水平伸缩，例如通过引入多台服务器建立集群和负载均衡的方式。</p>
 
 <p>遭遇如此场景实属无奈，要得出好的设计决策就好似戴着镣铐跳舞，只有在自己的服务端下功夫。我们首先想到的是限流（throttle）的方式，通过引入一个类似Controller角色的对象RequestHandlerPool，对客户端的请求进行控制。我们可以设定一个阈值，一旦超过该阈值，就将后续的请求放入队列进行排队。这个限流可以采用简单地在内存实现请求池全局对象。当然，也可以考虑引入消息队列中间件。改进后的时序图如下所示：
-<img class="center" src="/images/2013/06/filehandling.png"></p>
+{% img center /images/2013/06/filehandling.png %}</p>
 
 <p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
 
@@ -235,7 +235,7 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
     <link href="http://agiledon.github.com/blog/2013/05/13/architecture-and-design-of-reading-radar/"/>
     <updated>2013-05-13T20:41:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/05/13/architecture-and-design-of-reading-radar</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/04/reading_radar_02.png">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/04/reading_radar_02.png %}
 编码的能力与设计的能力，二者均不可偏废。我们认为，编码事实上是设计的一部分，只不过它更多的是以代码的形式来呈现，而设计则主要由模型来组成。这种设计模型有助于知识的传递与分享，同时也可以有效地提高编码质量。至于架构，则是软件系统中重要的事物，它关乎的内容往往是难以更改的。卓越的软件设计一定拥有美的架构，也能够有助于促进架构的演化。在ThoughtWorks，并没有明确的架构师职位。如果有，我们也希望这个角色应该是Martin Folwer认为的Architectus Oryzus，这些架构师与处理最困难部分的其他开发人员合作，积极地向项目贡献代码。显然，我们认为架构师也是程序员。这正是我们要在这个读书雷达中列出Architecture &amp; Design象限的原因。</p>
 
 <p>整体概览本象限列出的书籍，若有相关读书经验的人一定会注意到，这里列出的书籍并没有脱离面向对象设计体系的范畴。我们认为，在当今的企业级软件开发领域中，面向对象的思想体系仍然占据了主要的地位。对于程序员而言，建立面向对象的设计思维仍然至关重要。但是，我们从来都不曾忽略函数式语言对设计领域带来的冲击，以及它可能产生的巨大影响。在<a href="http://www.thoughtworks.com/insights">最新的ThoughtWorks Technology Radar</a>的Languages &amp; Frameworks象限中，ThoughtWorks对Scala，Clojure，F#等函数式语言青睐有加，同时也谈到了在Java中引入高阶函数等函数式特性的Functional Java发展趋势。我们也注意到在2012年的DDD eXchange会议上，函数式语言对设计范式的转变产生的影响。遗憾的是，除了少量介绍具体函数式语言的书籍，我们很少看到如面向对象设计一般专门讲解与深入探讨函数式软件设计的书籍。与其滥竽充数，不如抱残守缺。我们选择了在这期读书雷达图中，让函数式设计范式集体缺席。</p>
