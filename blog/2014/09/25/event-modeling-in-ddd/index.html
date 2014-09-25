@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>领域驱动设计中的事件建模 - 逸言</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="这两日，我参加了Implementing Domain Driven Disign一书作者Vaughn Vernon组织的IDDD Workshop。培训中，Vernon带领我们针对Domain Event进行了一次建模工作坊。 在领域驱动设计中，Domain Event变得越来越重要。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/09/25/event-modeling-in-ddd/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="逸言" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">逸言</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">领域驱动设计中的事件建模</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-25T12:58:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>这两日，我参加了Implementing Domain Driven Disign一书作者Vaughn Vernon组织的IDDD Workshop。培训中，Vernon带领我们针对Domain Event进行了一次建模工作坊。
+<img class="center" src="/images/2014/vernonandme.jpg"></p>
+
+<p>在领域驱动设计中，Domain Event变得越来越重要。在Implementing Domain Driven Disign这本书中，Vaughn Vernon甚至将Domain Event上升到了一等公民的地位。</p>
+
+<p>那么，Domain Event到底是什么？Domain Event即领域事件，是指领域中发生的事实（facts）。当满足某个条件时，某个发起者就会触发事件产生。因而在对事件建模时，我们可以关注统一语言中如下的关键词汇：
+<strong>“当…”
+“如果发生…”
+“当…的时候，请通知我”
+“发生…时”</strong></p>
+
+<p>“事件为事实（fact）”这一描述让我对“事件”本身有了更准确的认识。它让我想起两篇发表在InfoQ上的文章。一篇文章为《<a href="http://www.infoq.com/cn/articles/Architecture-Datomic">Datomic的架构</a>》。文中提到：“信息是一组事实（facts），事实是指一些已经发生的事情。鉴于任何人都无法改变过去，这也意味着数据库将累积这些事实，而非原地进行更新。虽然过去可以遗忘，但却是不能改变的。”同理推之，若事件即事实，那么它也是不可改变的。对于这些历史发生的“事实”，我们需要“立此存照”——于是，这就引出了Event Store或者Event Sourcing。我会在后续的文章深入分析Event Store与Event Sourcing。</p>
+
+<p>另一篇文章是徐昊的《<a href="http://www.infoq.com/cn/articles/xh-four-color-modeling">运用四色建模法进行领域分析</a>》。文中表达了类似的思想：“任何的业务事件都会以某种数据的形式留下足迹。我们对于事件的追溯可以通过对数据的追溯来完成。……你无法回到从前去看看到底发生了什么，但是却可以在单据的基础上，一定程度的还原当时事情发生的场景。当我们把这些数据的足迹按照时间顺序排列起来，我们几乎可以清晰的推测出这个在过往的一段时间内到底发生了那些事情。”</p>
+
+<p>在四色建模分析法中，徐昊认为应该将“时标性对象（moment-interval）”作为建模的起点。我在这里并不是要介绍四色建模法，这个话题留待以后再讲。我试图阐释的观点在于，如果事件与时间相关，那么在对事件进行建模时，就可以针对业务场景确定一条时间线，并通过分析业务状态的各种变迁，得到我们希望获得的事件模型。这正是这个工作坊的切入点。</p>
+
+<p>整个事件建模的活动可以分为四个步骤：
+1. 选定某个自己熟悉的领域，然后针对时间线去寻找那些用过去时态表现的事件；找到这些事件后，用黄色即时贴写出事件名称，形式如：OrderFilled。
+2. 针对每个事件，对触发事件的Command对象进行建模，并用绿色即时贴写出Command的名称。对Command对象进行建模并非单纯地为了寻找Command对象，而是为了更深一步地验证之前建模的事件模型。在思考触发事件的对象时，我们可能会发现一些遗漏又或者多余的事件。
+3. 判断这些事件应该属于哪个聚合对象，找到它们，然后写在紫色即时贴上。
+4. 对这些识别出来的Event、Command、Aggregate进行分类，判断它们到底属于哪个Bounded Context，并用红色即时贴标出。
+<img class="center" src="/images/2014/eventmodeling.jpg"></p>
+
+<p>这种Workshop不仅只针对培训，它更应该运用到团队进行领域驱动设计的过程中。这也正是我一直在提倡的所谓“可视化设计”。可视化设计并非一个噱头，更不是为了美观好看，而是希望以直观简单的形式展现设计思路，尤其需要让整个团队成员都能以协作互动的形式参与到这个设计过程中。群策群力，头脑风暴，如此方能获得更好的设计方案，并以这种团队行为的方式完成知识的共享与传递。其实，“架构”究竟是什么，不就是一种软件设计的知识吗？设计架构，重要在于交流，在于知识传递，而不仅仅是严谨完整的解决方案文档。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-25T12:58:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/design/'>Design</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='tag' href='/blog/tags/ddd/'>DDD</a>, <a class='tag' href='/blog/tags/event/'>Event</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/blog/2014/09/25/event-modeling-in-ddd/" data-via="agiledon" data-counturl="http://agiledon.github.com/blog/2014/09/25/event-modeling-in-ddd/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/22/understanding-scala-stack/" title="Previous Post: 快速了解Scala技术栈">&laquo; 快速了解Scala技术栈</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/profile.png" align="center"/></p>
+  	<p>
+    <strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Senior Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+<section>
+  <h1>Tag Cloud</h1>
+  <ul class="tag-cloud">
+<a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
+<a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
+<a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 144%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
+<a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 155%" href="/blog/tags/ddd/">DDD</a>
+<a style="font-size: 205%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 100%" href="/blog/tags/go/">GO</a>
+<a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
+<a style="font-size: 100%" href="/blog/tags/guava/">Guava</a>
+<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
+<a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/language/">Language</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
+<a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
+<a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
+<a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
+<a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
+<a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
+<a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
+<a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
+<a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
+<a style="font-size: 128%" href="/blog/tags/visualization/">Visualization</a>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Visitor</h1>
+  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/09/25/event-modeling-in-ddd/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/09/25/event-modeling-in-ddd/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

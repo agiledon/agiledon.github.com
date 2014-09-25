@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: CSharp | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/csharp/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-23T08:53:50+08:00</updated>
+  <updated>2014-09-25T13:03:35+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,21 +19,20 @@
     <updated>2013-06-16T20:06:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/06/16/reuse-with-extention-method</id>
     <content type="html"><![CDATA[<p>我们已经有了一个IRepository接口，它提供了诸如BatchSave()，Insert()之类的方法。其中，BatchSave()方法接收一个由实体类组成的数组，从而完成对实体对象的批量存储。
-{% img center /images/2013/06/IRepository.png %}</p>
+<img class="center" src="/images/2013/06/IRepository.png"></p>
 
 <p>对于单个实体对象而言，我们当然也需要有相关的方法来完成存储。它与BatchSave()的区别仅在于它要接收的参数只是一个实体对象。事实上，我们可以调用IRepository接口本身提供的BatchSave()来实现Save()方法。Save()方法的实现对于所有实现了IRepository接口的类而言，完全是一样的。那么，我们该如何为IRepository接口增加一个Save()方法，同时又能避免代码做出太多修改？由于接口自身并不能提供实现，因此唯一可以容纳这个方法实现的就是实现了IRepository接口的类。一个办法是为所有这些实现类定义一个公共的抽象父类，并让它再实现IRepository接口，于是将Save()的实现放到这个抽象父类中，就可以使得所有子类共享Save()方法的实现了。可是，为了这个Save()方法的实现与重用，专门引入一个抽象父类，是否值得呢？除非在现有的Repository继承体系中，已经存在了这样的抽象父类，否则该类的引入会导致整个继承体系发生较大的变化。</p>
 
 <p>在.NET中，我们可以巧妙地借助扩展方法来完成对Save()方法的重用，同时又能保证现有的继承体系不变。方法就是为IRepository接口提供扩展方法：
-{% codeblock lang:csharp %}
-public static class RepositoryExtensions {</p>
-
-<pre><code>public static void Save&lt;T&gt;(this IRepository&lt;T&gt; repository, T entity) {
-    repo.BatchSave(new[] {entity});
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">RepositoryExtensions</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">Save</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="k">this</span> <span class="n">IRepository</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">T</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">repository</span><span class="p">,</span> <span class="n">T</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">repo</span><span class="p">.</span><span class="n">BatchSave</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="n">entity</span><span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   
@@ -43,26 +42,24 @@ public static class RepositoryExtensions {</p>
     <updated>2011-10-11T17:06:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2011/10/11/Issue-of-isdefined</id>
     <content type="html"><![CDATA[<p>在.NET 4.0(当然也包括4.0以前的版本)下，用反射判断某个方法是否运用了自定义Attribute时，可以通过调用MethodInfo的IsDefined()方法进行确认。当然，IsDefined()方法事实上定义在MethodInfo的父类MemberInfo中，但它仅仅被定义为抽象方法，真正的实现是在MethodInfo的子类DynamicMethod中。调用方式如下所示：
-{% codeblock lang:csharp %}
-methodInfo.IsDefined(typeof(MyAttribute), false)
-{% endcodeblock %}
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">methodInfo</span><span class="p">.</span><span class="n">IsDefined</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MyAttribute</span><span class="p">),</span> <span class="k">false</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 然而，在实际开发中，我发现该方法有一个问题。如果获得MethodInfo的方式是通过加载程序集，然后利用反射方式获得的MethodInfo对象，即使该方法运用了自定义Attribute，返回的结果仍然是false。例如，我们将需要判断的方法所在的类定义到一个单独的Project中，并编译为单独的dll文件，然后，利用Assembly的LoadFile()方式获得程序集：
-{% codeblock lang:csharp %}
-  var assembly = Assembly.LoadFile(assemblyPath);
-  var types = assembly.GetExportedTypes();
-  types.ToList().ForEach(</p>
-
-<pre><code>  type =&gt;
-  {
-      var flag =
-          type.GetMethods().Where(methodInfo =&gt; !methodInfo.IsAbstract).Any(
-              methodInfo =&gt; methodInfo.IsDefined(typeof(MyAttribute), false));
-      Console.WriteLine("Flag of IsDefined is: {0}", flag);
-  }
-</code></pre>
-
-<p>  );
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="kt">var</span> <span class="n">assembly</span> <span class="p">=</span> <span class="n">Assembly</span><span class="p">.</span><span class="n">LoadFile</span><span class="p">(</span><span class="n">assemblyPath</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">types</span> <span class="p">=</span> <span class="n">assembly</span><span class="p">.</span><span class="n">GetExportedTypes</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">types</span><span class="p">.</span><span class="n">ToList</span><span class="p">().</span><span class="n">ForEach</span><span class="p">(&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span>  <span class="n">type</span> <span class="p">=&amp;</span><span class="n">gt</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="kt">var</span> <span class="n">flag</span> <span class="p">=</span>
+</span><span class='line'>          <span class="n">type</span><span class="p">.</span><span class="n">GetMethods</span><span class="p">().</span><span class="n">Where</span><span class="p">(</span><span class="n">methodInfo</span> <span class="p">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="p">!</span><span class="n">methodInfo</span><span class="p">.</span><span class="n">IsAbstract</span><span class="p">).</span><span class="n">Any</span><span class="p">(</span>
+</span><span class='line'>              <span class="n">methodInfo</span> <span class="p">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">methodInfo</span><span class="p">.</span><span class="n">IsDefined</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">MyAttribute</span><span class="p">),</span> <span class="k">false</span><span class="p">));</span>
+</span><span class='line'>      <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Flag of IsDefined is: {0}&quot;</span><span class="p">,</span> <span class="n">flag</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>打印出来的值为false。</p>
 
@@ -72,43 +69,40 @@ methodInfo.IsDefined(typeof(MyAttribute), false)
 <p>反之，如果不是通过加载程序集，而是直接通过typeof()获得的Type，并调用其下MethodInfo.IsDefined()方法，只要该方法被运用了指定的Attribute，返回的结果则为true。</p>
 
 <p>分析原因，大约是获得Type的方式不同所造成的。Assembly类的GetExportedType()实现如下所示：
-{% codeblock lang:csharp %}
-[SecuritySafeCritical]
-public override Type[] GetExportedTypes()
-{</p>
-
-<pre><code>Type[] o = null;
-GetExportedTypes(this.GetNativeHandle(), JitHelpers.GetObjectHandleOnStack&lt;Type[]&gt;(ref o));
-return o;
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[SecuritySafeCritical]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">override</span> <span class="n">Type</span><span class="p">[]</span> <span class="nf">GetExportedTypes</span><span class="p">()</span>
+</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Type</span><span class="p">[]</span> <span class="n">o</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'><span class="n">GetExportedTypes</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">GetNativeHandle</span><span class="p">(),</span> <span class="n">JitHelpers</span><span class="p">.</span><span class="n">GetObjectHandleOnStack</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">Type</span><span class="p">[]&amp;</span><span class="n">gt</span><span class="p">;(</span><span class="k">ref</span> <span class="n">o</span><span class="p">));</span>
+</span><span class='line'><span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意，这里返回的Type[]事实上是通过引用方式传递给了JitHelpers的GetObjectHandleOnStack&lt;Type[]>方法中：
-{% codeblock lang:csharp %}
-[TargetedPatchingOptOut("Performance critical to inline across NGen image boundaries"), SecurityCritical]
-internal static ObjectHandleOnStack GetObjectHandleOnStack<T>(ref T o) where T: class
-{</p>
-
-<pre><code>TypedReference reference = __makeref(o);
-return new ObjectHandleOnStack(reference.GetPointerOnStack());
-</code></pre>
-
-<p>}
-{% endcodeblock %}
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TargetedPatchingOptOut(&quot;Performance critical to inline across NGen image boundaries&quot;), SecurityCritical]</span>
+</span><span class='line'><span class="k">internal</span> <span class="k">static</span> <span class="n">ObjectHandleOnStack</span> <span class="n">GetObjectHandleOnStack</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">ref</span> <span class="n">T</span> <span class="n">o</span><span class="p">)</span> <span class="k">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">class</span>
+</span><span class='line'><span class="err">{&lt;/</span><span class="nc">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">TypedReference</span> <span class="n">reference</span> <span class="p">=</span> <span class="n">__makeref</span><span class="p">(</span><span class="n">o</span><span class="p">);</span>
+</span><span class='line'><span class="k">return</span> <span class="k">new</span> <span class="nf">ObjectHandleOnStack</span><span class="p">(</span><span class="n">reference</span><span class="p">.</span><span class="n">GetPointerOnStack</span><span class="p">());</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 这里将Type转换成了TypedReference。关键大约就是这里，可惜我无法找到typeof()的具体实现方式。代码追踪到这里，就无法判断这里发生的真实原因了。若要了解.NET底层机制的同学，可以告诉我。</p>
 
 <p>若要解决反射方式无法通过IsDefined()判断的问题，可以调用MethodInfo的GetCustomAttribute()方法。例如：
-{% codeblock lang:csharp %}
-private static bool IsAppliedWith(this MethodInfo methodInfo, Type attributeType, string attributeName)
-{</p>
-
-<pre><code>return methodInfo.GetCustomAttributes(attributeType, false).ToString().Contains(attributeName);
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">IsAppliedWith</span><span class="p">(</span><span class="k">this</span> <span class="n">MethodInfo</span> <span class="n">methodInfo</span><span class="p">,</span> <span class="n">Type</span> <span class="n">attributeType</span><span class="p">,</span> <span class="kt">string</span> <span class="n">attributeName</span><span class="p">)</span>
+</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">return</span> <span class="n">methodInfo</span><span class="p">.</span><span class="n">GetCustomAttributes</span><span class="p">(</span><span class="n">attributeType</span><span class="p">,</span> <span class="k">false</span><span class="p">).</span><span class="n">ToString</span><span class="p">().</span><span class="n">Contains</span><span class="p">(</span><span class="n">attributeName</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>无论是利用反射加载，还是使用typeof，采用这种方式判断方法是否运用了指定的Attribute，都是能够生效的。</p>
 ]]></content>
@@ -128,17 +122,16 @@ private static bool IsAppliedWith(this MethodInfo methodInfo, Type attributeType
 <!--more-->
 
 
-<p>{% codeblock lang:csharp %}
-public static class PlatformResponseHelper {</p>
-
-<pre><code>private static HashTable&lt;String,String&gt; messageMapping = //ignore;
-public static void Output(this PlatformResponse response) {
-    ServiceLocator.Lookup&lt;IMessageWriter&gt;.Write(messageMapping[response.StatusCode]);
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">PlatformResponseHelper</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">private</span> <span class="k">static</span> <span class="n">HashTable</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">String</span><span class="p">,</span><span class="n">String</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageMapping</span> <span class="p">=</span> <span class="c1">//ignore;</span>
+</span><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Output</span><span class="p">(</span><span class="k">this</span> <span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">ServiceLocator</span><span class="p">.</span><span class="n">Lookup</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">IMessageWriter</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;.</span><span class="n">Write</span><span class="p">(</span><span class="n">messageMapping</span><span class="p">[</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">]);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>通过引入扩展方法，Controller得到的PlatformResponse对象就可以通过调用扩展方法Output()输出获得的提示(出错)信息。注意，在上面的代码中，ServiceLocator是一个单例的服务定位器对象，通过它可以获得注册的服务。在Controller中，同样调用了ServiceLocator来获得它所需的业务服务。</p>
 
@@ -149,42 +142,40 @@ public static void Output(this PlatformResponse response) {
 <p>在面向对象设计中，最常见的解除依赖的方法是职责分离以及抽象，或者利用反射或IOC容器来解除具体依赖。由于要解除与ServiceLocator的耦合关系，再加上调用PlatformResponse相关方法的Controller也是通过依赖注入ServiceLocator对象的，所以我首先想到将ServiceLocator转移到扩展方法的外部，通过传入参数的方式注入依赖。由于这个对象是单例的，因此Controller获得的ServiceLocator也就是PlatformResponse需要的对象。当我们调用PlatformResponse的Output()方法时，可以将Controller获得的ServiceLocator对象作为方法参数传给PlatformResponse。在Controller层，我们利用依赖注入注入Mock对象，就可以达到较好的可测试性了。</p>
 
 <p>然而，倘若要这样做，就需要将调用代码改为：
-{% codeblock lang:csharp %}
-businessService.Response.Output(serviceLocator);
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">businessService</span><span class="p">.</span><span class="n">Response</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="n">serviceLocator</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>同事觉得在调用Output()方法时，还需要传入ServiceLocator对象，实在不够优雅而简洁。</p>
 
 <p>由于C#的扩展方法有很多限制，例如它要求必须是静态类和静态方法，很难利用OO的一些特性，所以我想到的第二个方案是不采用扩展方法，而是将之前的逻辑直接封装到PlatformResponse中。我们可以将Output()方法定义为虚方法，然后再为测试定义PlatformResponse的子类，它将作为测试使用的Mock类，重写Output()方法。遗憾的是，系统基本上都是在调用外部服务的时候才获得的PlatformResponse对象。我们不可能去修改服务对象，使其在单元测试时返回该类的子类对象。</p>
 
 <p>第三条路是转移职责，将扩展方法Output()转移到一个专门的类，例如OutputMessage，由它来负责管理StatusCode与提示（出错）消息之间的映射关系，以及消息的输出，然后由子类重写消息处理的逻辑，完成模拟。例如代码：
-{% codeblock lang:csharp %}
-public class OutputMessage {</p>
-
-<pre><code>private PlatformResponse response;
-private HashTable&lt;String, String&gt; messageMapping = //ignore;
-public OutputMessage(PlatformResponse response) {
-    this.response = response;
-}
-public void Output() {
-    OutputInternal();
-}
-protected virtual void OutputInternal() {
-    ServiceLocator.Lookup&lt;IMessageWriter&gt;.Write(messageMapping[response.StatusCode]);
-}
-</code></pre>
-
-<p>}
-public class MockOutputMessage {</p>
-
-<pre><code>public MockOutputMessage(PlatformResponse response):base(response) {}
-protected override void OutputInternal() {
-//mock international service to handle message;
-</code></pre>
-
-<p>   }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">OutputMessage</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">private</span> <span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">;</span>
+</span><span class='line'><span class="k">private</span> <span class="n">HashTable</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">String</span><span class="p">,</span> <span class="n">String</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">messageMapping</span> <span class="p">=</span> <span class="c1">//ignore;</span>
+</span><span class='line'><span class="k">public</span> <span class="nf">OutputMessage</span><span class="p">(</span><span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="n">response</span> <span class="p">=</span> <span class="n">response</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">Output</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">OutputInternal</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">OutputInternal</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">ServiceLocator</span><span class="p">.</span><span class="n">Lookup</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">IMessageWriter</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;.</span><span class="n">Write</span><span class="p">(</span><span class="n">messageMapping</span><span class="p">[</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">]);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MockOutputMessage</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="n">MockOutputMessage</span><span class="p">(</span><span class="n">PlatformResponse</span> <span class="n">response</span><span class="p">):</span><span class="k">base</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class='line'><span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">OutputInternal</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="c1">//mock international service to handle message;</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>实际上这一方案是第二种方案的一种变化。因为我们无法修改一个已经被广泛使用的类，所以只能在引入新职责的时候，通过引入新生类来完成职责的增加，并利用子类重写的方式达到可测试的目的。</p>
 
@@ -200,33 +191,7 @@ protected override void OutputInternal() {
 <p>让我们再来仔细思考“接缝”的问题。是谁引入了依赖点？接缝是调用ServiceLocator这条语句，而它的目的实际上是需要获得IMessageWriter。是这个外部服务成为测试的障碍。所以解决的重点应该是解除与IMessageWriter之间的依赖。要这样做，就需要修改Output()扩展方法，使其能够传入IMessageWriter对象。这种改进事实上与第一种方案没有什么区别，唯一的不同是它依赖于更小的接口，而不是全局的ServiceLocator对象。我认为，这已经是一个最好的方案了。但是同事依旧执著于调用的简单性。他认为，不能为了单元测试，而改变客户端调用的方式。</p>
 
 <p>现在，我们已经明白扩展方法是最简单的实现方式，纠结仅仅在于IMessageWriter服务的获取方式而已。在产品代码中，我们可以通过ServiceLocator来获得IMessageWriter对象，而在测试的时候，我们又需要模拟该服务对象。若要两全齐美，只有区分测试与生产环境。事实上，这是我最初想到的做法，就是引入预定义来区分测试与真正的生产环境。但同事无法接受这种C++所主要采取的预定义做法。因此，我唯一能想到的是修改PlatformMessage类的定义，提供设置IMessageWriter的属性（因为C#并不支持扩展属性），并在Output()方法中判断IMessageWriter对象是否为null。如果为null，则说明它没有在测试环境下注入，这就需要通过ServiceLocator获得。
-{% codeblock lang:csharp %}
-public class PlatformResponse {</p>
-
-<pre><code>private IMessageWriter writer = null;
-public IMessageWriter MessageWriter {
-    get; set;
-}
-</code></pre>
-
-<p>}
-public static class PlatformResponseHelper {</p>
-
-<pre><code>private static HashTable&lt;String,String&gt; messageMapping = //ignore;
-
-public static void Output(this PlatformResponse response) {
-    String message = messageMapping[response.StatusCode];
-    //if not null，the object had been injected for testing;
-   if (response.MessageWriter !=null) {
-       response.MessageWriter.Write(message);
-   } else {
-       ServiceLocator.Lookup&lt;IMessageWriter&gt;.Write(message);
-   }
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+Liquid error: invalid byte sequence in US-ASCII</p>
 
 <p>虽然我修改了PlatformResponse类的定义，但由于需要调用或创建PlatformResponse对象的外部服务并不需要新增加的MessageWriter属性，因此这样的修改实际上是扩展，并不会影响到以前的代码。这就是我唯一能够想到的满足同事要求的方案。在测试时，我们可以通过为PlatformResponse注入模拟的IMessageWriter对象，而在真正的产品代码中，则无需为它设置MessageWriter属性，而是直接调用它的扩展方法Output()。美中不足之处在于它为调用者提供了一定的开放性，使得调用者能够自由设置MessageWriter属性，破坏了对象的封装。为使这种破坏带来的影响降到最低，在单元测试放在同一个项目的前提下，可以考虑将MessageWriter属性定义为internal。</p>
 

@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="基于Akka的REST框架Spray，由于采用Akka提供的Actor模型，写出来的代码与通常的REST有很大的区别。从Spray-Can接收Http请求，到处理具体的HTTP动词以实现业务逻辑，都是通过传递消息的方式。这些消息再交由Akka Actor接收处理。消息皆定义为Scala提供的样例类 &hellip;">
+  <meta name="description" content="从MapReduce的兴起，就带来一种思路，就是希望通过大量廉价的机器来处理以前需要耗费昂贵资源的海量数据。这种方式事实上是一种架构的水平伸缩模式——真正的以量取胜。毕竟，以现在的硬件发展来看，CPU的核数、内存的容量以及海量存储硬盘，都慢慢变得低廉而高效。然而， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,96 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/08/hardware-on-spark/">Spark的硬件配置</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-08T09:19:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/05/08/hardware-on-spark/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>从MapReduce的兴起，就带来一种思路，就是希望通过大量廉价的机器来处理以前需要耗费昂贵资源的海量数据。这种方式事实上是一种架构的水平伸缩模式——真正的以量取胜。毕竟，以现在的硬件发展来看，CPU的核数、内存的容量以及海量存储硬盘，都慢慢变得低廉而高效。然而，对于商业应用的海量数据挖掘或分析来看，硬件成本依旧是开发商非常关注的。当然最好的结果是：既要马儿跑得快，还要马儿少吃草。</p>
+
+<p>Spark相对于Hadoop的MapReduce而言，确乎要跑得迅捷许多。然而，Spark这种In-Memory的计算模式，是否在硬件资源尤其是内存资源的消耗上，要求更高呢？我既找不到这么多机器，也无法租用多台虚拟instance，再没法测评的情况下，只要寻求Spark的官方网站，又或者通过Google搜索。从Spark官方网站，Databricks公司Patrick Wendell的演讲以及Matei Zaharia的Spark论文，找到了一些关于Spark硬件配置的支撑数据。</p>
+
+<h3>Spark与存储系统</h3>
+
+<p>如果Spark使用HDFS作为存储系统，则可以有效地运用Spark的standalone mode cluster，让Spark与HDFS部署在同一台机器上。这种模式的部署非常简单，且读取文件的性能更高。当然，Spark对内存的使用是有要求的，需要合理分配它与HDFS的资源。因此，需要配置Spark和HDFS的环境变量，为各自的任务分配内存和CPU资源，避免相互之间的资源争用。</p>
+
+<p>若HDFS的机器足够好，这种部署可以优先考虑。若数据处理的执行效率要求非常高，那么还是需要采用分离的部署模式，例如部署在Hadoop YARN集群上。</p>
+
+<h3>Spark对磁盘的要求</h3>
+
+<p>Spark是in memory的迭代式运算平台，因此它对磁盘的要求不高。Spark官方推荐为每个节点配置4-8块磁盘，且并不需要配置为RAID（即将磁盘作为单独的mount point）。然后，通过配置spark.local.dir来指定磁盘列表。</p>
+
+<h3>Spark对内存的要求</h3>
+
+<p>Spark虽然是in memory的运算平台，但从官方资料看，似乎本身对内存的要求并不是特别苛刻。官方网站只是要求内存在8GB之上即可（Impala要求机器配置在128GB）。当然，真正要高效处理，仍然是内存越大越好。若内存超过200GB，则需要当心，因为JVM对超过200GB的内存管理存在问题，需要特别的配置。</p>
+
+<p>内存容量足够大，还得真正分给了Spark才行。Spark建议需要提供至少75%的内存空间分配给Spark，至于其余的内存空间，则分配给操作系统与buffer cache。这就需要部署Spark的机器足够干净。</p>
+
+<p>考虑内存消耗问题，倘若我们要处理的数据仅仅是进行一次处理，用完即丢弃，就应该避免使用cache或persist，从而降低对内存的损耗。若确实需要将数据加载到内存中，而内存又不足以加载，则可以设置Storage Level。Spark提供了三种Storage Level：MEMORY_ONLY（这是默认值），MEMORY_AND_DISK，以及DISK_ONLY。</p>
+
+<p>关于数据的持久化，Spark默认是持久化到内存中。但它也提供了三种持久化RDD的存储方式：</p>
+
+<ul>
+<li><p>in-memory storage as deserialized Java objects</p></li>
+<li><p>in-memory storage as serialised data</p></li>
+<li><p>on-disk storage</p></li>
+</ul>
+
+
+<p>第一种存储方式性能最优，第二种方式则对RDD的展现方式（Representing）提供了扩展，第三种方式则用于内存不足时。</p>
+
+<p>然而，在最新版（V1.0.2）的Spark中，提供了更多的Storage Level选择。一个值得注意的选项是OFF_HEAP，它能够将RDD以序列化格式存储到Tachyon中。相比MEMORY_ONLY_SER，这一选项能够减少执行垃圾回收，使Spark的执行器（executor）更小，并能共享内存池。<a href="http://tachyon-project.org/">Tachyon</a>是一个基于内存的分布式文件系统，性能远超HDFS。Tachyon与Spark同源同宗，都烙有伯克利AMPLab的印记。目前，Tachyon的版本为0.5.0，还处于实验阶段。</p>
+
+<p>注意，RDDs是Lazy的，在执行Transformation操作如map、filter时，并不会提交Job，只有在执行Action操作如count、first时，才会执行Job，此时才会进行数据的加载。当然，对于一些shuffle操作，例如reduceByKey，虽然仅是Transformation操作，但它在执行时会将一些中间数据进行持久化，而无需显式调用persist()函数。这是为了应对当节点出现故障时，能够避免针对大量数据进行重计算。要计算Spark加载的Dataset大小，可以通过Spark提供的Web UI Monitoring工具来帮助分析与判断。</p>
+
+<p>Spark的RDD是具有分区（partition）的，Spark并非是将整个RDD一次性加载到内存中。Spark针对partition提供了eviction policy，这一Policy采用了LRU（Least Recently Used）机制。当一个新的RDD分区需要计算时，如果没有合适的空间存储，就会根据LRU策略，将最少访问的RDD分区弹出，除非这个新分区与最少访问的分区属于同一个RDD。这也在一定程度上缓和了对内存的消耗。</p>
+
+<p>Spark对内存的消耗主要分为三部分：1. 数据集中对象的大小；2. 访问这些对象的内存消耗；3. 垃圾回收GC的消耗。一个通常的内存消耗计算方法是：内存消耗大小= 对象字段中原生数据 * (2~5)。 这是因为Spark运行在JVM之上，操作的Java对象都有定义的“object header”，而数据结构（如Map，LinkedList）对象自身也需要占用内存空间。此外，对于存储在数据结构中的基本类型，还需要装箱（Boxing）。Spark也提供了一些内存调优机制，例如执行对象的序列化，可以释放一部分内存空间。还可以通过为JVM设置flag来标记存放的字节数（选择4个字节而非8个字节）。在JDK 7下，还可以做更多优化，例如对字符编码的设置。这些配置都可以在spark-env.sh中设置。</p>
+
+<h3>Spark对网络的要求</h3>
+
+<p>Spark属于网络绑定型系统，因而建议使用10G及以上的网络带宽。</p>
+
+<h3>Spark对CPU的要求</h3>
+
+<p>Spark可以支持一台机器扩展至数十个CPU core，它实现的是线程之间最小共享。若内存足够大，则制约运算性能的就是网络带宽与CPU数。</p>
+
+<p>Spark官方利用Amazon EC2的环境对Spark进行了基准测评。例如，在交互方式下进行数据挖掘（Interative Data Mining），租用Amazon EC2的100个实例，配置为8核、68GB的内存。对1TB的维基百科页面查阅日志（维基百科两年的数据）进行数据挖掘。在查询时，针对整个输入数据进行全扫描，只需要耗费5-7秒的时间。如下图所示：
+<img class="center" src="/images/2014/sparkbenchmark.png"></p>
+
+<p>在Matei Zaharia的Spark论文中还给出了一些使用Spark的真实案例。视频处理公司Conviva，使用Spark将数据子集加载到RDD中。报道说明，对于200GB压缩过的数据进行查询和聚合操作，并运行在两台Spark机器上，占用内存为96GB，执行完全部操作需要耗费30分钟左右的时间。同比情况下，Hadoop需要耗费20小时。注意：之所以200GB的压缩数据只占用96GB内存，是因为RDD的处理方式，使得我们可以只加载匹配客户过滤的行和列，而非所有压缩数据。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -971,168 +1061,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/01/13/testing-styles-of-scalatest/">ScalaTest的测试风格</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-13T18:39:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/01/13/testing-styles-of-scalatest/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>ScalaTest几乎已经成为Scala语言默认的测试框架，而在JVM平台下，无论是否使用Scala进行开发，我认为仍有尝试ScalaTest的必要。这主要源于它提供了多种表达力超强的测试风格，能够满足各种层次的需求包括单元测试、BDD、验收测试、数据驱动测试。正如ScalaTest的创建者Bill Venners所说：</p>
-
-<blockquote><p>A guiding design principle of ScalaTest is that different people on a team should be able look at each others test code and know immediately what&#8217;s going on.</p>
-
-<p>ScalaTest is designed to make it easy for you to customize your testing tool to meet your current needs, and for the built-in traits at least, make it easy for anyone who comes along later to read and understand your code.</p></blockquote>
-
-<h2>UT与IT的风格选择</h2>
-
-<p>ScalaTest一共提供了七种测试风格，分别为：FunSuite，FlatSpec，FunSpec，WordSpec，FreeSpec，PropSpec和FeatureSpec。这就好像使用相同的原料做成不同美味乃至不同菜系的佳肴，你可以根据自己的口味进行选择。以我个人的偏好来看，我倾向于选择FlatSpec或FunSpec(类似Ruby下的RSpec)来编写单元测试与集成测试。虽然FunSuite的方式要更灵活，而且更符合传统测试方法的风格，区别仅在于test()方法可以接受一个闭包，但坏处恰恰就是它太灵活了。而FlatSpec和FunSpec则通过提供诸如it、should、describe等方法，来规定书写测试的一种模式，例如前者明显的<em>“主-谓-宾”结构</em>，后者清晰的<strong>分级式结构</strong>，都可以使团队的测试更加规范。如下是ScalaTest官方网站的提供的FunSuite、FlatSpec和FunSpec的三种风格样例。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">//FunSuite</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.FunSuite</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SetSuite</span> <span class="k">extends</span> <span class="nc">FunSuite</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">test</span><span class="o">(</span><span class="s">&quot;An empty Set should have size 0&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">assert</span><span class="o">(</span><span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>      <span class="n">test</span><span class="o">(</span><span class="s">&quot;Invoking head on an empty Set should produce NoSuchElementException&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">intercept</span><span class="o">[</span><span class="kt">NoSuchElementException</span><span class="o">]</span> <span class="o">{</span>
-</span><span class='line'>          <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">head</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//FlatSpec</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.FlatSpec</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SetSpec</span> <span class="k">extends</span> <span class="nc">FlatSpec</span> <span class="o">{</span>
-</span><span class='line'>  <span class="s">&quot;An empty Set&quot;</span> <span class="n">should</span> <span class="s">&quot;have size 0&quot;</span> <span class="n">in</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">assert</span><span class="o">(</span><span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>      <span class="n">it</span> <span class="n">should</span> <span class="s">&quot;produce NoSuchElementException when head is invoked&quot;</span> <span class="n">in</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">intercept</span><span class="o">[</span><span class="kt">NoSuchElementException</span><span class="o">]</span> <span class="o">{</span>
-</span><span class='line'>          <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">head</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//FunSpec</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.FunSpec</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SetSpec</span> <span class="k">extends</span> <span class="nc">FunSpec</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">describe</span><span class="o">(</span><span class="s">&quot;A Set&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">describe</span><span class="o">(</span><span class="s">&quot;when empty&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">it</span><span class="o">(</span><span class="s">&quot;should have size 0&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">assert</span><span class="o">(</span><span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>                  <span class="n">it</span><span class="o">(</span><span class="s">&quot;should produce NoSuchElementException when head is invoked&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">intercept</span><span class="o">[</span><span class="kt">NoSuchElementException</span><span class="o">]</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">head</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>至于WordSpec和FreeSpec，要么太复杂，要么可读性稍差，要么惯用法风格有些混杂，个人认为都不是太好的选择，除非你已经习惯了这种风格。</p>
-
-<h2>数据驱动测试风格</h2>
-
-<p>JUnit对类似表数据的Fixture准备提供了Parameterized支持，但非常不直观，而且还需要为测试编写构造函数，然后定义一个带有@Parameters标记的静态方法。TestNG的DataProvider略好，但通过在测试方法上指定DataProvider的方式，仍然不尽如人意。ScalaTest提供的PropSpec充分利用了Scala函数式语言的特性，使得代码更简单，表达性也更强：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalatest._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">prop._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">scala.collection.immutable._</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SetSpec</span> <span class="k">extends</span> <span class="nc">PropSpec</span> <span class="k">with</span> <span class="nc">TableDrivenPropertyChecks</span> <span class="k">with</span> <span class="nc">Matchers</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">examples</span> <span class="k">=</span>
-</span><span class='line'>    <span class="nc">Table</span><span class="o">(</span>
-</span><span class='line'>      <span class="s">&quot;set&quot;</span><span class="o">,</span> <span class="nc">BitSet</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span> <span class="nc">HashSet</span><span class="o">.</span><span class="n">empty</span><span class="o">[</span><span class="kt">Int</span><span class="o">],</span> <span class="nc">TreeSet</span><span class="o">.</span><span class="n">empty</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span>
-</span><span class='line'>    <span class="o">)</span>
-</span><span class='line'>  <span class="n">property</span><span class="o">(</span><span class="s">&quot;an empty Set should have size 0&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">forAll</span><span class="o">(</span><span class="n">examples</span><span class="o">)</span> <span class="o">{</span> <span class="n">set</span> <span class="k">=&gt;</span>
-</span><span class='line'>      <span class="n">set</span><span class="o">.</span><span class="n">size</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">property</span><span class="o">(</span><span class="s">&quot;invoking head on an empty set should produce NoSuchElementException&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">forAll</span><span class="o">(</span><span class="n">examples</span><span class="o">)</span> <span class="o">{</span> <span class="n">set</span> <span class="k">=&gt;</span>
-</span><span class='line'>      <span class="n">a</span> <span class="o">[</span><span class="kt">NoSuchElementException</span><span class="o">]</span> <span class="n">should</span> <span class="n">be</span> <span class="n">thrownBy</span> <span class="o">{</span> <span class="n">set</span><span class="o">.</span><span class="n">head</span> <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>验收测试风格</h2>
-
-<p>我们会推荐由PO（或者需求分析人员BA）与测试人员结对编写验收测试的业务场景，然后由开发人员和测试人员结对实现该场景。Cocumber、JBehave、Twist乃至Robot、Fitness都可以用于编写这样的验收测试（Fitness与Robot更接近实例化需求的方式）。这些工具有一个特点是业务场景与测试支持代码完全是分开的。例如Cucumber将业务场景放到feature文件中，而将测试支持代码放到rb文件中。JBehave类似。这样的好处是feature文件很干净，很纯粹，与技术实现没有任何关系，且有利于生成Living Document。然而，这种分离方式在带来良好可读性的同时，也带来维护成本的增加。</p>
-
-<p>ScalaTest在提供类似Feature的验收测试Spec时，并没有将业务场景与测试支持代码分开，而是采用了混合的方式来表现：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.</span><span class="o">{</span><span class="nc">ShouldMatchers</span><span class="o">,</span> <span class="nc">GivenWhenThen</span><span class="o">,</span> <span class="nc">FeatureSpec</span><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">TVSetTest</span> <span class="k">extends</span> <span class="nc">FeatureSpec</span> <span class="k">with</span> <span class="nc">GivenWhenThen</span> <span class="k">with</span> <span class="nc">ShouldMatchers</span><span class="o">{</span>
-</span><span class='line'>  <span class="n">info</span><span class="o">(</span><span class="s">&quot;As a TV Set owner&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">info</span><span class="o">(</span><span class="s">&quot;I want to be able to turn the TV on and off&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">info</span><span class="o">(</span><span class="s">&quot;So I can watch TV when I want&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">info</span><span class="o">(</span><span class="s">&quot;And save energy when I&#39;m not watching TV&quot;</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">feature</span><span class="o">(</span><span class="s">&quot;TV power button&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">scenario</span><span class="o">(</span><span class="s">&quot;User press power button when TV is off&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="nc">Given</span><span class="o">(</span><span class="s">&quot;a TV set that is switched off&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="k">val</span> <span class="n">tv</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">TVSet</span>
-</span><span class='line'>      <span class="n">tv</span><span class="o">.</span><span class="n">isOn</span> <span class="n">should</span> <span class="n">be</span> <span class="o">(</span><span class="kc">false</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nc">When</span><span class="o">(</span><span class="s">&quot;The power button is pressed&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="n">tv</span><span class="o">.</span><span class="n">pressPowerButton</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nc">Then</span><span class="o">(</span><span class="s">&quot;The TV should switch on&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="n">tv</span><span class="o">.</span><span class="n">isOn</span> <span class="n">should</span> <span class="n">be</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ScalaTest的FeatureSpec支持常见的Given-When-Then模式。在上面的代码段中，info提供了对Feature的基本描述，然后提供了feature与scenario两个层级。熟悉Cucumber和JBehave的人对此应该不会陌生。测试支持代码直接写在Given、When、Then方法下，因而针对同一个Feature，只产生一个scala文件。这就意味着测试支持代码与自然语言描述是处于同一级的，准确地说，他们其实就属于同一个测试。开发时，PO（或者需求）与测试可以先编写FeatureSpec的骨架，即info-feature-scenario以及Given-When-Then部分。一旦编写好这个FeatureSpec，就可以提交到版本管理库。当开发人员与需求、测试一起Kick Off要做的Story时，就可以根据这个FeatureSpec进行，然后，要求开发人员在完成Story的实现前，与测试结对完成它的测试实现代码。</p>
-
-<p>由于ScalaTest还提供了Tag等功能，我们还可以通过对测试提取基类或者Trait有效地对这些测试进行重用，保证测试代码的可维护性。由于只需要维护一个scala，成本会降低许多，也不需要在业务场景和测试支持代码之间跳转，降低维护的难度。唯一的缺点是它天然不支持Living Document。但是我们发现这些自然语言描述实则都集中在FeatureSpec提供的方法中，我们完全可以自行开发工具或插件，完成对场景描述以及步骤的提取，生成我们需要的文档。</p>
-
-<p>目前，我的同事杨云已经将ScalaTest作为编写验收测试的工具引入到项目中。受他启发，在我当前的项目中也选择使用了ScalaTest作为验收测试的框架。考虑到IDE支持尤其是重构等方面的工具支持，以及构建中对测试运行、测试覆盖率检查等的支持，目前我并没有考虑在单元测试和集成测试中使用ScalaTest。之所以如此，还是源于对成本与收益的考量。</p>
-
-<p><strong>说明：</strong>文章的代码片段全部来自ScalaTest官方网站。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1171,6 +1099,10 @@ Liquid error: invalid byte sequence in US-ASCII</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
       </li>
     
@@ -1184,10 +1116,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
     
       <li class="post">
         <a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a>
       </li>
     
   </ul>
@@ -1234,13 +1162,14 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
 <a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
-<a style="font-size: 144%" href="/blog/tags/ddd/">DDD</a>
+<a style="font-size: 155%" href="/blog/tags/ddd/">DDD</a>
 <a style="font-size: 205%" href="/blog/tags/design/">Design</a>
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
 <a style="font-size: 100%" href="/blog/tags/go/">GO</a>
 <a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
+<a style="font-size: 100%" href="/blog/tags/guava/">Guava</a>
 <a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
 <a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
@@ -1273,7 +1202,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
-<a style="font-size: 100%" href="/blog/tags/translation/">Translation</a>
 <a style="font-size: 128%" href="/blog/tags/visualization/">Visualization</a>
 
   </ul>

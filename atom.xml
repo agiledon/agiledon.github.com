@@ -4,7 +4,7 @@
   <title><![CDATA[逸言]]></title>
   <link href="http://agiledon.github.com/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-23T08:50:38+08:00</updated>
+  <updated>2014-09-25T13:03:35+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,39 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[领域驱动设计中的事件建模]]></title>
+    <link href="http://agiledon.github.com/blog/2014/09/25/event-modeling-in-ddd/"/>
+    <updated>2014-09-25T12:58:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2014/09/25/event-modeling-in-ddd</id>
+    <content type="html"><![CDATA[<p>这两日，我参加了Implementing Domain Driven Disign一书作者Vaughn Vernon组织的IDDD Workshop。培训中，Vernon带领我们针对Domain Event进行了一次建模工作坊。
+<img class="center" src="http://agiledon.github.com/images/2014/vernonandme.jpg"></p>
+
+<p>在领域驱动设计中，Domain Event变得越来越重要。在Implementing Domain Driven Disign这本书中，Vaughn Vernon甚至将Domain Event上升到了一等公民的地位。</p>
+
+<p>那么，Domain Event到底是什么？Domain Event即领域事件，是指领域中发生的事实（facts）。当满足某个条件时，某个发起者就会触发事件产生。因而在对事件建模时，我们可以关注统一语言中如下的关键词汇：
+<strong>“当…”
+“如果发生…”
+“当…的时候，请通知我”
+“发生…时”</strong></p>
+
+<p>“事件为事实（fact）”这一描述让我对“事件”本身有了更准确的认识。它让我想起两篇发表在InfoQ上的文章。一篇文章为《<a href="http://www.infoq.com/cn/articles/Architecture-Datomic">Datomic的架构</a>》。文中提到：“信息是一组事实（facts），事实是指一些已经发生的事情。鉴于任何人都无法改变过去，这也意味着数据库将累积这些事实，而非原地进行更新。虽然过去可以遗忘，但却是不能改变的。”同理推之，若事件即事实，那么它也是不可改变的。对于这些历史发生的“事实”，我们需要“立此存照”——于是，这就引出了Event Store或者Event Sourcing。我会在后续的文章深入分析Event Store与Event Sourcing。</p>
+
+<p>另一篇文章是徐昊的《<a href="http://www.infoq.com/cn/articles/xh-four-color-modeling">运用四色建模法进行领域分析</a>》。文中表达了类似的思想：“任何的业务事件都会以某种数据的形式留下足迹。我们对于事件的追溯可以通过对数据的追溯来完成。……你无法回到从前去看看到底发生了什么，但是却可以在单据的基础上，一定程度的还原当时事情发生的场景。当我们把这些数据的足迹按照时间顺序排列起来，我们几乎可以清晰的推测出这个在过往的一段时间内到底发生了那些事情。”</p>
+
+<p>在四色建模分析法中，徐昊认为应该将“时标性对象（moment-interval）”作为建模的起点。我在这里并不是要介绍四色建模法，这个话题留待以后再讲。我试图阐释的观点在于，如果事件与时间相关，那么在对事件进行建模时，就可以针对业务场景确定一条时间线，并通过分析业务状态的各种变迁，得到我们希望获得的事件模型。这正是这个工作坊的切入点。</p>
+
+<p>整个事件建模的活动可以分为四个步骤：
+1. 选定某个自己熟悉的领域，然后针对时间线去寻找那些用过去时态表现的事件；找到这些事件后，用黄色即时贴写出事件名称，形式如：OrderFilled。
+2. 针对每个事件，对触发事件的Command对象进行建模，并用绿色即时贴写出Command的名称。对Command对象进行建模并非单纯地为了寻找Command对象，而是为了更深一步地验证之前建模的事件模型。在思考触发事件的对象时，我们可能会发现一些遗漏又或者多余的事件。
+3. 判断这些事件应该属于哪个聚合对象，找到它们，然后写在紫色即时贴上。
+4. 对这些识别出来的Event、Command、Aggregate进行分类，判断它们到底属于哪个Bounded Context，并用红色即时贴标出。
+<img class="center" src="http://agiledon.github.com/images/2014/eventmodeling.jpg"></p>
+
+<p>这种Workshop不仅只针对培训，它更应该运用到团队进行领域驱动设计的过程中。这也正是我一直在提倡的所谓“可视化设计”。可视化设计并非一个噱头，更不是为了美观好看，而是希望以直观简单的形式展现设计思路，尤其需要让整个团队成员都能以协作互动的形式参与到这个设计过程中。群策群力，头脑风暴，如此方能获得更好的设计方案，并以这种团队行为的方式完成知识的共享与传递。其实，“架构”究竟是什么，不就是一种软件设计的知识吗？设计架构，重要在于交流，在于知识传递，而不仅仅是严谨完整的解决方案文档。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[快速了解Scala技术栈]]></title>
@@ -2015,139 +2048,6 @@ Liquid error: invalid byte sequence in US-ASCII</p>
 <p>如果Supervisor不能简单地重启其Children，又必须终止他们，例如在初始化Actor时出现了错误，就可以使用Monitoring。此时，可以侦听这些children，然后重新创建他们，或者安排时间重试。</p>
 
 <p>使用Monitoring的另一种常见情形是，在缺乏外部资源，且该外部资源属于该Actor的一个children，Actor需要失败。如果第三方通过system.stop(child)或者发送PoisonPill去终止child，supervisor就会受到影响。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ScalaTest的测试风格]]></title>
-    <link href="http://agiledon.github.com/blog/2014/01/13/testing-styles-of-scalatest/"/>
-    <updated>2014-01-13T18:39:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2014/01/13/testing-styles-of-scalatest</id>
-    <content type="html"><![CDATA[<p>ScalaTest几乎已经成为Scala语言默认的测试框架，而在JVM平台下，无论是否使用Scala进行开发，我认为仍有尝试ScalaTest的必要。这主要源于它提供了多种表达力超强的测试风格，能够满足各种层次的需求包括单元测试、BDD、验收测试、数据驱动测试。正如ScalaTest的创建者Bill Venners所说：</p>
-
-<blockquote><p>A guiding design principle of ScalaTest is that different people on a team should be able look at each others test code and know immediately what&#8217;s going on.</p>
-
-<p>ScalaTest is designed to make it easy for you to customize your testing tool to meet your current needs, and for the built-in traits at least, make it easy for anyone who comes along later to read and understand your code.</p></blockquote>
-
-<h2>UT与IT的风格选择</h2>
-
-<p>ScalaTest一共提供了七种测试风格，分别为：FunSuite，FlatSpec，FunSpec，WordSpec，FreeSpec，PropSpec和FeatureSpec。这就好像使用相同的原料做成不同美味乃至不同菜系的佳肴，你可以根据自己的口味进行选择。以我个人的偏好来看，我倾向于选择FlatSpec或FunSpec(类似Ruby下的RSpec)来编写单元测试与集成测试。虽然FunSuite的方式要更灵活，而且更符合传统测试方法的风格，区别仅在于test()方法可以接受一个闭包，但坏处恰恰就是它太灵活了。而FlatSpec和FunSpec则通过提供诸如it、should、describe等方法，来规定书写测试的一种模式，例如前者明显的<em>“主-谓-宾”结构</em>，后者清晰的<strong>分级式结构</strong>，都可以使团队的测试更加规范。如下是ScalaTest官方网站的提供的FunSuite、FlatSpec和FunSpec的三种风格样例。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">//FunSuite</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.FunSuite</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SetSuite</span> <span class="k">extends</span> <span class="nc">FunSuite</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">test</span><span class="o">(</span><span class="s">&quot;An empty Set should have size 0&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">assert</span><span class="o">(</span><span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>      <span class="n">test</span><span class="o">(</span><span class="s">&quot;Invoking head on an empty Set should produce NoSuchElementException&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">intercept</span><span class="o">[</span><span class="kt">NoSuchElementException</span><span class="o">]</span> <span class="o">{</span>
-</span><span class='line'>          <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">head</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//FlatSpec</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.FlatSpec</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SetSpec</span> <span class="k">extends</span> <span class="nc">FlatSpec</span> <span class="o">{</span>
-</span><span class='line'>  <span class="s">&quot;An empty Set&quot;</span> <span class="n">should</span> <span class="s">&quot;have size 0&quot;</span> <span class="n">in</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">assert</span><span class="o">(</span><span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>      <span class="n">it</span> <span class="n">should</span> <span class="s">&quot;produce NoSuchElementException when head is invoked&quot;</span> <span class="n">in</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">intercept</span><span class="o">[</span><span class="kt">NoSuchElementException</span><span class="o">]</span> <span class="o">{</span>
-</span><span class='line'>          <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">head</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//FunSpec</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.FunSpec</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SetSpec</span> <span class="k">extends</span> <span class="nc">FunSpec</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">describe</span><span class="o">(</span><span class="s">&quot;A Set&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">describe</span><span class="o">(</span><span class="s">&quot;when empty&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">it</span><span class="o">(</span><span class="s">&quot;should have size 0&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">assert</span><span class="o">(</span><span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>                  <span class="n">it</span><span class="o">(</span><span class="s">&quot;should produce NoSuchElementException when head is invoked&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">intercept</span><span class="o">[</span><span class="kt">NoSuchElementException</span><span class="o">]</span> <span class="o">{</span>
-</span><span class='line'>                  <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">.</span><span class="n">head</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>至于WordSpec和FreeSpec，要么太复杂，要么可读性稍差，要么惯用法风格有些混杂，个人认为都不是太好的选择，除非你已经习惯了这种风格。</p>
-
-<h2>数据驱动测试风格</h2>
-
-<p>JUnit对类似表数据的Fixture准备提供了Parameterized支持，但非常不直观，而且还需要为测试编写构造函数，然后定义一个带有@Parameters标记的静态方法。TestNG的DataProvider略好，但通过在测试方法上指定DataProvider的方式，仍然不尽如人意。ScalaTest提供的PropSpec充分利用了Scala函数式语言的特性，使得代码更简单，表达性也更强：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalatest._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">prop._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">scala.collection.immutable._</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">SetSpec</span> <span class="k">extends</span> <span class="nc">PropSpec</span> <span class="k">with</span> <span class="nc">TableDrivenPropertyChecks</span> <span class="k">with</span> <span class="nc">Matchers</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">examples</span> <span class="k">=</span>
-</span><span class='line'>    <span class="nc">Table</span><span class="o">(</span>
-</span><span class='line'>      <span class="s">&quot;set&quot;</span><span class="o">,</span> <span class="nc">BitSet</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span> <span class="nc">HashSet</span><span class="o">.</span><span class="n">empty</span><span class="o">[</span><span class="kt">Int</span><span class="o">],</span> <span class="nc">TreeSet</span><span class="o">.</span><span class="n">empty</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span>
-</span><span class='line'>    <span class="o">)</span>
-</span><span class='line'>  <span class="n">property</span><span class="o">(</span><span class="s">&quot;an empty Set should have size 0&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">forAll</span><span class="o">(</span><span class="n">examples</span><span class="o">)</span> <span class="o">{</span> <span class="n">set</span> <span class="k">=&gt;</span>
-</span><span class='line'>      <span class="n">set</span><span class="o">.</span><span class="n">size</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">property</span><span class="o">(</span><span class="s">&quot;invoking head on an empty set should produce NoSuchElementException&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">forAll</span><span class="o">(</span><span class="n">examples</span><span class="o">)</span> <span class="o">{</span> <span class="n">set</span> <span class="k">=&gt;</span>
-</span><span class='line'>      <span class="n">a</span> <span class="o">[</span><span class="kt">NoSuchElementException</span><span class="o">]</span> <span class="n">should</span> <span class="n">be</span> <span class="n">thrownBy</span> <span class="o">{</span> <span class="n">set</span><span class="o">.</span><span class="n">head</span> <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>验收测试风格</h2>
-
-<p>我们会推荐由PO（或者需求分析人员BA）与测试人员结对编写验收测试的业务场景，然后由开发人员和测试人员结对实现该场景。Cocumber、JBehave、Twist乃至Robot、Fitness都可以用于编写这样的验收测试（Fitness与Robot更接近实例化需求的方式）。这些工具有一个特点是业务场景与测试支持代码完全是分开的。例如Cucumber将业务场景放到feature文件中，而将测试支持代码放到rb文件中。JBehave类似。这样的好处是feature文件很干净，很纯粹，与技术实现没有任何关系，且有利于生成Living Document。然而，这种分离方式在带来良好可读性的同时，也带来维护成本的增加。</p>
-
-<p>ScalaTest在提供类似Feature的验收测试Spec时，并没有将业务场景与测试支持代码分开，而是采用了混合的方式来表现：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalatest.</span><span class="o">{</span><span class="nc">ShouldMatchers</span><span class="o">,</span> <span class="nc">GivenWhenThen</span><span class="o">,</span> <span class="nc">FeatureSpec</span><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">TVSetTest</span> <span class="k">extends</span> <span class="nc">FeatureSpec</span> <span class="k">with</span> <span class="nc">GivenWhenThen</span> <span class="k">with</span> <span class="nc">ShouldMatchers</span><span class="o">{</span>
-</span><span class='line'>  <span class="n">info</span><span class="o">(</span><span class="s">&quot;As a TV Set owner&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">info</span><span class="o">(</span><span class="s">&quot;I want to be able to turn the TV on and off&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">info</span><span class="o">(</span><span class="s">&quot;So I can watch TV when I want&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">info</span><span class="o">(</span><span class="s">&quot;And save energy when I&#39;m not watching TV&quot;</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">feature</span><span class="o">(</span><span class="s">&quot;TV power button&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">scenario</span><span class="o">(</span><span class="s">&quot;User press power button when TV is off&quot;</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="nc">Given</span><span class="o">(</span><span class="s">&quot;a TV set that is switched off&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="k">val</span> <span class="n">tv</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">TVSet</span>
-</span><span class='line'>      <span class="n">tv</span><span class="o">.</span><span class="n">isOn</span> <span class="n">should</span> <span class="n">be</span> <span class="o">(</span><span class="kc">false</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nc">When</span><span class="o">(</span><span class="s">&quot;The power button is pressed&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="n">tv</span><span class="o">.</span><span class="n">pressPowerButton</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nc">Then</span><span class="o">(</span><span class="s">&quot;The TV should switch on&quot;</span><span class="o">)</span>
-</span><span class='line'>      <span class="n">tv</span><span class="o">.</span><span class="n">isOn</span> <span class="n">should</span> <span class="n">be</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ScalaTest的FeatureSpec支持常见的Given-When-Then模式。在上面的代码段中，info提供了对Feature的基本描述，然后提供了feature与scenario两个层级。熟悉Cucumber和JBehave的人对此应该不会陌生。测试支持代码直接写在Given、When、Then方法下，因而针对同一个Feature，只产生一个scala文件。这就意味着测试支持代码与自然语言描述是处于同一级的，准确地说，他们其实就属于同一个测试。开发时，PO（或者需求）与测试可以先编写FeatureSpec的骨架，即info-feature-scenario以及Given-When-Then部分。一旦编写好这个FeatureSpec，就可以提交到版本管理库。当开发人员与需求、测试一起Kick Off要做的Story时，就可以根据这个FeatureSpec进行，然后，要求开发人员在完成Story的实现前，与测试结对完成它的测试实现代码。</p>
-
-<p>由于ScalaTest还提供了Tag等功能，我们还可以通过对测试提取基类或者Trait有效地对这些测试进行重用，保证测试代码的可维护性。由于只需要维护一个scala，成本会降低许多，也不需要在业务场景和测试支持代码之间跳转，降低维护的难度。唯一的缺点是它天然不支持Living Document。但是我们发现这些自然语言描述实则都集中在FeatureSpec提供的方法中，我们完全可以自行开发工具或插件，完成对场景描述以及步骤的提取，生成我们需要的文档。</p>
-
-<p>目前，我的同事杨云已经将ScalaTest作为编写验收测试的工具引入到项目中。受他启发，在我当前的项目中也选择使用了ScalaTest作为验收测试的框架。考虑到IDE支持尤其是重构等方面的工具支持，以及构建中对测试运行、测试覆盖率检查等的支持，目前我并没有考虑在单元测试和集成测试中使用ScalaTest。之所以如此，还是源于对成本与收益的考量。</p>
-
-<p><strong>说明：</strong>文章的代码片段全部来自ScalaTest官方网站。</p>
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Life | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/categories/life/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-23T08:53:50+08:00</updated>
+  <updated>2014-09-25T13:03:35+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -22,16 +22,16 @@
 
 <p>这幅的颜色涂抹并不张扬，在绿树下显得线条更柔和又抽象：</p>
 
-<p>{% img center /images/2014/tuya01.jpg %}</p>
+<p><img class="center" src="/images/2014/tuya01.jpg"></p>
 
 <p>下面这幅让我产生建筑密集症：
-{% img center /images/2014/tuya02.jpg %}</p>
+<img class="center" src="/images/2014/tuya02.jpg"></p>
 
 <p>这一幅具有萌趣，但很破烂，那些外挂的空调外机反而成了装饰：
-{% img center /images/2014/tuya03.jpg %}</p>
+<img class="center" src="/images/2014/tuya03.jpg"></p>
 
 <p>这种蓝色是我最爱的，虽然破旧，我反而觉得更融洽：
-{% img center /images/2014/tuya04.jpg %}</p>
+<img class="center" src="/images/2014/tuya04.jpg"></p>
 ]]></content>
   </entry>
   
@@ -43,21 +43,21 @@
     <content type="html"><![CDATA[<p>今天，微信群“改变自己”发布了一篇张辉的文章《一个人的旅程：逃离舒适圈》——之所以选择一个人从北京到拉斯维加斯，就是希望挑战一下自己的孤独和不安感觉。读到这篇文章，让我想起自己的一次远行，何其相似。当我只有一个人面对一个陌生环境时，我也常常会陷入一种焦虑不安的情绪之中。区别只在于张辉的一个人旅程是主动选择，而我则是迫于无奈。</p>
 
 <p>那是在前年，我自己一人独自上路，乘坐从北京到布里斯本（Brisbane）的飞机。飞机经由香港转机到布里斯本，而在之前还要在凯恩斯（Keynes）做短暂停留。
-{% img center /images/2014/airport.jpg %}</p>
+<img class="center" src="/images/2014/airport.jpg"></p>
 
 <p>问题就出在这里，我一直以为在香港转机后，是直飞布里斯本。所以当飞机即将到达凯恩斯时，听到通知凯恩斯即将到达的广播时，就开始了自己的纠结：我是否坐错了飞机呢？实在按奈不住，终于忍不住问询了旁边的一位菲律宾人，得到完全无误的确认后，我才长舒了一口气。那种纠结真是折磨，虽然在理智上认为这种错误不可能发生，可是心里总是放却不下。当我走出布里斯本机场，上了公司派来接我的汽车后，似乎整个人才彻底轻松下来，开始与司机聊起布里斯本那美丽的景色来。同样是语言不通，同样是陌生人，飞机上的我格外地拘束，而坐在这白人小伙的车上，突然就变得自如了许多，就好似被压抑的洪水，一下子冲出了闸门。</p>
 
 <p>一个人非得要经历一些陌生事物，陌生景色，才会慢慢变得硬线条，粗神经，降低对周遭环境的敏感度。只有如此，才能变得更加适应这个社会。我记得第一次出国到洛杉矶，相对于兴奋，更显得紧张和不安。可惜那一次因为是与同事同行，缺乏了一次绝佳的锻炼机会。工作之余，我们几个人一起租车到棕榈泉，到拉斯维加斯，到胡佛大坝。因为同行还有一位美国同事，所以很多事情都已安排好，自己完全不用费心考虑。
-{% img center /images/2014/palmspring.JPG %}</p>
+<img class="center" src="/images/2014/palmspring.JPG"></p>
 
-<p>{% img center /images/2014/lasvagas.jpg %}</p>
+<p><img class="center" src="/images/2014/lasvagas.jpg"></p>
 
 <p>到布里斯本的一次，让我体味到寂寞孤独的同时，也让我心智成熟了许多。仔细思考，这种独自一人的旅行或许并不能让你收获什么知识，但它就像醍醐灌顶一般，不知不觉就打通了你的任督二脉。你突然会变得独立，变得勇敢，变得对陌生无畏。于是在布里斯本，我开始习惯在周末独自一人在布里斯本街头闲逛，在布里斯本河畔的餐馆就餐，到Queen Street的超市去购物，到Wedding Lawn看那些新人们举行婚礼，到South Bank体味艺术的人文气味；最后趁着复活节的空闲，独自一人去了一趟悉尼。我想，以后再将我扔到某个陌生环境，我至少不会恐惧了，我会学着正确地面对。
-{% img center /images/2014/brisbanebridge.jpg %}</p>
+<img class="center" src="/images/2014/brisbanebridge.jpg"></p>
 
-<p>{% img center /images/2014/sbank.jpg %}</p>
+<p><img class="center" src="/images/2014/sbank.jpg"></p>
 
-<p>{% img center /images/2014/southbank.jpg %}</p>
+<p><img class="center" src="/images/2014/southbank.jpg"></p>
 
 <p>这正是我为何在去年要申请离开Office的项目出外做咨询，为何希望作为Coach申请到印度参加TWU。我希望尝试一些新东西，试着给自己一些挑战，这在我司，一个流行说法就是“跳出舒适区”。在一个熟悉的环境，每天面对熟悉的人，做着熟悉的事情，久而久之，自己的行为就会被惯性推动，然后成为习惯，产生惰性。这就好似在一个重力场一般，只要重力发生一丁点改变，我们的身体都会敏感的察觉，并通过神经中枢系统传达这种不适意。然而一旦熟悉了这种重力，我们在这样的重力场中的任何行为都会变得轻松自如。一旦重力再一次改变，即使是调整到之前的值，身体仍然需要做再一次调整。</p>
 
@@ -72,17 +72,17 @@
     <link href="http://agiledon.github.com/blog/2012/12/21/geek-pictures-in-brisbane/"/>
     <updated>2012-12-21T17:01:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2012/12/21/geek-pictures-in-brisbane</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2012/12/spring.jpg 567 340 %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2012/12/spring.jpg" width="567" height="340">
 这是我在今年四月到澳洲Brisbane街头拍到的一组照片，Geek们，看到这些名称，是否有些熟悉的感觉呢？</p>
 
 <!--more-->
 
 
-<p>{% img center /images/2012/12/fitness.jpg 567 340 %}</p>
+<p><img class="center" src="/images/2012/12/fitness.jpg" width="567" height="340"></p>
 
-<p>{% img center /images/2012/12/hudson.jpg 567 340 %}</p>
+<p><img class="center" src="/images/2012/12/hudson.jpg" width="567" height="340"></p>
 
-<p>{% img center /images/2012/12/groovy.jpg 425 709 %}</p>
+<p><img class="center" src="/images/2012/12/groovy.jpg" width="425" height="709"></p>
 ]]></content>
   </entry>
   
