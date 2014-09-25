@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Agile | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/agile/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-25T13:03:35+08:00</updated>
+  <updated>2014-09-25T13:07:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/08/06/methodologies-of-reading-radar/"/>
     <updated>2013-08-06T10:41:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/08/06/methodologies-of-reading-radar</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/readingradar03.png"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2013/readingradar03.png %}</p>
 
 <p>方法学（Methodology）看似与开发技能无关，常为程序员忽略。忽略意味着未曾察觉，却不等于它的无关紧要。我们每时每刻呼吸的空气同样会被我们忽略，但空气不重要么？不要等到我们开始戴上口罩，每日关心PM 2.5指数时，方才察觉原来空气的质量已经积重难返了。在我们的读书雷达中，方法学象限囊括的书籍多与开发过程相关。如果说开发技能是程序员修炼过程中必须加强的显式的力，则开发过程的这些思想与实践，就是隐藏的推手。你若不动，它会推你前行，然而缓慢；若你后退，则推动的阻力就大，暗流汹涌。只有自愿向前，这种助力才能如鱼得水，使你能够优游地前行。</p>
 

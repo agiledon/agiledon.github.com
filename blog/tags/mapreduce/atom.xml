@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: MapReduce | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/mapreduce/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-25T13:03:35+08:00</updated>
+  <updated>2014-09-25T13:07:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2013/03/19/hadoop-mapreduce-skillset/"/>
     <updated>2013-03-19T13:19:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/03/19/hadoop-mapreduce-skillset</id>
-    <content type="html"><![CDATA[<p><img class="left" src="/images/2013/03/mapreduce.jpg">
+    <content type="html"><![CDATA[<p>{% img left /images/2013/03/mapreduce.jpg %}
 我在使用Hadoop编写MapReduce程序时，遇到了一些问题，通过在Google上查询资料，并结合自己对Hadoop的理解，逐一解决了这些问题。</p>
 
 <h4>自定义Writable</h4>
@@ -26,244 +26,247 @@
 <p>Hadoop对MapReduce中Key与Value的类型是有要求的，简单说来，这些类型必须支持Hadoop的序列化。为了提高序列化的性能，Hadoop还为Java中常见的基本类型提供了相应地支持序列化的类型，如IntWritable，LongWritable，并为String类型提供了Text类型。不过，这些Hadoop内建的类型并不足以支持真实遇到的业务。此时，就需要自定义Writable类，使得它既能够作为Job的Key或者Value，又能体现业务逻辑。</p>
 
 <p>假设我已经从豆瓣抓取了书籍的数据，包括书籍的Title以及读者定义的Tag，并以Json格式存储在文本文件中。现在我希望提取这些数据中我感兴趣的内容，例如指定书籍的Tag列表，包括Tag被标记的次数。这些数据可以作为向量，为后面的数据分析提供基础数据。对于Map，我希望读取Json文件，然后得到每本书的Title，以及对应的单个Tag信息。作为Map的输出，我希望是我自己定义的类型BookTag。<!--more-->它只包括Tag的名称和标记次数：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BookTag</span> <span class="kd">implements</span> <span class="n">Writable</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="kt">int</span> <span class="n">count</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="nf">BookTag</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="nf">BookTag</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">DataOutput</span> <span class="n">dataOutput</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">dataOutput</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">Text</span><span class="o">.</span><span class="na">writeString</span><span class="o">(</span><span class="n">dataOutput</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">dataOutput</span><span class="o">.</span><span class="na">writeInt</span><span class="o">(</span><span class="n">count</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">readFields</span><span class="o">(</span><span class="n">DataInput</span> <span class="n">dataInput</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">dataInput</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">name</span> <span class="o">=</span> <span class="n">Text</span><span class="o">.</span><span class="na">readString</span><span class="o">(</span><span class="n">dataInput</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">count</span> <span class="o">=</span> <span class="n">dataInput</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">getCount</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">count</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCount</span><span class="o">(</span><span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="s">&quot;BookTag{&quot;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;name=&#39;&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="sc">&#39;\&#39;&#39;</span> <span class="o">+</span>
-</span><span class='line'>            <span class="s">&quot;, count=&quot;</span> <span class="o">+</span> <span class="n">count</span> <span class="o">+</span>
-</span><span class='line'>            <span class="sc">&#39;}&#39;</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+{% codeblock lang:java %}
+public class BookTag implements Writable {</p>
+
+<pre><code>private String name;
+private int count;
+
+public BookTag() {
+    count = 0;
+}
+
+public BookTag(String name, int count) {
+    this.name = name;
+    this.count = count;
+}
+
+@Override
+public void write(DataOutput dataOutput) throws IOException {
+    if (dataOutput != null) {
+        Text.writeString(dataOutput, name);
+        dataOutput.writeInt(count);
+    }
+}
+
+@Override
+public void readFields(DataInput dataInput) throws IOException {
+    if (dataInput != null) {
+        name = Text.readString(dataInput);
+        count = dataInput.readInt();
+    }
+}
+
+public String getName() {
+    return name;
+}
+
+public void setName(String name) {
+    this.name = name;
+}
+
+public int getCount() {
+    return count;
+}
+
+public void setCount(int count) {
+    this.count = count;
+}
+
+@Override
+public String toString() {
+    return "BookTag{" +
+            "name='" + name + '\'' +
+            ", count=" + count +
+            '}';
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}
 注意，在write()与readFields()方法中，对于String类型的处理完全不同于Int、Long等类型，它需要调用Text的相关静态方法。</p>
 
 <p>针对每本书，Map出来的结果可能包含重复的BookTag信息（指Tag Name相同）；而我需要得到每个Tag的标记总和，以作为数据分析的向量。因此，作为Reduce的输入，可以是&lt;Text, Iterable<BookTag>>，但输出则应该是合并了相同Tag信息的结果。为此，我引入了BookTags类，在其内部维持了一个BookTag的Map，它同样需要实现Writable。由于BookTags包含了一个集合类型，因此它的实现会略有不同：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BookTags</span> <span class="kd">implements</span> <span class="n">Writable</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">Map</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">BookTag</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">tags</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">BookTag</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">write</span><span class="o">(</span><span class="n">DataOutput</span> <span class="n">dataOutput</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">dataOutput</span><span class="o">.</span><span class="na">writeInt</span><span class="o">(</span><span class="n">tags</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">BookTag</span> <span class="n">tag</span> <span class="o">:</span> <span class="n">tags</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">tag</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">dataOutput</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">readFields</span><span class="o">(</span><span class="n">DataInput</span> <span class="n">dataInput</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">dataInput</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">size</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">BookTag</span> <span class="n">tag</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BookTag</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">tag</span><span class="o">.</span><span class="na">readFields</span><span class="o">(</span><span class="n">dataInput</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">tags</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">tag</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">tag</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">BookTag</span> <span class="n">tag</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">tagName</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">tags</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">tagName</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">BookTag</span> <span class="n">bookTag</span> <span class="o">=</span> <span class="n">tags</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">tagName</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">bookTag</span><span class="o">.</span><span class="na">setCount</span><span class="o">(</span><span class="n">bookTag</span><span class="o">.</span><span class="na">getCount</span><span class="o">()</span> <span class="o">+</span> <span class="n">tag</span><span class="o">.</span><span class="na">getCount</span><span class="o">());</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">tags</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">tagName</span><span class="o">,</span> <span class="n">tag</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">StringBuilder</span> <span class="n">resultTags</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">BookTag</span> <span class="n">tag</span> <span class="o">:</span> <span class="n">tags</span><span class="o">.</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">resultTags</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">tag</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-</span><span class='line'>        <span class="n">resultTags</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;|&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">resultTags</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+{% codeblock lang:java %}
+public class BookTags implements Writable {</p>
+
+<pre><code>private Map&lt;String, BookTag&gt; tags = new HashMap&lt;String, BookTag&gt;();
+
+@Override
+public void write(DataOutput dataOutput) throws IOException {
+    dataOutput.writeInt(tags.size());
+    for (BookTag tag : tags.values()) {
+        tag.write(dataOutput);
+    }
+}
+
+@Override
+public void readFields(DataInput dataInput) throws IOException {
+    int size = dataInput.readInt();
+    for (int i = 0; i &lt; size; i++) {
+        BookTag tag = new BookTag();
+        tag.readFields(dataInput);
+        tags.put(tag.getName(), tag);
+    }
+}
+
+public void add(BookTag tag) {
+        String tagName = tag.getName();
+        if (tags.containsKey(tagName)) {
+            BookTag bookTag = tags.get(tagName);
+            bookTag.setCount(bookTag.getCount() + tag.getCount());
+        } else {
+            tags.put(tagName, tag);
+        }
+}
+
+@Override
+public String toString() {
+    StringBuilder resultTags = new StringBuilder();
+    for (BookTag tag : tags.values()) {
+        resultTags.append(tag.toString());
+        resultTags.append("|");
+    }
+    return resultTags.toString();
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}
 其实，针对这种嵌套了集合的自定义Writable类型，由于嵌套的类型同样实现了Writable接口，因而同样可以调用嵌套类型的write()与readFields()方法，唯一的区别是需要将集合的Size写入到DataOutput中，以便于在读取时可以遍历集合。这实际上是一种Composite模式。</p>
 
 <h4>Iterable的奇怪行为</h4>
 
 <p>我需要在reduce()方法中，遍历传入的Iterable<BookTag>，以便于对重复的Tag进行累加操作。在遍历该对象时，我发现了一个奇怪现象，即最终得到的每本书的Tag信息，全部变成了一样的内容。通过对Reduce Job进行调试，发现每当遍历到Iterable<BookTag>的下一个元素时，这个最新的值就会覆盖之前得到的对象，使其变成同一个对象。通过Google，我发现这个问题是Hadoop的奇怪行为，即Iterable对象的next()方法永远会返回同一个对象。解决办法就是在遍历时，创建一个新对象放到我们要存储的集合中，如下第5行代码所示：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">BookReduce</span> <span class="kd">extends</span> <span class="n">Reducer</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span> <span class="n">BookTag</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">BookTags</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reduce</span><span class="o">(</span><span class="n">Text</span> <span class="n">key</span><span class="o">,</span> <span class="n">Iterable</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">BookTag</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">values</span><span class="o">,</span> <span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">BookTags</span> <span class="n">bookTags</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BookTags</span><span class="o">();</span>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">BookTag</span> <span class="n">tag</span> <span class="o">:</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">bookTags</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">BookTag</span><span class="o">(</span><span class="n">tag</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">tag</span><span class="o">.</span><span class="na">getCount</span><span class="o">()));</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">bookTags</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}</p>
+
+<pre><code>public static class BookReduce extends Reducer&lt;Text, BookTag, Text, BookTags&gt; {
+    public void reduce(Text key, Iterable&lt;BookTag&gt; values, Context context) throws IOException, InterruptedException {
+        BookTags bookTags = new BookTags();
+        for (BookTag tag : values) {
+            bookTags.add(new BookTag(tag.getName(), tag.getCount()));
+        }
+        context.write(key, bookTags);
+    }
+}
+</code></pre>
+
+<p>{% endcodeblock lang:java %}</p>
 
 <p>这里得到的一个经验是，在编写MapReduce程序时，通过调试可以帮助你快速地定位问题。调试时，可以在项目的根目录下建立input文件夹，将数据源文件放入到该文件夹中，然后在调试的参数中设置即可。</p>
 
 <h4>如何进行单元测试</h4>
 
 <p>我们同样可以给MapReduce Job编写单元测试。除了可以使用Mockito进行Mock之外，我认为MRUnit可以更好地完成对MapReduce任务的验证。MRUnit为Map与Reduce提供了对应的Driver，即MapDriver与ReduceDriver。在编写测试用例时，我们只需要为Driver指定Input与Output，然后执行Driver的runTest()方法，即可测试任务的执行是否符合预期。这种预期是针对output输出的结果而言。以WordCounter为例，编写的单元测试如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">WordCounterTest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">MapDriver</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">LongWritable</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">mapDriver</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">ReduceDriver</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">reduceDriver</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Before</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">WordCounter</span><span class="o">.</span><span class="na">Map</span> <span class="n">tokenizerMapper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WordCounter</span><span class="o">.</span><span class="na">Map</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">WordCounter</span><span class="o">.</span><span class="na">Reduce</span> <span class="n">reducer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WordCounter</span><span class="o">.</span><span class="na">Reduce</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">mapDriver</span> <span class="o">=</span> <span class="n">MapDriver</span><span class="o">.</span><span class="na">newMapDriver</span><span class="o">(</span><span class="n">tokenizerMapper</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">reduceDriver</span> <span class="o">=</span> <span class="n">ReduceDriver</span><span class="o">.</span><span class="na">newReduceDriver</span><span class="o">(</span><span class="n">reducer</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_execute_tokenizer_map_job</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">mapDriver</span><span class="o">.</span><span class="na">withInput</span><span class="o">(</span><span class="k">new</span> <span class="n">LongWritable</span><span class="o">(</span><span class="mi">12</span><span class="o">),</span> <span class="k">new</span> <span class="n">Text</span><span class="o">(</span><span class="s">&quot;I am Bruce Bruce&quot;</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">mapDriver</span><span class="o">.</span><span class="na">withOutput</span><span class="o">(</span><span class="k">new</span> <span class="n">Text</span><span class="o">(</span><span class="s">&quot;I&quot;</span><span class="o">),</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">mapDriver</span><span class="o">.</span><span class="na">withOutput</span><span class="o">(</span><span class="k">new</span> <span class="n">Text</span><span class="o">(</span><span class="s">&quot;am&quot;</span><span class="o">),</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">mapDriver</span><span class="o">.</span><span class="na">withOutput</span><span class="o">(</span><span class="k">new</span> <span class="n">Text</span><span class="o">(</span><span class="s">&quot;Bruce&quot;</span><span class="o">),</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">mapDriver</span><span class="o">.</span><span class="na">withOutput</span><span class="o">(</span><span class="k">new</span> <span class="n">Text</span><span class="o">(</span><span class="s">&quot;Bruce&quot;</span><span class="o">),</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">mapDriver</span><span class="o">.</span><span class="na">runTest</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_execute_reduce_job</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
-</span><span class='line'>    <span class="n">values</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">values</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">3</span><span class="o">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">reduceDriver</span><span class="o">.</span><span class="na">withInput</span><span class="o">(</span><span class="k">new</span> <span class="n">Text</span><span class="o">(</span><span class="s">&quot;Bruce&quot;</span><span class="o">),</span> <span class="n">values</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">reduceDriver</span><span class="o">.</span><span class="na">withOutput</span><span class="o">(</span><span class="k">new</span> <span class="n">Text</span><span class="o">(</span><span class="s">&quot;Bruce&quot;</span><span class="o">),</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">4</span><span class="o">));</span>
-</span><span class='line'>    <span class="n">reduceDriver</span><span class="o">.</span><span class="na">runTest</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+public class WordCounterTest {</p>
+
+<pre><code>private MapDriver&lt;LongWritable, Text, Text, IntWritable&gt; mapDriver;
+private ReduceDriver&lt;Text, IntWritable, Text, IntWritable&gt; reduceDriver;
+
+@Before
+public void setUp() {
+    WordCounter.Map tokenizerMapper = new WordCounter.Map();
+    WordCounter.Reduce reducer = new WordCounter.Reduce();
+    mapDriver = MapDriver.newMapDriver(tokenizerMapper);
+    reduceDriver = ReduceDriver.newReduceDriver(reducer);
+}
+
+@Test
+public void should_execute_tokenizer_map_job() throws IOException {
+    mapDriver.withInput(new LongWritable(12), new Text("I am Bruce Bruce"));
+    mapDriver.withOutput(new Text("I"), new IntWritable(1));
+    mapDriver.withOutput(new Text("am"), new IntWritable(1));
+    mapDriver.withOutput(new Text("Bruce"), new IntWritable(1));
+    mapDriver.withOutput(new Text("Bruce"), new IntWritable(1));
+    mapDriver.runTest();
+}
+
+@Test
+public void should_execute_reduce_job() {
+    List&lt;IntWritable&gt; values = new ArrayList&lt;IntWritable&gt;();
+    values.add(new IntWritable(1));
+    values.add(new IntWritable(3));
+
+    reduceDriver.withInput(new Text("Bruce"), values);
+    reduceDriver.withOutput(new Text("Bruce"), new IntWritable(4));
+    reduceDriver.runTest();
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <h4>Chaining Job</h4>
 
 <p>通过利用Hadoop提供的ChainMapper与ChainReducer，可以较为容易地实现多个Map Job或Reduce Job的链接。例如，我们可以将WordCounter分解为Tokenizer与Upper Case两个Map任务，最后执行Reduce。遗憾的是，ChainMapper与ChainReducer似乎不支持新版本的API，它要链接的Map与Reduce必须派生自MapReduceBase，并实现对应的Mapper或Reducer接口(说明，下面的代码基本上来自于StackOverFlow的<a href="http://stackoverflow.com/a/10470437/1008310">一个帖子</a>)。
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ChainWordCounter</span> <span class="kd">extends</span> <span class="n">Configured</span> <span class="kd">implements</span> <span class="n">Tool</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Tokenizer</span> <span class="kd">extends</span> <span class="n">MapReduceBase</span> <span class="kd">implements</span> <span class="n">Mapper</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">LongWritable</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">IntWritable</span> <span class="n">one</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Text</span> <span class="n">word</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Text</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">map</span><span class="o">(</span><span class="n">LongWritable</span> <span class="n">key</span><span class="o">,</span> <span class="n">Text</span> <span class="n">value</span><span class="o">,</span> <span class="n">OutputCollector</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">output</span><span class="o">,</span> <span class="n">Reporter</span> <span class="n">reporter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">StringTokenizer</span> <span class="n">tokenizer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">word</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
-</span><span class='line'>            <span class="n">output</span><span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="n">one</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">UpperCaser</span> <span class="kd">extends</span> <span class="n">MapReduceBase</span> <span class="kd">implements</span> <span class="n">Mapper</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">map</span><span class="o">(</span><span class="n">Text</span> <span class="n">key</span><span class="o">,</span> <span class="n">IntWritable</span> <span class="n">count</span><span class="o">,</span> <span class="n">OutputCollector</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">collector</span><span class="o">,</span> <span class="n">Reporter</span> <span class="n">reporter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">collector</span><span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="k">new</span> <span class="n">Text</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">toUpperCase</span><span class="o">()),</span> <span class="n">count</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Reduce</span> <span class="kd">extends</span> <span class="n">MapReduceBase</span> <span class="kd">implements</span> <span class="n">Reducer</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">IntWritable</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reduce</span><span class="o">(</span><span class="n">Text</span> <span class="n">key</span><span class="o">,</span> <span class="n">Iterator</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">values</span><span class="o">,</span> <span class="n">OutputCollector</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">collector</span><span class="o">,</span> <span class="n">Reporter</span> <span class="n">reporter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">values</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">sum</span> <span class="o">+=</span> <span class="n">values</span><span class="o">.</span><span class="na">next</span><span class="o">().</span><span class="na">get</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">result</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">collector</span><span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">run</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">JobConf</span> <span class="n">jobConf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JobConf</span><span class="o">(</span><span class="n">getConf</span><span class="o">(),</span> <span class="n">ChainWordCounter</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">FileInputFormat</span><span class="o">.</span><span class="na">setInputPaths</span><span class="o">(</span><span class="n">jobConf</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">FileInputFormat</span><span class="o">.</span><span class="na">setInputPaths</span><span class="o">(</span><span class="n">jobConf</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
-</span><span class='line'>    <span class="n">Path</span> <span class="n">outputDir</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
-</span><span class='line'>    <span class="n">FileOutputFormat</span><span class="o">.</span><span class="na">setOutputPath</span><span class="o">(</span><span class="n">jobConf</span><span class="o">,</span> <span class="n">outputDir</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">outputDir</span><span class="o">.</span><span class="na">getFileSystem</span><span class="o">(</span><span class="n">getConf</span><span class="o">()).</span><span class="na">delete</span><span class="o">(</span><span class="n">outputDir</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">JobConf</span> <span class="n">tokenizerMapConf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JobConf</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">ChainMapper</span><span class="o">.</span><span class="na">addMapper</span><span class="o">(</span><span class="n">jobConf</span><span class="o">,</span> <span class="n">Tokenizer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">LongWritable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="n">tokenizerMapConf</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">JobConf</span> <span class="n">upperCaserMapConf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JobConf</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">ChainMapper</span><span class="o">.</span><span class="na">addMapper</span><span class="o">(</span><span class="n">jobConf</span><span class="o">,</span> <span class="n">UpperCaser</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="n">upperCaserMapConf</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">JobConf</span> <span class="n">reduceConf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JobConf</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">ChainReducer</span><span class="o">.</span><span class="na">setReducer</span><span class="o">(</span><span class="n">jobConf</span><span class="o">,</span> <span class="n">Reduce</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="n">reduceConf</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">JobClient</span><span class="o">.</span><span class="na">runJob</span><span class="o">(</span><span class="n">jobConf</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">ToolRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="k">new</span> <span class="n">Configuration</span><span class="o">(),</span> <span class="k">new</span> <span class="n">ChainWordCounter</span><span class="o">(),</span> <span class="n">args</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="n">ret</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+public class ChainWordCounter extends Configured implements Tool {</p>
+
+<pre><code>public static class Tokenizer extends MapReduceBase implements Mapper&lt;LongWritable, Text, Text, IntWritable&gt; {
+    private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
+
+    public void map(LongWritable key, Text value, OutputCollector&lt;Text, IntWritable&gt; output, Reporter reporter) throws IOException {
+        StringTokenizer tokenizer = new StringTokenizer(value.toString());
+        while (tokenizer.hasMoreTokens()) {
+            word.set(tokenizer.nextToken());
+            output.collect(word, one);
+        }
+    }
+}
+
+public static class UpperCaser extends MapReduceBase implements Mapper&lt;Text, IntWritable, Text, IntWritable&gt; {
+    public void map(Text key, IntWritable count, OutputCollector&lt;Text, IntWritable&gt; collector, Reporter reporter) throws IOException {
+        collector.collect(new Text(key.toString().toUpperCase()), count);
+    }
+}
+
+public static class Reduce extends MapReduceBase implements Reducer&lt;Text, IntWritable, Text, IntWritable&gt; {
+    private IntWritable result = new IntWritable();
+
+    @Override
+    public void reduce(Text key, Iterator&lt;IntWritable&gt; values, OutputCollector&lt;Text, IntWritable&gt; collector, Reporter reporter) throws IOException {
+        int sum = 0;
+        while (values.hasNext()) {
+            sum += values.next().get();
+        }
+
+        result.set(sum);
+        collector.collect(key, result);
+    }
+}
+
+public int run(String[] args) throws Exception {
+    JobConf jobConf = new JobConf(getConf(), ChainWordCounter.class);
+    FileInputFormat.setInputPaths(jobConf, new Path(args[0]));
+
+    FileInputFormat.setInputPaths(jobConf, new Path(args[0]));
+    Path outputDir = new Path(args[1]);
+    FileOutputFormat.setOutputPath(jobConf, outputDir);
+    outputDir.getFileSystem(getConf()).delete(outputDir, true);
+
+    JobConf tokenizerMapConf = new JobConf(false);
+    ChainMapper.addMapper(jobConf, Tokenizer.class, LongWritable.class, Text.class, Text.class, IntWritable.class, true, tokenizerMapConf);
+
+    JobConf upperCaserMapConf = new JobConf(false);
+    ChainMapper.addMapper(jobConf, UpperCaser.class, Text.class, IntWritable.class, Text.class, IntWritable.class, true, upperCaserMapConf);
+
+    JobConf reduceConf = new JobConf(false);
+    ChainReducer.setReducer(jobConf, Reduce.class, Text.class, IntWritable.class, Text.class, IntWritable.class, true, reduceConf);
+
+    JobClient.runJob(jobConf);
+    return 0;
+}
+
+public static void main(String[] args) throws Exception {
+    int ret = ToolRunner.run(new Configuration(), new ChainWordCounter(), args);
+    System.exit(ret);
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>不知道什么时候这种机制能够很好地支持新版的API。</p>
 ]]></content>

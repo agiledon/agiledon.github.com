@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Guava | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/guava/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-25T13:03:35+08:00</updated>
+  <updated>2014-09-25T13:07:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -20,52 +20,54 @@
     <id>http://agiledon.github.com/blog/2013/10/09/using-preconditions-of-guava</id>
     <content type="html"><![CDATA[<p>我看到这么一段Java代码，主要逻辑是对传入的数据对象进行分析和处理。方法除了长了一点，本身没有什么问题，但一个不好的味道是方法中充斥了一部分对对象非空的处理，以及写日志的信息。这些语句本身不属于方法的主干实现，却很讨厌地干扰了方法的主要逻辑，影响了程序的可读性。</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Processor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">(</span><span class="n">ProcessData</span> <span class="n">processData</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">processData</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">processData</span><span class="o">.</span><span class="na">getInput</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;processData is error&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">FavoratePolicy</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">policies</span> <span class="o">=</span> <span class="n">fetchPolicies</span><span class="o">(</span><span class="n">processData</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">policies</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">policies</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;can not fetch favorate policies&quot;</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">FavoratePolicy</span> <span class="n">policy</span> <span class="o">:</span> <span class="n">policies</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="c1">//handle policy</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:java %}
+public class Processor {</p>
+
+<pre><code>public void execute(ProcessData processData) {
+    if (processData == null || processData.getInput() == null) {
+        logger.error("processData is error");
+        return;
+    }
+
+    List&lt;FavoratePolicy&gt; policies = fetchPolicies(processData);
+    if (policies == null || policies.isEmpty()) {
+        logger.error("can not fetch favorate policies");
+        return;
+    }
+
+    for (FavoratePolicy policy : policies) {
+        //handle policy
+    }
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>我最初想要尝试使用Guava提供的Optional。经过仔细分析，发现这里的场景并不适合Optional。Optional确实可以用于处理null object，甚至可以将其看做是Null Object模式的实现。但它为Java语言带来的好处，无非是提高了代码可读性，同时可以有效地防止程序员忘记对null的判断。它不能带来代码量的减少，用在这里，也无法消除非空判断以及日志的噪音。所幸，Guava还提供了Preconditions，它拥有更好而简洁的断言方式，可以处理程序的一些异常分支。它主要定义的方法包括checkArgument(), checkNotNull()以及checkState()等，可以通过抛指定异常的方式，将程序的主分支与异常分支有效地隔离开。通过引入checkArgument()方法，前面的代码可以调整为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Processor</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">(</span><span class="n">ProcessData</span> <span class="n">processData</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">checkArgument</span><span class="o">(</span><span class="n">processData</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="n">processData</span><span class="o">.</span><span class="na">getInput</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">,</span> <span class="s">&quot;processData is error&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">FavoratePolicy</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">policies</span> <span class="o">=</span> <span class="n">fetchPolicies</span><span class="o">(</span><span class="n">processData</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">checkArgument</span><span class="o">(</span><span class="n">policies</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="o">(!</span><span class="n">policies</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()),</span> <span class="s">&quot;can not fetch favorate policies&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">FavoratePolicy</span> <span class="n">policy</span> <span class="o">:</span> <span class="n">policies</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="c1">//handle policy</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalArgumentException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">ex</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:java %}
+public class Processor {</p>
+
+<pre><code>public void execute(ProcessData processData) {
+    try {
+        checkArgument(processData != null &amp;&amp; processData.getInput() != null, "processData is error");
+
+        List&lt;FavoratePolicy&gt; policies = fetchPolicies(processData);
+
+        checkArgument(policies != null &amp;&amp; (!policies.isEmpty()), "can not fetch favorate policies");
+
+        for (FavoratePolicy policy : policies) {
+            //handle policy
+        }
+
+    } catch (IllegalArgumentException ex) {
+        logger.error(ex.getMessage());
+    }
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>经过这样的处理，程序的主体逻辑变得清晰了许多，而且也能够有效地避免日志方法的重复。当然，这里也可以使用checkNotNull()方法来处理ProcessData与List<FavoratePolicy>的null情形。但由于它抛出的异常为NullPointerException，用在这里会增加一个异常捕获（因为它无法处理isEmpty()的情况），所以就一致地选择了checkArgument()方法。不过，在使用这一方法时，要注意它传入的条件表达式与原有实现的表达式是相反的。</p>
 ]]></content>

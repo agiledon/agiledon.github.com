@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Painting | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/painting/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-09-25T13:03:35+08:00</updated>
+  <updated>2014-09-25T13:07:50+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -22,16 +22,16 @@
 
 <p>这幅的颜色涂抹并不张扬，在绿树下显得线条更柔和又抽象：</p>
 
-<p><img class="center" src="/images/2014/tuya01.jpg"></p>
+<p>{% img center /images/2014/tuya01.jpg %}</p>
 
 <p>下面这幅让我产生建筑密集症：
-<img class="center" src="/images/2014/tuya02.jpg"></p>
+{% img center /images/2014/tuya02.jpg %}</p>
 
 <p>这一幅具有萌趣，但很破烂，那些外挂的空调外机反而成了装饰：
-<img class="center" src="/images/2014/tuya03.jpg"></p>
+{% img center /images/2014/tuya03.jpg %}</p>
 
 <p>这种蓝色是我最爱的，虽然破旧，我反而觉得更融洽：
-<img class="center" src="/images/2014/tuya04.jpg"></p>
+{% img center /images/2014/tuya04.jpg %}</p>
 ]]></content>
   </entry>
   
