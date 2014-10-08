@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Event | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/event/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-10-08T20:58:33+08:00</updated>
+  <updated>2014-10-08T21:32:59+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,7 +19,7 @@
     <updated>2014-09-25T12:58:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/09/25/event-modeling-in-ddd</id>
     <content type="html"><![CDATA[<p>这两日，我参加了Implementing Domain Driven Disign一书作者Vaughn Vernon组织的IDDD Workshop。培训中，Vernon带领我们针对Domain Event进行了一次建模工作坊。
-{% img center /images/2014/vernonandme.jpg %}</p>
+<img class="center" src="/images/2014/vernonandme.jpg"></p>
 
 <p>在领域驱动设计中，Domain Event变得越来越重要。在Implementing Domain Driven Disign这本书中，Vaughn Vernon甚至将Domain Event上升到了一等公民的地位。</p>
 
@@ -40,7 +40,7 @@
 2. 针对每个事件，对触发事件的Command对象进行建模，并用绿色即时贴写出Command的名称。对Command对象进行建模并非单纯地为了寻找Command对象，而是为了更深一步地验证之前建模的事件模型。在思考触发事件的对象时，我们可能会发现一些遗漏又或者多余的事件。
 3. 判断这些事件应该属于哪个聚合对象，找到它们，然后写在紫色即时贴上。
 4. 对这些识别出来的Event、Command、Aggregate进行分类，判断它们到底属于哪个Bounded Context，并用红色即时贴标出。
-{% img center /images/2014/eventmodeling.jpg %}</p>
+<img class="center" src="/images/2014/eventmodeling.jpg"></p>
 
 <p>这种Workshop不仅只针对培训，它更应该运用到团队进行领域驱动设计的过程中。这也正是我一直在提倡的所谓“可视化设计”。可视化设计并非一个噱头，更不是为了美观好看，而是希望以直观简单的形式展现设计思路，尤其需要让整个团队成员都能以协作互动的形式参与到这个设计过程中。群策群力，头脑风暴，如此方能获得更好的设计方案，并以这种团队行为的方式完成知识的共享与传递。其实，“架构”究竟是什么，不就是一种软件设计的知识吗？设计架构，重要在于交流，在于知识传递，而不仅仅是严谨完整的解决方案文档。</p>
 ]]></content>

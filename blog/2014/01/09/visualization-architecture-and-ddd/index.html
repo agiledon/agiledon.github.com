@@ -28,11 +28,9 @@
   <link href="/atom.xml" rel="alternate" title="逸言" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
 
-
-  
 
 </head>
 
@@ -320,35 +318,6 @@
 </section>
 
 <section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
-  
-  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
-  
-  <script type="text/javascript">
-    $.domReady(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'agiledon',
-            count: 5,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-<section>
   <h1>Tag Cloud</h1>
   <ul class="tag-cloud">
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
@@ -407,7 +376,6 @@
 
 <section>
   <h1>Visitor</h1>
-  <div><a href="https://www.google.com/analytics/web/?hl=zh-CN#savedreport/-74rj-TaSR2-OlraMB4ZZQ/a38898311w67651546p69626158/%3F_r.dsa%3D1%26_.advseg%3D%26_.sectionId%3D/" target="_blank"><img src="/images/googleanalytics.png"/></a></div>
     <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
 </section>
 

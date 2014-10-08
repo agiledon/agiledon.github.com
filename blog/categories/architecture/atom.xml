@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Architecture | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/categories/architecture/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-10-08T20:58:33+08:00</updated>
+  <updated>2014-10-08T21:32:59+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/"/>
     <updated>2014-09-10T08:54:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/spark_architecture.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/spark_architecture.jpg">
 与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark这朵小火花让人着迷的地方。</p>
 
 <p>要理解Spark，就需得理解RDD。</p>
@@ -39,46 +39,42 @@
 <p>首先，narrow dependencies可以支持在同一个cluster node上以管道形式执行多条命令，例如在执行了map后，紧接着执行filter。相反，wide dependencies需要所有的父分区都是可用的，可能还需要调用类似MapReduce之类的操作进行跨节点传递。</p>
 
 <p>其次，则是从失败恢复的角度考虑。narrow dependencies的失败恢复更有效，因为它只需要重新计算丢失的parent partition即可，而且可以并行地在不同节点进行重计算。而wide dependencies牵涉到RDD各级的多个Parent Partitions。下图说明了narrow dependencies与wide dependencies之间的区别：
-{% img center /images/2014/rdd_dependency.png %}</p>
+<img class="center" src="/images/2014/rdd_dependency.png"></p>
 
 <p>本图来自Matei Zaharia撰写的论文An Architecture for Fast and General Data Processing on Large Clusters。图中，一个box代表一个RDD，一个带阴影的矩形框代表一个partition。</p>
 
 <p><strong>RDD如何保障数据处理效率？</strong></p>
 
 <p>RDD提供了两方面的特性persistence和patitioning，用户可以通过persist与patitionBy函数来控制RDD的这两个方面。RDD的分区特性与并行计算能力(RDD定义了parallerize函数)，使得Spark可以更好地利用可伸缩的硬件资源。若将分区与持久化二者结合起来，就能更加高效地处理海量数据。例如：
-{% codeblock lang:scala %}
-input.map(parseArticle _).partitionBy(partitioner).cache()
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">input</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">parseArticle</span> <span class="k">_</span><span class="o">).</span><span class="n">partitionBy</span><span class="o">(</span><span class="n">partitioner</span><span class="o">).</span><span class="n">cache</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>partitionBy函数需要接受一个Partitioner对象，如：
-{% codeblock lang:scala %}
-val partitioner = new HashPartitioner(sc.defaultParallelism)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">partitioner</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HashPartitioner</span><span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="n">defaultParallelism</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
 
 <p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
 
 <p>在实现时，RDD针对transformation操作，都提供了对应的继承自RDD的类型，例如map操作会返回MappedRDD，而flatMap则返回FlatMappedRDD。当我们执行map或flatMap操作时，不过是将当前RDD对象传递给对应的RDD对象而已。例如：
-{% codeblock lang:scala %}
-def map<a href="f:%20T%20=>%20U">U: ClassTag</a>: RDD[U] = new MappedRDD(this, sc.clean(f))
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">map</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20T%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="k">:</span> <span class="kt">ClassTag&lt;/a</span><span class="k">&gt;:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">U</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MappedRDD</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">sc</span><span class="o">.</span><span class="n">clean</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这些继承自RDD的类都定义了compute函数。该函数会在action操作被调用时触发，在函数内部是通过迭代器进行对应的转换操作：
-{% codeblock lang:scala %}
-private[spark]
-class MappedRDD<a href="prev:%20RDD[T],%20f:%20T%20=>%20U">U: ClassTag, T: ClassTag</a>
-  extends RDD<a href="prev">U</a> {</p>
-
-<p>  override def getPartitions: Array[Partition] = firstParent[T].partitions</p>
-
-<p>  override def compute(split: Partition, context: TaskContext) =</p>
-
-<pre><code>firstParent[T].iterator(split, context).map(f)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MappedRDD</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;prev:%20RDD[T],%20f:%20T%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">,</span> <span class="n">T</span><span class="k">:</span> <span class="kt">ClassTag&lt;/a&gt;</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">RDD</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;prev&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">getPartitions</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Partition</span><span class="o">]</span> <span class="k">=</span> <span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">partitions</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">compute</span><span class="o">(</span><span class="n">split</span><span class="k">:</span> <span class="kt">Partition</span><span class="o">,</span> <span class="n">context</span><span class="k">:</span> <span class="kt">TaskContext</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">iterator</span><span class="o">(</span><span class="n">split</span><span class="o">,</span> <span class="n">context</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><strong>RDD对容错的支持</strong></p>
 
@@ -107,90 +103,89 @@ class MappedRDD<a href="prev:%20RDD[T],%20f:%20T%20=>%20U">U: ClassTag, T: Class
     <updated>2014-04-05T09:39:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/04/05/spark-overview</id>
     <content type="html"><![CDATA[<p>Spark具有先进的DAG执行引擎，支持cyclic data flow和内存计算。因此，它的运行速度，在内存中是Hadoop MapReduce的100倍，在磁盘中是10倍。如下是对比图：
-{% img center /images/2014/spark-logistic-regression.png %}</p>
+<img class="center" src="/images/2014/spark-logistic-regression.png"></p>
 
 <p>这样的性能指标，真的让人心动啊！</p>
 
 <p>Spark的API更为简单，提供了80个High Level的操作，可以很好地支持并行应用。它的API支持Scala、Java和Python，并且可以支持交互式的运行Scala与Python。来看看Spark统计Word字数的程序：
-{% codeblock lang:scala %}
-file = spark.textFile("hdfs://...")</p>
-
-<p>file.flatMap(line => line.split(" "))</p>
-
-<pre><code>.map(word =&gt; (word, 1))
-.reduceByKey(_ + _)
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">file</span> <span class="k">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">textFile</span><span class="o">(</span><span class="s">&quot;hdfs://...&quot;</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">file</span><span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="n">line</span> <span class="k">=&gt;</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">))&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">map</span><span class="o">(</span><span class="n">word</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'><span class="o">.</span><span class="n">reduceByKey</span><span class="o">(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>看看Hadoop的Word Count例子，简直弱爆了，爆表的节奏啊：
-{% codeblock lang:java %}
-public class WordCount {
-  public static class TokenizerMapper</p>
-
-<pre><code>   extends Mapper&lt;Object, Text, Text, IntWritable&gt;{
-
-private final static IntWritable one = new IntWritable(1);
-private Text word = new Text();
-
-public void map(Object key, Text value, Context context
-                ) throws IOException, InterruptedException {
-  StringTokenizer itr = new StringTokenizer(value.toString());
-  while (itr.hasMoreTokens()) {
-    word.set(itr.nextToken());
-    context.write(word, one);
-  }
-}
-</code></pre>
-
-<p>  }</p>
-
-<p>  public static class IntSumReducer</p>
-
-<pre><code>   extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; {
-private IntWritable result = new IntWritable();
-
-
-public void reduce(Text key, Iterable&lt;IntWritable&gt; values,
-                   Context context
-                   ) throws IOException, InterruptedException {
-  int sum = 0;
-  for (IntWritable val : values) {
-    sum += val.get();
-  }
-  result.set(sum);
-  context.write(key, result);
-}
-</code></pre>
-
-<p>  }</p>
-
-<p>  public static void main(String[] args) throws Exception {</p>
-
-<pre><code>Configuration conf = new Configuration();
-String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-if (otherArgs.length != 2) {
-  System.err.println("Usage: wordcount &lt;in&gt; &lt;out&gt;");
-  System.exit(2);
-}
-Job job = new Job(conf, "word count");
-job.setJarByClass(WordCount.class);
-job.setMapperClass(TokenizerMapper.class);
-job.setCombinerClass(IntSumReducer.class);
-job.setReducerClass(IntSumReducer.class);
-job.setOutputKeyClass(Text.class);
-job.setOutputValueClass(IntWritable.class);
-FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
-FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
-System.exit(job.waitForCompletion(true) ? 0 : 1);
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">WordCount</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">TokenizerMapper</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kd">extends</span> <span class="n">Mapper</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;{</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">IntWritable</span> <span class="n">one</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">Text</span> <span class="n">word</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Text</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">map</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">,</span> <span class="n">Text</span> <span class="n">value</span><span class="o">,</span> <span class="n">Context</span> <span class="n">context</span>
+</span><span class='line'>                <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">StringTokenizer</span> <span class="n">itr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>  <span class="k">while</span> <span class="o">(</span><span class="n">itr</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">word</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">itr</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="n">one</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">IntSumReducer</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kd">extends</span> <span class="n">Reducer</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span><span class="n">IntWritable</span><span class="o">,</span><span class="n">Text</span><span class="o">,</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">IntWritable</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">reduce</span><span class="o">(</span><span class="n">Text</span> <span class="n">key</span><span class="o">,</span> <span class="n">Iterable</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">values</span><span class="o">,</span>
+</span><span class='line'>                   <span class="n">Context</span> <span class="n">context</span>
+</span><span class='line'>                   <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">IntWritable</span> <span class="n">val</span> <span class="o">:</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">sum</span> <span class="o">+=</span> <span class="n">val</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+</span><span class='line'><span class="n">String</span><span class="o">[]</span> <span class="n">otherArgs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GenericOptionsParser</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="n">args</span><span class="o">).</span><span class="na">getRemainingArgs</span><span class="o">();</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">otherArgs</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Usage: wordcount &amp;lt;in&amp;gt; &amp;lt;out&amp;gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">Job</span> <span class="n">job</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Job</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="s">&quot;word count&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setJarByClass</span><span class="o">(</span><span class="n">WordCount</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setMapperClass</span><span class="o">(</span><span class="n">TokenizerMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setCombinerClass</span><span class="o">(</span><span class="n">IntSumReducer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setReducerClass</span><span class="o">(</span><span class="n">IntSumReducer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setOutputKeyClass</span><span class="o">(</span><span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setOutputValueClass</span><span class="o">(</span><span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">FileInputFormat</span><span class="o">.</span><span class="na">addInputPath</span><span class="o">(</span><span class="n">job</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">otherArgs</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
+</span><span class='line'><span class="n">FileOutputFormat</span><span class="o">.</span><span class="na">setOutputPath</span><span class="o">(</span><span class="n">job</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">otherArgs</span><span class="o">[</span><span class="mi">1</span><span class="o">]));</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="n">job</span><span class="o">.</span><span class="na">waitForCompletion</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>当然，Hadoop有自己的一套框架，为整个的大数据处理做支持，例如HIVE，例如HDFS。Spark也不逊色，也有自己的SQL框架支持，即Shark，此外还支持流处理、机器学习以及图运算：
-{% img center /images/2014/spark-stack.png %}</p>
+<img class="center" src="/images/2014/spark-stack.png"></p>
 
 <p>Spark并没有自己的分布式存储方案。不过已经有了强悍的HDFS，同为Aparch旗下的Spark又何必再造一个差不多的轮子呢？所以Spark可以很好地与Hadoop集成。例如可以运行在Hadoop 2的YARN集群下，可以读取现有的Hadoop数据。当然，Spark自身也支持standadlone的部署，或者部署到EC2等云平台下。除了可以读取HDFS数据，它还可以读取HBase，Cassandra等NoSQL数据库。这扩大了Spark的适用范围。</p>
 
@@ -208,10 +203,10 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
 <p>我查看了许多关于Bounded Context的书籍与文章，虽然都着重强调了它的重要性，也给出了一些实例，却对如何从需求——>Boundex Context这一点上语焉不详。</p>
 
 <p>我的初步设想是通过绘制场景图（但并不成熟）。我认为有三种绘制场景图的方式：商业画布，体验地图和流程图。我认为，商业画布可以作为需求分析（尤其针对初创产品）的起点。商业画布如下图所示：
-{% img center /images/2014/business_canvas.jpeg %}</p>
+<img class="center" src="/images/2014/business_canvas.jpeg"></p>
 
 <p>采用这种规范化的方式来推导商业模型，可以激发我们的灵感，理清我们的思路，以便我们思考为何要做这个产品，产品应该具备哪些功能。结合优点和缺点、成本等因素，我们可以藉此判断和决策功能的优先级，从而得到MVP。这个过程需要大量运用即时贴，让整个商业模型呈现。经过取舍后，就可以针对产品绘制场景图。此时，场景图可以采用Experience Map或流程图来体现。Experience Map的例子如下图所示：
-{% img center /images/2014/experience_map.gif %}</p>
+<img class="center" src="/images/2014/experience_map.gif"></p>
 
 <p>由于商业画布本身提供了“客户”项，我们应该创建Persona，找准人物角色的特征来“搜寻”需求。绘制了场景图后，就能够确定用例了，此时，可辅以ATDD帮助确定Story。在确定了用例后，可以识别Bounded Context，并通过Context Map确定上下文之间的关系。</p>
 
@@ -224,23 +219,23 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
 
 <blockquote><p>为了更好的理解我们选择的目标消费者，我们需要对消费者进行完整的建模，即Persona。越接近于真实的Persona帮助我们更好的理解其用户目标……Persona的重要产出物是一系列用户目标，对于同一个Persona，用户目标可能有不同，有些目标是基础核心目标，有些则是衍生性的，例如一个访问网站潜在投资者的核心目标可能是了解成为投资者的过程，而衍生性目标可能是获得一些关于公司历史信息增加信任度。</p></blockquote>
 
-<p>{% img center /images/2014/persona.jpg %}
+<p><img class="center" src="/images/2014/persona.jpg">
 <strong>说明</strong>：本图摘自熊子川博客</p>
 
 <p>假设我们要开发一个电子商务网站，我们就可以通过商业画布来驱动出这个产品应该具有哪些功能，它的客户有哪些等，在绘制了场景图后，可以初步得到这样的Bounded Context:
-{% img center /images/2014/bounded_context.jpg %}</p>
+<img class="center" src="/images/2014/bounded_context.jpg"></p>
 
 <p>然后，我利用Context Map得到了各个上下文之间的关系：
-{% img center /images/2014/context_map.jpg %}</p>
+<img class="center" src="/images/2014/context_map.jpg"></p>
 
 <p>这样，一个包图的获得就水到渠成了：
-{% img center /images/2014/modules.jpeg %}</p>
+<img class="center" src="/images/2014/modules.jpeg"></p>
 
 <p>在识别了Bounded Context以及Context之间的关系后，我们可以运用Hexagon架构（Cockburn提出的六边形架构）来展现系统的整体架构。Hexagon架构并不深入关注内部边界中领域部分，仅仅是简单的划分为Application与Domain两层。但它有助于我们获得基础设施层以及相关集成点的包结构。我们要合理地运用六边形架构。它更贴近应用逻辑架构，并可以驱动我们去发现诸多集成点，寻找集成模式。内外边界的分离也有助于我们将业务逻辑与应用逻辑分离开。这实际上符合“关注点分离”的架构原则。下图展现了六边形架构中常见的Port与Adapter：
-{% img center /images/2014/Hexagon.jpg %}</p>
+<img class="center" src="/images/2014/Hexagon.jpg"></p>
 
 <p>我对“可视化架构”的理解，还是要希望多通过即时贴、白板等工具来实现可视化，而非通过绘图。至少，绘图不应该成为主要的驱动力，否则，开发人员很难接受。例如，下图就是我运用Hexagon架构，并结合可视化手段分析该电子商务系统得到的应用逻辑架构，它很好地一个展现了Hexagon架构的可视化手法。
-{% img center /images/2014/e_commerce.jpg %}</p>
+<img class="center" src="/images/2014/e_commerce.jpg"></p>
 
 <p>在这个图中，直观地展现了如何与外部的支付系统以及物流系统的集成。例如，图中展现的Port实际上为防腐层（ACL）。为何要建立这样的一个防腐层呢，原因在于：支付与物流常常存在多个供应商，因而需要解除对供应商的绑定，并避免供应商系统的变化造成对电子商务系统的腐蚀。这是切合实际的决策。</p>
 
@@ -266,7 +261,7 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
 
 
 <p>整个架构如下图所示：
-{% img center /images/2014/inventory.jpeg %}</p>
+<img class="center" src="/images/2014/inventory.jpeg"></p>
 
 <p>对于库存管理而言，我认为它主要支持商品存放信息的数据管理，即获得商品数量、存放位置以及更新这些信息。对于该上下文而言，操作本身比较简单，且耗时较短。若出现大规模并发，其瓶颈也不在于获取或更新仓库信息（当然需要通过测试数据验证），而在于客户下订单后向仓库管理流程控制系统发起的发货请求。</p>
 
@@ -279,7 +274,7 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
 <p>一旦收到消息，物流控制系统作为消息队列的订阅者（或侦听器）就可以即使处理信息，进行后续的处理。</p>
 
 <p>针对库存管理而言，我认为它是一个独立的物理边界，因此在可视化手段中，我展现为一个单独的库存管理六边形，如下图所示：
-{% img center /images/2014/inventory_2.jpeg %}</p>
+<img class="center" src="/images/2014/inventory_2.jpeg"></p>
 
 <ul>
 <li>建立了针对REST服务的端口，对应的适配器为Controller，其目的是支持E-Commerce系统。事实上，我们对E-Commerce系统进行过分析，获得的六边形架构正好与此对接。</li>
@@ -289,7 +284,7 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
 
 
 <p>物流控制与拓扑管理放在同一个边界中，它是高度可伸缩的独立系统，为展现它的可伸缩性以及它与库存管理之间的集成，我在可视化手段中，展现出两个独立的六边形，如下图所示：
-{% img center /images/2014/inventory_3.jpeg %}</p>
+<img class="center" src="/images/2014/inventory_3.jpeg"></p>
 
 <ul>
 <li>针对Queue的侦听器端口，对应的适配器为Message Handler。若有必要，如为了更好的支持并发，也可以在此引入Active Object甚至Leader/Followers。</li>
@@ -337,23 +332,23 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
 
 <h4>架构师</h4>
 
-<p>{% img left /images/2013/07/nealford.png %}</p>
+<p><img class="left" src="/images/2013/07/nealford.png"></p>
 
 <h5>Neal Ford</h5>
 
 <p>Neal Ford是全球IT咨询公司ThoughtWorks的软件架构师。除了常规工作，他做的事情还包括设计和开发应用程序、教学材料、杂志文章、课件和视频/DVD演示，同时还是各种技术书籍的作者或者编辑，其中包括著作The Productive Programmer。他专注于设计和开发大规模企业应用程序，同时，他也是世界开发人员会议的国际知名演说家。
-{% img right /images/2013/07/ericevans.png %}</p>
+<img class="right" src="/images/2013/07/ericevans.png"></p>
 
 <h5>Eric Evans</h5>
 
 <p>大型业务系统方面的领域建模和设计专家。早20世纪90年代，他就参与了很多项目，基于对象（Object）开发出许多大型的业务系统，并致力于将敏捷过程应用到现实项目中。
 此外，Eric Evans还是《领域驱动设计——软件核心复杂性应对之道》一书的作者。在书中他总结了构建上述业务系统相关的经验、原则和技术等。并介绍了一个建模和设计技术的系统，成功的团队应用这一系统可以组装有业务需求的复杂软件系统，并使系统在增大时仍然保持敏捷。
-Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。{% img left /images/2013/07/buschmann.png %}</p>
+Eric现在是“Domain Language”组织的负责人。该组织是一个咨询小组，它指导和训练团队实施领域驱动设计，帮助他们使自己的开发工作对业务而言更有生产力和更有价值。<img class="left" src="/images/2013/07/buschmann.png"></p>
 
 <h5>FranK Buschmann</h5>
 
 <p>德国慕尼黑西门子技术公司资深技术专家及负责人。Wiley软件设计模式系列图书主编。他的研究领域包括对象技术、软件架构、产品线、模型驱动软件开发和模式。他曾是ANSI C++标准化委员会x3J16的成员，于1996年发起了首届EuroPLoP会议。Frank Buschmann是Pattern-Oriented Software Architecture系列书籍的主要作者。
-{% img right /images/2013/07/george.png %}</p>
+<img class="right" src="/images/2013/07/george.png"></p>
 
 <h5>Fred George</h5>
 
@@ -361,17 +356,17 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 
 <h4>推荐书籍</h4>
 
-<p>{% img left /images/2013/07/releaseit.png %}#####Release It!</p>
+<p><img class="left" src="/images/2013/07/releaseit.png">#####Release It!</p>
 
 <p><strong>推荐理由：</strong>Michael Nygard的Releast It!可以看做是处理软件系统质量属性的治病良方。本书常常会以一个具体的实例开始阐述某一个质量属性的关键性，并列出一系列的反模式作为参照和对比，最后再给出正确的模式列表。这种针对问题的叙事方法，使得读者往往能够照方抓药，又因为模式的叙述如此清晰而规范，所以常常能药到病除。正如本书书名所指，这些内容确乎与软件的发布息息相关。</p>
 
-<p>{% img right /images/2013/07/beautifularchitecture.png %}</p>
+<p><img class="right" src="/images/2013/07/beautifularchitecture.png"></p>
 
 <h5>Beautiful Architecture</h5>
 
 <p><strong>推荐理由：</strong>全书涵盖的内容广博而宏大，涵盖了架构基本原则、企业级应用架构、系统架构、最终用户应用架构、语言与架构，分列为本书的五大部分，读之会让人产生目不暇接之感。尤其对于术有专攻的程序员来讲，要彻底吃透本书讲解的内容，无疑是一项艰巨的挑战。然而，如果从架构师所必须具备的技能来看，本书的内容其实并没有超出架构的范畴，因为架构师必须要见识广博，你才能针对不同的需求场景，面对不同的实现技术，选出最适合当前场景的恰如其分的架构方案。</p>
 
-<p>{% img right /images/2013/07/eip.png %}</p>
+<p><img class="right" src="/images/2013/07/eip.png"></p>
 
 <h5>Enterprise Integation Patterns</h5>
 
@@ -389,7 +384,7 @@ Eric现在是“Domain Language”组织的负责人。该组织是一个咨询�
 <p>我们希望在后续版本中解决这一问题。然而，现实总是这么残酷。真正处理文件并提供下载功能的系统并不在我们的掌控之中。它是第三方Vendor提供的Web Service，我们开发的系统仅仅涉及到请求的转发，完成对该Web Service的调用；并在获得结果后，将响应（包含了文件流数据）返回给客户端。换言之，我们既不能改善文件处理的实现逻辑，以提高处理的速度；也无法对该Web Service进行水平伸缩，例如通过引入多台服务器建立集群和负载均衡的方式。</p>
 
 <p>遭遇如此场景实属无奈，要得出好的设计决策就好似戴着镣铐跳舞，只有在自己的服务端下功夫。我们首先想到的是限流（throttle）的方式，通过引入一个类似Controller角色的对象RequestHandlerPool，对客户端的请求进行控制。我们可以设定一个阈值，一旦超过该阈值，就将后续的请求放入队列进行排队。这个限流可以采用简单地在内存实现请求池全局对象。当然，也可以考虑引入消息队列中间件。改进后的时序图如下所示：
-{% img center /images/2013/06/filehandling.png %}</p>
+<img class="center" src="/images/2013/06/filehandling.png"></p>
 
 <p>引入RequestHandlerPool仅仅是对请求进行了限制，从而避免请求过多导致File Cabinet的阻塞，或者导致抛出OutOfMemeory异常。但整体的处理时间并没有得到任何改善。我们首先考虑将该功能分为两阶段。第一阶段是发起对文件的处理请求，第二阶段则是下载处理好的文件。对于耗时较长的文件处理请求，可以考虑使用异步请求，一旦文件处理完毕，就可以通过Callback通知请求者。然而，由于文件处理的时间过长，可能会导致请求者不愿继续等待结果，从而退出系统，形成一次失败的请求。因而，我们考虑系统的Callback可以通过发送邮件的方式通知发出请求的客户，在邮件内容中附带下载地址，以供客户下载。</p>
 

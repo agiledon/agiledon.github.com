@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Coding | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/categories/coding/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-10-08T20:58:33+08:00</updated>
+  <updated>2014-10-08T21:32:59+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -36,7 +36,7 @@
 <h2>快速了解Scala技术栈</h2>
 
 <p>若要了解Scala技术栈，并快速学习这些框架，一个好的方法是下载typesafe推出的Activator。它提供了相对富足的基于Scala以及Scala主流框架的开发模板，这其中实则还隐含了typesafe为Scala开发提供的最佳实践与指导。下图是Activator模板的截图：
-{% img center /images/2014/activatortemplate.png %}</p>
+<img class="center" src="/images/2014/activatortemplate.png"></p>
 
 <p>那么，是否有渠道可以整体地获知Scala技术栈到底包括哪些框架或工具，以及它们的特性与使用场景呢？感谢Lauris Dzilums以及其他在Github的Contributors。在Lauris Dzilums的Github上，他建立了名为awesome-scala的<a href="https://github.com/lauris/awesome-scala">Repository</a>，搜罗了当下主要的基于Scala开发的框架与工具，涉及到的领域包括：
 Database
@@ -63,28 +63,26 @@ Sbt plugins</p>
 <h3>持久化</h3>
 
 <p>归根结底，对数据的持久化主要还是通过JDBC访问数据库。但是，我们需要更好的API接口，能更好地与Scala契合，又或者更自然的ORM。如果希望执行SQL语句来操作数据库，那么运用相对广泛的是框架ScalikeJDBC，它提供了非常简单的API接口，甚至提供了SQL的DSL语法。例如：
-{% codeblock lang:scala %}
-  val alice: Option[Member] = withSQL {</p>
-
-<pre><code>select.from(Member as m).where.eq(m.name, name)
-</code></pre>
-
-<p>  }.map(rs => Member(rs)).single.apply()
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">val</span> <span class="n">alice</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Member</span><span class="o">]</span> <span class="k">=</span> <span class="n">withSQL</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">select</span><span class="o">.</span><span class="n">from</span><span class="o">(</span><span class="nc">Member</span> <span class="n">as</span> <span class="n">m</span><span class="o">).</span><span class="n">where</span><span class="o">.</span><span class="n">eq</span><span class="o">(</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="o">,</span> <span class="n">name</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}.</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span> <span class="k">=&gt;</span> <span class="nc">Member</span><span class="o">(</span><span class="n">rs</span><span class="o">)).</span><span class="n">single</span><span class="o">.</span><span class="n">apply</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>如果希望使用ORM框架，Squeryl应该是很好的选择。我的同事杨云在项目中使用过该框架，体验不错。该框架目前的版本为0.9.5，已经比较成熟了。Squeryl支持按惯例映射对象与关系表，相当于定义一个POSO（Plain Old Scala Object），从而减少框架的侵入。若映射违背了惯例，则可以利用框架定义的annotation如@Column定义映射。框架提供了org.squeryl.Table[T]来完成这种映射关系。</p>
 
 <p>因为可以运用Scala的高阶函数、偏函数等特性，使得Squeryl的语法非常自然，例如根据条件对表进行更新：
-{% codeblock lang:scala %}
-update(songs)(s =>
-  where(s.title === "Watermelon Man")
-  set(s.title := "The Watermelon Man",</p>
-
-<pre><code>  s.year  := s.year.~ + 1)
-</code></pre>
-
-<p>)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">update</span><span class="o">(</span><span class="n">songs</span><span class="o">)(</span><span class="n">s</span> <span class="k">=&gt;</span>
+</span><span class='line'>  <span class="n">where</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="n">title</span> <span class="o">===</span> <span class="s">&quot;Watermelon Man&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">set</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="n">title</span> <span class="o">:=</span> <span class="s">&quot;The Watermelon Man&quot;</span><span class="o">,&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">s</span><span class="o">.</span><span class="n">year</span>  <span class="o">:=</span> <span class="n">s</span><span class="o">.</span><span class="n">year</span><span class="o">.~</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h3>分布式系统</h3>
 
@@ -95,43 +93,42 @@ update(songs)(s =>
 <p>对于分布式的支持，绝对绕不开的框架还是AKKA。它产生的影响力如此之大，甚至使得Scala语言从2.10开始，就放弃了自己的Actor模型，转而将AKKA Actor收编为2.10版本的语言特性。许多框架在分布式处理方面也选择了使用AKKA，例如Spark、Spray。AKKA的Actor模型参考了Erlang语言，为每个Actor提供了一个专有的Mailbox，并将消息处理的实现细节做了良好的封装，使得并发编程变得更加容易。AKKA很好地统一了本地Actor与远程Actor，提供了几乎一致的API接口。AKKA也能够很好地支持消息的容错，除了提供一套完整的Monitoring机制外，还提供了对Dead Letter的处理。</p>
 
 <p>AKKA天生支持EDA（Event-Driven Architecture）。当我们针对领域建模时，可以考虑针对事件进行建模。在AKKA中，这些事件模型可以被定义为Scala的case class，并作为消息传递给Actor。借用Vaughn Vernon在《实现领域驱动设计》中的例子，针对如下的事件流：
-{% img center /images/2014/pipe-filter.jpg %}</p>
+<img class="center" src="/images/2014/pipe-filter.jpg"></p>
 
 <p>我们可以利用Akka简单地实现：
-{% codeblock lang:scala %}
-case class AllPhoneNumberListed(phoneNumbers: List[Int])
-case class PhoneNumberMatched(phoneNumbers: List[Int])
-case class AllPhoneNumberRead(fileName: String)</p>
-
-<p>class PhoneNumbersPublisher(actor: ActorRef) extends ActorRef {</p>
-
-<pre><code>def receive = {
-    case ReadPhoneNumbers =&gt;
-    //list phone numbers
-
-    actor ! AllPhoneNumberListed(List(1110, ))
-}
-</code></pre>
-
-<p>}</p>
-
-<p>class PhoneNumberFinder(actor: ActorRef) extends ActorRef {</p>
-
-<pre><code>def receive = {
-    case AllPhoneNumberListed(numbers) =&gt; 
-        //match
-
-        actor ! PhoneNumberMatched()
-}
-</code></pre>
-
-<p>}</p>
-
-<p>val finder = system.actorOf(Prop(new PhoneNumberFinder(...)))
-val publisher = system.actorOf(Prop(new PhoneNumbersPublisher(finder)))</p>
-
-<p>publisher ! ReadPhoneNumbers("callinfo.txt")
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">AllPhoneNumberListed</span><span class="o">(</span><span class="n">phoneNumbers</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">PhoneNumberMatched</span><span class="o">(</span><span class="n">phoneNumbers</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">AllPhoneNumberRead</span><span class="o">(</span><span class="n">fileName</span><span class="k">:</span> <span class="kt">String</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">PhoneNumbersPublisher</span><span class="o">(</span><span class="n">actor</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">ActorRef</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nc">ReadPhoneNumbers</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>    <span class="c1">//list phone numbers</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">actor</span> <span class="o">!</span> <span class="nc">AllPhoneNumberListed</span><span class="o">(</span><span class="nc">List</span><span class="o">(</span><span class="mi">1110</span><span class="o">,</span> <span class="o">))</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">PhoneNumberFinder</span><span class="o">(</span><span class="n">actor</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">ActorRef</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">receive</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nc">AllPhoneNumberListed</span><span class="o">(</span><span class="n">numbers</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>        <span class="c1">//match</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">actor</span> <span class="o">!</span> <span class="nc">PhoneNumberMatched</span><span class="o">()</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">finder</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Prop</span><span class="o">(</span><span class="k">new</span> <span class="nc">PhoneNumberFinder</span><span class="o">(...)))</span>
+</span><span class='line'><span class="k">val</span> <span class="n">publisher</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Prop</span><span class="o">(</span><span class="k">new</span> <span class="nc">PhoneNumbersPublisher</span><span class="o">(</span><span class="n">finder</span><span class="o">)))&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">publisher</span> <span class="o">!</span> <span class="nc">ReadPhoneNumbers</span><span class="o">(</span><span class="s">&quot;callinfo.txt&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>若需要处理的电话号码数据量大，我们可以很容易地将诸如PhoneNumbersPublisher、PhoneNumberFinder等Actors部署为Remote Actor。此时，仅仅需要更改客户端获得Actor的方式即可。</p>
 
@@ -140,60 +137,58 @@ val publisher = system.actorOf(Prop(new PhoneNumbersPublisher(finder)))</p>
 <h3>HTTP</h3>
 
 <p>严格意义上讲，Spray并非单纯的HTTP框架，它还支持REST、JSON、Caching、Routing、IO等功能。Spray的模块及其之间的关系如下图所示：
-{% img center /images/2014/spraydepencies.png %}</p>
+<img class="center" src="/images/2014/spraydepencies.png"></p>
 
 <p>我在项目中主要将Spray作为REST框架来使用，并结合AKKA来处理领域逻辑。Spray处理HTTP请求的架构如下图所示：
-{% img center /images/2014/spray_arch.png %}</p>
+<img class="center" src="/images/2014/spray_arch.png"></p>
 
 <p>Spray提供了一套DSL风格的path语法，能够非常容易地编写支持各种HTTP动词的请求，例如：
-{% codeblock lang:scala %}
-trait HttpServiceBase extends Directives with Json4sSupport {</p>
-
-<pre><code> implicit val system: ActorSystem
- implicit def json4sFormats: Formats = DefaultFormats
- def route: Route
-</code></pre>
-
-<p>}</p>
-
-<p>trait CustomerService extends HttpServiceBase {</p>
-
-<pre><code> val route = 
-      path("customer" / "groups") {
-           get {
-                parameters('groupids.?) {
-                     (groupids) =&gt;
-                          complete {
-                               groupids match {
-                                    case Some(groupIds) =&gt; 
-                ViewUserGroup.queryUserGroup(groupIds.split(",").toList)
-                                    case None =&gt; ViewUserGroup.queryUserGroup()
-                               }
-                          }
-                }
-           }
-      } ~
-      path("customers" / "vip" / "failureinfo") {
-           post {
-                entity(as[FailureVipCustomerRequest]) {
-                     request =&gt; 
-                          complete {
-                               VipCustomer.failureInfo(request) 
-                          }
-                }
-           }
-      }
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">HttpServiceBase</span> <span class="k">extends</span> <span class="nc">Directives</span> <span class="k">with</span> <span class="nc">Json4sSupport</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span>
+</span><span class='line'> <span class="k">implicit</span> <span class="k">def</span> <span class="n">json4sFormats</span><span class="k">:</span> <span class="kt">Formats</span> <span class="o">=</span> <span class="nc">DefaultFormats</span>
+</span><span class='line'> <span class="k">def</span> <span class="n">route</span><span class="k">:</span> <span class="kt">Route</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">trait</span> <span class="nc">CustomerService</span> <span class="k">extends</span> <span class="nc">HttpServiceBase</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">route</span> <span class="k">=</span>
+</span><span class='line'>      <span class="n">path</span><span class="o">(</span><span class="s">&quot;customer&quot;</span> <span class="o">/</span> <span class="s">&quot;groups&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">get</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">parameters</span><span class="o">(</span><span class="-Symbol">&#39;groupids</span><span class="o">.?)</span> <span class="o">{</span>
+</span><span class='line'>                     <span class="o">(</span><span class="n">groupids</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>                          <span class="n">complete</span> <span class="o">{</span>
+</span><span class='line'>                               <span class="n">groupids</span> <span class="k">match</span> <span class="o">{</span>
+</span><span class='line'>                                    <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">groupIds</span><span class="o">)</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>                <span class="nc">ViewUserGroup</span><span class="o">.</span><span class="n">queryUserGroup</span><span class="o">(</span><span class="n">groupIds</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">).</span><span class="n">toList</span><span class="o">)</span>
+</span><span class='line'>                                    <span class="k">case</span> <span class="nc">None</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nc">ViewUserGroup</span><span class="o">.</span><span class="n">queryUserGroup</span><span class="o">()</span>
+</span><span class='line'>                               <span class="o">}</span>
+</span><span class='line'>                          <span class="o">}</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>           <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span> <span class="o">~</span>
+</span><span class='line'>      <span class="n">path</span><span class="o">(</span><span class="s">&quot;customers&quot;</span> <span class="o">/</span> <span class="s">&quot;vip&quot;</span> <span class="o">/</span> <span class="s">&quot;failureinfo&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">post</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">entity</span><span class="o">(</span><span class="n">as</span><span class="o">[</span><span class="kt">FailureVipCustomerRequest</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                     <span class="n">request</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>                          <span class="n">complete</span> <span class="o">{</span>
+</span><span class='line'>                               <span class="nc">VipCustomer</span><span class="o">.</span><span class="n">failureInfo</span><span class="o">(</span><span class="n">request</span><span class="o">)</span>
+</span><span class='line'>                          <span class="o">}</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>           <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我个人认为，在进行Web开发时，完全可以放弃Web框架，直接选择AngularJS结合Spray和AKKA，同样能够很好地满足Web开发需要。</p>
 
 <p>Spray支持REST，且Spray自身提供了服务容器spray-can，因而允许Standalone的部署（当然也支持部署到Jetty和tomcat等应用服务器）。Spray对HTTP请求的内部处理机制实则是基于Akka-IO，通过IO这个Actor发出对HTTP的bind消息。例如：
-{% codeblock lang:scala %}
- IO(Http) ! Http.Bind(service, interface = "0.0.0.0", port = 8889)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'> <span class="nc">IO</span><span class="o">(</span><span class="nc">Http</span><span class="o">)</span> <span class="o">!</span> <span class="nc">Http</span><span class="o">.</span><span class="nc">Bind</span><span class="o">(</span><span class="n">service</span><span class="o">,</span> <span class="n">interface</span> <span class="k">=</span> <span class="s">&quot;0.0.0.0&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">8889</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我们可以编写不同的Boot对象去绑定不同的主机Host以及端口。这些特性都使得Spray能够很好地支持当下较为流行的Micro Service架构风格。</p>
 
@@ -204,52 +199,51 @@ trait HttpServiceBase extends Directives with Json4sSupport {</p>
 <p>若硬要使用专有的Web框架，在Scala技术栈下，最为流行的就是Play Framework，这是一个标准的MVC框架。另外一个相对小众的Web框架是Lift。它与大多数Web框架如RoR、Struts、Django以及Spring MVC、Play不同，采用的并非MVC模式，而是使用了所谓的View First。它驱动开发者对内容生成与内容展现（Markup）形成“关注点分离”。</p>
 
 <p>Lift将关注点重点放在View上，这是因为在一些Web应用中，可能存在多个页面对同一种Model的Action。倘若采用MVC中的Controller，会使得控制变得非常复杂。Lift提出了一种所谓view-snippet-model（简称为VSM）的模式。
-{% img center /images/2014/lift_vsm.png %}</p>
+<img class="center" src="/images/2014/lift_vsm.png"></p>
 
 <p>View主要为响应页面请求的HTML内容，分为template views和generated views。Snippet的职责则用于生成动态内容，并在模型发生更改时，对Model和View进行协调。</p>
 
 <h3>大数据</h3>
 
 <p>大数据框架最耀眼的新星非Spark莫属。与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。
-{% img center /images/2014/spark_architecture.jpg %}</p>
+<img class="center" src="/images/2014/spark_architecture.jpg"></p>
 
 <p>由于Spark具有先进的DAG执行引擎，支持cyclic data flow和内存计算。因此相比较Hadoop而言，性能更优。在内存中它的运行速度是Hadoop MapReduce的100倍，在磁盘中是10倍。</p>
 
 <p>由于使用了Scala语言，通过高效利用Scala的语言特性，使得Spark的总代码量出奇地少，性能却在多数方面都具备一定的优势（只有在Streaming方面，逊色于Storm）。下图是针对Spark 0.9版本的BenchMark：
-{% img center /images/2014/spark_metric.png %}</p>
+<img class="center" src="/images/2014/spark_metric.png"></p>
 
 <p>由于使用了Scala，使得语言的函数式特性得到了最棒的利用。事实上，函数式语言的诸多特性包括不变性、无副作用、组合子等，天生与数据处理匹配。于是，针对WordCount，我们可以如此简易地实现：
-{% codeblock lang:scala %}
-file = spark.textFile("hdfs://...")</p>
-
-<p>file.flatMap(line => line.split(" "))</p>
-
-<pre><code>.map(word =&gt; (word, 1))
-.reduceByKey(_ + _)
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">file</span> <span class="k">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">textFile</span><span class="o">(</span><span class="s">&quot;hdfs://...&quot;</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">file</span><span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="n">line</span> <span class="k">=&gt;</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">))&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">map</span><span class="o">(</span><span class="n">word</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'><span class="o">.</span><span class="n">reduceByKey</span><span class="o">(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>要是使用Hadoop，就没有这么方便了。幸运的是，Twitter的一个开源框架scalding提供了对Hadoop MapReduce的抽象与包装。它使得我们可以按照Scala的方式执行MapReduce的Job：
-{% codeblock lang:scala %}
-class WordCountJob(args : Args) extends Job(args) {
-  TextLine( args("input") )</p>
-
-<pre><code>.flatMap('line -&gt; 'word) { line : String =&gt; tokenize(line) }
-.groupBy('word) { _.size }
-.write( Tsv( args("output") ) )
-</code></pre>
-
-<p>  // Split a piece of text into individual words.
-  def tokenize(text : String) : Array[String] = {</p>
-
-<pre><code>// Lowercase each word and remove punctuation.
-text.toLowerCase.replaceAll("[^a-zA-Z0-9\\s]", "").split("\\s+")
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">WordCountJob</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Args</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Job</span><span class="o">(</span><span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nc">TextLine</span><span class="o">(</span> <span class="n">args</span><span class="o">(</span><span class="s">&quot;input&quot;</span><span class="o">)</span> <span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">flatMap</span><span class="o">(</span><span class="-Symbol">&#39;line</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="-Symbol">&#39;word</span><span class="o">)</span> <span class="o">{</span> <span class="n">line</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">tokenize</span><span class="o">(</span><span class="n">line</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'><span class="o">.</span><span class="n">groupBy</span><span class="o">(</span><span class="-Symbol">&#39;word</span><span class="o">)</span> <span class="o">{</span> <span class="k">_</span><span class="o">.</span><span class="n">size</span> <span class="o">}</span>
+</span><span class='line'><span class="o">.</span><span class="n">write</span><span class="o">(</span> <span class="nc">Tsv</span><span class="o">(</span> <span class="n">args</span><span class="o">(</span><span class="s">&quot;output&quot;</span><span class="o">)</span> <span class="o">)</span> <span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="c1">// Split a piece of text into individual words.</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">tokenize</span><span class="o">(</span><span class="n">text</span> <span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;//</span> <span class="nc">Lowercase</span> <span class="n">each</span> <span class="n">word</span> <span class="n">and</span> <span class="n">remove</span> <span class="n">punctuation</span><span class="o">.</span>
+</span><span class='line'><span class="n">text</span><span class="o">.</span><span class="n">toLowerCase</span><span class="o">.</span><span class="n">replaceAll</span><span class="o">(</span><span class="s">&quot;[^a-zA-Z0-9\\s]&quot;</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">).</span><span class="n">split</span><span class="o">(</span><span class="s">&quot;\\s+&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h3>测试</h3>
 
@@ -260,28 +254,27 @@ text.toLowerCase.replaceAll("[^a-zA-Z0-9\\s]", "").split("\\s+")
 <p>一个被广泛使用的测试工具是Gatling，它是基于Scala、AKKA以及Netty开发的性能测试与压力测试工具。我的同事刘冉在InfoQ发表的文章《新一代服务器性能测试工具Gatling》对Gatling进行了详细深入的介绍。</p>
 
 <p>ScalaMeter也是一款很不错的性能测试工具。我们可以像编写ScalaTest测试那样的风格来编写ScalaMeter性能测试用例，并能够快捷地生成性能测试数据。这些功能都非常有助于我们针对代码或软件产品进行BenchMark测试。我们曾经用ScalaMeter来编写针对Scala集合的性能测试，例如比较Vector、ArrayBuffer、ListBuffer以及List等集合的相关操作，以便于我们更好地使用Scala集合。以下代码展示了如何使用ScalaMeter编写性能测试：
-{% codeblock lang:scala %}
-import org.scalameter.api._</p>
-
-<p>object RangeBenchmark
-extends PerformanceTest.Microbenchmark {
-  val ranges = for {</p>
-
-<pre><code>size &lt;- Gen.range("size")(300000, 1500000, 300000)
-</code></pre>
-
-<p>  } yield 0 until size</p>
-
-<p>  measure method "map" in {</p>
-
-<pre><code>using(ranges) curve("Range") in {
-  _.map(_ + 1)
-}
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">org.scalameter.api._&lt;/p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">object</span> <span class="nc">RangeBenchmark</span>
+</span><span class='line'><span class="k">extends</span> <span class="nc">PerformanceTest</span><span class="o">.</span><span class="nc">Microbenchmark</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">ranges</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">size</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;-</span> <span class="nc">Gen</span><span class="o">.</span><span class="n">range</span><span class="o">(</span><span class="s">&quot;size&quot;</span><span class="o">)(</span><span class="mi">300000</span><span class="o">,</span> <span class="mi">1500000</span><span class="o">,</span> <span class="mi">300000</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span> <span class="k">yield</span> <span class="mi">0</span> <span class="n">until</span> <span class="n">size</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">measure</span> <span class="n">method</span> <span class="s">&quot;map&quot;</span> <span class="n">in</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">using</span><span class="o">(</span><span class="n">ranges</span><span class="o">)</span> <span class="n">curve</span><span class="o">(</span><span class="s">&quot;Range&quot;</span><span class="o">)</span> <span class="n">in</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">_</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h2>根据场景选择框架或工具</h2>
 
@@ -296,7 +289,7 @@ extends PerformanceTest.Microbenchmark {
     <link href="http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/"/>
     <updated>2014-08-03T21:25:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/sisyphus.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/sisyphus.jpg"></p>
 
 <p>这是我去年写的一个小框架，专为自动化测试准备数据。以我个人的经验，进行自动化测试尤其是单元测试，除了技能的障碍外，最大的障碍有两点：1)难以解除依赖，因而无法为相关功能编写独立的测试；2)数据准备困难，导致编写测试的成本高。在我的一篇博客《<a href="http://agiledon.github.io/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>》中有相关总结。尤其在企业级软件系统中，面对的领域相对复杂，被测接口常常需要输入复杂的数据，然后再返回复杂的数据。在面向对象开发中，这些数据常常被建模为对象。我们该怎么实例化这些对象？在单元测试中，我们常常会引入Builder模式，通过Fluent Interface的方式建立类似DSL的构建接口，以便于自由、流畅而可任意组合的方式，帮助编写测试的人实例化他想要创建的对象。然而，一旦这个对象内嵌了多层，或具有极多的属性时，创建就变得极为艰难了。</p>
 
@@ -308,161 +301,156 @@ extends PerformanceTest.Microbenchmark {
 
 
 <p>要使用Sisyphus，可以在build.gradle的构建脚本中添加sonatype提供的Repository依赖：
-{% codeblock lang:groovy %}
-repositories {</p>
-
-<pre><code>maven{
-    url 'https://oss.sonatype.org/content/groups/public'
-}
-mavenCentral();
-</code></pre>
-
-<p>}</p>
-
-<p>dependencies {</p>
-
-<pre><code>test (
-        'junit:junit:4.11',
-        'com.github.agiledon:sisyphus:1.0-SNAPSHOT'
-    )
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">repositories</span> <span class="o">{&lt;</span><span class="s">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&lt;pre&gt;&lt;code&gt;maven{</span>
+</span><span class='line'><span class="s">    url &#39;https://oss.sonatype.org/</span><span class="n">content</span><span class="s">/groups/</span><span class="kd">public</span><span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">}</span>
+</span><span class='line'><span class="s1">mavenCentral();</span>
+</span><span class='line'><span class="s1">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">&lt;p&gt;}&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">&lt;p&gt;dependencies {&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">&lt;pre&gt;&lt;code&gt;test (</span>
+</span><span class='line'><span class="s1">        &#39;</span><span class="nl">junit:junit:</span><span class="mf">4.11</span><span class="s1">&#39;,</span>
+</span><span class='line'><span class="s1">        &#39;</span><span class="n">com</span><span class="o">.</span><span class="na">github</span><span class="o">.</span><span class="na">agiledon</span><span class="o">:</span><span class="nl">sisyphus:</span><span class="mf">1.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="err">&#39;</span>
+</span><span class='line'>    <span class="o">)</span>
+</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>针对Yaml文件，我选择了snakeyaml框架。而对于Json数据，我尝试了两种框架Jackson和Gson。我发现这两个框架各有不足之处。倘若使用Jackson，它要求你要反序列化的类型必须定义默认的构造函数，如果没有定义，则必须声明Annotation：@JsonCreate和@JsonProperty。可是，有时候我们要准备的数据对象，或许是自动生成的，并不能修改该定义。何况，为了进行测试而改变产品代码，是邪恶的，不可取。Gson没有这样的约束，但当我尝试将一段字符串解析为byte[]类型时，发现Gson并不支持。为此，Sisyphus为Json数据提供了两种实现，为了区分，若是Gson实现，则要求测试数据文件的扩展名必须为“.gson”。</p>
 
 <p>模板功能使用了ST4的StringTemplate。我没有使用该框架提供的默认变量标识，而是要求将变量用$符号包裹起来。如果不需要模板，则只需提供一个测试数据文件即可；否则还要定义模板文件，它的扩展名为“.template”。例如针对Json格式的数据，倘若定义了这样的User类：
-{% codeblock lang:java %}
-public class User {</p>
-
-<pre><code>public enum Gender { MALE, FEMALE };
-
-public static class Name {
-    private String _first, _last;
-
-    public String getFirst() { return _first; }
-    public String getLast() { return _last; }
-
-    public void setFirst(String s) { _first = s; }
-    public void setLast(String s) { _last = s; }
-}
-
-private Gender _gender;
-private Name _name;
-private boolean _isVerified;
-private byte[] _userImage;
-
-public Name getName() { return _name; }
-public boolean isVerified() { return _isVerified; }
-public Gender getGender() { return _gender; }
-public byte[] getUserImage() { return _userImage; }
-
-public void setName(Name n) { _name = n; }
-public void setVerified(boolean b) { _isVerified = b; }
-public void setGender(Gender g) { _gender = g; }
-public void setUserImage(byte[] b) { _userImage = b; }
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">enum</span> <span class="n">Gender</span> <span class="o">{</span> <span class="n">MALE</span><span class="o">,</span> <span class="n">FEMALE</span> <span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Name</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">_first</span><span class="o">,</span> <span class="n">_last</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirst</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_first</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLast</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_last</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirst</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_first</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLast</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_last</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="n">Gender</span> <span class="n">_gender</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">Name</span> <span class="n">_name</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="n">_isVerified</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">_userImage</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Name</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_name</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isVerified</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_isVerified</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">Gender</span> <span class="nf">getGender</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_gender</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUserImage</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_userImage</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">Name</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span> <span class="n">_name</span> <span class="o">=</span> <span class="n">n</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVerified</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_isVerified</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setGender</span><span class="o">(</span><span class="n">Gender</span> <span class="n">g</span><span class="o">)</span> <span class="o">{</span> <span class="n">_gender</span> <span class="o">=</span> <span class="n">g</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserImage</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_userImage</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>则可以准备模板文件为：
-{% codeblock %}
-{
-  "name" : { "first" : $firstName$, "last" : $lastName$ },
-  "gender" : "MALE",
-  "verified" : false,
-  "userImage" : "Rm9vYmFyIQ=="
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name" : { "first" : $firstName$, "last" : $lastName$ },
+</span><span class='line'>  "gender" : "MALE",
+</span><span class='line'>  "verified" : false,
+</span><span class='line'>  "userImage" : "Rm9vYmFyIQ=="
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>而数据文件则可以是：
-{% codeblock %}</p>
-
-<h1>This is multi section sample</h1>
-
-<p>firstName = "Joe"
-lastName = "Sixpack"</p>
-
-<p>///</p>
-
-<p>firstName = "Bruce"
-lastName = "Zhang"</p>
-
-<p>///</p>
-
-<p>firstName = "Yi"
-lastName = "Zhang"
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>This is multi section sample&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>firstName = "Joe"
+</span><span class='line'>lastName = "Sixpack"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>///&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>firstName = "Bruce"
+</span><span class='line'>lastName = "Zhang"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>///&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>firstName = "Yi"
+</span><span class='line'>lastName = "Zhang"</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>符号///是分节的标识符，而符号#则为注释，读取数据时会忽略该符号后的所有字符。使用Sisyphus框架，就可以很方便地加载数据文件，从而获得三个User实例。如下测试：
-{% codeblock lang:java %}</p>
-
-<pre><code>@Test
-public void should_compose_multi_user_data_by_parsing_template_file() {
-    List&lt;User&gt; users = Fixture.from("userWithMultiSections.json")
-            .withTemplate("template/user.template")
-            .toList(User.class);
-    assertThat(users, not(nullValue()));
-    assertThat(users.get(0).getName().getFirst(), is("Joe"));
-    assertThat(users.get(0).getName().getLast(), is("Sixpack"));
-    assertThat(users.get(2).getName().getFirst(), is("Yi"));
-    assertThat(users.get(2).getName().getLast(), is("Zhang"));
-}
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_multi_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">User</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">users</span> <span class="o">=</span> <span class="n">Fixture</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="s">&quot;userWithMultiSections.json&quot;</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">withTemplate</span><span class="o">(</span><span class="s">&quot;template/user.template&quot;</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">toList</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Yi&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Zhang&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>Sisyphus框架还提供了将实例化好的对象输出为对应格式数据文件的功能。这个功能算是框架提供的一个辅助功能，可以避免手动去准备数据文件。例如我们可以先创建一个User实例，将其输出为yaml格式的数据文件，从而将该文件作为测试数据文件：
-{% codeblock lang:java %}
-   @Test</p>
-
-<pre><code>public void should_serialize_specific_object_to_string_with_yaml_format() {
-    User user = createUser();
-    String result = FixtureAssist.yaml().print(user, "outputUser");
-    assertThat(result, is("!!com.github.agiledon.sisyphus.domain.json.User\n" +
-            "gender: MALE\n" +
-            "name: {first: Yi, last: Zhang}\n" +
-            "userImage: !!binary |-\n" +
-            "  MDAwMDExMTE=\n" +
-            "verified: true\n"));
-}
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>   <span class="nd">@Test</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">should_serialize_specific_object_to_string_with_yaml_format</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">createUser</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">FixtureAssist</span><span class="o">.</span><span class="na">yaml</span><span class="o">().</span><span class="na">print</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="s">&quot;outputUser&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;!!com.github.agiledon.sisyphus.domain.json.User\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;gender: MALE\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;name: {first: Yi, last: Zhang}\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;userImage: !!binary |-\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;  MDAwMDExMTE=\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;verified: true\n&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>框架在加载数据文件时，本身提供了缓存功能，如果重复加载同一个文件，则第二次加载时，并不需要真正去读取文件，从而在一定程度上提高了测试的效率。</p>
 
 <p>框架的入口为Fixture类。若要使用Sisyphus准备数据，通常应调用Fixture的静态方法。框架也提供了对JUnit的支持，通过框架自定义的Rule来加载测试数据，使用方式为：
-{% codeblock lang:java %}
-public class DataProviderRuleTest {</p>
-
-<pre><code>@Rule
-public DataProviderRule dataProvider = new DataProviderRule();
-
-@Test
-@DataResource(resourceName = "user.json", targetClass = User.class)
-public void should_compose_User_data_with_json_format() {
-    User user = dataProvider.provideData();
-    assertThat(user, not(nullValue()));
-    assertThat(user.getName().getFirst(), is("Joe"));
-}
-
-@Test
-@DataResource(resourceName = "userWithTemplate.json",
-        templateName = "template/user.template",
-        targetClass = User.class)
-public void should_compose_user_data_by_parsing_template_file() {
-    User user = dataProvider.provideData();
-    assertThat(user, not(nullValue()));
-    assertThat(user.getName().getFirst(), is("Joe"));
-    assertThat(user.getName().getLast(), is("Sixpack"));
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataProviderRuleTest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Rule</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">DataProviderRule</span> <span class="n">dataProvider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataProviderRule</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;user.json&quot;</span><span class="o">,</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_User_data_with_json_format</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;userWithTemplate.json&quot;</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">templateName</span> <span class="o">=</span> <span class="s">&quot;template/user.template&quot;</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>但我个人并不推荐这种方式。使用Fixture更直观，甚至更简单。Sisyphus的源代码可以从<a href="https://github.com/agiledon/sisyphus">我的Github</a>上获得，在其Repository主页，有更多实例介绍。你也可以clone代码后，通过测试代码学习框架的使用。clone代码到本地后，将当前目录转到sisyphus，然后运行gradle build，即可对代码进行编译。若需运行测试，可运行gradle test。由于我使用的IDE为IntelliJ Idea，因此，框架的构建脚本中仅支持IDEA。你可以通过运行gradle idea来生成IntelliJ的项目。</p>
 ]]></content>
@@ -520,46 +508,43 @@ public void should_compose_user_data_by_parsing_template_file() {
     <updated>2014-07-07T19:19:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/07/07/using-listbuffer-vs-list</id>
     <content type="html"><![CDATA[<p>我们有一个需求，需要在Scala中调用JDBC对数据库进行查询。然后将查询的结果ResultSet放到一个自定义结果类SqlResult中：
-{% codeblock lang:scala %}
-case class SqlResult(name: List[String], value: List[List[String]])
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">SqlResult</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span> <span class="n">value</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]])</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>SqlResult的第一个构造函数参数存储的是数据表的列名，第二个参数存储数据表的行记录。由于ResultSet是Java中的一个对象，并不支持Scala的常用集合操作，因此这种转换是有必要的。我引入了隐式类（放在一个package object中）来完成这个转换，在转换过程中，由于需要对ResultSet进行遍历，因而引入了一个结果集List。默认情况下，Scala的List是immutable的，因此将其声明为var：
-{% codeblock lang:scala %}
-package object db {</p>
-
-<pre><code> implicit class ResultSetUtil(rs: ResultSet) {
-      private val columnCount = rs.getMetaData.getColumnCount
-
-      def rows: List[List[String]] = {
-           var valueList: List[List[String]] = List()
-           while (rs.next()) {
-                val oneLine = (1 to columnCount).map(rs.getString).toList
-                valueList = oneLine :: valueList
-           }
-           valueList.reverse 
-      }
-
-      def columns: List[String] = {
-           (1 to columnCount).map(rs.getMetaData.getColumnName).toList
-      }
- }
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">object</span> <span class="n">db</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">implicit</span> <span class="k">class</span> <span class="nc">ResultSetUtil</span><span class="o">(</span><span class="n">rs</span><span class="k">:</span> <span class="kt">ResultSet</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">private</span> <span class="k">val</span> <span class="n">columnCount</span> <span class="k">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">getMetaData</span><span class="o">.</span><span class="n">getColumnCount</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="n">rows</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>           <span class="k">var</span> <span class="n">valueList</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">()</span>
+</span><span class='line'>           <span class="k">while</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">next</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">val</span> <span class="n">oneLine</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">columnCount</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">getString</span><span class="o">).</span><span class="n">toList</span>
+</span><span class='line'>                <span class="n">valueList</span> <span class="k">=</span> <span class="n">oneLine</span> <span class="o">::</span> <span class="n">valueList</span>
+</span><span class='line'>           <span class="o">}</span>
+</span><span class='line'>           <span class="n">valueList</span><span class="o">.</span><span class="n">reverse</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="n">columns</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>           <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">columnCount</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">getMetaData</span><span class="o">.</span><span class="n">getColumnName</span><span class="o">).</span><span class="n">toList</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>有了这个隐式转换，操作ResultSet就变简单了：
-{% codeblock lang:scala %}
-def query(sql: String): SqlResult = {</p>
-
-<pre><code>stmt = conn.createStatement()
-rs = stmt.executeQuery(sql)
-SqlResult(rs.columns, rs.rows)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">query</span><span class="o">(</span><span class="n">sql</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">SqlResult</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">stmt</span> <span class="k">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">createStatement</span><span class="o">()</span>
+</span><span class='line'><span class="n">rs</span> <span class="k">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">executeQuery</span><span class="o">(</span><span class="n">sql</span><span class="o">)</span>
+</span><span class='line'><span class="nc">SqlResult</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">columns</span><span class="o">,</span> <span class="n">rs</span><span class="o">.</span><span class="n">rows</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>由于在前面的实现中，我初始化了一个Immutable的List，因此只能使用::添加每行从ResultSet得到的记录，然后再赋值给valueList。::方法只能将后加入的元素放到List的头部。所以在遍历完毕后，还需要做一个reverse操作。</p>
 
@@ -567,178 +552,161 @@ SqlResult(rs.columns, rs.rows)
 
 
 <p>我的感觉告诉我，这种先添加再反转的做法有些怪异。既然这里是以var的方式来使用Immutable List，为何不直接使用Mutable的集合呢？于是，我将前面的rows方法修改为：
-{% codeblock lang:scala %}
-import scala.collection.mutable.ListBuffer
-package object db {</p>
-
-<pre><code> implicit class ResultSetUtil(rs: ResultSet) {
-
-      def rows: List[List[String]] = {
-           val valueList: ListBuffer[List[String]] = ListBuffer()
-           while (rs.next()) {
-                val oneLine = (1 to columnCount).map(rs.getString).toList
-                valueList += oneLine
-           }
-           valueList.toList  
-      }
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.mutable.ListBuffer</span>
+</span><span class='line'><span class="k">package</span> <span class="nn">object</span> <span class="n">db</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">implicit</span> <span class="k">class</span> <span class="nc">ResultSetUtil</span><span class="o">(</span><span class="n">rs</span><span class="k">:</span> <span class="kt">ResultSet</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="n">rows</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>           <span class="k">val</span> <span class="n">valueList</span><span class="k">:</span> <span class="kt">ListBuffer</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="nc">ListBuffer</span><span class="o">()</span>
+</span><span class='line'>           <span class="k">while</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">next</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">val</span> <span class="n">oneLine</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">columnCount</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">getString</span><span class="o">).</span><span class="n">toList</span>
+</span><span class='line'>                <span class="n">valueList</span> <span class="o">+=</span> <span class="n">oneLine</span>
+</span><span class='line'>           <span class="o">}</span>
+</span><span class='line'>           <span class="n">valueList</span><span class="o">.</span><span class="n">toList</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>因为rows方法返回的是Immutable List，所以在后面需要调用一个转换方法，将ListBuffer转换为List；但这个实现减少了对reverse方法的调用。于是，我产生了一个疑惑：这两种实现，究竟谁的性能更好呢？</p>
 
 <p>为了判断彼此的性能，我首先写了一段简单的小代码，并放到perf.scala文件中：
-{% codeblock lang:scala %}
-import java.util.Date
-import scala.collection.mutable.ListBuffer</p>
-
-<p>object PerformanceTest extends App {</p>
-
-<pre><code>val maxCount = args.head.toInt
-
-args.tail.head match {
-    case "list" =&gt;
-        println("using List:")
-        var time = elapsedTime{ max =&gt;
-           var l = List[Int]()
-            (1 to max).foreach {
-               i =&gt; i :: l
-          }
-          l.reverse
-      }
-      println(s"it elapsed $time(ms)")
-
-   case "listbuffer" =&gt;
-        println("using ListBuffer:")
-         time = elapsedTime{ max =&gt;
-            var l = ListBuffer[Int]()
-            (1 to max).foreach {
-                i =&gt; l += i
-            }
-            l.toList
-        }
-        println(s"it elapsed $time(ms)")
-}
-
-def elapsedTime(f: Int =&gt; List[Int]):Long = {
-    val before = new Date().getTime
-    f(maxCount)
-    val after = new Date().getTime
-    after - before
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.Date</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.collection.mutable.ListBuffer</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">object</span> <span class="nc">PerformanceTest</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">maxCount</span> <span class="k">=</span> <span class="n">args</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">toInt</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">args</span><span class="o">.</span><span class="n">tail</span><span class="o">.</span><span class="n">head</span> <span class="k">match</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s">&quot;list&quot;</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="s">&quot;using List:&quot;</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">var</span> <span class="n">time</span> <span class="k">=</span> <span class="n">elapsedTime</span><span class="o">{</span> <span class="n">max</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>           <span class="k">var</span> <span class="n">l</span> <span class="k">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]()</span>
+</span><span class='line'>            <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">max</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>               <span class="n">i</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">i</span> <span class="o">::</span> <span class="n">l</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="n">l</span><span class="o">.</span><span class="n">reverse</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;it elapsed $time(ms)&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">case</span> <span class="s">&quot;listbuffer&quot;</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="s">&quot;using ListBuffer:&quot;</span><span class="o">)</span>
+</span><span class='line'>         <span class="n">time</span> <span class="k">=</span> <span class="n">elapsedTime</span><span class="o">{</span> <span class="n">max</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">var</span> <span class="n">l</span> <span class="k">=</span> <span class="nc">ListBuffer</span><span class="o">[</span><span class="kt">Int</span><span class="o">]()</span>
+</span><span class='line'>            <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">max</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">i</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">l</span> <span class="o">+=</span> <span class="n">i</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="n">l</span><span class="o">.</span><span class="n">toList</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;it elapsed $time(ms)&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">elapsedTime</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span><span class="kt">Long</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">before</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">().</span><span class="n">getTime</span>
+</span><span class='line'>    <span class="n">f</span><span class="o">(</span><span class="n">maxCount</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">after</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">().</span><span class="n">getTime</span>
+</span><span class='line'>    <span class="n">after</span> <span class="o">-</span> <span class="n">before</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>为避免前后干扰，我选择以分支的方式通过传入参数分别执行。编译perf.scala文件。运行scala PerformanceTest 100000 list。此时运行结果为：
-{% codeblock %}
-using List:
-it elapsed 23(ms)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using List:
+</span><span class='line'>it elapsed 23(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>运行scala PerformanceTest 100000 listbuffer。运行结果为：
-{% codeblock %}
-using ListBuffer:
-it elaspse 26(ms)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using ListBuffer:
+</span><span class='line'>it elaspse 26(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>增加到200,000，结果迥然不同：
-{% codeblock %}
-using List:
-it elaspse 23(ms)
-using ListBuffer:
-it elaspse 34(ms)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using List:
+</span><span class='line'>it elaspse 23(ms)
+</span><span class='line'>using ListBuffer:
+</span><span class='line'>it elaspse 34(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>增加到500,000，结果迥然不同：
-{% codeblock %}
-using List:
-it elaspse 34(ms)
-using ListBuffer:
-it elaspse 293(ms)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using List:
+</span><span class='line'>it elaspse 34(ms)
+</span><span class='line'>using ListBuffer:
+</span><span class='line'>it elaspse 293(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>增加到1,000,000，结果就更明显了：
-{% codeblock %}
-using List:
-it elaspse 45(ms)
-using ListBuffer:
-it elaspse 620(ms)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using List:
+</span><span class='line'>it elaspse 45(ms)
+</span><span class='line'>using ListBuffer:
+</span><span class='line'>it elaspse 620(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我们假定List方式为A，ListBuffer方式为B。整体看来，方式A消耗的时间都要小于方式B。当数据量越来越大时，这种差距就更加明显。问题在哪里？让我们来看看List与ListBuffer的实现。</p>
 
 <p>首先，考察List对::以及reverse的实现：
-{% codeblock lang:scala %}
-  def ::[B >: A] (x: B): List[B] =</p>
-
-<pre><code>new scala.collection.immutable.::(x, this)
-</code></pre>
-
-<p>  override def reverse: List[A] = {</p>
-
-<pre><code>var result: List[A] = Nil
-var these = this
-while (!these.isEmpty) {
-  result = these.head :: result
-  these = these.tail
-}
-result
-</code></pre>
-
-<p>  }
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="o">::[</span><span class="kt">B</span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">]</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">B</span><span class="o">)</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">new</span> <span class="n">scala</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">immutable</span><span class="o">.::(</span><span class="n">x</span><span class="o">,</span> <span class="k">this</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">reverse</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">var</span> <span class="n">result</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Nil</span>
+</span><span class='line'><span class="k">var</span> <span class="n">these</span> <span class="k">=</span> <span class="k">this</span>
+</span><span class='line'><span class="k">while</span> <span class="o">(!</span><span class="n">these</span><span class="o">.</span><span class="n">isEmpty</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">result</span> <span class="k">=</span> <span class="n">these</span><span class="o">.</span><span class="n">head</span> <span class="o">::</span> <span class="n">result</span>
+</span><span class='line'>  <span class="n">these</span> <span class="k">=</span> <span class="n">these</span><span class="o">.</span><span class="n">tail</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">result</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>::方法中的scala.collection.immutable.::实际上是一个继承自List的样例类。显然，这里的添加操作就相当于对List对象的创建。每次::操作的时间复杂度为O(C1)。此时的常量值C1基本等于1。由于每次遍历都要执行，因此总的时间为O(C1)*n。事实上，List数据结构增加一个头元素本身就非常简单，基本不耗时。但reverse操作要稍微复杂一些。它同样是复制了一个List，但对原List进行了遍历，然后将原有List的头元素与空List进行::操作，使其变成了last元素，如此遍历。因而时间复杂度为O(n)。</p>
 
 <p>再来考察ListBuffer对+=以及toList的实现：
-{% codeblock lang:scala %}
-  override def toList: List[A] = {</p>
-
-<pre><code>exported = !start.isEmpty
-start
-</code></pre>
-
-<p>  }</p>
-
-<p>  def += (x: A): this.type = {</p>
-
-<pre><code>if (exported) copy()
-if (start.isEmpty) {
-  last0 = new :: (x, Nil)
-  start = last0
-} else {
-  val last1 = last0
-  last0 = new :: (x, Nil)
-  last1.tl = last0
-}
-len += 1
-this
-</code></pre>
-
-<p>  }
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">toList</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">exported</span> <span class="k">=</span> <span class="o">!</span><span class="n">start</span><span class="o">.</span><span class="n">isEmpty</span>
+</span><span class='line'><span class="n">start</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="o">+=</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">this.</span><span class="k">type</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span><span class="n">exported</span><span class="o">)</span> <span class="n">copy</span><span class="o">()</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">start</span><span class="o">.</span><span class="n">isEmpty</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">last0</span> <span class="k">=</span> <span class="k">new</span> <span class="o">::</span> <span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="nc">Nil</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">start</span> <span class="k">=</span> <span class="n">last0</span>
+</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">last1</span> <span class="k">=</span> <span class="n">last0</span>
+</span><span class='line'>  <span class="n">last0</span> <span class="k">=</span> <span class="k">new</span> <span class="o">::</span> <span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="nc">Nil</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">last1</span><span class="o">.</span><span class="n">tl</span> <span class="k">=</span> <span class="n">last0</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">len</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">this</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>toList方法非常简单，因为ListBuffer内部存储了一个List对象，即这里看到的start。start会在每次添加元素时发生变化。因此看起来是一个转换方法，实则就是返回一个字段。时间复杂度为O(1)。再来看+=操作。首先，该方法会判断exported的值。如果为true，则需要执行copy方法。但是，根据OderSky对+=方法的描述（原书513页），只有在将ListBuffer转换为List之后，如果还要对原ListBuffer执行+=操作，才会执行copy方法：
-{% blockquote %}
-However, the implementation of ListBuffer is such that copying is neces- sary only for list buffers that are further extended after they have been turned into lists. This case is quite rare in practice. Most use cases of list buffers add elements incrementally and then do one toList operation at the end. In such cases, no copying is necessary.
-{% endblockquote %}</p>
+<blockquote><p>However, the implementation of ListBuffer is such that copying is neces- sary only for list buffers that are further extended after they have been turned into lists. This case is quite rare in practice. Most use cases of list buffers add elements incrementally and then do one toList operation at the end. In such cases, no copying is necessary.</p></blockquote></p>
 
 <p>根据前面列出的toList方法，也可以看到：只要ListBuffer不为空，exported在执行了toList方法后，才会被设置为true。因此，在我们这个例子里，copy方法是不会执行的。显然，+=方法的执行耗时还是体现在if分支上。注意，这里的start类型为List[A]类型，且被声明为var；last0类型为::，同样被声明为var。在上面的语句中，将last0赋值给start，以及将last0赋值给val对象last1，是关键。此时，只要对last1的tl（即tail，声明为var的scala包下可访问的构造函数参数）进行赋值，实则就是会为start增加尾部元素。所以增加一个新元素，其时间复杂度应该为O(C2)，并且这个C2一定大于1。针对我们的例子，每次遍历都要执行+=方法，因此总的时间复杂度为O(C2)*n。</p>
 
 <p>这个推断是比较符合事实的。Odersky的著作Programming in Scala的第24章列出了各种集合的时间复杂度：
-{% img center /images/2014/scalacollection.png %}</p>
+<img class="center" src="/images/2014/scalacollection.png"></p>
 
 <p>比较方案A的O((C+1)n)，要判断谁更优，就是要看各自的C值是多大。分析实现，显然C2 > C1。此外，我们还不要忽略内存的消耗。仔细观察ListBuffer的实现，主要通过var变量start、last0以及一个临时的val变量last0，完成+=操作。相比较List而言，消耗的内存要大得多。事实上，在我将JVM的最大内存设置为512M的前提下，当数值为10,000,000时，执行方式A，消耗时间为119ms，而执行方式B时，就已经抛出OutOfMemoryError的异常了。</p>
 
 <p>显然，当数据量比较大，且性能敏感时，在本文提到的场景下，应优先考虑使用List结合reverse的方式。当然，请注意，这里我虽然使用了Immutable的List，但我将其声明为了var变量。这可以避免在遍历过程中生成临时的List对象。如果采用纯函数无副作用的foldLeft进行转换，例如：
-{% codeblock lang:scala %}
-var l = (1 to max).foldLeft(List<a href="">Int</a>)((a, b) => b :: a )
-l.reverse
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">var</span> <span class="n">l</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">max</span><span class="o">).</span><span class="n">foldLeft</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="o">&gt;</span><span class="nc">Int</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;)((</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">b</span> <span class="o">::</span> <span class="n">a</span> <span class="o">)</span>
+</span><span class='line'><span class="n">l</span><span class="o">.</span><span class="n">reverse</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>则其性能比较方式A有非常大的区别，数据量为1,000,000时，达到了845ms。而且在同等环境下，数据量达到5,000,000时，就已经抛出OutOfMemoryError的异常了。</p>
 
@@ -752,86 +720,77 @@ l.reverse
     <updated>2014-06-18T23:57:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/06/18/magic-scala-1-call-by-name</id>
     <content type="html"><![CDATA[<p>在Scala中，调用函数有两种形式：Call by value（按值调用）和call by name（按名称调用）。若是call by value，会先计算参数的值，然后再传递给被调用的函数；若是call by name，参数会到实际使用的时候才计算。例如：
-{% codeblock lang:scala %}
-val logEnable = false</p>
-
-<p>def log(msg: String) =</p>
-
-<pre><code>if (logEnable) println(msg)
-</code></pre>
-
-<p>val MSG = "programing is running"</p>
-
-<p>log(MSG + 1 / 0)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">logEnable</span> <span class="k">=</span> <span class="kc">false</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span><span class="n">logEnable</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">val</span> <span class="nc">MSG</span> <span class="k">=</span> <span class="s">&quot;programing is running&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">log</span><span class="o">(</span><span class="nc">MSG</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">0</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>此时的log函数是call by value。因此在调用log函数时，会先计算传入的参数，此时会计算MSG + 1/0。由于表达式中有0作为被除数，因此会抛出异常：
-{% codeblock %}
-Exception in thread "main" java.lang.ArithmeticException: / by zero</p>
-
-<pre><code>    at Main$.main(scala-script352098905369979205.scala:16)
-    at Main.main(scala-script352098905369979205.scala)
-</code></pre>
-
-<p>exit value is 1
-Program exited.
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Exception in thread "main" java.lang.ArithmeticException: / by zero&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>    at Main$.main(scala-script352098905369979205.scala:16)
+</span><span class='line'>    at Main.main(scala-script352098905369979205.scala)
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>exit value is 1
+</span><span class='line'>Program exited.</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>如果修改log的定义为：
-{% codeblock lang:scala %}
-def log(msg: => String) =</p>
-
-<pre><code> if (logEnable) println(msg)
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">String</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">if</span> <span class="o">(</span><span class="n">logEnable</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>当调用log函数：log(MSG + 1/0)时，它首先并不会计算MSG + 1/0表达式，而是先执行log的函数体，即判断logEnable的值。此时logEnable值为false，此时就不会执行该分支println(msg)。既然不会执行println，就不会计算MSG + 1/0。因此就不会抛出异常。</p>
 
 <p>再看另外一个例子。首先定义一个函数：
-{% codeblock lang:scala %}
-def getOneWhatever():Int = {</p>
-
-<pre><code> println("calling getOneWhatever")
- 1
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">getOneWhatever</span><span class="o">()</span><span class="k">:</span><span class="kt">Int</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">&quot;calling getOneWhatever&quot;</span><span class="o">)</span>
+</span><span class='line'> <span class="mi">1</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>然后，再定义两个函数，分别用call by value和call by name的方式：
-{% codeblock lang:scala %}
-def callByValue(x: Int) = {</p>
-
-<pre><code> println("x1=" + x)
- println("x2=" + x)
-</code></pre>
-
-<p>}</p>
-
-<p>def callByName(x: => Int) = {</p>
-
-<pre><code> println("x1=" + x)
- println("x2=" + x)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">callByValue</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">&quot;x1=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'> <span class="n">println</span><span class="o">(</span><span class="s">&quot;x2=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">callByName</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">&quot;x1=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'> <span class="n">println</span><span class="o">(</span><span class="s">&quot;x2=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>如果执行callByValue(getOneWhatever())，则结果为：
-{% codeblock %}
-calling getOneWhatever
-x1=1
-x2=1
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>calling getOneWhatever
+</span><span class='line'>x1=1
+</span><span class='line'>x2=1</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>若执行callByName(getOneWhatever())，则结果为：
-{% codeblock %}
-calling getOneWhatever
-x1=1
-calling getOneWhatever
-x2=1
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>calling getOneWhatever
+</span><span class='line'>x1=1
+</span><span class='line'>calling getOneWhatever
+</span><span class='line'>x2=1</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意看二者的区别，采用by name的方式，getOneWhatever函数被执行了两次，这是因为在callByName函数中，传入的参数被调用了两次。</p>
 ]]></content>

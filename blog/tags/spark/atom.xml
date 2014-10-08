@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Spark | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/spark/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-10-08T20:58:33+08:00</updated>
+  <updated>2014-10-08T21:32:59+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/"/>
     <updated>2014-09-10T08:54:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/spark_architecture.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/spark_architecture.jpg">
 与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark这朵小火花让人着迷的地方。</p>
 
 <p>要理解Spark，就需得理解RDD。</p>
@@ -39,46 +39,42 @@
 <p>首先，narrow dependencies可以支持在同一个cluster node上以管道形式执行多条命令，例如在执行了map后，紧接着执行filter。相反，wide dependencies需要所有的父分区都是可用的，可能还需要调用类似MapReduce之类的操作进行跨节点传递。</p>
 
 <p>其次，则是从失败恢复的角度考虑。narrow dependencies的失败恢复更有效，因为它只需要重新计算丢失的parent partition即可，而且可以并行地在不同节点进行重计算。而wide dependencies牵涉到RDD各级的多个Parent Partitions。下图说明了narrow dependencies与wide dependencies之间的区别：
-{% img center /images/2014/rdd_dependency.png %}</p>
+<img class="center" src="/images/2014/rdd_dependency.png"></p>
 
 <p>本图来自Matei Zaharia撰写的论文An Architecture for Fast and General Data Processing on Large Clusters。图中，一个box代表一个RDD，一个带阴影的矩形框代表一个partition。</p>
 
 <p><strong>RDD如何保障数据处理效率？</strong></p>
 
 <p>RDD提供了两方面的特性persistence和patitioning，用户可以通过persist与patitionBy函数来控制RDD的这两个方面。RDD的分区特性与并行计算能力(RDD定义了parallerize函数)，使得Spark可以更好地利用可伸缩的硬件资源。若将分区与持久化二者结合起来，就能更加高效地处理海量数据。例如：
-{% codeblock lang:scala %}
-input.map(parseArticle _).partitionBy(partitioner).cache()
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">input</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">parseArticle</span> <span class="k">_</span><span class="o">).</span><span class="n">partitionBy</span><span class="o">(</span><span class="n">partitioner</span><span class="o">).</span><span class="n">cache</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>partitionBy函数需要接受一个Partitioner对象，如：
-{% codeblock lang:scala %}
-val partitioner = new HashPartitioner(sc.defaultParallelism)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">partitioner</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HashPartitioner</span><span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="n">defaultParallelism</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
 
 <p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
 
 <p>在实现时，RDD针对transformation操作，都提供了对应的继承自RDD的类型，例如map操作会返回MappedRDD，而flatMap则返回FlatMappedRDD。当我们执行map或flatMap操作时，不过是将当前RDD对象传递给对应的RDD对象而已。例如：
-{% codeblock lang:scala %}
-def map<a href="f:%20T%20=>%20U">U: ClassTag</a>: RDD[U] = new MappedRDD(this, sc.clean(f))
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">map</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20T%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="k">:</span> <span class="kt">ClassTag&lt;/a</span><span class="k">&gt;:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">U</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MappedRDD</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">sc</span><span class="o">.</span><span class="n">clean</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这些继承自RDD的类都定义了compute函数。该函数会在action操作被调用时触发，在函数内部是通过迭代器进行对应的转换操作：
-{% codeblock lang:scala %}
-private[spark]
-class MappedRDD<a href="prev:%20RDD[T],%20f:%20T%20=>%20U">U: ClassTag, T: ClassTag</a>
-  extends RDD<a href="prev">U</a> {</p>
-
-<p>  override def getPartitions: Array[Partition] = firstParent[T].partitions</p>
-
-<p>  override def compute(split: Partition, context: TaskContext) =</p>
-
-<pre><code>firstParent[T].iterator(split, context).map(f)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MappedRDD</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;prev:%20RDD[T],%20f:%20T%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">,</span> <span class="n">T</span><span class="k">:</span> <span class="kt">ClassTag&lt;/a&gt;</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">RDD</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;prev&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">getPartitions</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Partition</span><span class="o">]</span> <span class="k">=</span> <span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">partitions</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">compute</span><span class="o">(</span><span class="n">split</span><span class="k">:</span> <span class="kt">Partition</span><span class="o">,</span> <span class="n">context</span><span class="k">:</span> <span class="kt">TaskContext</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">iterator</span><span class="o">(</span><span class="n">split</span><span class="o">,</span> <span class="n">context</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><strong>RDD对容错的支持</strong></p>
 
@@ -156,7 +152,7 @@ class MappedRDD<a href="prev:%20RDD[T],%20f:%20T%20=>%20U">U: ClassTag, T: Class
 <p>Spark可以支持一台机器扩展至数十个CPU core，它实现的是线程之间最小共享。若内存足够大，则制约运算性能的就是网络带宽与CPU数。</p>
 
 <p>Spark官方利用Amazon EC2的环境对Spark进行了基准测评。例如，在交互方式下进行数据挖掘（Interative Data Mining），租用Amazon EC2的100个实例，配置为8核、68GB的内存。对1TB的维基百科页面查阅日志（维基百科两年的数据）进行数据挖掘。在查询时，针对整个输入数据进行全扫描，只需要耗费5-7秒的时间。如下图所示：
-{% img center /images/2014/sparkbenchmark.png %}</p>
+<img class="center" src="/images/2014/sparkbenchmark.png"></p>
 
 <p>在Matei Zaharia的Spark论文中还给出了一些使用Spark的真实案例。视频处理公司Conviva，使用Spark将数据子集加载到RDD中。报道说明，对于200GB压缩过的数据进行查询和聚合操作，并运行在两台Spark机器上，占用内存为96GB，执行完全部操作需要耗费30分钟左右的时间。同比情况下，Hadoop需要耗费20小时。注意：之所以200GB的压缩数据只占用96GB内存，是因为RDD的处理方式，使得我们可以只加载匹配客户过滤的行和列，而非所有压缩数据。</p>
 ]]></content>
@@ -168,90 +164,89 @@ class MappedRDD<a href="prev:%20RDD[T],%20f:%20T%20=>%20U">U: ClassTag, T: Class
     <updated>2014-04-05T09:39:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/04/05/spark-overview</id>
     <content type="html"><![CDATA[<p>Spark具有先进的DAG执行引擎，支持cyclic data flow和内存计算。因此，它的运行速度，在内存中是Hadoop MapReduce的100倍，在磁盘中是10倍。如下是对比图：
-{% img center /images/2014/spark-logistic-regression.png %}</p>
+<img class="center" src="/images/2014/spark-logistic-regression.png"></p>
 
 <p>这样的性能指标，真的让人心动啊！</p>
 
 <p>Spark的API更为简单，提供了80个High Level的操作，可以很好地支持并行应用。它的API支持Scala、Java和Python，并且可以支持交互式的运行Scala与Python。来看看Spark统计Word字数的程序：
-{% codeblock lang:scala %}
-file = spark.textFile("hdfs://...")</p>
-
-<p>file.flatMap(line => line.split(" "))</p>
-
-<pre><code>.map(word =&gt; (word, 1))
-.reduceByKey(_ + _)
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">file</span> <span class="k">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">textFile</span><span class="o">(</span><span class="s">&quot;hdfs://...&quot;</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">file</span><span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="n">line</span> <span class="k">=&gt;</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">))&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">map</span><span class="o">(</span><span class="n">word</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'><span class="o">.</span><span class="n">reduceByKey</span><span class="o">(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>看看Hadoop的Word Count例子，简直弱爆了，爆表的节奏啊：
-{% codeblock lang:java %}
-public class WordCount {
-  public static class TokenizerMapper</p>
-
-<pre><code>   extends Mapper&lt;Object, Text, Text, IntWritable&gt;{
-
-private final static IntWritable one = new IntWritable(1);
-private Text word = new Text();
-
-public void map(Object key, Text value, Context context
-                ) throws IOException, InterruptedException {
-  StringTokenizer itr = new StringTokenizer(value.toString());
-  while (itr.hasMoreTokens()) {
-    word.set(itr.nextToken());
-    context.write(word, one);
-  }
-}
-</code></pre>
-
-<p>  }</p>
-
-<p>  public static class IntSumReducer</p>
-
-<pre><code>   extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; {
-private IntWritable result = new IntWritable();
-
-
-public void reduce(Text key, Iterable&lt;IntWritable&gt; values,
-                   Context context
-                   ) throws IOException, InterruptedException {
-  int sum = 0;
-  for (IntWritable val : values) {
-    sum += val.get();
-  }
-  result.set(sum);
-  context.write(key, result);
-}
-</code></pre>
-
-<p>  }</p>
-
-<p>  public static void main(String[] args) throws Exception {</p>
-
-<pre><code>Configuration conf = new Configuration();
-String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-if (otherArgs.length != 2) {
-  System.err.println("Usage: wordcount &lt;in&gt; &lt;out&gt;");
-  System.exit(2);
-}
-Job job = new Job(conf, "word count");
-job.setJarByClass(WordCount.class);
-job.setMapperClass(TokenizerMapper.class);
-job.setCombinerClass(IntSumReducer.class);
-job.setReducerClass(IntSumReducer.class);
-job.setOutputKeyClass(Text.class);
-job.setOutputValueClass(IntWritable.class);
-FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
-FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
-System.exit(job.waitForCompletion(true) ? 0 : 1);
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">WordCount</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">TokenizerMapper</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kd">extends</span> <span class="n">Mapper</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;{</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">IntWritable</span> <span class="n">one</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">Text</span> <span class="n">word</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Text</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">map</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">,</span> <span class="n">Text</span> <span class="n">value</span><span class="o">,</span> <span class="n">Context</span> <span class="n">context</span>
+</span><span class='line'>                <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">StringTokenizer</span> <span class="n">itr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>  <span class="k">while</span> <span class="o">(</span><span class="n">itr</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">word</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">itr</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="n">one</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">IntSumReducer</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kd">extends</span> <span class="n">Reducer</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span><span class="n">IntWritable</span><span class="o">,</span><span class="n">Text</span><span class="o">,</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">IntWritable</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">reduce</span><span class="o">(</span><span class="n">Text</span> <span class="n">key</span><span class="o">,</span> <span class="n">Iterable</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">values</span><span class="o">,</span>
+</span><span class='line'>                   <span class="n">Context</span> <span class="n">context</span>
+</span><span class='line'>                   <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">IntWritable</span> <span class="n">val</span> <span class="o">:</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">sum</span> <span class="o">+=</span> <span class="n">val</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+</span><span class='line'><span class="n">String</span><span class="o">[]</span> <span class="n">otherArgs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GenericOptionsParser</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="n">args</span><span class="o">).</span><span class="na">getRemainingArgs</span><span class="o">();</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">otherArgs</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Usage: wordcount &amp;lt;in&amp;gt; &amp;lt;out&amp;gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">Job</span> <span class="n">job</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Job</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="s">&quot;word count&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setJarByClass</span><span class="o">(</span><span class="n">WordCount</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setMapperClass</span><span class="o">(</span><span class="n">TokenizerMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setCombinerClass</span><span class="o">(</span><span class="n">IntSumReducer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setReducerClass</span><span class="o">(</span><span class="n">IntSumReducer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setOutputKeyClass</span><span class="o">(</span><span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setOutputValueClass</span><span class="o">(</span><span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">FileInputFormat</span><span class="o">.</span><span class="na">addInputPath</span><span class="o">(</span><span class="n">job</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">otherArgs</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
+</span><span class='line'><span class="n">FileOutputFormat</span><span class="o">.</span><span class="na">setOutputPath</span><span class="o">(</span><span class="n">job</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">otherArgs</span><span class="o">[</span><span class="mi">1</span><span class="o">]));</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="n">job</span><span class="o">.</span><span class="na">waitForCompletion</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>当然，Hadoop有自己的一套框架，为整个的大数据处理做支持，例如HIVE，例如HDFS。Spark也不逊色，也有自己的SQL框架支持，即Shark，此外还支持流处理、机器学习以及图运算：
-{% img center /images/2014/spark-stack.png %}</p>
+<img class="center" src="/images/2014/spark-stack.png"></p>
 
 <p>Spark并没有自己的分布式存储方案。不过已经有了强悍的HDFS，同为Aparch旗下的Spark又何必再造一个差不多的轮子呢？所以Spark可以很好地与Hadoop集成。例如可以运行在Hadoop 2的YARN集群下，可以读取现有的Hadoop数据。当然，Spark自身也支持standadlone的部署，或者部署到EC2等云平台下。除了可以读取HDFS数据，它还可以读取HBase，Cassandra等NoSQL数据库。这扩大了Spark的适用范围。</p>
 
