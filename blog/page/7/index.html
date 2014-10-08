@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="今天的心情难以用言语表达。打开公司邮件，看到邮件“ThoughtWorks Declares Tuesday January 15, 2013 as Day of Remembrance for Aaron Swartz”，有一种被震惊的感觉。虽然我与Aaron素昧平生，但只要了解他的生平， &hellip;">
+  <meta name="description" content="经历了几次过度设计，我对一些设计模式开始抱有谨慎的戒惧。我希望能够合理地运用设计模式，而非为模式而模式。事实上，现在的我较少会有意识地运用设计模式；更多地是通过职责来驱动，以期获得合理的职责分配。之后，再通过辨别代码的坏味道，运用重构来改善设计。大多数情况下，这种方式对于设计而言，已经足够。不过， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/02/change-of-design-patterns/">设计模式的一些变化</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-02T22:28:00+08:00" pubdate data-updated="true">Feb 2<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/02/02/change-of-design-patterns/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>经历了几次过度设计，我对一些设计模式开始抱有谨慎的戒惧。我希望能够合理地运用设计模式，而非为模式而模式。事实上，现在的我较少会有意识地运用设计模式；更多地是通过职责来驱动，以期获得合理的职责分配。之后，再通过辨别代码的坏味道，运用重构来改善设计。大多数情况下，这种方式对于设计而言，已经足够。不过，有时我们仍有必要根据具体场景，做出合理判断和决策。</p>
+
+<p>我曾经遭遇的一个Story，是要实现一个Web Service，提供update的服务接口。需求要求对服务的Request进行验证。这一验证功能并非Story的核心功能，但其逻辑却比核心逻辑复杂数倍。它需要针对不同情况，遵循多个规则验证Request。这些验证逻辑如此的复杂，以至于我们可以在第一时间做出判断，它必须是单独的职责，绝对不适合放到Service对象中。</p>
+
+<p>这种职责分离还不够。因为每一条验证规则，都可以视为一个单独的验证职责。若将每种验证规则封装为一个验证对象，就能很好地满足SRP。每个验证对象只需要做好自己的事情即可，结果只有两个，要么错误，要么通过。若当验证逻辑为一个整体，则可以理解为：只要违背了一条验证规则，出现错误，则可以视为验证不通过；否则将继续验证下一条规则。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/02/02/change-of-design-patterns/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -519,50 +566,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/12/21/geek-pictures-in-brisbane/">Geek Pictures in Brisbane</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-12-21T17:01:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/21/geek-pictures-in-brisbane/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2012/12/spring.jpg" width="567" height="340">
-这是我在今年四月到澳洲Brisbane街头拍到的一组照片，Geek们，看到这些名称，是否有些熟悉的感觉呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/12/21/geek-pictures-in-brisbane/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/8/">&larr; Older</a>
@@ -601,6 +604,10 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
       </li>
     
@@ -614,10 +621,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
     
       <li class="post">
         <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a>
       </li>
     
   </ul>
@@ -669,13 +672,14 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 128%" href="/blog/tags/fp/">FP</a>
 <a style="font-size: 100%" href="/blog/tags/go/">GO</a>
-<a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
 <a style="font-size: 100%" href="/blog/tags/guava/">Guava</a>
 <a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
 <a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
 <a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
 <a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
@@ -684,7 +688,6 @@ CQRS由Greg Young提出，目前在DDD领域中被广泛使用。在我看来，
 <a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
-<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
 <a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>

@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="这两日，我参加了Implementing Domain Driven Disign一书作者Vaughn Vernon组织的IDDD Workshop。培训中，Vernon带领我们针对Domain Event进行了一次建模工作坊。 在领域驱动设计中，Domain Event变得越来越重要。 &hellip;">
+  <meta name="description" content="古希腊哲学家巴门尼德认为：“人的思想和言语都有一个载体，如果你在这一时间和另外一个时间想到或者谈到同样一件东西，那就说明这件东西在这段时间内没有变化，如有变化的话，你说的就不是同一件东西。” 这让我想起对象的实例。在面向对象设计中，默认情况下并没有约束类的实例是否为可变， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +67,71 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-08T20:51:00+08:00" pubdate data-updated="true">Oct 8<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/10/08/change-and-stable-of-design/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2014/thinking.jpg"></p>
+
+<p>古希腊哲学家巴门尼德认为：“人的思想和言语都有一个载体，如果你在这一时间和另外一个时间想到或者谈到同样一件东西，那就说明这件东西在这段时间内没有变化，如有变化的话，你说的就不是同一件东西。”</p>
+
+<p>这让我想起对象的实例。在面向对象设计中，默认情况下并没有约束类的实例是否为可变，这意味着我们可以通过某种方式改变实例的状态。这体现了实例的可变特征。然而，若是站在内存的角度观察实例，则又不然。无论它在内存中存储的状态如何变化，该实例的对象标识依旧是保持不变的。显然，变与不变是相对的。</p>
+
+<p>切换到DDD的命题中，所谓“实体”就是那种具有唯一的可识别可跟踪ID的对象。这个ID并非程序语言在内存中为它分配的对象标识，而是从领域角度来看，由设计者为其识别，由创建者为其分配，因而具有领域语义。实体的状态当然是可变的，然而实体ID在这个实体的生命周期中却是不可变的。</p>
+
+<p>与之相对的是值对象。在DDD中，强调将领域对象严格区分为实体和值对象。一个指导原则是，当你无法分辨某个领域对象究竟是实体还是值对象时，应优先将其建模为值对象。这有助于我们更好地利用值对象的不可变性。</p>
+
+<p>不可变的对象能够更好地维护，因为你不用操心它的值变化，也无需追踪变化的轨迹。不变性天生支持并发。这就衍生出面向对象设计中的Immutable模式。例如Java和C#中的String类型，皆为Immutable模式的实现。</p>
+
+<p>可若放在函数式编程中，这种模式就显得有些可笑了。尤其在纯函数式编程的世界里，任何东西都应该是不变的。</p>
+
+<p>这种不变意味着只要它存在，就不可修改，而且恒古不变。这种追究变化背后的不变性，一直是古希腊哲学乃至科学的基本原则。物质是否永恒不变，在哲学中一直是引人深思的命题或假设；但在函数式编程中，它几乎被证明了。例如，在Haskell中，对List的任何操作，即使调用++对List进行合并，返回的都是全新的List对象，原有对象不会有任何变化。</p>
+
+<p>罗素在《西方哲学简史》中写道：
+有的神秘主义者认为永恒并不是指时间上的永久，它是独立于时间之外的，无前无后、无因无果，也没有逻辑可循。</p>
+
+<p>我觉得函数式编程追求的不变性，可以划入这个范畴。</p>
+
+<p>赫拉克利特说：“人不能两次踏进同一条河流”。这是赫拉克利特终极的哲学观，即万物随时在变。软件系统就是这样一条河流，它无时无刻不在变化，正如水不断的流动，需求也总是在变化。但若抛开原子裂变、放射衰变的科学原理，我们似乎也可以将组成整条河流的每一滴水，看做是不变的基本组成要素。这个要素就是Monad中的Identity（幺元或单位元）。这个Identity表达了单一、恒等的概念，例如Int类型中加减法运算半群（SemiGroup）中的Zero，就是一个Identity，因为半群中的任何元素a与Zero结合，依然是元素a本身。</p>
+
+<p>水是如何组成一条河流的呢？这取决于组合子（Combinator）的设计与组合。只要我们找到万物的基本要素，继而设计出各种组合子，就可以演绎出世间不同的物。例如水滴虽可以组合为河流，却也可以组合为橙汁，只要我们加入橙子的另一个组合子即可。这就是面向组合子（Combinator Oriented）的设计思想。显然，它与面向对象的设计哲学背道而驰。</p>
+
+<p>以哲学史观之，函数式思想更符合古典的朴素哲学观。在古希腊哲学家中，泰勒斯认为世界的元素为水，阿那克西美尼认为世界的元素是气，赫拉克利特认为世界的元素是火，而恩培多克勒则糅合了这些思想，认为世界的元素有土、气、火、水四种。而观中国古代哲学，则有五行学说认为宇宙万物都由金木水火土五种基本特性的运行和变化所构成。</p>
+
+<p>不论构成万物的基本元素为何，这种哲学观不正是函数式编程的设计观吗？</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -592,113 +657,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/18/magic-scala-1-call-by-name/">Magic Scala(1): Call by Name</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-18T23:57:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/06/18/magic-scala-1-call-by-name/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在Scala中，调用函数有两种形式：Call by value（按值调用）和call by name（按名称调用）。若是call by value，会先计算参数的值，然后再传递给被调用的函数；若是call by name，参数会到实际使用的时候才计算。例如：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">logEnable</span> <span class="k">=</span> <span class="kc">false</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">logEnable</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">val</span> <span class="nc">MSG</span> <span class="k">=</span> <span class="s">&quot;programing is running&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">log</span><span class="o">(</span><span class="nc">MSG</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">0</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>此时的log函数是call by value。因此在调用log函数时，会先计算传入的参数，此时会计算MSG + 1/0。由于表达式中有0作为被除数，因此会抛出异常：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Exception in thread "main" java.lang.ArithmeticException: / by zero
-</span><span class='line'>        at Main$.main(scala-script352098905369979205.scala:16)
-</span><span class='line'>        at Main.main(scala-script352098905369979205.scala)
-</span><span class='line'>exit value is 1
-</span><span class='line'>Program exited.</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果修改log的定义为：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">String</span><span class="o">)</span> <span class="k">=</span>
-</span><span class='line'>     <span class="k">if</span> <span class="o">(</span><span class="n">logEnable</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当调用log函数：log(MSG + 1/0)时，它首先并不会计算MSG + 1/0表达式，而是先执行log的函数体，即判断logEnable的值。此时logEnable值为false，此时就不会执行该分支println(msg)。既然不会执行println，就不会计算MSG + 1/0。因此就不会抛出异常。</p>
-
-<p>再看另外一个例子。首先定义一个函数：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">getOneWhatever</span><span class="o">()</span><span class="k">:</span><span class="kt">Int</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;calling getOneWhatever&quot;</span><span class="o">)</span>
-</span><span class='line'>     <span class="mi">1</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后，再定义两个函数，分别用call by value和call by name的方式：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">callByValue</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;x1=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
-</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;x2=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="n">callByName</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;x1=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
-</span><span class='line'>     <span class="n">println</span><span class="o">(</span><span class="s">&quot;x2=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果执行callByValue(getOneWhatever())，则结果为：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>calling getOneWhatever
-</span><span class='line'>x1=1
-</span><span class='line'>x2=1</span></code></pre></td></tr></table></div></figure>
-
-
-<p>若执行callByName(getOneWhatever())，则结果为：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>calling getOneWhatever
-</span><span class='line'>x1=1
-</span><span class='line'>calling getOneWhatever
-</span><span class='line'>x2=1</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意看二者的区别，采用by name的方式，getOneWhatever函数被执行了两次，这是因为在callByName函数中，传入的参数被调用了两次。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -735,6 +693,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
       </li>
     
@@ -748,10 +710,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a>
       </li>
     
   </ul>
@@ -803,13 +761,14 @@
 <a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 128%" href="/blog/tags/fp/">FP</a>
 <a style="font-size: 100%" href="/blog/tags/go/">GO</a>
-<a style="font-size: 100%" href="/blog/tags/geek/">Geek</a>
 <a style="font-size: 100%" href="/blog/tags/guava/">Guava</a>
 <a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
 <a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
 <a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
 <a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
@@ -818,7 +777,6 @@
 <a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
-<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
 <a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
