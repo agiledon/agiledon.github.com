@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="张逸 软件开发生涯经历了从程序员，项目经理，测试经理，开发部长，技术总监到架构师的一个循环，现在幸福地回到程序员的起点。三大爱好是开发、写作与阅读。热爱文学，热爱技术，文理兼修，可惜都不精通。现为ThoughtWorks高级咨询师，程序员。目前居住在成都， &hellip;">
+  <meta name="description" content="张逸 张逸，现为ThoughtWorks Lead Consultant。爱开发，喜阅读，好写作。作为一名咨询师，主要为客户提供组织的敏捷转型、过程改进、系统架构监理、领域设计、代码质量提升等咨询工作。作为一名程序员，则致力于前后端系统、大数据分析等项目或平台的开发， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,7 +71,7 @@
     
   </header>
   
-  <p>软件开发生涯经历了从程序员，项目经理，测试经理，开发部长，技术总监到架构师的一个循环，现在幸福地回到程序员的起点。三大爱好是开发、写作与阅读。热爱文学，热爱技术，文理兼修，可惜都不精通。现为ThoughtWorks高级咨询师，程序员。目前居住在成都，最向往的大约就是安静悠闲地在阳光下品读自己喜爱的书了。Email：yizhang@thoughtworks.com。</p>
+  <p>张逸，现为ThoughtWorks Lead Consultant。爱开发，喜阅读，好写作。作为一名咨询师，主要为客户提供组织的敏捷转型、过程改进、系统架构监理、领域设计、代码质量提升等咨询工作。作为一名程序员，则致力于前后端系统、大数据分析等项目或平台的开发，热衷于面向对象与函数式思想的结合，好研究新技术，热衷开源社区。目前居住在成都，拥有自己的微信公众号——逸言。</p>
 
 <hr />
 
@@ -121,10 +121,6 @@
       
         <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://agiledon.github.com/about/index.html" data-via="agiledon" data-counturl="http://agiledon.github.com/about/index.html" >Tweet</a>
-  
-  
-  <div class="g-plusone" data-size="medium"></div>
   
   
 </div>
@@ -184,6 +180,35 @@
       </li>
     
   </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
 
 <section>
@@ -267,25 +292,7 @@
 
 
 
-  <script type="text/javascript">
-    (function() {
-      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
-      script.src = 'https://apis.google.com/js/plusone.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
-    })();
-  </script>
 
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
 
 
 
