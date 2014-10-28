@@ -361,12 +361,16 @@
         <lastmod>2014-10-08T20:57:32+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2014/10/28/are-you-writing-auto-test-today/</loc>
+        <lastmod>2014-10-28T16:12:31+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2014-10-28T16:04:23+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2014-10-08T20:57:32+08:00</lastmod>
+        <lastmod>2014-10-28T16:12:31+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -374,6 +378,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2014-10-08T20:57:32+08:00</lastmod>
+        <lastmod>2014-10-28T16:12:31+08:00</lastmod>
     </url>
 </urlset>

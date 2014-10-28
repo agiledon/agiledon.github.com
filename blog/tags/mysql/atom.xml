@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: MySQL | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/mysql/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-10-28T16:04:34+08:00</updated>
+  <updated>2014-10-28T16:13:34+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,24 +18,28 @@
     <link href="http://agiledon.github.com/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew/"/>
     <updated>2013-01-06T13:05:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/01/06/install-mysql-on-mountain-lion-with-homebrew</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/01/Mountain-Lion.jpg"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2013/01/Mountain-Lion.jpg %}</p>
 
 <p>使用Homebrew在Max OS下安装，一切都变得容易了许多。你只需要知道你要安装的软件或工具的名称，然后输入一条命令行即可。不过安装MySQL就有点不一样，在输入命令行安装了MySQL之后，还需要做一些配置。</p>
 
 <p>首先运行命令：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>$ brew install mysql</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+$ brew install mysql
+{% endcodeblock %}</p>
 
 <p>Homebrew确实安装了MySQL，但是运行mysql命令，却并不能进入MySQL。通过在Google上查询解决方案，找到博客<a href="http://madebyhoundstooth.com/blog/install-mysql-on-mountain-lion-with-homebrew/">Install MySQL on Mountain Lion with Homebrew</a>，给出了如下的步骤：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p ~/Library/LaunchAgents
-</span><span class='line'>$ cp /usr/local/Cellar/mysql/5.5.25a/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
-</span><span class='line'>$ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>$ unset TMPDIR
-</span><span class='line'>$ mysql_install_db --verbose --user=&lt;code>YOUR_USER_NAME&lt;/code> --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>$ /usr/local/Cellar/mysql/5.5.25a/bin/mysqladmin -u root password 'YOUR_NEW_PASSWORD'&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>$ mysql.server start</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+$ mkdir -p ~/Library/LaunchAgents
+$ cp /usr/local/Cellar/mysql/5.5.25a/homebrew.mxcl.mysql.plist ~/Library/LaunchAgents/
+$ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist</p>
+
+<p>$ unset TMPDIR
+$ mysql_install_db --verbose --user=<code>YOUR_USER_NAME</code> --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp</p>
+
+<p>$ /usr/local/Cellar/mysql/5.5.25a/bin/mysqladmin -u root password 'YOUR_NEW_PASSWORD'</p>
+
+<p>$ mysql.server start
+{% endcodeblock %}</p>
 
 <p>现在，你就可以运行mysql命令使用MySQL了。</p>
 ]]></content>

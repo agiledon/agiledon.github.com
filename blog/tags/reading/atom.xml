@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Reading | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/reading/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-10-28T16:04:34+08:00</updated>
+  <updated>2014-10-28T16:13:34+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading/"/>
     <updated>2014-03-04T20:47:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/steiner.jpg"></p>
+    <content type="html"><![CDATA[<p>{% img center /images/2014/steiner.jpg %}</p>
 
 <p>阅读，以灵魂融合的方式阅读，或许会战栗，恐惧，喜悦，哭泣，甚至紧张，却可以让你成为阅读的人存在，你既是独立的，又陷入作品中成为你臆想和理解的另一个人。这种阅读，使得你存在。</p>
 
@@ -47,7 +47,7 @@
     <link href="http://agiledon.github.com/blog/2014/01/10/reading-the-captive-mind/"/>
     <updated>2014-01-10T22:24:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/01/10/reading-the-captive-mind</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/captivemind.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2014/captivemind.jpg %}
 米沃什在《被禁锢的头脑》中，描述了战时东欧的白色恐怖：</p>
 
 <blockquote><p>此时带着套马索的骑马者就会出现。那就是‘囚车’，即停在街角，用帆布遮盖着的大卡车。行人根本预见不到那里会有危险，当他们路过那个街角时，会突然感觉有一支枪顶住他。它也许会被关进集中营，或者会被推到墙下，用胶布封上嘴巴以防止他喊出反对占领国的口号，然后就被枪毙。这一切都令城市居民心惊胆战，迫使他们俯首帖耳。为了避免这种不幸，最好的办法就是足不出户。但是作为一家之主的父亲必须外出挣钱，弄点供养他的妻儿老小的面包和菜汤。每到晚上，家里人就开始心绪不宁，担心父亲是否还回得来。这种情况已经持续多年，所以人们渐渐觉得他们居住的这座城市简直就是危机四伏的原始森林，20世纪人的命运，与那些每天跟毒蛇猛兽作生死搏斗的穴居人的命运没什么两样。</p></blockquote>
@@ -94,7 +94,7 @@
     <link href="http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture/"/>
     <updated>2013-08-29T10:39:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/08/29/about-just-enough-software-architecuture</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/justenough_cn.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/justenough_cn.jpg %}
 华中科技大学出版社的徐定翔问我意见，了解我对Just Enough Software Architecture这本书的观感，看是否值得引进。时间是在2010年。从一开始，我就被书名中的Just Enough理念所吸引。它让我想起宋玉的东家姑娘，“增之一分则太长，减之一分则太短”那种不可言说的美丽。我在心里说，架构设计就需要这样。我当时并没有看到本书，只是到Amazon上找到了几篇英文原版样章。犹记得我在读到第一章介绍的RackSpace案例时那种兴奋之情。于是，我迫切地向徐定翔强烈推荐引进这本书，而我则毛遂自荐，希望能作为本书的译者。之后，我在InfoQ上看到对本书的《<a href="http://www.infoq.com/cn/articles/fairbanks-jesa">访谈和书摘</a>》，进一步加强了我翻译本书的信念。于是，出版社开始与作者Fairbanks联系，然而从此音讯如石沉大海。时针指向2011年，我对于本书是否被引进，是否由我翻译，一切未知。我觉得我可能错过了它，思之仍觉怅然。谁知到了九月，消息突然确定，而徐大编辑就不容分说地直接把原书给我寄来了。</p>
 
 <p>拿到沉甸甸的书，第一面就为本书的装帧而惊喜。心里想，我这一辈子若能写出这样一本书，绝对值得生命走过的这一遭了。我并没有迫不及待地开始翻译，这就好似遇到珍馐美味，需得先赏其色，闻其香，然后再品其味。我每天抱着这本书饶有兴味地开始阅读之旅。阅读之旅确乎如行山阴道，沿途之美，目不暇接；可一想到翻译，这种美景就成了一种折磨，因为我害怕辜负这一美景。翻译之初我就举步维艰，那些词语放在那里，我却无法解开“封印”将它们取出来，即使取出来，却又找不到存放的合适位置。一些翻译隐隐约约浮现着，当我竭力去揭开这些词语的真面目时，无论如何用力，总也不能够着。翻译就好像那些年我们一起追过的女孩——追不到，痛苦；追到了，销魂。翻译进度像蜗牛一样的爬着，我终于决定求助了。辗转寻找了好多朋友，都以各种理由拒绝或者放弃了。翻译讲解软件架构的书，确乎不是一件轻松的事儿。那个时候，我的Buddy肖鹏正从翻译《面向模式的软件架构》第五卷的泥潭中爬了出来。每一提及他的这段翻译经历，脸上就会浮现出不堪回首的表情，如看了恐怖片。终于，事情得到转机，最开始是倪健的雪中送炭，再有高翌翔的锦上添花，随着我们这个三人组的建立，翻译才算开始走向正规，我才有了交稿的信心。</p>
@@ -112,7 +112,7 @@
     <link href="http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar/"/>
     <updated>2013-04-17T21:46:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/04/17/thoughtworks-developer-reading-radar</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/04/reading-radar.jpg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/04/reading-radar.jpg %}
 软件业的特点是变化。若要提高软件开发的技能，就必须跟上技术发展的步伐。埋首醉心于项目开发与实战，固然能够锤炼自己的开发技巧，却难免受限于经验与学识。世界上并不存在速成的终南捷径，但阅读好的技术书籍，尤其是阅读大师们的经典著作，总能收到事半功倍之效。一位优秀的程序员，或许就是一名好的阅读者。好的阅读者，总是知道如何选择好的书籍。书海浩繁，良莠不齐。阅读技术好书，如与智者交谈，“与君一席话胜读十年书”；遭遇技术烂书，如被拐卖，“少小离家老大回，乡音无改鬓毛衰”。</p>
 
 <p>ThoughtWorks作为一家学习型组织，颇为看重每一位员工的学习能力。事实上，大多数ThoughtWorker的骨子里，都溢满了读书的基因。与书相伴，与书为伍，既是一种乐趣，又是一种习惯。当习惯成为自然时，书籍就成为生活和工作不可或缺的一部分了。如果说人文历史哲学等书籍是一碗心灵鸡汤，技术书籍大抵算得上是一味营养素，读之可以直接带来养分；可若是不了解自己究竟缺了哪一种营养，乱吃乱补，结果就可能适得其反了。有鉴于此，我和同事刘龙军结合自身的阅读经验，为新入职ThoughtWorks的程序员制作了一份读书路线图。我们将范围明确为程序员，是因为作为程序员的我们，它是我们最了解的工作角色。我们筛选出了一些大家公认的经典书籍，再结合自己的阅读体会，并广泛征集了更多ThoughtWorker的意见，包括徐昊，熊节，郑晔等资深阅读者，得到了这样一份草稿。在中国公司内部推出时，这份读书路线图得到了多数人的认可和欢迎。继而，我们在成都办公室陆续针对此读书路线图展开了读书俱乐部的活动，算是做了一次全方位大面积的试水。</p>
@@ -123,7 +123,12 @@
 <p>现在，我们觉得是推出正式版本，并面向更多受众的时机了。这就是大家现在看到的ThoughtWorks(中国)程序员读书雷达。它相较于之前的读书路线图草稿，分类更为专业，书籍筛选更为合理，并以雷达独有的优势，来展现不同的阅读维度与阅读深度。显然，读书雷达更能表达我们对所选书籍的深度认识。它可以作为学习型组织的一份知识输入，每一位程序员都可以根据自身水平与能力，选择适合自己的书籍，甚至组成一份表达阅读履历的读书路线图，在获得知识完善与汲取的过程中，提高自身能力，达至各个维度的巅峰。</p>
 
 <p>该读书雷达将书籍分为了如下四个象限：
-<blockquote><p>Coding Practice（编程实践）<br/>Architecture &amp; Design（架构与设计）<br/>Methodology（方法学）<br/>Thought &amp; Leadership（思想与领导力）</p></blockquote></p>
+{% blockquote %}
+Coding Practice（编程实践）
+Architecture &amp; Design（架构与设计）
+Methodology（方法学）
+Thought &amp; Leadership（思想与领导力）
+{% endblockquote %}</p>
 
 <p>我们之所以将方法学、思想与领导力放入到这个为程序员设计的读书雷达中，乃是因为软件开发不仅仅是个人的活动，也不仅仅是编码技巧和设计能力的体现。我们认为，开发技能其实是一项综合的系统工程。了解方法学，可以促进你对开发过程的理解；关于思想，则涉及大脑思维的修炼，可以提高程序员的抽象能力、学习能力，有助于帮助程序员发现事物发展的规律和本质；至于领导力，则有助于程序员在开发团队中发挥更大的作用，并能作为很好的团队成员，提升团队的整体能力。我们没有在这个读书雷达中包括语言类的书籍，原因在于这类书籍太过于发散，且更新较快；我们也不可能奢望在一张读书雷达图中，为不同的语言平台展现不同的优秀书籍。相比较语言的学习，我们更看重程序员在编程实践上的基本功。</p>
 
@@ -139,57 +144,113 @@
 
 <h4>基础篇</h4>
 
-<p><blockquote><p>Clean Code《代码整洁之道》<br/>Pragmatic Unit Testing《单元测试之道》<br/>The Productive Programmer《卓有成效的程序员》<br/>Test-Driven Development By Example《测试驱动开发》<br/>Clean Coder《程序员的职业修养》<br/>The Art of Readable Code《编写可读代码的艺术》</p></blockquote></p>
+<p>{% blockquote %}
+Clean Code《代码整洁之道》
+Pragmatic Unit Testing《单元测试之道》
+The Productive Programmer《卓有成效的程序员》
+Test-Driven Development By Example《测试驱动开发》
+Clean Coder《程序员的职业修养》
+The Art of Readable Code《编写可读代码的艺术》
+{% endblockquote %}</p>
 
 <h4>进阶篇</h4>
 
-<p><blockquote><p>Refactoring To Patterns《重构与模式》<br/>Implementation Patterns《实现模式》<br/>Code Complete《代码大全》<br/>The Pragmatic Programmer《程序员修炼之道》</p></blockquote></p>
+<p>{% blockquote %}
+Refactoring To Patterns《重构与模式》
+Implementation Patterns《实现模式》
+Code Complete《代码大全》
+The Pragmatic Programmer《程序员修炼之道》
+{% endblockquote %}</p>
 
 <h4>高级篇</h4>
 
-<p><blockquote><p>Structure and Interpretation of Computer Programs《计算机程序的构造和解释》<br/>Working Effectively with Legacy Code《修改代码的艺术》</p></blockquote></p>
+<p>{% blockquote %}
+Structure and Interpretation of Computer Programs《计算机程序的构造和解释》
+Working Effectively with Legacy Code《修改代码的艺术》
+{% endblockquote %}</p>
 
 <h3>Architecture &amp; Design | 架构与设计</h3>
 
 <h4>基础篇</h4>
 
-<p><blockquote><p>Agile Software Development 《敏捷软件开发：原则、实践与模式》<br/>Head First Design Patterns《深入浅出设计模式》<br/>Design Patterns 《设计模式》</p></blockquote></p>
+<p>{% blockquote %}
+Agile Software Development 《敏捷软件开发：原则、实践与模式》
+Head First Design Patterns《深入浅出设计模式》
+Design Patterns 《设计模式》
+{% endblockquote %}</p>
 
 <h4>进阶篇</h4>
 
-<p><blockquote><p>The Art of UNIX Programming 《Unix编程艺术》<br/>Practical API Design  《框架设计的艺术》<br/>Domain Specific Languages 《领域特定语言》<br/>Patterns of Enterprise Application Architecture 《企业应用架构模式》</p></blockquote></p>
+<p>{% blockquote %}
+The Art of UNIX Programming 《Unix编程艺术》
+Practical API Design  《框架设计的艺术》
+Domain Specific Languages 《领域特定语言》
+Patterns of Enterprise Application Architecture 《企业应用架构模式》
+{% endblockquote %}</p>
 
 <h4>高级篇</h4>
 
-<p><blockquote><p>Release It<br/>Domain-Driven Design 《领域驱动设计》<br/>Enterprise Integration Patterns《企业集成模式》<br/>Beautiful Architecture《架构之美》<br/>Pattern-Oriented Software Architecture《面向模式的软件架构》</p></blockquote></p>
+<p>{% blockquote %}
+Release It
+Domain-Driven Design 《领域驱动设计》
+Enterprise Integration Patterns《企业集成模式》
+Beautiful Architecture《架构之美》
+Pattern-Oriented Software Architecture《面向模式的软件架构》
+{% endblockquote %}</p>
 
 <h3>Methodology | 方法学</h3>
 
 <h4>基础篇</h4>
 
-<p><blockquote><p>User Stories Applied《用户故事与敏捷方法》<br/>The Gold Mine《金矿》<br/>Scrum and XP From the Trenches《硝烟中的Scrum和XP》<br/>Continuous Integration《持续集成》<br/>Extreme Programming Explained《解析极限编程》</p></blockquote></p>
+<p>{% blockquote %}
+User Stories Applied《用户故事与敏捷方法》
+The Gold Mine《金矿》
+Scrum and XP From the Trenches《硝烟中的Scrum和XP》
+Continuous Integration《持续集成》
+Extreme Programming Explained《解析极限编程》
+{% endblockquote %}</p>
 
 <h4>进阶篇</h4>
 
-<p><blockquote><p>Lean Thinking《精益思想》<br/>Continuous Delivery《持续交付》<br/>How Google Tests Software<br/>Agile Testing<br/>Extreme Programming Refactored《重构极限编程》</p></blockquote></p>
+<p>{% blockquote %}
+Lean Thinking《精益思想》
+Continuous Delivery《持续交付》
+How Google Tests Software
+Agile Testing
+Extreme Programming Refactored《重构极限编程》
+{% endblockquote %}</p>
 
 <h4>高级篇</h4>
 
-<p><blockquote><p>Specification By Example</p></blockquote></p>
+<p>{% blockquote %}
+Specification By Example
+{% endblockquote %}</p>
 
 <h3>Thought &amp; Leadership | 思想与领导力</h3>
 
 <h4>基础篇</h4>
 
-<p><blockquote><p>The Effective Executive《卓有成效的管理者》<br/>Are Your Lights On?《你的灯亮着吗》<br/>Becoming A Technical Leader《成为技术领导者》</p></blockquote></p>
+<p>{% blockquote %}
+The Effective Executive《卓有成效的管理者》
+Are Your Lights On?《你的灯亮着吗》
+Becoming A Technical Leader《成为技术领导者》
+{% endblockquote %}</p>
 
 <h4>进阶篇</h4>
 
-<p><blockquote><p>The Fifth Discipline《第五项修炼》<br/>The Design Of Business<br/>Management 3.0《管理3.0：培养和提升敏捷领导力》<br/>Presentation To Win<br/>The McKinsey Way《麦肯锡方法》</p></blockquote></p>
+<p>{% blockquote %}
+The Fifth Discipline《第五项修炼》
+The Design Of Business
+Management 3.0《管理3.0：培养和提升敏捷领导力》
+Presentation To Win
+The McKinsey Way《麦肯锡方法》
+{% endblockquote %}</p>
 
 <h4>高级篇</h4>
 
-<p><blockquote><p>Thinking, Fast and Slow《思考快与慢》</p></blockquote></p>
+<p>{% blockquote %}
+Thinking, Fast and Slow《思考快与慢》
+{% endblockquote %}</p>
 ]]></content>
   </entry>
   
@@ -198,12 +259,16 @@
     <link href="http://agiledon.github.com/blog/2013/03/16/old-and-reclusion-and-fight/"/>
     <updated>2013-03-16T21:47:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2013/03/16/old-and-reclusion-and-fight</id>
-    <content type="html"><![CDATA[<p><img class="center" src="/images/2013/03/old.jpeg">
+    <content type="html"><![CDATA[<p>{% img center /images/2013/03/old.jpeg %}
 杜拉斯在《情人》里劈头就是这么一段话：“我已经老了，有一天，在一处公共场所的大厅里，有一个男人向我走来。他主动介绍自己，他对我说：‘我认识你，永远记得你。那时候，你还很年轻，人人都说你美，现在，我是特为来告诉你，对我来说，我觉得现在你比年轻的时候更美，那时你是年轻女人，与你那时的面貌相比，我更爱你现在备受摧残的面容。’”</p>
 
 <p>人的沧桑如年代悠远的古董一般让人怀念，如侵蚀后的青铜器斑驳的美。每位老人都是讲不完的长篇故事，刻在皱纹里的是曾经拥有的回忆。似乎什么都经历过，似乎什么都未曾经历得完全，孤独与衰老慢慢侵袭而来，正如皱纹慢慢爬上额头。时光开始变得急促，可惜步子越发的蹒跚，再也无法追赶光阴的影子了。这或许是一种无奈；然而，真正的苍老总是懂得生命的哲理，毋须哀叹这不可追回的韶光。沧桑的历练足以让老人在回忆中度过另一个鲜活的生命。这是一种睿智。这种睿智仿佛一把金刚刀，岁月之美如钻石一般被切割出来，拥有那玲珑剔透的切面，折射出璀璨的辉光。</p>
 
-<p><blockquote><p>然而，面对苍老，我总不免低低咏叹：<br/>你饱经沧桑的双眼，<br/>为何总饱含着忧伤的泪水？</p></blockquote></p>
+<p>{% blockquote %}
+然而，面对苍老，我总不免低低咏叹：
+你饱经沧桑的双眼，
+为何总饱含着忧伤的泪水？
+{% endblockquote %}</p>
 
 <p>想到人的日渐衰老，我总是无法抑制地哀伤。“夕阳无限好，只是近黄昏”，李商隐的一句诗，道尽了这其中的无奈，甚至是凄楚。或许，自私的人们总是可以欣赏别人备受摧残的面容，却无法容忍自己的老去，最后走向阴冷的坟墓。对苍老的诵咏，就变成一曲对凄美的哀歌了。</p>
 

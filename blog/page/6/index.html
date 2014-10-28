@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="职责分配不仅限于对象之间。如果将对象看做是细粒度的封装，则模块作为组合多个对象的设计元素，可以看做是粗粒度的封装。倘若在模块之间分配职责失当，带来的影响会比对象职责分配不合理更大。这是因为只要在OO设计中进行了适度的封装，在一定程度上体现了隐藏细节的设计理念，对象的职责分配失当就不会溢出边界， &hellip;">
+  <meta name="description" content="Apache Nutch是在Java平台上开发的开源网络爬虫工具。按照Nutch官方网站给出的向导，通过使用Nutch命令，可以比较容易地抓取指定种子网站的数据。不过，若是要通过它提供的Java API，以编程方式抓取数据，并存储到指定的数据存储，如MySQL，则有一些技巧或者说秘诀需要注意。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql/">Nutch Crawler抓取数据并存储到MySQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-07T22:17:00+08:00" pubdate data-updated="true">Mar 7<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Apache Nutch是在Java平台上开发的开源网络爬虫工具。按照<a href="http://wiki.apache.org/nutch/NutchTutorial">Nutch官方网站</a>给出的向导，通过使用Nutch命令，可以比较容易地抓取指定种子网站的数据。不过，若是要通过它提供的Java API，以编程方式抓取数据，并存储到指定的数据存储，如MySQL，则有一些技巧或者说秘诀需要注意。经过这几天抽空进行的试验，并查询了相关资料，完成了指定网站数据的抓取。</p>
+
+<p>首先，需要准备好Nutch。目前Nutch的最新版本是2.1，在官方网站可以下载到2.1版本的源代码。奇怪的是，网站并未提供该版本的Bin下载。我们若是要通过Java API调用，则需要依赖于Nutch需要的Jar包。我们可以直接在自己的Java项目中导入这些Jar包，也可以在项目的pom.xml文件中指定Maven的Repository。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/03/07/nutch-crawler-crawl-data-and-store-to-mysql/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -486,55 +531,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/03/reading-hrabal/">过于喧嚣的孤独</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-03T21:24:00+08:00" pubdate data-updated="true">Feb 3<span>rd</span>, 2013</time>
-        
-         | <a href="/blog/2013/02/03/reading-hrabal/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/02/alone.jpg"></p>
-
-<p>书的内容其实没有书名那么富有诗意，整本书中，汉嘉都在废纸堆中与老鼠、苍蝇为伍，这种如下水道般的卑微存在，在现实生活中，定然是遭到嘲笑、冷落甚至摒弃的下等人。我在书的一开始，完全欣赏不到那种诗意的美。设身处地，我会选择逃离，即使有黑格尔、康德、加缪与梵高。归根结底，我们大多数人无法做到无视周遭环境的龌龊，优游于精神高尚的深邃星空。从这一点来讲，汉嘉无疑是孤独的。</p>
-
-<p>最可悲的是，这种孤独还在于他像一个送灵人，日复一日地挥别逝去的亲人，让这种忧伤啃啮孤独的灵魂，这就好像普罗米修斯在高加索山脉日复一日被恶鹰雕琢肝脏一般的痛苦。</p>
-
-<p>与书为友，却又在随时埋葬他的精神安慰；这似乎是一种悖论。于是，阅读的体验就在这种悲伤中蔓延！？“子非鱼，焉知鱼之乐？”其实，我们这种忧伤不过是庸人自扰。读书读到灵魂中的人，会无视这些悲哀，因为汉嘉用自己的心灵构筑了一个属于自己的独立王国——书的王国。书的开篇就展现了这种欢乐，将肮脏的废纸堆当做自己的love story，作者写道：“三十五年来我同自己、同周围的世界相处和谐，因为我读书的时候，实际上不是读，而是把美丽的词句含在嘴里，嘬糖果似的嘬着，品烈酒似的一小口一小口呷着，直到那词句像酒精一样溶解在我的身体里，不仅渗透到我的大脑和心灵，而且在我的血管中奔腾，冲击到我每根血管的末梢。”</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/02/03/reading-hrabal/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -573,6 +569,10 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a>
       </li>
     
@@ -586,10 +586,6 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
     
       <li class="post">
         <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
       </li>
     
   </ul>
@@ -627,12 +623,12 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <section>
   <h1>Tag Cloud</h1>
   <ul class="tag-cloud">
+<a style="font-size: 128%" href="/blog/tags/agile/">Agile</a>
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
 <a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 144%" href="/blog/tags/book/">Book</a>
-<a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
 <a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
@@ -654,9 +650,9 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
 <a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
 <a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
-<a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
 <a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
@@ -672,7 +668,7 @@ HDFS(Hadoop Distributed File System)作为<a href="http://hadoop.apache.org">Had
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
-<a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/test/">Test</a>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>

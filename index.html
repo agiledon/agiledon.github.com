@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="古希腊哲学家巴门尼德认为：“人的思想和言语都有一个载体，如果你在这一时间和另外一个时间想到或者谈到同样一件东西，那就说明这件东西在这段时间内没有变化，如有变化的话，你说的就不是同一件东西。” 这让我想起对象的实例。在面向对象设计中，默认情况下并没有约束类的实例是否为可变， &hellip;">
+  <meta name="description" content="一艘货轮满载着货物从港口启航，向浩瀚的大海深处破水而去。海面平静，微微皱起波浪，从容而显得宽容。然而，货轮的步履却有些蹒跚，发动机“轰轰轰”地嘶吼着，不堪重负，却无法让船只游得更快，倒像是海水咬住了船底往下在拖曳。 “嘟——嘟——嘟”，突然警报声响起，甲板上变得喧闹起来， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,72 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-28T16:08:00+08:00" pubdate data-updated="true">Oct 28<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/10/28/are-you-writing-auto-test-today/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2014/ship.jpg"></p>
+
+<p>一艘货轮满载着货物从港口启航，向浩瀚的大海深处破水而去。海面平静，微微皱起波浪，从容而显得宽容。然而，货轮的步履却有些蹒跚，发动机“轰轰轰”地嘶吼着，不堪重负，却无法让船只游得更快，倒像是海水咬住了船底往下在拖曳。</p>
+
+<p>“嘟——嘟——嘟”，突然警报声响起，甲板上变得喧闹起来，一个水手模样的年轻人声嘶力竭地呐喊：“船超重了，快快快……快卸货！”声音急迫，甚至能听到哭音。然后，又是一阵喧嚷，似乎是在争吵甚么，就看到一个胖胖的中年人冲了出来。看他那肥胖的体型，真难想到他的身手竟然如此敏捷，如海豹一般破开人群，两手挥舞，大声喊道：“怎么了？怎么了？”，他停下来，吼道：“我看哪个不长眼的家伙敢卸我的货！谁敢！”</p>
+
+<p>船长走了过来，略带恭敬地对那中年人说道：“老板，你看，这船超载了，船身吃紧，已经发出超重警报了。倘若不减轻船的重量，这船开不了多久就得沉了啊！”</p>
+
+<p>“他奶奶的，这船可真秀气啊！”中年人一边骂骂咧咧，却也知道形势紧迫，容不得自己不下决断。可是心里总存着侥幸心理，突然灵机一动，一把拉过船长，指着这艘货轮问道：“既然这船超重，那我问你，除了货物，这船上还有哪些东西占了船身的重量？”</p>
+
+<p>船长一听，立刻明白老板心里的小九九，没好气地回道：“除了货物，占了这船重量的就还有人、淡水、食品，还有救生圈、救生衣、救生艇。老板你看那样不顺心，你就扔哪样吧！”</p>
+
+<p>嘿，回到现实中来吧。回答问题：倘若你是老板，你会扔哪样呢？稍有理智的人，都不难做出正确的选择。——然而，为何在软件开发过程中，我却常常看到有人选择丢弃救生圈、救生衣、救生艇呢？哪怕它们的重量对于整艘船而言如同九牛一毛，却总有人存着侥幸，认为船就超了那么一点点，或许扔出几个救生圈，就能恢复重量到安全线；于是，货物得以幸存，可以避免不必要的损失了。</p>
+
+<p>或许，我们没这么傻吧。那么，让我们想想。</p>
+
+<p>假设将这航行比作是软件开发的过程，那么载货到达目的地，就是实现软件需求。只有交付了货物，才算是实现了价值。至于淡水、食品以及船只，就是开发的工具与环境，而救生圈、救生衣、救生艇，就是我们在开发过程中需要编写的自动化测试（单元测试、集成测试、验收测试等）。我们需要这些测试来随时检测开发功能是否有误，及时反馈，就像在航行过程中，若是有人溺水，可以用救生衣、救生圈挽回一条生命一般。</p>
+
+<p>可一旦开发时间紧促，人手严重不足，进度压力山大时，我们想到了什么呢？对于我见过的多数软件团队而言，每当面临如此窘境时，首先想到的就是减少甚至不做自动化测试。有人认为自动化测试没有价值，浪费成本；有人认为自动化测试可以以后再补，先把功能完成再说；有人认为有了手动测试，就足以保障项目的质量……如此这般，自动化测试就这般被忽略了，沦落到随时可以抛弃的地位。</p>
+
+<p>倘若软件开发就只有这一个阶段，没有需求变更，没有后续开发，没有软件维护。项目的代码库如树苗一般在阳光雨露下茁壮成长，没有大风狂吹，没有烈日暴晒，没有大雨倾盆，亦没有虫蚁啃啮，那自然由得它去。然而，现实世界哪有如此美好！</p>
+
+<p>Michael Feather将没有自动化测试的代码称为“遗留代码”，温伯格在《咨询的奥秘》中则认为应该将“维护”工作视为“设计”工作。自动化测试是修改的基础，重构的保障，设计的规约，演化的文档。它的重要性怎么强调都不过分，然而很可惜，在很多软件项目开发中，它甚至不如“鸡肋”的地位，说放弃就放弃了，在决定当时，毫不觉得可惜。至于以后的以后，不远的未来，谁还顾得上！！？债欠下了，什么时候偿还呢？——不知道！到了催债的那天，再想办法还债吧。</p>
+
+<p>鸵鸟心态害死人啊！</p>
+
+<p>扪心自问，我们经历过维护的苦楚吗？体验过修改代码的烦恼吗？修复过不胜其扰的缺陷吗？答案若是肯定，那么，如果老天再给你一次机会，把选择自动化测试的权利放在你面前，作为“曾经沧海难为水”的你，你会怎么选？——所以，我想问问程序员们：今天，你写自动化测试了吗？</p>
+
+<p>后记：其实我很想写：程序员要是写代码不写测试，就是耍流氓，就是做爱不带套。可我纯洁啊，没好意思写出来。可总觉得这么经典的语录藏在我心里，小心憋不住。把心一横，他奶奶的，毕竟话糙理不糙啊！这不，一激动，还是吐露真言了。终归脸皮薄，没好意思写进正文，就这般猥琐地躲在文章后面，算是偷窥，觑觑究竟有谁真有耐心读到文章末尾，听听我的真心大实话。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -573,88 +639,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/07/using-listbuffer-vs-list/">ListBuffer vs List in Scala</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-07T19:19:00+08:00" pubdate data-updated="true">Jul 7<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/07/07/using-listbuffer-vs-list/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我们有一个需求，需要在Scala中调用JDBC对数据库进行查询。然后将查询的结果ResultSet放到一个自定义结果类SqlResult中：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">SqlResult</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span> <span class="n">value</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>SqlResult的第一个构造函数参数存储的是数据表的列名，第二个参数存储数据表的行记录。由于ResultSet是Java中的一个对象，并不支持Scala的常用集合操作，因此这种转换是有必要的。我引入了隐式类（放在一个package object中）来完成这个转换，在转换过程中，由于需要对ResultSet进行遍历，因而引入了一个结果集List。默认情况下，Scala的List是immutable的，因此将其声明为var：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">object</span> <span class="n">db</span> <span class="o">{</span>
-</span><span class='line'>     <span class="k">implicit</span> <span class="k">class</span> <span class="nc">ResultSetUtil</span><span class="o">(</span><span class="n">rs</span><span class="k">:</span> <span class="kt">ResultSet</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">private</span> <span class="k">val</span> <span class="n">columnCount</span> <span class="k">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">getMetaData</span><span class="o">.</span><span class="n">getColumnCount</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="k">def</span> <span class="n">rows</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>               <span class="k">var</span> <span class="n">valueList</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">()</span>
-</span><span class='line'>               <span class="k">while</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">next</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                    <span class="k">val</span> <span class="n">oneLine</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">columnCount</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">getString</span><span class="o">).</span><span class="n">toList</span>
-</span><span class='line'>                    <span class="n">valueList</span> <span class="k">=</span> <span class="n">oneLine</span> <span class="o">::</span> <span class="n">valueList</span>
-</span><span class='line'>               <span class="o">}</span>
-</span><span class='line'>               <span class="n">valueList</span><span class="o">.</span><span class="n">reverse</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="k">def</span> <span class="n">columns</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>               <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">columnCount</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">getMetaData</span><span class="o">.</span><span class="n">getColumnName</span><span class="o">).</span><span class="n">toList</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>     <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有了这个隐式转换，操作ResultSet就变简单了：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">query</span><span class="o">(</span><span class="n">sql</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">SqlResult</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">stmt</span> <span class="k">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">createStatement</span><span class="o">()</span>
-</span><span class='line'>    <span class="n">rs</span> <span class="k">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">executeQuery</span><span class="o">(</span><span class="n">sql</span><span class="o">)</span>
-</span><span class='line'>    <span class="nc">SqlResult</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">columns</span><span class="o">,</span> <span class="n">rs</span><span class="o">.</span><span class="n">rows</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>由于在前面的实现中，我初始化了一个Immutable的List，因此只能使用::添加每行从ResultSet得到的记录，然后再赋值给valueList。::方法只能将后加入的元素放到List的头部。所以在遍历完毕后，还需要做一个reverse操作。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/07/using-listbuffer-vs-list/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -691,6 +675,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a>
       </li>
     
@@ -704,10 +692,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/09/visualize-design-workshop/">可视化设计工作坊</a>
       </li>
     
   </ul>
@@ -745,12 +729,12 @@
 <section>
   <h1>Tag Cloud</h1>
   <ul class="tag-cloud">
+<a style="font-size: 128%" href="/blog/tags/agile/">Agile</a>
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
 <a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 144%" href="/blog/tags/book/">Book</a>
-<a style="font-size: 100%" href="/blog/tags/cqrs/">CQRS</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
 <a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
@@ -772,9 +756,9 @@
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
 <a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
 <a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
-<a style="font-size: 100%" href="/blog/tags/mysql/">MySQL</a>
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
 <a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
@@ -790,7 +774,7 @@
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
-<a style="font-size: 100%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/test/">Test</a>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>

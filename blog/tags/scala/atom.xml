@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: scala | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/scala/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-10-28T16:04:34+08:00</updated>
+  <updated>2014-10-28T16:13:34+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -19,43 +19,46 @@
     <updated>2014-07-07T19:19:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/07/07/using-listbuffer-vs-list</id>
     <content type="html"><![CDATA[<p>我们有一个需求，需要在Scala中调用JDBC对数据库进行查询。然后将查询的结果ResultSet放到一个自定义结果类SqlResult中：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">SqlResult</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span> <span class="n">value</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]])</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+case class SqlResult(name: List[String], value: List[List[String]])
+{% endcodeblock %}</p>
 
 <p>SqlResult的第一个构造函数参数存储的是数据表的列名，第二个参数存储数据表的行记录。由于ResultSet是Java中的一个对象，并不支持Scala的常用集合操作，因此这种转换是有必要的。我引入了隐式类（放在一个package object中）来完成这个转换，在转换过程中，由于需要对ResultSet进行遍历，因而引入了一个结果集List。默认情况下，Scala的List是immutable的，因此将其声明为var：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">object</span> <span class="n">db</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">implicit</span> <span class="k">class</span> <span class="nc">ResultSetUtil</span><span class="o">(</span><span class="n">rs</span><span class="k">:</span> <span class="kt">ResultSet</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">private</span> <span class="k">val</span> <span class="n">columnCount</span> <span class="k">=</span> <span class="n">rs</span><span class="o">.</span><span class="n">getMetaData</span><span class="o">.</span><span class="n">getColumnCount</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="n">rows</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>           <span class="k">var</span> <span class="n">valueList</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">()</span>
-</span><span class='line'>           <span class="k">while</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">next</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">val</span> <span class="n">oneLine</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">columnCount</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">getString</span><span class="o">).</span><span class="n">toList</span>
-</span><span class='line'>                <span class="n">valueList</span> <span class="k">=</span> <span class="n">oneLine</span> <span class="o">::</span> <span class="n">valueList</span>
-</span><span class='line'>           <span class="o">}</span>
-</span><span class='line'>           <span class="n">valueList</span><span class="o">.</span><span class="n">reverse</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="n">columns</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>           <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">columnCount</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">getMetaData</span><span class="o">.</span><span class="n">getColumnName</span><span class="o">).</span><span class="n">toList</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'> <span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+package object db {</p>
+
+<pre><code> implicit class ResultSetUtil(rs: ResultSet) {
+      private val columnCount = rs.getMetaData.getColumnCount
+
+      def rows: List[List[String]] = {
+           var valueList: List[List[String]] = List()
+           while (rs.next()) {
+                val oneLine = (1 to columnCount).map(rs.getString).toList
+                valueList = oneLine :: valueList
+           }
+           valueList.reverse 
+      }
+
+      def columns: List[String] = {
+           (1 to columnCount).map(rs.getMetaData.getColumnName).toList
+      }
+ }
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>有了这个隐式转换，操作ResultSet就变简单了：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">query</span><span class="o">(</span><span class="n">sql</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">SqlResult</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">stmt</span> <span class="k">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">createStatement</span><span class="o">()</span>
-</span><span class='line'><span class="n">rs</span> <span class="k">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">executeQuery</span><span class="o">(</span><span class="n">sql</span><span class="o">)</span>
-</span><span class='line'><span class="nc">SqlResult</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">columns</span><span class="o">,</span> <span class="n">rs</span><span class="o">.</span><span class="n">rows</span><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+def query(sql: String): SqlResult = {</p>
+
+<pre><code>stmt = conn.createStatement()
+rs = stmt.executeQuery(sql)
+SqlResult(rs.columns, rs.rows)
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>由于在前面的实现中，我初始化了一个Immutable的List，因此只能使用::添加每行从ResultSet得到的记录，然后再赋值给valueList。::方法只能将后加入的元素放到List的头部。所以在遍历完毕后，还需要做一个reverse操作。</p>
 
@@ -63,161 +66,178 @@
 
 
 <p>我的感觉告诉我，这种先添加再反转的做法有些怪异。既然这里是以var的方式来使用Immutable List，为何不直接使用Mutable的集合呢？于是，我将前面的rows方法修改为：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">scala.collection.mutable.ListBuffer</span>
-</span><span class='line'><span class="k">package</span> <span class="nn">object</span> <span class="n">db</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">implicit</span> <span class="k">class</span> <span class="nc">ResultSetUtil</span><span class="o">(</span><span class="n">rs</span><span class="k">:</span> <span class="kt">ResultSet</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="n">rows</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>           <span class="k">val</span> <span class="n">valueList</span><span class="k">:</span> <span class="kt">ListBuffer</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="nc">ListBuffer</span><span class="o">()</span>
-</span><span class='line'>           <span class="k">while</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">next</span><span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">val</span> <span class="n">oneLine</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">columnCount</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">getString</span><span class="o">).</span><span class="n">toList</span>
-</span><span class='line'>                <span class="n">valueList</span> <span class="o">+=</span> <span class="n">oneLine</span>
-</span><span class='line'>           <span class="o">}</span>
-</span><span class='line'>           <span class="n">valueList</span><span class="o">.</span><span class="n">toList</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+import scala.collection.mutable.ListBuffer
+package object db {</p>
+
+<pre><code> implicit class ResultSetUtil(rs: ResultSet) {
+
+      def rows: List[List[String]] = {
+           val valueList: ListBuffer[List[String]] = ListBuffer()
+           while (rs.next()) {
+                val oneLine = (1 to columnCount).map(rs.getString).toList
+                valueList += oneLine
+           }
+           valueList.toList  
+      }
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>因为rows方法返回的是Immutable List，所以在后面需要调用一个转换方法，将ListBuffer转换为List；但这个实现减少了对reverse方法的调用。于是，我产生了一个疑惑：这两种实现，究竟谁的性能更好呢？</p>
 
 <p>为了判断彼此的性能，我首先写了一段简单的小代码，并放到perf.scala文件中：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.Date</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">scala.collection.mutable.ListBuffer</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">object</span> <span class="nc">PerformanceTest</span> <span class="k">extends</span> <span class="nc">App</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">maxCount</span> <span class="k">=</span> <span class="n">args</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">toInt</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">args</span><span class="o">.</span><span class="n">tail</span><span class="o">.</span><span class="n">head</span> <span class="k">match</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">case</span> <span class="s">&quot;list&quot;</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="s">&quot;using List:&quot;</span><span class="o">)</span>
-</span><span class='line'>        <span class="k">var</span> <span class="n">time</span> <span class="k">=</span> <span class="n">elapsedTime</span><span class="o">{</span> <span class="n">max</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
-</span><span class='line'>           <span class="k">var</span> <span class="n">l</span> <span class="k">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]()</span>
-</span><span class='line'>            <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">max</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span>
-</span><span class='line'>               <span class="n">i</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">i</span> <span class="o">::</span> <span class="n">l</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          <span class="n">l</span><span class="o">.</span><span class="n">reverse</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;it elapsed $time(ms)&quot;</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>   <span class="k">case</span> <span class="s">&quot;listbuffer&quot;</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="s">&quot;using ListBuffer:&quot;</span><span class="o">)</span>
-</span><span class='line'>         <span class="n">time</span> <span class="k">=</span> <span class="n">elapsedTime</span><span class="o">{</span> <span class="n">max</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
-</span><span class='line'>            <span class="k">var</span> <span class="n">l</span> <span class="k">=</span> <span class="nc">ListBuffer</span><span class="o">[</span><span class="kt">Int</span><span class="o">]()</span>
-</span><span class='line'>            <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">max</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span>
-</span><span class='line'>                <span class="n">i</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">l</span> <span class="o">+=</span> <span class="n">i</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>            <span class="n">l</span><span class="o">.</span><span class="n">toList</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;it elapsed $time(ms)&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="n">elapsedTime</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span><span class="kt">Long</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">before</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">().</span><span class="n">getTime</span>
-</span><span class='line'>    <span class="n">f</span><span class="o">(</span><span class="n">maxCount</span><span class="o">)</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">after</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">().</span><span class="n">getTime</span>
-</span><span class='line'>    <span class="n">after</span> <span class="o">-</span> <span class="n">before</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+import java.util.Date
+import scala.collection.mutable.ListBuffer</p>
+
+<p>object PerformanceTest extends App {</p>
+
+<pre><code>val maxCount = args.head.toInt
+
+args.tail.head match {
+    case "list" =&gt;
+        println("using List:")
+        var time = elapsedTime{ max =&gt;
+           var l = List[Int]()
+            (1 to max).foreach {
+               i =&gt; i :: l
+          }
+          l.reverse
+      }
+      println(s"it elapsed $time(ms)")
+
+   case "listbuffer" =&gt;
+        println("using ListBuffer:")
+         time = elapsedTime{ max =&gt;
+            var l = ListBuffer[Int]()
+            (1 to max).foreach {
+                i =&gt; l += i
+            }
+            l.toList
+        }
+        println(s"it elapsed $time(ms)")
+}
+
+def elapsedTime(f: Int =&gt; List[Int]):Long = {
+    val before = new Date().getTime
+    f(maxCount)
+    val after = new Date().getTime
+    after - before
+}
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>为避免前后干扰，我选择以分支的方式通过传入参数分别执行。编译perf.scala文件。运行scala PerformanceTest 100000 list。此时运行结果为：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using List:
-</span><span class='line'>it elapsed 23(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+using List:
+it elapsed 23(ms)
+{% endcodeblock %}</p>
 
 <p>运行scala PerformanceTest 100000 listbuffer。运行结果为：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using ListBuffer:
-</span><span class='line'>it elaspse 26(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+using ListBuffer:
+it elaspse 26(ms)
+{% endcodeblock %}</p>
 
 <p>增加到200,000，结果迥然不同：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using List:
-</span><span class='line'>it elaspse 23(ms)
-</span><span class='line'>using ListBuffer:
-</span><span class='line'>it elaspse 34(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+using List:
+it elaspse 23(ms)
+using ListBuffer:
+it elaspse 34(ms)
+{% endcodeblock %}</p>
 
 <p>增加到500,000，结果迥然不同：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using List:
-</span><span class='line'>it elaspse 34(ms)
-</span><span class='line'>using ListBuffer:
-</span><span class='line'>it elaspse 293(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+using List:
+it elaspse 34(ms)
+using ListBuffer:
+it elaspse 293(ms)
+{% endcodeblock %}</p>
 
 <p>增加到1,000,000，结果就更明显了：
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>using List:
-</span><span class='line'>it elaspse 45(ms)
-</span><span class='line'>using ListBuffer:
-</span><span class='line'>it elaspse 620(ms)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock %}
+using List:
+it elaspse 45(ms)
+using ListBuffer:
+it elaspse 620(ms)
+{% endcodeblock %}</p>
 
 <p>我们假定List方式为A，ListBuffer方式为B。整体看来，方式A消耗的时间都要小于方式B。当数据量越来越大时，这种差距就更加明显。问题在哪里？让我们来看看List与ListBuffer的实现。</p>
 
 <p>首先，考察List对::以及reverse的实现：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">def</span> <span class="o">::[</span><span class="kt">B</span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">]</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">B</span><span class="o">)</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">new</span> <span class="n">scala</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">immutable</span><span class="o">.::(</span><span class="n">x</span><span class="o">,</span> <span class="k">this</span><span class="o">)</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">reverse</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">var</span> <span class="n">result</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Nil</span>
-</span><span class='line'><span class="k">var</span> <span class="n">these</span> <span class="k">=</span> <span class="k">this</span>
-</span><span class='line'><span class="k">while</span> <span class="o">(!</span><span class="n">these</span><span class="o">.</span><span class="n">isEmpty</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">result</span> <span class="k">=</span> <span class="n">these</span><span class="o">.</span><span class="n">head</span> <span class="o">::</span> <span class="n">result</span>
-</span><span class='line'>  <span class="n">these</span> <span class="k">=</span> <span class="n">these</span><span class="o">.</span><span class="n">tail</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="n">result</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+  def ::[B >: A] (x: B): List[B] =</p>
+
+<pre><code>new scala.collection.immutable.::(x, this)
+</code></pre>
+
+<p>  override def reverse: List[A] = {</p>
+
+<pre><code>var result: List[A] = Nil
+var these = this
+while (!these.isEmpty) {
+  result = these.head :: result
+  these = these.tail
+}
+result
+</code></pre>
+
+<p>  }
+{% endcodeblock %}</p>
 
 <p>::方法中的scala.collection.immutable.::实际上是一个继承自List的样例类。显然，这里的添加操作就相当于对List对象的创建。每次::操作的时间复杂度为O(C1)。此时的常量值C1基本等于1。由于每次遍历都要执行，因此总的时间为O(C1)*n。事实上，List数据结构增加一个头元素本身就非常简单，基本不耗时。但reverse操作要稍微复杂一些。它同样是复制了一个List，但对原List进行了遍历，然后将原有List的头元素与空List进行::操作，使其变成了last元素，如此遍历。因而时间复杂度为O(n)。</p>
 
 <p>再来考察ListBuffer对+=以及toList的实现：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">toList</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">exported</span> <span class="k">=</span> <span class="o">!</span><span class="n">start</span><span class="o">.</span><span class="n">isEmpty</span>
-</span><span class='line'><span class="n">start</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="o">+=</span> <span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">this.</span><span class="k">type</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span><span class="n">exported</span><span class="o">)</span> <span class="n">copy</span><span class="o">()</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">start</span><span class="o">.</span><span class="n">isEmpty</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">last0</span> <span class="k">=</span> <span class="k">new</span> <span class="o">::</span> <span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="nc">Nil</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">start</span> <span class="k">=</span> <span class="n">last0</span>
-</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">last1</span> <span class="k">=</span> <span class="n">last0</span>
-</span><span class='line'>  <span class="n">last0</span> <span class="k">=</span> <span class="k">new</span> <span class="o">::</span> <span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="nc">Nil</span><span class="o">)</span>
-</span><span class='line'>  <span class="n">last1</span><span class="o">.</span><span class="n">tl</span> <span class="k">=</span> <span class="n">last0</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="n">len</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span class='line'><span class="k">this</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+  override def toList: List[A] = {</p>
+
+<pre><code>exported = !start.isEmpty
+start
+</code></pre>
+
+<p>  }</p>
+
+<p>  def += (x: A): this.type = {</p>
+
+<pre><code>if (exported) copy()
+if (start.isEmpty) {
+  last0 = new :: (x, Nil)
+  start = last0
+} else {
+  val last1 = last0
+  last0 = new :: (x, Nil)
+  last1.tl = last0
+}
+len += 1
+this
+</code></pre>
+
+<p>  }
+{% endcodeblock %}</p>
 
 <p>toList方法非常简单，因为ListBuffer内部存储了一个List对象，即这里看到的start。start会在每次添加元素时发生变化。因此看起来是一个转换方法，实则就是返回一个字段。时间复杂度为O(1)。再来看+=操作。首先，该方法会判断exported的值。如果为true，则需要执行copy方法。但是，根据OderSky对+=方法的描述（原书513页），只有在将ListBuffer转换为List之后，如果还要对原ListBuffer执行+=操作，才会执行copy方法：
-<blockquote><p>However, the implementation of ListBuffer is such that copying is neces- sary only for list buffers that are further extended after they have been turned into lists. This case is quite rare in practice. Most use cases of list buffers add elements incrementally and then do one toList operation at the end. In such cases, no copying is necessary.</p></blockquote></p>
+{% blockquote %}
+However, the implementation of ListBuffer is such that copying is neces- sary only for list buffers that are further extended after they have been turned into lists. This case is quite rare in practice. Most use cases of list buffers add elements incrementally and then do one toList operation at the end. In such cases, no copying is necessary.
+{% endblockquote %}</p>
 
 <p>根据前面列出的toList方法，也可以看到：只要ListBuffer不为空，exported在执行了toList方法后，才会被设置为true。因此，在我们这个例子里，copy方法是不会执行的。显然，+=方法的执行耗时还是体现在if分支上。注意，这里的start类型为List[A]类型，且被声明为var；last0类型为::，同样被声明为var。在上面的语句中，将last0赋值给start，以及将last0赋值给val对象last1，是关键。此时，只要对last1的tl（即tail，声明为var的scala包下可访问的构造函数参数）进行赋值，实则就是会为start增加尾部元素。所以增加一个新元素，其时间复杂度应该为O(C2)，并且这个C2一定大于1。针对我们的例子，每次遍历都要执行+=方法，因此总的时间复杂度为O(C2)*n。</p>
 
 <p>这个推断是比较符合事实的。Odersky的著作Programming in Scala的第24章列出了各种集合的时间复杂度：
-<img class="center" src="/images/2014/scalacollection.png"></p>
+{% img center /images/2014/scalacollection.png %}</p>
 
 <p>比较方案A的O((C+1)n)，要判断谁更优，就是要看各自的C值是多大。分析实现，显然C2 > C1。此外，我们还不要忽略内存的消耗。仔细观察ListBuffer的实现，主要通过var变量start、last0以及一个临时的val变量last0，完成+=操作。相比较List而言，消耗的内存要大得多。事实上，在我将JVM的最大内存设置为512M的前提下，当数值为10,000,000时，执行方式A，消耗时间为119ms，而执行方式B时，就已经抛出OutOfMemoryError的异常了。</p>
 
 <p>显然，当数据量比较大，且性能敏感时，在本文提到的场景下，应优先考虑使用List结合reverse的方式。当然，请注意，这里我虽然使用了Immutable的List，但我将其声明为了var变量。这可以避免在遍历过程中生成临时的List对象。如果采用纯函数无副作用的foldLeft进行转换，例如：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">var</span> <span class="n">l</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">max</span><span class="o">).</span><span class="n">foldLeft</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="o">&gt;</span><span class="nc">Int</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;)((</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">b</span> <span class="o">::</span> <span class="n">a</span> <span class="o">)</span>
-</span><span class='line'><span class="n">l</span><span class="o">.</span><span class="n">reverse</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:scala %}
+var l = (1 to max).foldLeft(List<a href="">Int</a>)((a, b) => b :: a )
+l.reverse
+{% endcodeblock %}</p>
 
 <p>则其性能比较方式A有非常大的区别，数据量为1,000,000时，达到了845ms。而且在同等环境下，数据量达到5,000,000时，就已经抛出OutOfMemoryError的异常了。</p>
 
