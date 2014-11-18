@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="在.NET 4.0(当然也包括4.0以前的版本)下，用反射判断某个方法是否运用了自定义Attribute时，可以通过调用MethodInfo的IsDefined()方法进行确认。当然，IsDefined()方法事实上定义在MethodInfo的父类MemberInfo中，但它仅仅被定义为抽象方法， &hellip;">
+  <meta name="description" content="我们希望将客户端（ExtJS 4.0）浏览器中选择的记录post到服务端（ASP.NET MVC 3.0），然后在服务端将这些数据导出到CSV文件中，并传到客户端进行保存。最初，我们希望在客户端采用AJAX请求，将json数据post到服务端。例如： postSelectedItems: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,68 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/">Post数据到服务端生成文件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-10T11:27:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我们希望将客户端（ExtJS 4.0）浏览器中选择的记录post到服务端（ASP.NET MVC 3.0），然后在服务端将这些数据导出到CSV文件中，并传到客户端进行保存。最初，我们希望在客户端采用AJAX请求，将json数据post到服务端。例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">postSelectedItems</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">gridId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">me</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">Ext</span><span class="p">.</span><span class="nx">Ajax</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">jsonData</span><span class="o">:</span> <span class="nx">Ext</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span>
+</span><span class='line'>            <span class="nx">Ext</span><span class="p">.</span><span class="nx">getCmp</span><span class="p">(</span><span class="nx">gridId</span><span class="p">).</span><span class="nx">getSelectedRecords</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">item</span><span class="p">){</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">})</span>
+</span><span class='line'>        <span class="p">),</span>
+</span><span class='line'>        <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>            <span class="nx">callback</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在服务端，Controller中的Action可以处理post过来的json数据，然后以FileResult的方式返回。为了更好地处理CSV文件，我们定义了一个CsvActionResult，它继承自FileResult，并重写了它的WriteFile()方法。浏览器就可以获得CsvActionResult返回的Stream，从而就可以完成文件的下载和保存了。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/02/10/post-data-to-server-side-to-generate-file/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -306,6 +368,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/18/present-and-future-of-spark/">Spark的现状与未来发展</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a>
       </li>
     
@@ -319,10 +385,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
       </li>
     
   </ul>
@@ -364,7 +426,7 @@
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
-<a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 164%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 144%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
@@ -401,7 +463,7 @@
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
 <a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
-<a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 155%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>

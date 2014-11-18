@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="我看到这么一段Java代码，主要逻辑是对传入的数据对象进行分析和处理。方法除了长了一点，本身没有什么问题，但一个不好的味道是方法中充斥了一部分对对象非空的处理，以及写日志的信息。这些语句本身不属于方法的主干实现，却很讨厌地干扰了方法的主要逻辑，影响了程序的可读性。 public class &hellip;">
+  <meta name="description" content="虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/">使用Maven为一个项目生成多个Jar包</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-10T22:43:00+08:00" pubdate data-updated="true">Nov 10<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>虽然在Java平台下，各种构建工具如Maven、Gradle、SBT已经得到了较为广泛地运用，同时Maven约定的模块目录结构也得到了业界的认可，成为了Java平台下项目结构的事实标准。但我们总无法避免与各种遗留系统或老系统打交道。在没有Maven的时代，是Ant统治的时代，它因为提供了较为灵活的编写Task的功能，而忽略了制定一套看似呆板，实则有效的标准模板。于是，在不同的企业，不同的Java项目，出现了各种各样奇怪的目录结构与打包要求。拖着这些沉重的历史包袱，我们自然希望彻底革命，把那些看不顺眼的东西全部改造，让整个项目焕然一新。这是好事儿，所谓长痛不如短痛，一下子把问题肿瘤给割了，痛快！可是现实总有那么一些阻力会让我们缩手缩脚，我们不能挥起革命的利刃一阵乱砍，这弄不好会砍伤自己的手。于是乎，我们需要做战略性的撤退。退一步海阔天空嘛。</p>
+
+<p>我面对的就是这样一个软件系统。这个Java开发的软件系统一直没有依赖管理，仅仅编写了Ant任务用于发布打包。我们的任务是渐进地引入Maven，并在从Build到deploy的整个生命周期中，逐步替换Ant，与持续集成搭配起来。这个系统的多数模块都划分了服务端与客户端。然而不巧的是，各个模块的服务端和客户端都集中在一个模块中。同时，这个项目的目录结构并非标准的Maven结构，如下图所示。因此，还需要自定义Source与TestSource的目录结构。在原来的Ant任务中，是将它们打包成了两个Jar包。现在，我们需要在Maven中同样做到这一点。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/10/create-two-jars-from-one-project-using-maven/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -555,53 +600,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/08/farewell-struts-1-dot-x/">Struts 1.x一路走好</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-08T22:38:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/08/farewell-struts-1-dot-x/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>因为Struts 1.x宣布退出了历史舞台，于是InfoQ组织了一次虚拟访谈。恰好在我现在的项目中，仍然能够看到Struts 1.x的身影，以我这浅薄的Web开发经验，也能有幸被丁雪丰邀请参加了这次虚拟访谈，和李锟、张龙就这一事件畅谈了各自的感受和想法。这篇<a href="http://www.infoq.com/cn/articles/virtual-panel-struts1?utm_source=infoq&amp;utm_medium=popular_links_homepage">虚拟访谈</a>发表在了InfoQ上。这里发布的则是我自己就主持人提出的问题给出的回答。</p>
-
-<p><strong>1. Struts是最早的MVC框架之一，影响了很多人，你是否还记得最早接触到它时，给你留下的印象是什么？</strong></p>
-
-<p><strong>张逸：</strong>从业15年来，我主要参与的开发工作除了早期的Windows Form应用开发外，主要还是集中在后端。用分层的角度来说，即工作在数据层、领域层以及服务层。虽然早已知道Struts的大名，甚至了解到所谓Struts+Spring+Hibernate几乎成为了Java企业开发的标配，却一直没有机会使用Struts。我当时工作的项目主要还是在微软的.NET平台上，经历了从ASP到ASP.NET，再到ASP.NET MVC的过程。在使用ASP时，我很质疑那种业务代码与表现代码混杂在一起的开发方式；而在最初拥抱ASP.NET时，我认为这种Code-Behind会是一种良好的职责分离。然而，ASP.NET在灵活性或扩展性方面带来的约束，使得它越来越不适合富客户端的开发了。于是，才有了借鉴Ruby On Rails思想的ASP.NET MVC出现。或许我的回答偏题了，但我想借ASP的这种发展来看待此次Struts 1.x退出历史舞台的事件，那就是任何产品都会步入晚年的衰落期，跟不上技术的发展，必然会被淘汰，没有什么好奇怪的。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/08/farewell-struts-1-dot-x/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -640,6 +638,10 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/18/present-and-future-of-spark/">Spark的现状与未来发展</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a>
       </li>
     
@@ -653,10 +655,6 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
     
       <li class="post">
         <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
       </li>
     
   </ul>
@@ -698,7 +696,7 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
-<a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 164%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 144%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
@@ -735,7 +733,7 @@ Spray是基于Akka之上的轻量级Scala库，提供对客户端与服务端RES
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
 <a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
-<a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 155%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>

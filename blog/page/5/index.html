@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="阅读了Rob Pike撰写的《Go在谷歌：以软件工程为目的的语言设计》，颇多感触。这些感触并不在于语言层面，或者Go这门语言的语法以及底层实现；而是因为语言设计者们在设计Go这门语言时，做出设计决策的合理性以及基于的事实与根据。正如此文标题所言，显然， &hellip;">
+  <meta name="description" content="因为Struts 1.x宣布退出了历史舞台，于是InfoQ组织了一次虚拟访谈。恰好在我现在的项目中，仍然能够看到Struts 1.x的身影，以我这浅薄的Web开发经验，也能有幸被丁雪丰邀请参加了这次虚拟访谈，和李锟、张龙就这一事件畅谈了各自的感受和想法。这篇虚拟访谈发表在了InfoQ上。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/08/farewell-struts-1-dot-x/">Struts 1.x一路走好</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-08T22:38:00+08:00" pubdate data-updated="true">May 8<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/08/farewell-struts-1-dot-x/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>因为Struts 1.x宣布退出了历史舞台，于是InfoQ组织了一次虚拟访谈。恰好在我现在的项目中，仍然能够看到Struts 1.x的身影，以我这浅薄的Web开发经验，也能有幸被丁雪丰邀请参加了这次虚拟访谈，和李锟、张龙就这一事件畅谈了各自的感受和想法。这篇<a href="http://www.infoq.com/cn/articles/virtual-panel-struts1?utm_source=infoq&amp;utm_medium=popular_links_homepage">虚拟访谈</a>发表在了InfoQ上。这里发布的则是我自己就主持人提出的问题给出的回答。</p>
+
+<p><strong>1. Struts是最早的MVC框架之一，影响了很多人，你是否还记得最早接触到它时，给你留下的印象是什么？</strong></p>
+
+<p><strong>张逸：</strong>从业15年来，我主要参与的开发工作除了早期的Windows Form应用开发外，主要还是集中在后端。用分层的角度来说，即工作在数据层、领域层以及服务层。虽然早已知道Struts的大名，甚至了解到所谓Struts+Spring+Hibernate几乎成为了Java企业开发的标配，却一直没有机会使用Struts。我当时工作的项目主要还是在微软的.NET平台上，经历了从ASP到ASP.NET，再到ASP.NET MVC的过程。在使用ASP时，我很质疑那种业务代码与表现代码混杂在一起的开发方式；而在最初拥抱ASP.NET时，我认为这种Code-Behind会是一种良好的职责分离。然而，ASP.NET在灵活性或扩展性方面带来的约束，使得它越来越不适合富客户端的开发了。于是，才有了借鉴Ruby On Rails思想的ASP.NET MVC出现。或许我的回答偏题了，但我想借ASP的这种发展来看待此次Struts 1.x退出历史舞台的事件，那就是任何产品都会步入晚年的衰落期，跟不上技术的发展，必然会被淘汰，没有什么好奇怪的。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/08/farewell-struts-1-dot-x/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -666,52 +713,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/">新人培养日记(一)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-14T20:37:00+08:00" pubdate data-updated="true">Mar 14<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2013/03/growup.jpg">
-我在公司内部Wiki找到了一份如何利用TDD驱动开发与设计的案例。这个案例的代码非常粗略，用C#编写。可贵之处在于它提供了20个已经写好的Story，并以正式项目中书写Story的方式编写。这个案例的需求类似一个真实软件系统，非常适合让新人体会应该如何开发一个完整地项目。它要求创建一个电子银行系统，提供银行的一些基本功能，例如客户管理、存取款等业务逻辑。</p>
-
-<p>最初我并不知道新手的真实水平，不过，可以假设他只具备基础的Java编程知识，对TDD、Refactoring以及OO有最初步的了解，但处于懵懵懂懂之间。我最初希望新手仅仅针对业务层进行设计与编码，但新手坚持要加上数据库访问以及Web页面。我认为这种做法有利于新手学习到更多的Java框架和库，便同意了这种请求。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/14/diary-1-for-coaching-fresh-man/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -750,6 +751,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/18/present-and-future-of-spark/">Spark的现状与未来发展</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a>
       </li>
     
@@ -763,10 +768,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/10/understanding-rdd-of-spark/">理解Spark的核心RDD</a>
       </li>
     
   </ul>
@@ -808,7 +809,7 @@
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
 <a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
-<a style="font-size: 155%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 164%" href="/blog/tags/big-data/">Big Data</a>
 <a style="font-size: 144%" href="/blog/tags/book/">Book</a>
 <a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
 <a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
@@ -845,7 +846,7 @@
 <a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
 <a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
 <a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
-<a style="font-size: 144%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 155%" href="/blog/tags/spark/">Spark</a>
 <a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>

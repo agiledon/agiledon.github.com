@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>Spark的现状与未来发展 - 逸言</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="Spark的发展 对于一个具有相当技术门槛与复杂度的平台，Spark从诞生到正式版本的成熟，经历的时间如此之短，让人感到惊诧。2009年，Spark诞生于伯克利大学AMPLab，最开初属于伯克利大学的研究性项目。它于2010年正式开源，并于2013年成为了Apache基金项目， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/11/18/present-and-future-of-spark/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="逸言" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">逸言</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Spark的现状与未来发展</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-18T13:03:00+08:00" pubdate data-updated="true">Nov 18<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Spark的发展</h2>
+
+<p>对于一个具有相当技术门槛与复杂度的平台，Spark从诞生到正式版本的成熟，经历的时间如此之短，让人感到惊诧。2009年，Spark诞生于伯克利大学AMPLab，最开初属于伯克利大学的研究性项目。它于2010年正式开源，并于2013年成为了Apache基金项目，并于2014年成为Apache基金的顶级项目，整个过程不到五年时间。</p>
+
+<p>由于Spark出自伯克利大学，使其在整个发展过程中都烙上了学术研究的标记，对于一个在数据科学领域的平台而言，这也是题中应有之义，它甚至决定了Spark的发展动力。Spark的核心RDD（resilient distributed datasets），以及流处理，SQL智能分析，机器学习等功能，都脱胎于学术研究论文，如下所示：</p>
+
+<blockquote><p>Discretized Streams: Fault-Tolerant Streaming Computation at Scale. Matei Zaharia, Tathagata Das, Haoyuan Li, Timothy Hunter, Scott Shenker, Ion Stoica. SOSP 2013. November 2013.</p>
+
+<p>Shark: SQL and Rich Analytics at Scale. Reynold Xin, Joshua Rosen, Matei Zaharia, Michael J. Franklin, Scott Shenker, Ion Stoica. SIGMOD 2013. June 2013.</p>
+
+<p>Discretized Streams: An Efficient and Fault-Tolerant Model for Stream Processing on Large Clusters. Matei Zaharia, Tathagata Das, Haoyuan Li, Scott Shenker, Ion Stoica. HotCloud 2012. June 2012.</p>
+
+<p>Shark: Fast Data Analysis Using Coarse-grained Distributed Memory (demo). Cliff Engle, Antonio Lupher, Reynold Xin, Matei Zaharia, Haoyuan Li, Scott Shenker, Ion Stoica. SIGMOD 2012. May 2012. Best Demo Award.</p>
+
+<p>Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing. Matei Zaharia, Mosharaf Chowdhury, Tathagata Das, Ankur Dave, Justin Ma, Murphy McCauley, Michael J. Franklin, Scott Shenker, Ion Stoica. NSDI 2012. April 2012. Best Paper Award and Honorable Mention for Community Award.</p>
+
+<p>Spark: Cluster Computing with Working Sets. Matei Zaharia, Mosharaf Chowdhury, Michael J. Franklin, Scott Shenker, Ion Stoica. HotCloud 2010. June 2010.</p></blockquote>
+
+<p>在大数据领域，只有深挖数据科学领域，走在学术前沿，才能在底层算法和模型方面走在前面，从而占据领先地位。Spark的这种学术基因，使得它从一开始就在大数据领域建立了一定优势。无论是性能，还是方案的统一性，对比传统的Hadoop，优势都非常明显。Spark提供的基于RDD的一体化解决方案，将MapReduce、Streaming、SQL、Machine Learning、Graph Processing等模型统一到一个平台下，并以一致的API公开，并提供相同的部署方案，使得Spark的工程应用领域变得更加广泛。</p>
+
+<!-- more -->
+
+
+<h2>Spark的代码活跃度</h2>
+
+<p>从Spark的版本演化看，足以说明这个平台旺盛的生命力以及社区的活跃度。尤其在2013年来，Spark进入了一个高速发展期，代码库提交与社区活跃度都有显著增长。以活跃度论，Spark在所有Apache基金会开源项目中，位列前三。相较于其他大数据平台或框架而言，Spark的代码库最为活跃，如下图所示：
+<img class="center" src="/images/2014/11/spark_commit.png"></p>
+
+<p>从2013年6月到2014年6月，参与贡献的开发人员从原来的68位增长到255位，参与贡献的公司也从17家上升到50家。在这50家公司中，有来自中国的阿里、百度、网易、腾讯、搜狐等公司。当然，代码库的代码行也从原来的63,000行增加到175,000行。下图为截止2014年Spark代码贡献者每个月的增长曲线：
+<img class="center" src="/images/2014/11/contributors.png"></p>
+
+<p>下图则显示了自从Spark将其代码部署到Github之后的提交数据，一共有8471次提交，11个分支，25次发布，326位代码贡献者。
+<img class="center" src="/images/2014/11/commit_history.png"></p>
+
+<p>目前的Spark版本为1.1.0。在该版本的代码贡献者列表中，出现了数十位国内程序员的身影。这些贡献者的多数工作主要集中在Bug Fix上，甚至包括Example的Bug Fix。由于1.1.0版本极大地增强了Spark SQL和MLib的功能，因此有部分贡献都集中在SQL和MLib的特性实现上。下图是Spark Master分支上最近发生的仍然处于Open状态的Pull Request：
+<img class="center" src="/images/2014/11/pull_request.png"></p>
+
+<p>可以看出，由于Spark仍然比较年轻，当运用到生产上时，可能发现一些小缺陷。而在代码整洁度方面，也随时在对代码进行着重构。例如，淘宝技术部在2013年就开始尝试将Spark on Yarn应用到生产环境上。他们在执行数据分析作业过程中，先后发现了DAGSchedular的内存泄露，不匹配的作业结束状态等缺陷，从而为Spark库贡献了几个比较重要的Pull Request。具体内容可以查看淘宝技术部的博客文章：《<a href="http://rdc.taobao.org/?p=525">Spark on Yarn：几个关键Pull Request</a>》。</p>
+
+<h2>Spark的社区活动</h2>
+
+<p>Spark非常重视社区活动，组织也极为规范，定期或不定期地举行与Spark相关的会议。会议分为两种，一种为Spark Summit，影响力巨大，可谓全球Spark顶尖技术人员的峰会。目前，已经于2013年和2014年在San Francisco连续召开了两届Summit大会。2015年，Spark Summit将分别在New York与San Francisco召开，其官方网站为：<a href="http://spark-summit.org/">http://spark-summit.org/</a>。</p>
+
+<p>在2014年的Spark Summit大会上，我们看到除了伯克利大学以及Databricks公司自身外，演讲者都来自最早开始运用和尝试Spark进行大数据分析的公司，包括最近非常火的音乐网站Spotify，全球最大专注金融交易的Sharethrough，专业大数据平台MapR、Cloudera，云计算的领先者Amazon，以及全球超大型企业IBM、Intel、SAP等。</p>
+
+<p>除了影响力巨大的Spark Summit之外，Spark社区还不定期地在全球各地召开小型的Meetup活动。Spark Meetup Group已经遍布北美、欧洲、亚洲和大洋洲。在中国，北京Spark Meetup已经召开了两次，并将于今年10月26日召开第三次Meetup。届时将有来自Intel中国研究院、淘宝、TalkingData、微软亚洲研究院、Databricks的工程师进行分享。下图为Spark Meetup Groups在全球的分布图：
+<img class="center" src="/images/2014/11/meetup_groups.png"></p>
+
+<h2>Spark的现在和未来</h2>
+
+<p>Spark的特色在于它首先为大数据应用提供了一个统一的平台。从数据处理层面看，模型可以分为批处理、交互式、流处理等多种方式；而从大数据平台而言，已有成熟的Hadoop、Cassandra、Mesos以及其他云的供应商。Spark整合了主要的数据处理模型，并能够很好地与现在主流的大数据平台集成。下图展现了Spark的这一特色：
+<img class="center" src="/images/2014/11/spark_arch01.png"></p>
+
+<p>这样的一种统一平台带来的优势非常明显。对于开发者而言，只需要学习一个平台，降低了学习曲线。对于用户而言，可以很方便地将Spark应用运行在Hadoop、Mesos等平台上面，满足了良好的可迁移性。统一的数据处理方式，也可以简化开发模型，降低平台的维护难度。</p>
+
+<p>Spark为大数据提供了通用算法的标准库，这些算法包括MapReduce、SQL、Streaming、Machine Learning与Graph Processing。同时，它还提供了对Scala、Python、Java（支持Java 8）和R语言的支持：
+<img class="center" src="/images/2014/11/spark_arch02.png"></p>
+
+<p>在最新发布的1.1.0版本中，对Spark SQL和Machine Learning库提供了增强。Spark SQL能够更加有效地在Spark中加载和查询结构型数据，同时还支持对JSON数据的操作，并提供了更加友好的Spark API。在Machine Learning方面，已经包含了超过15种算法，包括决策树、SVD、PCA，L-BFGS等。下图展现了Spark当前的技术栈：
+<img class="center" src="/images/2014/11/spark_arch03.png"></p>
+
+<p>在2014年的Spark Summit上，来自Databricks公司的Patrick Wendell展望了Spark的未来。他在演讲中提到了Spark的目标，包括：</p>
+
+<ul>
+<li>Empower data scientists and engineers</li>
+<li>Expressive, clean APIs</li>
+<li>Unified runtime across many environments</li>
+<li>Powerful standard libraries</li>
+</ul>
+
+
+<p>在演讲中，他提到在Spark最近的版本中，最重要的核心组件为Spark SQL。接下来的几次发布，除了在性能上更加优化（包括代码生成和快速的Join操作）外，还要提供对SQL语句的扩展和更好的集成（利用SchemaRDD与Hadoop、NoSQL以及RDBMS的集成）。在将来的版本中，要为MLLib增加更多的算法，这些算法除了传统的统计算法外，还包括学习算法，并提供与R语言更好的集成，从而能够为数据科学家提供更好的选择，根据场景来选择Spark和R。</p>
+
+<p>Spark的发展会结合硬件的发展趋势。首先，内存会变得越来越便宜，256GB内存以上的机器会变得越来越常见，而对于硬盘，则SSD硬盘也将慢慢成为服务器的标配。由于Spark是基于内存的大数据处理平台，因而在处理过程中，会因为数据存储在硬盘中，而导致性能瓶颈。随着机器内存容量的逐步增加，类似HDFS这种存储在磁盘中的分布式文件系统将慢慢被共享内存的分布式存储系统所替代，诸如同样来自伯克利大学的AMPLab实验室的Tachyon就提供了远超HDFS的性能表现。因此，未来的Spark会在内部的存储接口上发生较大的变化，能够更好地支持SSD、以及诸如Tachyon之类的共享内存系统。事实上，在Spark的最近版本里，已经开始支持Tachyon了。</p>
+
+<p>根据Spark的路线图，Databricks会在近三个月陆续发布1.2.0和1.3.0版本。其中，1.2.0版本会对存储方面的API进行重构，在1.3.0之上的版本，则会推出结合Spark和R的SparkR。除了前面提到的SQL与MLLib之外，未来的Spark对于Streaming、GraphX都有不同程度的增强，并能够更好地支持YARN。</p>
+
+<h2>Spark的应用</h2>
+
+<p>目前，Spark的正式版本得到了部分Hadoop主流厂商的支持，如下企业或平台发布的Hadoop版本中，都包含了Spark：
+<img class="center" src="/images/2014/11/vendor.png"></p>
+
+<p>这说明业界已经认可了Spark，Spark也被许多企业尤其是互联网企业广泛应用到商业项目中。根据Spark的官方统计，目前参与Spark的贡献以及将Spark运用在商业项目的公司大约有80余家（https://cwiki.apache.org/confluence/display/SPARK/Powered+By+Spark）。在国内，投身Spark阵营的公司包括阿里、百度、腾讯、网易、搜狐等。在San Francisco召开的Spark Summit 2014大会上，参会的演讲嘉宾分享了在音乐推荐（Spotify）、实时审计的数据分析（Sharethrough）、流在高速率分析中的运用（Cassandra）、文本分析（IBM）、客户智能实时推荐（Graphflow）等诸多在应用层面的话题，这足以说明Spark的应用程度。</p>
+
+<p>但是，整体而言，目前开始应用Spark的企业主要集中在互联网领域。制约传统企业采用Spark的因素主要包括三个方面。首先，取决于平台的成熟度。传统企业在技术选型上相对稳健，当然也可以说是保守。如果一门技术尤其是牵涉到主要平台的选择，会变得格外慎重。如果没有经过多方面的验证，并从业界获得成功经验，不会轻易选定。其次是对SQL的支持。传统企业的数据处理主要集中在关系型数据库，而且有大量的遗留系统存在。在这些遗留系统中，多数数据处理都是通过SQL甚至存储过程来完成。如果一个大数据平台不能很好地支持关系型数据库的SQL，就会导致迁移数据分析业务逻辑的成本太大。其三则是团队与技术的学习曲线。如果没有熟悉该平台以及该平台相关技术的团队成员，企业就会担心开发进度、成本以及可能的风险。</p>
+
+<p>Spark在努力解决这三个问题。随着1.0.2版本的发布，Spark得到了更多商用案例的验证。Spark虽然依旧保持年轻的活力，但已经具备堪称成熟的平台功能。至于SQL支持，Spark非常。在1.0.2版本发布之前，就认识到基于HIVE的Shark存在的不足，从而痛下决心，决定在新版本中抛弃Shark，而决定引入新的SQL模块。如今，在Spark 1.1.0版本中，Spark SQL的支持已经相对完善，足以支持企业应用中对SQL迁移的需求。关于Spark的学习曲线，主要的学习内容还是在于对RDD的理解。由于Spark为多种算法提供了统一的编程模型、部署模式，搭建了一个大数据的一体化方案，倘若企业的大数据分析需要应对多种场景，那么，Spark这样的架构反而使得它的学习曲线更低，同时还能降低部署成本。Spark可以很好地与Hadoop、Cassandra等平台集成，同时也能部署到YARN上。如果企业已经具备大数据分析的能力，原有掌握的经验仍旧可以用到Spark上。虽然Spark是用Scala编写，官方也更建议用户调用Scala的API，但它同时也提供了Java和Python的接口，非常体贴地满足了Java企业用户或非JVM用户。如果抱怨Java的冗赘，则Spark新版本对Java 8的支持让Java API变得与Scala API同样的简洁（因为缺少类型推断略显冗余）而强大。</p>
+
+<p>显然，随着Spark的逐渐成熟，并在活跃社区的推动下，它所提供的强大功能一定能得到更多技术团队和企业的青睐。相信在不远的将来会有更多传统企业开始尝试使用Spark。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-18T13:03:00+08:00" pubdate data-updated="true">Nov 18<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/architecture/'>Architecture</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='tag' href='/blog/tags/big-data/'>Big Data</a>, <a class='tag' href='/blog/tags/spark/'>Spark</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/28/are-you-writing-auto-test-today/" title="Previous Post: 今天你写了自动化测试吗">&laquo; 今天你写了自动化测试吗</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/zhangyi03.jpg" align="center"/></p>
+  	<p>
+    <strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Lead Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/18/present-and-future-of-spark/">Spark的现状与未来发展</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+<section>
+  <h1>Tag Cloud</h1>
+  <ul class="tag-cloud">
+<a style="font-size: 128%" href="/blog/tags/agile/">Agile</a>
+<a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
+<a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
+<a style="font-size: 164%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 144%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
+<a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 155%" href="/blog/tags/ddd/">DDD</a>
+<a style="font-size: 205%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 128%" href="/blog/tags/fp/">FP</a>
+<a style="font-size: 100%" href="/blog/tags/go/">GO</a>
+<a style="font-size: 100%" href="/blog/tags/guava/">Guava</a>
+<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
+<a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
+<a style="font-size: 100%" href="/blog/tags/language/">Language</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
+<a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
+<a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
+<a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
+<a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
+<a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
+<a style="font-size: 155%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
+<a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 128%" href="/blog/tags/test/">Test</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
+<a style="font-size: 128%" href="/blog/tags/visualization/">Visualization</a>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Visitor</h1>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/11/18/present-and-future-of-spark/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/11/18/present-and-future-of-spark/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
