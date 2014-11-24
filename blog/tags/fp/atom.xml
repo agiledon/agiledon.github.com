@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: FP | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/fp/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-11-18T14:27:59+08:00</updated>
+  <updated>2014-11-24T13:16:03+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/10/08/change-and-stable-of-design/"/>
     <updated>2014-10-08T20:51:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/10/08/change-and-stable-of-design</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/thinking.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/thinking.jpg"></p>
 
 <p>古希腊哲学家巴门尼德认为：“人的思想和言语都有一个载体，如果你在这一时间和另外一个时间想到或者谈到同样一件东西，那就说明这件东西在这段时间内没有变化，如有变化的话，你说的就不是同一件东西。”</p>
 
@@ -55,86 +55,77 @@
     <updated>2014-06-18T23:57:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/06/18/magic-scala-1-call-by-name</id>
     <content type="html"><![CDATA[<p>在Scala中，调用函数有两种形式：Call by value（按值调用）和call by name（按名称调用）。若是call by value，会先计算参数的值，然后再传递给被调用的函数；若是call by name，参数会到实际使用的时候才计算。例如：
-{% codeblock lang:scala %}
-val logEnable = false</p>
-
-<p>def log(msg: String) =</p>
-
-<pre><code>if (logEnable) println(msg)
-</code></pre>
-
-<p>val MSG = "programing is running"</p>
-
-<p>log(MSG + 1 / 0)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">logEnable</span> <span class="k">=</span> <span class="kc">false</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span><span class="n">logEnable</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">val</span> <span class="nc">MSG</span> <span class="k">=</span> <span class="s">&quot;programing is running&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">log</span><span class="o">(</span><span class="nc">MSG</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">0</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>此时的log函数是call by value。因此在调用log函数时，会先计算传入的参数，此时会计算MSG + 1/0。由于表达式中有0作为被除数，因此会抛出异常：
-{% codeblock %}
-Exception in thread "main" java.lang.ArithmeticException: / by zero</p>
-
-<pre><code>    at Main$.main(scala-script352098905369979205.scala:16)
-    at Main.main(scala-script352098905369979205.scala)
-</code></pre>
-
-<p>exit value is 1
-Program exited.
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>Exception in thread "main" java.lang.ArithmeticException: / by zero&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>    at Main$.main(scala-script352098905369979205.scala:16)
+</span><span class='line'>    at Main.main(scala-script352098905369979205.scala)
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>exit value is 1
+</span><span class='line'>Program exited.</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>如果修改log的定义为：
-{% codeblock lang:scala %}
-def log(msg: => String) =</p>
-
-<pre><code> if (logEnable) println(msg)
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">String</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">if</span> <span class="o">(</span><span class="n">logEnable</span><span class="o">)</span> <span class="n">println</span><span class="o">(</span><span class="n">msg</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>当调用log函数：log(MSG + 1/0)时，它首先并不会计算MSG + 1/0表达式，而是先执行log的函数体，即判断logEnable的值。此时logEnable值为false，此时就不会执行该分支println(msg)。既然不会执行println，就不会计算MSG + 1/0。因此就不会抛出异常。</p>
 
 <p>再看另外一个例子。首先定义一个函数：
-{% codeblock lang:scala %}
-def getOneWhatever():Int = {</p>
-
-<pre><code> println("calling getOneWhatever")
- 1
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">getOneWhatever</span><span class="o">()</span><span class="k">:</span><span class="kt">Int</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">&quot;calling getOneWhatever&quot;</span><span class="o">)</span>
+</span><span class='line'> <span class="mi">1</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>然后，再定义两个函数，分别用call by value和call by name的方式：
-{% codeblock lang:scala %}
-def callByValue(x: Int) = {</p>
-
-<pre><code> println("x1=" + x)
- println("x2=" + x)
-</code></pre>
-
-<p>}</p>
-
-<p>def callByName(x: => Int) = {</p>
-
-<pre><code> println("x1=" + x)
- println("x2=" + x)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">callByValue</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">&quot;x1=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'> <span class="n">println</span><span class="o">(</span><span class="s">&quot;x2=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="n">callByName</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Int</span><span class="o">)</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">&quot;x1=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'> <span class="n">println</span><span class="o">(</span><span class="s">&quot;x2=&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>如果执行callByValue(getOneWhatever())，则结果为：
-{% codeblock %}
-calling getOneWhatever
-x1=1
-x2=1
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>calling getOneWhatever
+</span><span class='line'>x1=1
+</span><span class='line'>x2=1</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>若执行callByName(getOneWhatever())，则结果为：
-{% codeblock %}
-calling getOneWhatever
-x1=1
-calling getOneWhatever
-x2=1
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>calling getOneWhatever
+</span><span class='line'>x1=1
+</span><span class='line'>calling getOneWhatever
+</span><span class='line'>x2=1</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意看二者的区别，采用by name的方式，getOneWhatever函数被执行了两次，这是因为在callByName函数中，传入的参数被调用了两次。</p>
 ]]></content>

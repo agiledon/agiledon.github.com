@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Big Data | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/big-data/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-11-18T14:27:59+08:00</updated>
+  <updated>2014-11-24T13:16:03+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -44,16 +44,16 @@
 <h2>Spark的代码活跃度</h2>
 
 <p>从Spark的版本演化看，足以说明这个平台旺盛的生命力以及社区的活跃度。尤其在2013年来，Spark进入了一个高速发展期，代码库提交与社区活跃度都有显著增长。以活跃度论，Spark在所有Apache基金会开源项目中，位列前三。相较于其他大数据平台或框架而言，Spark的代码库最为活跃，如下图所示：
-{% img center /images/2014/11/spark_commit.png %}</p>
+<img class="center" src="/images/2014/11/spark_commit.png"></p>
 
 <p>从2013年6月到2014年6月，参与贡献的开发人员从原来的68位增长到255位，参与贡献的公司也从17家上升到50家。在这50家公司中，有来自中国的阿里、百度、网易、腾讯、搜狐等公司。当然，代码库的代码行也从原来的63,000行增加到175,000行。下图为截止2014年Spark代码贡献者每个月的增长曲线：
-{% img center /images/2014/11/contributors.png %}</p>
+<img class="center" src="/images/2014/11/contributors.png"></p>
 
 <p>下图则显示了自从Spark将其代码部署到Github之后的提交数据，一共有8471次提交，11个分支，25次发布，326位代码贡献者。
-{% img center /images/2014/11/commit_history.png %}</p>
+<img class="center" src="/images/2014/11/commit_history.png"></p>
 
 <p>目前的Spark版本为1.1.0。在该版本的代码贡献者列表中，出现了数十位国内程序员的身影。这些贡献者的多数工作主要集中在Bug Fix上，甚至包括Example的Bug Fix。由于1.1.0版本极大地增强了Spark SQL和MLib的功能，因此有部分贡献都集中在SQL和MLib的特性实现上。下图是Spark Master分支上最近发生的仍然处于Open状态的Pull Request：
-{% img center /images/2014/11/pull_request.png %}</p>
+<img class="center" src="/images/2014/11/pull_request.png"></p>
 
 <p>可以看出，由于Spark仍然比较年轻，当运用到生产上时，可能发现一些小缺陷。而在代码整洁度方面，也随时在对代码进行着重构。例如，淘宝技术部在2013年就开始尝试将Spark on Yarn应用到生产环境上。他们在执行数据分析作业过程中，先后发现了DAGSchedular的内存泄露，不匹配的作业结束状态等缺陷，从而为Spark库贡献了几个比较重要的Pull Request。具体内容可以查看淘宝技术部的博客文章：《<a href="http://rdc.taobao.org/?p=525">Spark on Yarn：几个关键Pull Request</a>》。</p>
 
@@ -64,20 +64,20 @@
 <p>在2014年的Spark Summit大会上，我们看到除了伯克利大学以及Databricks公司自身外，演讲者都来自最早开始运用和尝试Spark进行大数据分析的公司，包括最近非常火的音乐网站Spotify，全球最大专注金融交易的Sharethrough，专业大数据平台MapR、Cloudera，云计算的领先者Amazon，以及全球超大型企业IBM、Intel、SAP等。</p>
 
 <p>除了影响力巨大的Spark Summit之外，Spark社区还不定期地在全球各地召开小型的Meetup活动。Spark Meetup Group已经遍布北美、欧洲、亚洲和大洋洲。在中国，北京Spark Meetup已经召开了两次，并将于今年10月26日召开第三次Meetup。届时将有来自Intel中国研究院、淘宝、TalkingData、微软亚洲研究院、Databricks的工程师进行分享。下图为Spark Meetup Groups在全球的分布图：
-{% img center /images/2014/11/meetup_groups.png %}</p>
+<img class="center" src="/images/2014/11/meetup_groups.png"></p>
 
 <h2>Spark的现在和未来</h2>
 
 <p>Spark的特色在于它首先为大数据应用提供了一个统一的平台。从数据处理层面看，模型可以分为批处理、交互式、流处理等多种方式；而从大数据平台而言，已有成熟的Hadoop、Cassandra、Mesos以及其他云的供应商。Spark整合了主要的数据处理模型，并能够很好地与现在主流的大数据平台集成。下图展现了Spark的这一特色：
-{% img center /images/2014/11/spark_arch01.png %}</p>
+<img class="center" src="/images/2014/11/spark_arch01.png"></p>
 
 <p>这样的一种统一平台带来的优势非常明显。对于开发者而言，只需要学习一个平台，降低了学习曲线。对于用户而言，可以很方便地将Spark应用运行在Hadoop、Mesos等平台上面，满足了良好的可迁移性。统一的数据处理方式，也可以简化开发模型，降低平台的维护难度。</p>
 
 <p>Spark为大数据提供了通用算法的标准库，这些算法包括MapReduce、SQL、Streaming、Machine Learning与Graph Processing。同时，它还提供了对Scala、Python、Java（支持Java 8）和R语言的支持：
-{% img center /images/2014/11/spark_arch02.png %}</p>
+<img class="center" src="/images/2014/11/spark_arch02.png"></p>
 
 <p>在最新发布的1.1.0版本中，对Spark SQL和Machine Learning库提供了增强。Spark SQL能够更加有效地在Spark中加载和查询结构型数据，同时还支持对JSON数据的操作，并提供了更加友好的Spark API。在Machine Learning方面，已经包含了超过15种算法，包括决策树、SVD、PCA，L-BFGS等。下图展现了Spark当前的技术栈：
-{% img center /images/2014/11/spark_arch03.png %}</p>
+<img class="center" src="/images/2014/11/spark_arch03.png"></p>
 
 <p>在2014年的Spark Summit上，来自Databricks公司的Patrick Wendell展望了Spark的未来。他在演讲中提到了Spark的目标，包括：</p>
 
@@ -98,7 +98,7 @@
 <h2>Spark的应用</h2>
 
 <p>目前，Spark的正式版本得到了部分Hadoop主流厂商的支持，如下企业或平台发布的Hadoop版本中，都包含了Spark：
-{% img center /images/2014/11/vendor.png %}</p>
+<img class="center" src="/images/2014/11/vendor.png"></p>
 
 <p>这说明业界已经认可了Spark，Spark也被许多企业尤其是互联网企业广泛应用到商业项目中。根据Spark的官方统计，目前参与Spark的贡献以及将Spark运用在商业项目的公司大约有80余家（https://cwiki.apache.org/confluence/display/SPARK/Powered+By+Spark）。在国内，投身Spark阵营的公司包括阿里、百度、腾讯、网易、搜狐等。在San Francisco召开的Spark Summit 2014大会上，参会的演讲嘉宾分享了在音乐推荐（Spotify）、实时审计的数据分析（Sharethrough）、流在高速率分析中的运用（Cassandra）、文本分析（IBM）、客户智能实时推荐（Graphflow）等诸多在应用层面的话题，这足以说明Spark的应用程度。</p>
 
@@ -115,7 +115,7 @@
     <link href="http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark/"/>
     <updated>2014-09-10T08:54:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/09/10/understanding-rdd-of-spark</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/spark_architecture.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/spark_architecture.jpg">
 与许多专有的大数据处理平台不同，Spark建立在统一抽象的RDD之上，使得它可以以基本一致的方式应对不同的大数据处理场景，包括MapReduce，Streaming，SQL，Machine Learning以及Graph等。这即Matei Zaharia所谓的“设计一个通用的编程抽象（Unified Programming Abstraction）。这正是Spark这朵小火花让人着迷的地方。</p>
 
 <p>要理解Spark，就需得理解RDD。</p>
@@ -136,46 +136,42 @@
 <p>首先，narrow dependencies可以支持在同一个cluster node上以管道形式执行多条命令，例如在执行了map后，紧接着执行filter。相反，wide dependencies需要所有的父分区都是可用的，可能还需要调用类似MapReduce之类的操作进行跨节点传递。</p>
 
 <p>其次，则是从失败恢复的角度考虑。narrow dependencies的失败恢复更有效，因为它只需要重新计算丢失的parent partition即可，而且可以并行地在不同节点进行重计算。而wide dependencies牵涉到RDD各级的多个Parent Partitions。下图说明了narrow dependencies与wide dependencies之间的区别：
-{% img center /images/2014/rdd_dependency.png %}</p>
+<img class="center" src="/images/2014/rdd_dependency.png"></p>
 
 <p>本图来自Matei Zaharia撰写的论文An Architecture for Fast and General Data Processing on Large Clusters。图中，一个box代表一个RDD，一个带阴影的矩形框代表一个partition。</p>
 
 <p><strong>RDD如何保障数据处理效率？</strong></p>
 
 <p>RDD提供了两方面的特性persistence和patitioning，用户可以通过persist与patitionBy函数来控制RDD的这两个方面。RDD的分区特性与并行计算能力(RDD定义了parallerize函数)，使得Spark可以更好地利用可伸缩的硬件资源。若将分区与持久化二者结合起来，就能更加高效地处理海量数据。例如：
-{% codeblock lang:scala %}
-input.map(parseArticle _).partitionBy(partitioner).cache()
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">input</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">parseArticle</span> <span class="k">_</span><span class="o">).</span><span class="n">partitionBy</span><span class="o">(</span><span class="n">partitioner</span><span class="o">).</span><span class="n">cache</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>partitionBy函数需要接受一个Partitioner对象，如：
-{% codeblock lang:scala %}
-val partitioner = new HashPartitioner(sc.defaultParallelism)
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">partitioner</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HashPartitioner</span><span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="n">defaultParallelism</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>RDD本质上是一个内存数据集，在访问RDD时，指针只会指向与操作相关的部分。例如存在一个面向列的数据结构，其中一个实现为Int的数组，另一个实现为Float的数组。如果只需要访问Int字段，RDD的指针可以只访问Int数组，避免了对整个数据结构的扫描。</p>
 
 <p>RDD将操作分为两类：transformation与action。无论执行了多少次transformation操作，RDD都不会真正执行运算，只有当action操作被执行时，运算才会触发。而在RDD的内部实现机制中，底层接口则是基于迭代器的，从而使得数据访问变得更高效，也避免了大量中间结果对内存的消耗。</p>
 
 <p>在实现时，RDD针对transformation操作，都提供了对应的继承自RDD的类型，例如map操作会返回MappedRDD，而flatMap则返回FlatMappedRDD。当我们执行map或flatMap操作时，不过是将当前RDD对象传递给对应的RDD对象而已。例如：
-{% codeblock lang:scala %}
-def map<a href="f:%20T%20=>%20U">U: ClassTag</a>: RDD[U] = new MappedRDD(this, sc.clean(f))
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">map</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;f:%20T%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="k">:</span> <span class="kt">ClassTag&lt;/a</span><span class="k">&gt;:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">U</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MappedRDD</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">sc</span><span class="o">.</span><span class="n">clean</span><span class="o">(</span><span class="n">f</span><span class="o">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这些继承自RDD的类都定义了compute函数。该函数会在action操作被调用时触发，在函数内部是通过迭代器进行对应的转换操作：
-{% codeblock lang:scala %}
-private[spark]
-class MappedRDD<a href="prev:%20RDD[T],%20f:%20T%20=>%20U">U: ClassTag, T: ClassTag</a>
-  extends RDD<a href="prev">U</a> {</p>
-
-<p>  override def getPartitions: Array[Partition] = firstParent[T].partitions</p>
-
-<p>  override def compute(split: Partition, context: TaskContext) =</p>
-
-<pre><code>firstParent[T].iterator(split, context).map(f)
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MappedRDD</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;prev:%20RDD[T],%20f:%20T%20=&gt;%20U&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">,</span> <span class="n">T</span><span class="k">:</span> <span class="kt">ClassTag&lt;/a&gt;</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">RDD</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;prev&quot;</span><span class="o">&gt;</span><span class="n">U</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">getPartitions</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">Partition</span><span class="o">]</span> <span class="k">=</span> <span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">partitions</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">compute</span><span class="o">(</span><span class="n">split</span><span class="k">:</span> <span class="kt">Partition</span><span class="o">,</span> <span class="n">context</span><span class="k">:</span> <span class="kt">TaskContext</span><span class="o">)</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">firstParent</span><span class="o">[</span><span class="kt">T</span><span class="o">].</span><span class="n">iterator</span><span class="o">(</span><span class="n">split</span><span class="o">,</span> <span class="n">context</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><strong>RDD对容错的支持</strong></p>
 
@@ -253,7 +249,7 @@ class MappedRDD<a href="prev:%20RDD[T],%20f:%20T%20=>%20U">U: ClassTag, T: Class
 <p>Spark可以支持一台机器扩展至数十个CPU core，它实现的是线程之间最小共享。若内存足够大，则制约运算性能的就是网络带宽与CPU数。</p>
 
 <p>Spark官方利用Amazon EC2的环境对Spark进行了基准测评。例如，在交互方式下进行数据挖掘（Interative Data Mining），租用Amazon EC2的100个实例，配置为8核、68GB的内存。对1TB的维基百科页面查阅日志（维基百科两年的数据）进行数据挖掘。在查询时，针对整个输入数据进行全扫描，只需要耗费5-7秒的时间。如下图所示：
-{% img center /images/2014/sparkbenchmark.png %}</p>
+<img class="center" src="/images/2014/sparkbenchmark.png"></p>
 
 <p>在Matei Zaharia的Spark论文中还给出了一些使用Spark的真实案例。视频处理公司Conviva，使用Spark将数据子集加载到RDD中。报道说明，对于200GB压缩过的数据进行查询和聚合操作，并运行在两台Spark机器上，占用内存为96GB，执行完全部操作需要耗费30分钟左右的时间。同比情况下，Hadoop需要耗费20小时。注意：之所以200GB的压缩数据只占用96GB内存，是因为RDD的处理方式，使得我们可以只加载匹配客户过滤的行和列，而非所有压缩数据。</p>
 ]]></content>
@@ -265,90 +261,89 @@ class MappedRDD<a href="prev:%20RDD[T],%20f:%20T%20=>%20U">U: ClassTag, T: Class
     <updated>2014-04-05T09:39:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/04/05/spark-overview</id>
     <content type="html"><![CDATA[<p>Spark具有先进的DAG执行引擎，支持cyclic data flow和内存计算。因此，它的运行速度，在内存中是Hadoop MapReduce的100倍，在磁盘中是10倍。如下是对比图：
-{% img center /images/2014/spark-logistic-regression.png %}</p>
+<img class="center" src="/images/2014/spark-logistic-regression.png"></p>
 
 <p>这样的性能指标，真的让人心动啊！</p>
 
 <p>Spark的API更为简单，提供了80个High Level的操作，可以很好地支持并行应用。它的API支持Scala、Java和Python，并且可以支持交互式的运行Scala与Python。来看看Spark统计Word字数的程序：
-{% codeblock lang:scala %}
-file = spark.textFile("hdfs://...")</p>
-
-<p>file.flatMap(line => line.split(" "))</p>
-
-<pre><code>.map(word =&gt; (word, 1))
-.reduceByKey(_ + _)
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">file</span> <span class="k">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">textFile</span><span class="o">(</span><span class="s">&quot;hdfs://...&quot;</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">file</span><span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="n">line</span> <span class="k">=&gt;</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">))&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;.</span><span class="n">map</span><span class="o">(</span><span class="n">word</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'><span class="o">.</span><span class="n">reduceByKey</span><span class="o">(</span><span class="k">_</span> <span class="o">+</span> <span class="k">_</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>看看Hadoop的Word Count例子，简直弱爆了，爆表的节奏啊：
-{% codeblock lang:java %}
-public class WordCount {
-  public static class TokenizerMapper</p>
-
-<pre><code>   extends Mapper&lt;Object, Text, Text, IntWritable&gt;{
-
-private final static IntWritable one = new IntWritable(1);
-private Text word = new Text();
-
-public void map(Object key, Text value, Context context
-                ) throws IOException, InterruptedException {
-  StringTokenizer itr = new StringTokenizer(value.toString());
-  while (itr.hasMoreTokens()) {
-    word.set(itr.nextToken());
-    context.write(word, one);
-  }
-}
-</code></pre>
-
-<p>  }</p>
-
-<p>  public static class IntSumReducer</p>
-
-<pre><code>   extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; {
-private IntWritable result = new IntWritable();
-
-
-public void reduce(Text key, Iterable&lt;IntWritable&gt; values,
-                   Context context
-                   ) throws IOException, InterruptedException {
-  int sum = 0;
-  for (IntWritable val : values) {
-    sum += val.get();
-  }
-  result.set(sum);
-  context.write(key, result);
-}
-</code></pre>
-
-<p>  }</p>
-
-<p>  public static void main(String[] args) throws Exception {</p>
-
-<pre><code>Configuration conf = new Configuration();
-String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-if (otherArgs.length != 2) {
-  System.err.println("Usage: wordcount &lt;in&gt; &lt;out&gt;");
-  System.exit(2);
-}
-Job job = new Job(conf, "word count");
-job.setJarByClass(WordCount.class);
-job.setMapperClass(TokenizerMapper.class);
-job.setCombinerClass(IntSumReducer.class);
-job.setReducerClass(IntSumReducer.class);
-job.setOutputKeyClass(Text.class);
-job.setOutputValueClass(IntWritable.class);
-FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
-FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
-System.exit(job.waitForCompletion(true) ? 0 : 1);
-</code></pre>
-
-<p>  }
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">WordCount</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">TokenizerMapper</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kd">extends</span> <span class="n">Mapper</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">Text</span><span class="o">,</span> <span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;{</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">IntWritable</span> <span class="n">one</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">Text</span> <span class="n">word</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Text</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">map</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">,</span> <span class="n">Text</span> <span class="n">value</span><span class="o">,</span> <span class="n">Context</span> <span class="n">context</span>
+</span><span class='line'>                <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">StringTokenizer</span> <span class="n">itr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>  <span class="k">while</span> <span class="o">(</span><span class="n">itr</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">word</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">itr</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">word</span><span class="o">,</span> <span class="n">one</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">IntSumReducer</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>   <span class="kd">extends</span> <span class="n">Reducer</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Text</span><span class="o">,</span><span class="n">IntWritable</span><span class="o">,</span><span class="n">Text</span><span class="o">,</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">IntWritable</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntWritable</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">reduce</span><span class="o">(</span><span class="n">Text</span> <span class="n">key</span><span class="o">,</span> <span class="n">Iterable</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">IntWritable</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">values</span><span class="o">,</span>
+</span><span class='line'>                   <span class="n">Context</span> <span class="n">context</span>
+</span><span class='line'>                   <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="n">IntWritable</span> <span class="n">val</span> <span class="o">:</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">sum</span> <span class="o">+=</span> <span class="n">val</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">context</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+</span><span class='line'><span class="n">String</span><span class="o">[]</span> <span class="n">otherArgs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GenericOptionsParser</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="n">args</span><span class="o">).</span><span class="na">getRemainingArgs</span><span class="o">();</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">otherArgs</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Usage: wordcount &amp;lt;in&amp;gt; &amp;lt;out&amp;gt;&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">Job</span> <span class="n">job</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Job</span><span class="o">(</span><span class="n">conf</span><span class="o">,</span> <span class="s">&quot;word count&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setJarByClass</span><span class="o">(</span><span class="n">WordCount</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setMapperClass</span><span class="o">(</span><span class="n">TokenizerMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setCombinerClass</span><span class="o">(</span><span class="n">IntSumReducer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setReducerClass</span><span class="o">(</span><span class="n">IntSumReducer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setOutputKeyClass</span><span class="o">(</span><span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setOutputValueClass</span><span class="o">(</span><span class="n">IntWritable</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">FileInputFormat</span><span class="o">.</span><span class="na">addInputPath</span><span class="o">(</span><span class="n">job</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">otherArgs</span><span class="o">[</span><span class="mi">0</span><span class="o">]));</span>
+</span><span class='line'><span class="n">FileOutputFormat</span><span class="o">.</span><span class="na">setOutputPath</span><span class="o">(</span><span class="n">job</span><span class="o">,</span> <span class="k">new</span> <span class="n">Path</span><span class="o">(</span><span class="n">otherArgs</span><span class="o">[</span><span class="mi">1</span><span class="o">]));</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="n">job</span><span class="o">.</span><span class="na">waitForCompletion</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>当然，Hadoop有自己的一套框架，为整个的大数据处理做支持，例如HIVE，例如HDFS。Spark也不逊色，也有自己的SQL框架支持，即Shark，此外还支持流处理、机器学习以及图运算：
-{% img center /images/2014/spark-stack.png %}</p>
+<img class="center" src="/images/2014/spark-stack.png"></p>
 
 <p>Spark并没有自己的分布式存储方案。不过已经有了强悍的HDFS，同为Aparch旗下的Spark又何必再造一个差不多的轮子呢？所以Spark可以很好地与Hadoop集成。例如可以运行在Hadoop 2的YARN集群下，可以读取现有的Hadoop数据。当然，Spark自身也支持standadlone的部署，或者部署到EC2等云平台下。除了可以读取HDFS数据，它还可以读取HBase，Cassandra等NoSQL数据库。这扩大了Spark的适用范围。</p>
 
@@ -369,115 +364,114 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
 
 
 <p>要直接导入Jar包，对于2.1版本而言，因为仅提供了源代码，所以在下载了Nutch之后，需要使用ant命令编译。编译后的Jar包会放在${NUTCH_HOME}下的runtime/local/lib下。如果想在pom.xml下管理依赖，而非直接导入，则需要查看Nutch 2.1究竟依赖了哪些Java库，并要了解这些库的版本。这个依赖管理还是比较麻烦的。所以，我在这里直接给出pom.xml文件。
-{% codeblock lang:xml %}
-&lt;?xml version="1.0" encoding="UTF-8"?>
-&lt;project xmlns="http://maven.apache.org/POM/4.0.0"</p>
-
-<pre><code>     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
-&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-
-&lt;groupId&gt;NutchSample&lt;/groupId&gt;
-&lt;artifactId&gt;NutchSample&lt;/artifactId&gt;
-&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-
-&lt;repositories&gt;
-    &lt;repository&gt;
-        &lt;id&gt;maven-restlet&lt;/id&gt;
-        &lt;name&gt;Public online Restlet repository&lt;/name&gt;
-        &lt;url&gt;http://maven.restlet.org&lt;/url&gt;
-    &lt;/repository&gt;
-&lt;/repositories&gt;
-
-&lt;dependencies&gt;
-    &lt;dependency&gt;
-        &lt;groupId&gt;junit&lt;/groupId&gt;
-        &lt;artifactId&gt;junit&lt;/artifactId&gt;
-        &lt;version&gt;4.11&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.nutch&lt;/groupId&gt;
-        &lt;artifactId&gt;nutch&lt;/artifactId&gt;
-        &lt;version&gt;2.1&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.hsqldb&lt;/groupId&gt;
-        &lt;artifactId&gt;hsqldb&lt;/artifactId&gt;
-        &lt;version&gt;2.2.8&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.solr&lt;/groupId&gt;
-        &lt;artifactId&gt;solr-core&lt;/artifactId&gt;
-        &lt;version&gt;3.4.0&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;
-        &lt;artifactId&gt;hadoop-core&lt;/artifactId&gt;
-        &lt;version&gt;1.0.3&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;
-        &lt;artifactId&gt;hadoop-test&lt;/artifactId&gt;
-        &lt;version&gt;1.0.3&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
-        &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
-        &lt;version&gt;1.6.1&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.gora&lt;/groupId&gt;
-        &lt;artifactId&gt;gora-core&lt;/artifactId&gt;
-        &lt;version&gt;0.2.1&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.apache.gora&lt;/groupId&gt;
-        &lt;artifactId&gt;gora-sql&lt;/artifactId&gt;
-        &lt;version&gt;0.1.1-incubating&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.jdom&lt;/groupId&gt;
-        &lt;artifactId&gt;jdom&lt;/artifactId&gt;
-        &lt;version&gt;1.1&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.elasticsearch&lt;/groupId&gt;
-        &lt;artifactId&gt;elasticsearch&lt;/artifactId&gt;
-        &lt;version&gt;0.19.4&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.restlet.jse&lt;/groupId&gt;
-        &lt;artifactId&gt;org.restlet&lt;/artifactId&gt;
-        &lt;version&gt;2.0.5&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;org.restlet.jse&lt;/groupId&gt;
-        &lt;artifactId&gt;org.restlet.ext.jackson&lt;/artifactId&gt;
-        &lt;version&gt;2.0.5&lt;/version&gt;
-    &lt;/dependency&gt;
-
-    &lt;dependency&gt;
-        &lt;groupId&gt;mysql&lt;/groupId&gt;
-        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
-        &lt;version&gt;5.1.18&lt;/version&gt;
-    &lt;/dependency&gt;
-&lt;/dependencies&gt;
-</code></pre>
-
-<p></project>
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="ni">&amp;lt;</span>?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+</span><span class='line'><span class="ni">&amp;lt;</span>project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+</span><span class='line'>     xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>modelVersion<span class="ni">&amp;gt;</span>4.0.0<span class="ni">&amp;lt;</span>/modelVersion<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>NutchSample<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>NutchSample<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0-SNAPSHOT<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>repositories<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>repository<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>maven-restlet<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>Public online Restlet repository<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>url<span class="ni">&amp;gt;</span>http://maven.restlet.org<span class="ni">&amp;lt;</span>/url<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/repository<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/repositories<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>dependencies<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>junit<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>junit<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>4.11<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.nutch<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>nutch<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>2.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.hsqldb<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>hsqldb<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>2.2.8<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.solr<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>solr-core<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>3.4.0<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.hadoop<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>hadoop-core<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0.3<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.hadoop<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>hadoop-test<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0.3<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.slf4j<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>slf4j-log4j12<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.6.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.gora<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>gora-core<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>0.2.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.apache.gora<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>gora-sql<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>0.1.1-incubating<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.jdom<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>jdom<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.1<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.elasticsearch<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>elasticsearch<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>0.19.4<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.restlet.jse<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>org.restlet<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>2.0.5<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>org.restlet.jse<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>org.restlet.ext.jackson<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>2.0.5<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>groupId<span class="ni">&amp;gt;</span>mysql<span class="ni">&amp;lt;</span>/groupId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>artifactId<span class="ni">&amp;gt;</span>mysql-connector-java<span class="ni">&amp;lt;</span>/artifactId<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>5.1.18<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/dependency<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/dependencies<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;/project&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意，其中的mysql是后面存储抓取的数据时使用。pom.xml文件前面的maven-restlet的repository是restlet以及restlet.ext.jackson是独有的。因为这两个库必须在这个Repository下才能下载Jar包。</p>
 
@@ -494,39 +488,36 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
 <h4>修改配置文件</h4>
 
 <p>首先，修改nutch-site.xml文件，将其设置为：
-{% codeblock lang:xml %}
-<configuration></p>
-
-<pre><code>&lt;property&gt;
-    &lt;name&gt;http.agent.name&lt;/name&gt;
-    &lt;value&gt;my nutch spider&lt;/value&gt;
-&lt;/property&gt;
-&lt;property&gt;
-    &lt;name&gt;parser.character.encoding.default&lt;/name&gt;
-    &lt;value&gt;utf-8&lt;/value&gt;
-    &lt;description&gt;The character encoding to fall back to when no other information
-</code></pre>
-
-<p>is available</description></p>
-
-<pre><code>&lt;/property&gt;
-&lt;property&gt;
-    &lt;name&gt;storage.data.store.class&lt;/name&gt;
-    &lt;value&gt;org.apache.gora.sql.store.SqlStore&lt;/value&gt;
-    &lt;description&gt;Default class for storing data&lt;/description&gt;
-&lt;/property&gt;
-</code></pre>
-
-<p></configuration>
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;configuration&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>property<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>http.agent.name<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>value<span class="ni">&amp;gt;</span>my nutch spider<span class="ni">&amp;lt;</span>/value<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/property<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>property<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>parser.character.encoding.default<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>value<span class="ni">&amp;gt;</span>utf-8<span class="ni">&amp;lt;</span>/value<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>description<span class="ni">&amp;gt;</span>The character encoding to fall back to when no other information
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>is available<span class="nt">&lt;/description&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>/property<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>property<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>storage.data.store.class<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>value<span class="ni">&amp;gt;</span>org.apache.gora.sql.store.SqlStore<span class="ni">&amp;lt;</span>/value<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>description<span class="ni">&amp;gt;</span>Default class for storing data<span class="ni">&amp;lt;</span>/description<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/property<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;/configuration&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>修改gora.properties，增加mysql的设置：
-{% codeblock %}
-gora.sqlstore.jdbc.driver=com.mysql.jdbc.Driver
-gora.sqlstore.jdbc.url=jdbc:mysql://localhost:3306/nutch?createDatabaseIfNotExist=true
-gora.sqlstore.jdbc.user=root
-gora.sqlstore.jdbc.password=
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>gora.sqlstore.jdbc.driver=com.mysql.jdbc.Driver
+</span><span class='line'>gora.sqlstore.jdbc.url=jdbc:mysql://localhost:3306/nutch?createDatabaseIfNotExist=true
+</span><span class='line'>gora.sqlstore.jdbc.user=root
+</span><span class='line'>gora.sqlstore.jdbc.password=</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>注意，jdbc.url值中的nutch为MySQL中数据库的名字，你可以根据自己的需要设置数据库名。前提是你要在MySQL中创建数据库。url值的createDatabaseIfNotExist=true，指代的是如果数据库中不存在该数据库，在运行Crawler时会自动创建。但是，对于MySQL而言，由于编码问题，可能会导致一些问题出现。因此，还是建议由自己创建。创建脚本在后面的链接提供。</p>
 
@@ -541,34 +532,33 @@ gora.sqlstore.jdbc.password=
 <h4>调用Nutch Java API</h4>
 
 <p>Nutch本身提供了Crawler类来执行数据爬虫的命令。我们可以使用Hadoop的ToolRunner来运行Crawl工具。代码如下：
-{% codeblock lang:java %}
-public class MyCrawler {</p>
-
-<pre><code>public static void main(String[] args) throws Exception {
-    String crawlArg = "urls -depth 3 -topN 5";
-    // Run Crawl tool
-    try {
-        ToolRunner.run(NutchConfiguration.create(), new Crawler(),
-                tokenize(crawlArg));
-    } catch (Exception e) {
-        e.printStackTrace();
-        return;
-    }
-}
-public static String[] tokenize(String str) {
-    StringTokenizer tok = new StringTokenizer(str);
-    String tokens[] = new String[tok.countTokens()];
-    int i = 0;
-    while (tok.hasMoreTokens()) {
-        tokens[i] = tok.nextToken();
-        i++;
-    }
-    return tokens;
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCrawler</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">crawlArg</span> <span class="o">=</span> <span class="s">&quot;urls -depth 3 -topN 5&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="c1">// Run Crawl tool</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">ToolRunner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">NutchConfiguration</span><span class="o">.</span><span class="na">create</span><span class="o">(),</span> <span class="k">new</span> <span class="n">Crawler</span><span class="o">(),</span>
+</span><span class='line'>                <span class="n">tokenize</span><span class="o">(</span><span class="n">crawlArg</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">tokenize</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">StringTokenizer</span> <span class="n">tok</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringTokenizer</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">tokens</span><span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">tok</span><span class="o">.</span><span class="na">countTokens</span><span class="o">()];</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">tok</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">tokens</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">tok</span><span class="o">.</span><span class="na">nextToken</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">tokens</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h4>复制插件</h4>
 

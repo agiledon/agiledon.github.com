@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: OpenSource | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/opensource/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-11-18T14:27:59+08:00</updated>
+  <updated>2014-11-24T13:16:03+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework/"/>
     <updated>2014-08-03T21:25:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/08/03/test-data-prepare-framework</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/sisyphus.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/sisyphus.jpg"></p>
 
 <p>这是我去年写的一个小框架，专为自动化测试准备数据。以我个人的经验，进行自动化测试尤其是单元测试，除了技能的障碍外，最大的障碍有两点：1)难以解除依赖，因而无法为相关功能编写独立的测试；2)数据准备困难，导致编写测试的成本高。在我的一篇博客《<a href="http://agiledon.github.io/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>》中有相关总结。尤其在企业级软件系统中，面对的领域相对复杂，被测接口常常需要输入复杂的数据，然后再返回复杂的数据。在面向对象开发中，这些数据常常被建模为对象。我们该怎么实例化这些对象？在单元测试中，我们常常会引入Builder模式，通过Fluent Interface的方式建立类似DSL的构建接口，以便于自由、流畅而可任意组合的方式，帮助编写测试的人实例化他想要创建的对象。然而，一旦这个对象内嵌了多层，或具有极多的属性时，创建就变得极为艰难了。</p>
 
@@ -30,161 +30,156 @@
 
 
 <p>要使用Sisyphus，可以在build.gradle的构建脚本中添加sonatype提供的Repository依赖：
-{% codeblock lang:groovy %}
-repositories {</p>
-
-<pre><code>maven{
-    url 'https://oss.sonatype.org/content/groups/public'
-}
-mavenCentral();
-</code></pre>
-
-<p>}</p>
-
-<p>dependencies {</p>
-
-<pre><code>test (
-        'junit:junit:4.11',
-        'com.github.agiledon:sisyphus:1.0-SNAPSHOT'
-    )
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">repositories</span> <span class="o">{&lt;</span><span class="s">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&lt;pre&gt;&lt;code&gt;maven{</span>
+</span><span class='line'><span class="s">    url &#39;https://oss.sonatype.org/</span><span class="n">content</span><span class="s">/groups/</span><span class="kd">public</span><span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">}</span>
+</span><span class='line'><span class="s1">mavenCentral();</span>
+</span><span class='line'><span class="s1">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">&lt;p&gt;}&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">&lt;p&gt;dependencies {&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">&lt;pre&gt;&lt;code&gt;test (</span>
+</span><span class='line'><span class="s1">        &#39;</span><span class="nl">junit:junit:</span><span class="mf">4.11</span><span class="s1">&#39;,</span>
+</span><span class='line'><span class="s1">        &#39;</span><span class="n">com</span><span class="o">.</span><span class="na">github</span><span class="o">.</span><span class="na">agiledon</span><span class="o">:</span><span class="nl">sisyphus:</span><span class="mf">1.0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="err">&#39;</span>
+</span><span class='line'>    <span class="o">)</span>
+</span><span class='line'><span class="o">&lt;</span><span class="s">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>针对Yaml文件，我选择了snakeyaml框架。而对于Json数据，我尝试了两种框架Jackson和Gson。我发现这两个框架各有不足之处。倘若使用Jackson，它要求你要反序列化的类型必须定义默认的构造函数，如果没有定义，则必须声明Annotation：@JsonCreate和@JsonProperty。可是，有时候我们要准备的数据对象，或许是自动生成的，并不能修改该定义。何况，为了进行测试而改变产品代码，是邪恶的，不可取。Gson没有这样的约束，但当我尝试将一段字符串解析为byte[]类型时，发现Gson并不支持。为此，Sisyphus为Json数据提供了两种实现，为了区分，若是Gson实现，则要求测试数据文件的扩展名必须为“.gson”。</p>
 
 <p>模板功能使用了ST4的StringTemplate。我没有使用该框架提供的默认变量标识，而是要求将变量用$符号包裹起来。如果不需要模板，则只需提供一个测试数据文件即可；否则还要定义模板文件，它的扩展名为“.template”。例如针对Json格式的数据，倘若定义了这样的User类：
-{% codeblock lang:java %}
-public class User {</p>
-
-<pre><code>public enum Gender { MALE, FEMALE };
-
-public static class Name {
-    private String _first, _last;
-
-    public String getFirst() { return _first; }
-    public String getLast() { return _last; }
-
-    public void setFirst(String s) { _first = s; }
-    public void setLast(String s) { _last = s; }
-}
-
-private Gender _gender;
-private Name _name;
-private boolean _isVerified;
-private byte[] _userImage;
-
-public Name getName() { return _name; }
-public boolean isVerified() { return _isVerified; }
-public Gender getGender() { return _gender; }
-public byte[] getUserImage() { return _userImage; }
-
-public void setName(Name n) { _name = n; }
-public void setVerified(boolean b) { _isVerified = b; }
-public void setGender(Gender g) { _gender = g; }
-public void setUserImage(byte[] b) { _userImage = b; }
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">enum</span> <span class="n">Gender</span> <span class="o">{</span> <span class="n">MALE</span><span class="o">,</span> <span class="n">FEMALE</span> <span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Name</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">_first</span><span class="o">,</span> <span class="n">_last</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirst</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_first</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLast</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_last</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirst</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_first</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLast</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="n">_last</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="n">Gender</span> <span class="n">_gender</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">Name</span> <span class="n">_name</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="n">_isVerified</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">_userImage</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Name</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_name</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isVerified</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_isVerified</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">Gender</span> <span class="nf">getGender</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_gender</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">getUserImage</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">_userImage</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">Name</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span> <span class="n">_name</span> <span class="o">=</span> <span class="n">n</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setVerified</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_isVerified</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setGender</span><span class="o">(</span><span class="n">Gender</span> <span class="n">g</span><span class="o">)</span> <span class="o">{</span> <span class="n">_gender</span> <span class="o">=</span> <span class="n">g</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserImage</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span> <span class="n">_userImage</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>则可以准备模板文件为：
-{% codeblock %}
-{
-  "name" : { "first" : $firstName$, "last" : $lastName$ },
-  "gender" : "MALE",
-  "verified" : false,
-  "userImage" : "Rm9vYmFyIQ=="
-}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name" : { "first" : $firstName$, "last" : $lastName$ },
+</span><span class='line'>  "gender" : "MALE",
+</span><span class='line'>  "verified" : false,
+</span><span class='line'>  "userImage" : "Rm9vYmFyIQ=="
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>而数据文件则可以是：
-{% codeblock %}</p>
-
-<h1>This is multi section sample</h1>
-
-<p>firstName = "Joe"
-lastName = "Sixpack"</p>
-
-<p>///</p>
-
-<p>firstName = "Bruce"
-lastName = "Zhang"</p>
-
-<p>///</p>
-
-<p>firstName = "Yi"
-lastName = "Zhang"
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>This is multi section sample&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>firstName = "Joe"
+</span><span class='line'>lastName = "Sixpack"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>///&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>firstName = "Bruce"
+</span><span class='line'>lastName = "Zhang"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>///&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>firstName = "Yi"
+</span><span class='line'>lastName = "Zhang"</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>符号///是分节的标识符，而符号#则为注释，读取数据时会忽略该符号后的所有字符。使用Sisyphus框架，就可以很方便地加载数据文件，从而获得三个User实例。如下测试：
-{% codeblock lang:java %}</p>
-
-<pre><code>@Test
-public void should_compose_multi_user_data_by_parsing_template_file() {
-    List&lt;User&gt; users = Fixture.from("userWithMultiSections.json")
-            .withTemplate("template/user.template")
-            .toList(User.class);
-    assertThat(users, not(nullValue()));
-    assertThat(users.get(0).getName().getFirst(), is("Joe"));
-    assertThat(users.get(0).getName().getLast(), is("Sixpack"));
-    assertThat(users.get(2).getName().getFirst(), is("Yi"));
-    assertThat(users.get(2).getName().getLast(), is("Zhang"));
-}
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_multi_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">User</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">users</span> <span class="o">=</span> <span class="n">Fixture</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="s">&quot;userWithMultiSections.json&quot;</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">withTemplate</span><span class="o">(</span><span class="s">&quot;template/user.template&quot;</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">toList</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Yi&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">users</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Zhang&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>Sisyphus框架还提供了将实例化好的对象输出为对应格式数据文件的功能。这个功能算是框架提供的一个辅助功能，可以避免手动去准备数据文件。例如我们可以先创建一个User实例，将其输出为yaml格式的数据文件，从而将该文件作为测试数据文件：
-{% codeblock lang:java %}
-   @Test</p>
-
-<pre><code>public void should_serialize_specific_object_to_string_with_yaml_format() {
-    User user = createUser();
-    String result = FixtureAssist.yaml().print(user, "outputUser");
-    assertThat(result, is("!!com.github.agiledon.sisyphus.domain.json.User\n" +
-            "gender: MALE\n" +
-            "name: {first: Yi, last: Zhang}\n" +
-            "userImage: !!binary |-\n" +
-            "  MDAwMDExMTE=\n" +
-            "verified: true\n"));
-}
-</code></pre>
-
-<p>{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'>   <span class="nd">@Test</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">should_serialize_specific_object_to_string_with_yaml_format</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">createUser</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">FixtureAssist</span><span class="o">.</span><span class="na">yaml</span><span class="o">().</span><span class="na">print</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="s">&quot;outputUser&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;!!com.github.agiledon.sisyphus.domain.json.User\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;gender: MALE\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;name: {first: Yi, last: Zhang}\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;userImage: !!binary |-\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;  MDAwMDExMTE=\n&quot;</span> <span class="o">+</span>
+</span><span class='line'>            <span class="s">&quot;verified: true\n&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>框架在加载数据文件时，本身提供了缓存功能，如果重复加载同一个文件，则第二次加载时，并不需要真正去读取文件，从而在一定程度上提高了测试的效率。</p>
 
 <p>框架的入口为Fixture类。若要使用Sisyphus准备数据，通常应调用Fixture的静态方法。框架也提供了对JUnit的支持，通过框架自定义的Rule来加载测试数据，使用方式为：
-{% codeblock lang:java %}
-public class DataProviderRuleTest {</p>
-
-<pre><code>@Rule
-public DataProviderRule dataProvider = new DataProviderRule();
-
-@Test
-@DataResource(resourceName = "user.json", targetClass = User.class)
-public void should_compose_User_data_with_json_format() {
-    User user = dataProvider.provideData();
-    assertThat(user, not(nullValue()));
-    assertThat(user.getName().getFirst(), is("Joe"));
-}
-
-@Test
-@DataResource(resourceName = "userWithTemplate.json",
-        templateName = "template/user.template",
-        targetClass = User.class)
-public void should_compose_user_data_by_parsing_template_file() {
-    User user = dataProvider.provideData();
-    assertThat(user, not(nullValue()));
-    assertThat(user.getName().getFirst(), is("Joe"));
-    assertThat(user.getName().getLast(), is("Sixpack"));
-}
-</code></pre>
-
-<p>}
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataProviderRuleTest</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Rule</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">DataProviderRule</span> <span class="n">dataProvider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataProviderRule</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;user.json&quot;</span><span class="o">,</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_User_data_with_json_format</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="nd">@DataResource</span><span class="o">(</span><span class="n">resourceName</span> <span class="o">=</span> <span class="s">&quot;userWithTemplate.json&quot;</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">templateName</span> <span class="o">=</span> <span class="s">&quot;template/user.template&quot;</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">targetClass</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">should_compose_user_data_by_parsing_template_file</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">dataProvider</span><span class="o">.</span><span class="na">provideData</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">not</span><span class="o">(</span><span class="n">nullValue</span><span class="o">()));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getFirst</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Joe&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">getLast</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Sixpack&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>但我个人并不推荐这种方式。使用Fixture更直观，甚至更简单。Sisyphus的源代码可以从<a href="https://github.com/agiledon/sisyphus">我的Github</a>上获得，在其Repository主页，有更多实例介绍。你也可以clone代码后，通过测试代码学习框架的使用。clone代码到本地后，将当前目录转到sisyphus，然后运行gradle build，即可对代码进行编译。若需运行测试，可运行gradle test。由于我使用的IDE为IntelliJ Idea，因此，框架的构建脚本中仅支持IDEA。你可以通过运行gradle idea来生成IntelliJ的项目。</p>
 ]]></content>
