@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta property="wb:webmaster" content="65cd5fda62d66878" />
+  <title>代码的体格 - 逸言</title>
+  <meta name="author" content="张逸">
+
+  
+  <meta name="description" content="图片选自俄罗斯画家、美术理论家瓦西里·康定斯基作品。 Steve Yegge在他特立独行的作品《程序员的呐喊》中写道：“我坚信代码最大的敌人就是体格”。不过他过于自大了，以为这只是像他那样牛逼的程序员才拥有的少数派观点；又或者说他过于悲观，以为程序员的世界还在拼代码的肌肉男臆想中。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://agiledon.github.com/blog/2014/12/16/the-figure-of-code/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="逸言" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!--<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<link href="http://fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">逸言</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:agiledon.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/categories">Categories</a></li>
+  <li><a href="/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">代码的体格</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-16T17:05:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><img class="center" src="/images/2014/figure.jpg">
+<strong>图片选自俄罗斯画家、美术理论家瓦西里·康定斯基作品。</strong></p>
+
+<p>Steve Yegge在他特立独行的作品《程序员的呐喊》中写道：“我坚信代码最大的敌人就是体格”。不过他过于自大了，以为这只是像他那样牛逼的程序员才拥有的少数派观点；又或者说他过于悲观，以为程序员的世界还在拼代码的肌肉男臆想中。殊不知只要是曾经挣扎在庞大代码库泥潭中的程序员，就不会盲目崇拜代码的大块头。</p>
+
+<p>可惜，“知行合一”非圣人不可以做到，梦想的光芒常常难以照进现实的阴影。要缩小代码的体格，似乎比减肥还要艰难。软件系统像一条贪吃蛇，吃掉一切功能，最后越变越长，在局限的空间里再也无法做到从容的转折腾挪，最后活活困死。偏偏还有人以能掌控千万级代码的软件系统为荣。——“兄弟不才，做过一系统，代码达到了两千万行，真是一场噩梦啊！”，程序君一边摇头作痛苦状，嘘声叹气，但察其眼角眉间，藏不住的却是得意和炫耀。</p>
+
+<p>因而，我们一边在愤慨代码日益膨胀的体格，一边又在做着堆代码的增肥工作。软件从来都不是一个人写完的，需求也从来不会稳定不变，于是乎出现了超过数个屏幕的分支语句，出现了大量注释过的代码残骸，于是乎有了拷贝粘贴，程序员渐渐开始降低坏代码的容忍度，开始得过且过。</p>
+
+<p>面对日益膨胀的代码体格，Steve的呐喊是换语言，因为他是Ruby粉和Python粉的缘故，恨不得把所有系统都换成Ruby或者Python，要么就是Lisp。作为Scala粉的我，当然也恨不得所有Java项目都换成Scala。让我再写啰嗦的Java代码，真是痛不欲生，生不如死啊。支持了lambda的Java 8也许还能挽救我，但我还是钟情Scala。</p>
+
+<p>太天真了！首先是换不了，其次是换了也没用。你真以为换语言如换刀，宝刀在手，就能割去那些臃肿的代码，还代码一个苗条身材？——你以为是抽脂啊！Ruby也可以写出烂代码，Java也能写出漂亮的程序，关键不在于语言。正如武林高手比武并不在于刀剑的利钝，要分出武功高低，根本还是功力和招式。只有同等高手之间的厮杀，手握一柄利器才能成为制胜法宝。</p>
+
+<p>代码的臃肿关键还在于分解与去重。Unix大吗？大，而且必须大。但它又很小，因为它以内核形式确立了系统的边界，同时遵循KISS原则，将大功能分解为小程序，每个小程序只能完成一个功能，任何复杂的操作都必须分解成一些基本步骤，由这些小程序逐一完成，再组合起来得到最终结果。分解的一个难题是如何定边界，换言之就是如何做到“高内聚、松耦合”。另一个难题在于组合，即该如何把这些分解的细小功能再糅合起来，形成一个整体。这也是为何Micro Service被鼓吹了多少遍，仍然有人保持观望态度的原因。</p>
+
+<p>若说掌握分解这门技艺的高手中高手，还得数庖丁这哥们，“彼节者有闲，而刀刃者无厚，以无厚入有闲，恢恢乎其于游刃必有余地矣，是以十九年而刀刃若新发于硎。”眼睛都修炼成了X光，能够透过牛皮看清骨肉经络，以至于能够无厚入有闲，像舞蹈一般变屠牛为行为艺术，举手投足间，潇潇洒洒地把牛给宰了，还挥挥衣袖，不带走一点血。对软件系统的分解，我们能做到像庖丁那般识破依赖，判断“有闲”之节者，进而做到合理解耦吗？</p>
+
+<p>去重的根本其实还是分解，粒度可以是函数、类、模块、子系统。程序员需要有洁癖，重复就是最大的dirty，可惜打扫卫生需要付出。写代码是件劳心劳力的事儿，总会有人偷懒的。Deadline又是一把悬在程序员头上的达摩克利斯之剑，在急迫的催促声中，程序员寻找到了心里安慰，因为时间是允许降低质量的最完美借口。——当然，时间也是最残忍的。程序员干的是刀口舔血的生活，出来混，迟早是要还的。程序世界，就是佛家所谓的“因果世界”啊。</p>
+
+<p>去重的关键并不在于技巧（程序员都不是傻子，只要愿意学，什么技巧不能学会？），而在于勇气和决心。重复是敌人，而且是大块头的敌人，它就这般随意地站着，勾起小指头，傲慢地挑衅着你。而你，却未必有战风车的勇气。是明知必败吗？还是不可战胜？未战先怯，这场战争你已经败了。我见到的诸多遗留系统，重复代码都是这样开始蔓延的。——时间，见鬼的时间，其实大多数时候它都是你举白旗时找来贴脸的遮羞布。</p>
+
+<p>我常常说程序员要懒，例如要把重复的过程变成自动化，例如不要重复制造轮子，例如竭力少写代码完成更多的事。可惜，我们多数时候把这种懒，用错了地方。懒于打扫，懒于行动，却又不计后果的吃，代码的体格怎么能够减得下来？就看着代码的体格一天天膨胀下去，然后呜呼哀哉吧。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">张逸</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-16T17:05:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/coding/'>Coding</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      Tags: 
+
+<span class="categories">
+  
+    <a class='tag' href='/blog/tags/reading/'>Reading</a>, <a class='tag' href='/blog/tags/thinking/'>Thinking</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/18/present-and-future-of-spark/" title="Previous Post: Spark的现状与未来发展">&laquo; Spark的现状与未来发展</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <div align="center">
+  	<p><img src="/images/profile/zhangyi03.jpg" align="center"/></p>
+  	<p>
+    <strong>Company: </strong>ThoughtWorks<br>
+  	<strong>Role: </strong>Lead Consultant</p>  
+  </div>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38898311-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/16/the-figure-of-code/">代码的体格</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/18/present-and-future-of-spark/">Spark的现状与未来发展</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/agiledon">@agiledon</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'agiledon',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+<section>
+  <h1>Tag Cloud</h1>
+  <ul class="tag-cloud">
+<a style="font-size: 128%" href="/blog/tags/agile/">Agile</a>
+<a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
+<a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
+<a style="font-size: 205%" href="/blog/tags/architecture/">Architecture</a>
+<a style="font-size: 164%" href="/blog/tags/big-data/">Big Data</a>
+<a style="font-size: 144%" href="/blog/tags/book/">Book</a>
+<a style="font-size: 144%" href="/blog/tags/csharp/">CSharp</a>
+<a style="font-size: 128%" href="/blog/tags/coach/">Coach</a>
+<a style="font-size: 171%" href="/blog/tags/coding/">Coding</a>
+<a style="font-size: 155%" href="/blog/tags/ddd/">DDD</a>
+<a style="font-size: 205%" href="/blog/tags/design/">Design</a>
+<a style="font-size: 128%" href="/blog/tags/design-patterns/">Design Patterns</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
+<a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
+<a style="font-size: 128%" href="/blog/tags/fp/">FP</a>
+<a style="font-size: 100%" href="/blog/tags/go/">GO</a>
+<a style="font-size: 100%" href="/blog/tags/guava/">Guava</a>
+<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
+<a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
+<a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
+<a style="font-size: 177%" href="/blog/tags/java/">Java</a>
+<a style="font-size: 100%" href="/blog/tags/javascript/">JavaScript</a>
+<a style="font-size: 100%" href="/blog/tags/language/">Language</a>
+<a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
+<a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
+<a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
+<a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
+<a style="font-size: 100%" href="/blog/tags/nutch/">Nutch</a>
+<a style="font-size: 155%" href="/blog/tags/oo/">OO</a>
+<a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
+<a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
+<a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
+<a style="font-size: 199%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
+<a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
+<a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
+<a style="font-size: 128%" href="/blog/tags/ruby/">Ruby</a>
+<a style="font-size: 205%" href="/blog/tags/scala/">Scala</a>
+<a style="font-size: 100%" href="/blog/tags/scalability/">Scalability</a>
+<a style="font-size: 155%" href="/blog/tags/spark/">Spark</a>
+<a style="font-size: 128%" href="/blog/tags/spray/">Spray</a>
+<a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
+<a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
+<a style="font-size: 128%" href="/blog/tags/test/">Test</a>
+<a style="font-size: 128%" href="/blog/tags/thinking/">Thinking</a>
+<a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
+<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
+<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
+<a style="font-size: 128%" href="/blog/tags/visualization/">Visualization</a>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Visitor</h1>
+    <div id="clustrmaps-widget"></div><script type="text/javascript">var _clustrmaps = {'url' : 'http://agiledon.github.com', 'user' : 1081379, 'server' : '4', 'id' : 'clustrmaps-widget', 'version' : 1, 'date' : '2013-02-27', 'lang' : 'en', 'corners' : 'square' };(function (){ var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'http://www4.clustrmaps.com/counter/map.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);})();</script><noscript><a href="http://www4.clustrmaps.com/user/63d108023"><img src="http://www4.clustrmaps.com/stats/maps-no_clusters/agiledon.github.com-thumb.jpg" alt="Locations of visitors to this page" /></a></noscript>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 张逸 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'agiledon';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://agiledon.github.com/blog/2014/12/16/the-figure-of-code/';
+        var disqus_url = 'http://agiledon.github.com/blog/2014/12/16/the-figure-of-code/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

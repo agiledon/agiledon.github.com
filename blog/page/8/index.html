@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="在GitHub上创建了自己的博客后，先后在Jekyll和Octopress之间来回折腾了好一段时间。之前打算直接使用Jekyll提供的博客模板，后来觉得太费神，看到Octopress还不错，且它也是基于Jekyll，并能非常方便地部署到GitHub上。经过最初的安装到对博客的深入改造， &hellip;">
+  <meta name="description" content="在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,49 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/26/weibo-plugin-for-octopress/">Octopress的新浪微博插件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-26T12:26:00+08:00" pubdate data-updated="true">Dec 26<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/26/weibo-plugin-for-octopress/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在GitHub上搭建了Octopress博客后，我一直在尝试改进或增强一些功能。有一些功能可以在网上找到第三方插件。因为我在GitHub上的博客是刚刚申请，并没有太多人知道我的博客域名。如果希望我自己新写的博客让更多人知道，最好的方式还是能够将链接发到我的新浪微博中。一些插件为octopress提供了新浪微博的share按钮，但这并不是我想要的。也许已经有快速现成的方法支持我想要的功能，但我没有找到。那么何必还去上穷碧落下黄泉的去搜索了，身为一个程序员，这种事情就自己搞定好了。正好可以练手Ruby。经过半天的代码编写和测试，我的这个新浪微博插件就实现了。它主要能够运行rake命令，解析最新博客的标题与URL，再替换weibo-config.yml配置文件中配置的微博模板的内容，并将其发布到新浪微博中。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/26/weibo-plugin-for-octopress/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -492,53 +535,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/02/11/the-design-of-gae/">GAE的设计</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-11T10:55:00+08:00" pubdate data-updated="true">Feb 11<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/02/11/the-design-of-gae/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2012/02/Google-App-Engine.jpg" width="537" height="251"></p>
-
-<p>说明：以下获得的设计思考，是阅读《GAE编程指南》时的一些简单体会。主要针对的是一些设计细节（非架构）的考量。</p>
-
-<p>简单与灵活。在对API进行设计决策时，需充分考虑API的简单性和全面性。此二者都是站在调用者的角度来思考，即需要提供一种默认的简单调用形式，也可以根据实际情况提供可选的方式。这是简单性和灵活性的共同体现。在Google App Engine中，对数据存储区的实体存储，可以在创建实体对象时指定主键；如果不指定主键，就会生成唯一的ID。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/02/11/the-design-of-gae/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/9/">&larr; Older</a>
@@ -577,6 +573,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/16/the-figure-of-code/">代码的体格</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/18/present-and-future-of-spark/">Spark的现状与未来发展</a>
       </li>
     
@@ -590,10 +590,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
       </li>
     
   </ul>
@@ -656,7 +652,6 @@
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
 <a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
-<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
 <a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
@@ -665,7 +660,7 @@
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
 <a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
-<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 199%" href="/blog/tags/reading/">Reading</a>
 <a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
@@ -677,6 +672,7 @@
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
 <a style="font-size: 128%" href="/blog/tags/test/">Test</a>
+<a style="font-size: 128%" href="/blog/tags/thinking/">Thinking</a>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>

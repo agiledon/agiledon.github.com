@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="Spark的发展 对于一个具有相当技术门槛与复杂度的平台，Spark从诞生到正式版本的成熟，经历的时间如此之短，让人感到惊诧。2009年，Spark诞生于伯克利大学AMPLab，最开初属于伯克利大学的研究性项目。它于2010年正式开源，并于2013年成为了Apache基金项目， &hellip;">
+  <meta name="description" content="图片选自俄罗斯画家、美术理论家瓦西里·康定斯基作品。 Steve Yegge在他特立独行的作品《程序员的呐喊》中写道：“我坚信代码最大的敌人就是体格”。不过他过于自大了，以为这只是像他那样牛逼的程序员才拥有的少数派观点；又或者说他过于悲观，以为程序员的世界还在拼代码的肌肉男臆想中。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,65 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/16/the-figure-of-code/">代码的体格</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-16T17:05:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/12/16/the-figure-of-code/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2014/figure.jpg">
+<strong>图片选自俄罗斯画家、美术理论家瓦西里·康定斯基作品。</strong></p>
+
+<p>Steve Yegge在他特立独行的作品《程序员的呐喊》中写道：“我坚信代码最大的敌人就是体格”。不过他过于自大了，以为这只是像他那样牛逼的程序员才拥有的少数派观点；又或者说他过于悲观，以为程序员的世界还在拼代码的肌肉男臆想中。殊不知只要是曾经挣扎在庞大代码库泥潭中的程序员，就不会盲目崇拜代码的大块头。</p>
+
+<p>可惜，“知行合一”非圣人不可以做到，梦想的光芒常常难以照进现实的阴影。要缩小代码的体格，似乎比减肥还要艰难。软件系统像一条贪吃蛇，吃掉一切功能，最后越变越长，在局限的空间里再也无法做到从容的转折腾挪，最后活活困死。偏偏还有人以能掌控千万级代码的软件系统为荣。——“兄弟不才，做过一系统，代码达到了两千万行，真是一场噩梦啊！”，程序君一边摇头作痛苦状，嘘声叹气，但察其眼角眉间，藏不住的却是得意和炫耀。</p>
+
+<p>因而，我们一边在愤慨代码日益膨胀的体格，一边又在做着堆代码的增肥工作。软件从来都不是一个人写完的，需求也从来不会稳定不变，于是乎出现了超过数个屏幕的分支语句，出现了大量注释过的代码残骸，于是乎有了拷贝粘贴，程序员渐渐开始降低坏代码的容忍度，开始得过且过。</p>
+
+<p>面对日益膨胀的代码体格，Steve的呐喊是换语言，因为他是Ruby粉和Python粉的缘故，恨不得把所有系统都换成Ruby或者Python，要么就是Lisp。作为Scala粉的我，当然也恨不得所有Java项目都换成Scala。让我再写啰嗦的Java代码，真是痛不欲生，生不如死啊。支持了lambda的Java 8也许还能挽救我，但我还是钟情Scala。</p>
+
+<p>太天真了！首先是换不了，其次是换了也没用。你真以为换语言如换刀，宝刀在手，就能割去那些臃肿的代码，还代码一个苗条身材？——你以为是抽脂啊！Ruby也可以写出烂代码，Java也能写出漂亮的程序，关键不在于语言。正如武林高手比武并不在于刀剑的利钝，要分出武功高低，根本还是功力和招式。只有同等高手之间的厮杀，手握一柄利器才能成为制胜法宝。</p>
+
+<p>代码的臃肿关键还在于分解与去重。Unix大吗？大，而且必须大。但它又很小，因为它以内核形式确立了系统的边界，同时遵循KISS原则，将大功能分解为小程序，每个小程序只能完成一个功能，任何复杂的操作都必须分解成一些基本步骤，由这些小程序逐一完成，再组合起来得到最终结果。分解的一个难题是如何定边界，换言之就是如何做到“高内聚、松耦合”。另一个难题在于组合，即该如何把这些分解的细小功能再糅合起来，形成一个整体。这也是为何Micro Service被鼓吹了多少遍，仍然有人保持观望态度的原因。</p>
+
+<p>若说掌握分解这门技艺的高手中高手，还得数庖丁这哥们，“彼节者有闲，而刀刃者无厚，以无厚入有闲，恢恢乎其于游刃必有余地矣，是以十九年而刀刃若新发于硎。”眼睛都修炼成了X光，能够透过牛皮看清骨肉经络，以至于能够无厚入有闲，像舞蹈一般变屠牛为行为艺术，举手投足间，潇潇洒洒地把牛给宰了，还挥挥衣袖，不带走一点血。对软件系统的分解，我们能做到像庖丁那般识破依赖，判断“有闲”之节者，进而做到合理解耦吗？</p>
+
+<p>去重的根本其实还是分解，粒度可以是函数、类、模块、子系统。程序员需要有洁癖，重复就是最大的dirty，可惜打扫卫生需要付出。写代码是件劳心劳力的事儿，总会有人偷懒的。Deadline又是一把悬在程序员头上的达摩克利斯之剑，在急迫的催促声中，程序员寻找到了心里安慰，因为时间是允许降低质量的最完美借口。——当然，时间也是最残忍的。程序员干的是刀口舔血的生活，出来混，迟早是要还的。程序世界，就是佛家所谓的“因果世界”啊。</p>
+
+<p>去重的关键并不在于技巧（程序员都不是傻子，只要愿意学，什么技巧不能学会？），而在于勇气和决心。重复是敌人，而且是大块头的敌人，它就这般随意地站着，勾起小指头，傲慢地挑衅着你。而你，却未必有战风车的勇气。是明知必败吗？还是不可战胜？未战先怯，这场战争你已经败了。我见到的诸多遗留系统，重复代码都是这样开始蔓延的。——时间，见鬼的时间，其实大多数时候它都是你举白旗时找来贴脸的遮羞布。</p>
+
+<p>我常常说程序员要懒，例如要把重复的过程变成自动化，例如不要重复制造轮子，例如竭力少写代码完成更多的事。可惜，我们多数时候把这种懒，用错了地方。懒于打扫，懒于行动，却又不计后果的吃，代码的体格怎么能够减得下来？就看着代码的体格一天天膨胀下去，然后呜呼哀哉吧。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -583,48 +642,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/01/thoughtworks-china-book/">ThoughtWorks中国区文集出版</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-01T23:25:00+08:00" pubdate data-updated="true">Aug 1<span>st</span>, 2014</time>
-        
-         | <a href="/blog/2014/08/01/thoughtworks-china-book/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2014/tw_book.png"></p>
-
-<p>这次参加TID会议，居然看到了这本耗时达3年的书《<a href="http://product.china-pub.com/4243605">软件开发践行录——ThoughtWorks中国区文集</a>》——终于出版了。很早以前，凯峰就提出这个想法，当时他作为InfoQ中文站原创社区的主编，着实策划了不少优秀的原创技术文章。凯峰作为ThoughtWorks的一份子，很好地搭建了ThoughtWorks实践与社区的分享桥梁。不少由TWer撰写的优秀文章陆续在InfoQ发表。然而，从想法到本书出版经历了如此漫长的时间，却也出乎我意料之外。大约一年前，在我提供了个人信息给负责此事的同事后，就没再关心此事，差不多就要淡忘了。如今看到这本漂亮的汇集了中国区TWer心得体会的小书，真是莫名的惊喜啊。就好似那些珍贵的东西你会忘记，却在再次遇见时，忽然发现这种珍贵一点都没有减少。</p>
-
-<p>无论如何，我都为加入ThoughtWorks感到开心而自豪；我也为能有文章选入这本文集而感到荣幸。这是一本散文集，是我们书写在IT边上的日志，又或是一种对技术的诠释与注解，未必必然美丽，却是心灵的一种悸动，一声叹息，是因为技术的狂热而挑动的心弦。这份执着，更是一种美——必然是美！</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -661,6 +678,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/16/the-figure-of-code/">代码的体格</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/18/present-and-future-of-spark/">Spark的现状与未来发展</a>
       </li>
     
@@ -674,10 +695,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/22/understanding-scala-stack/">快速了解Scala技术栈</a>
       </li>
     
   </ul>
@@ -740,7 +757,6 @@
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
 <a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
-<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
 <a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
@@ -749,7 +765,7 @@
 <a style="font-size: 144%" href="/blog/tags/octopress/">Octopress</a>
 <a style="font-size: 128%" href="/blog/tags/photo/">Photo</a>
 <a style="font-size: 128%" href="/blog/tags/rest/">REST</a>
-<a style="font-size: 195%" href="/blog/tags/reading/">Reading</a>
+<a style="font-size: 199%" href="/blog/tags/reading/">Reading</a>
 <a style="font-size: 155%" href="/blog/tags/reading-radar/">Reading Radar</a>
 <a style="font-size: 164%" href="/blog/tags/refactoring/">Refactoring</a>
 <a style="font-size: 144%" href="/blog/tags/responsibility/">Responsibility</a>
@@ -761,6 +777,7 @@
 <a style="font-size: 100%" href="/blog/tags/struts/">Struts</a>
 <a style="font-size: 164%" href="/blog/tags/tdd/">TDD</a>
 <a style="font-size: 128%" href="/blog/tags/test/">Test</a>
+<a style="font-size: 128%" href="/blog/tags/thinking/">Thinking</a>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
 <a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
