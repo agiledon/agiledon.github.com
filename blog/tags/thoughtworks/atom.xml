@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: ThoughtWorks | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/thoughtworks/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2014-12-16T17:10:39+08:00</updated>
+  <updated>2015-01-05T11:26:09+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -12,6 +12,40 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Efficient Tools We Recommended]]></title>
+    <link href="http://agiledon.github.com/blog/2015/01/05/efficient-tools-we-recommended/"/>
+    <updated>2015-01-05T11:17:00+08:00</updated>
+    <id>http://agiledon.github.com/blog/2015/01/05/efficient-tools-we-recommended</id>
+    <content type="html"><![CDATA[<p>{% img center /images/2015/1/efficiency.jpg %}</p>
+
+<p>几天前，ThoughtWorks China咨询师团队召开了一次团结的大会，成功的大会。为期三天的会议，分享的内容并不亚于坊间举行的技术大会，包含了敏捷组织转型、C++重构、敏捷测试体系、持续交付整体解决方案、Spark执行模型、机器学习、Scala代码操练。课题五花八门，争辩激烈精彩。</p>
+
+<p>临近尾声，洪敏提了一个好建议，让大家推荐自己平时用的高效率工具，于是就有了如下的一个清单。以下工具排名不分先后。</p>
+
+<ol>
+<li><p>Pocket：一款超极好用的内容收藏工具，正如其名，像口袋一般方便。Pocket提供了各种形式的应用，包括Mac下的App、各种移动设备包括iphone、ipad、android、windows phone的APP以及网页版。同时它为firefox、chrome、safari、Opera提供了插件。当我们在浏览网页时，若发现内容精彩需要收藏，只需点击插件上的按钮，即可收藏，并能将收藏的内容同步到不同平台下的pocket中。我通常使用Pocket来收藏内容，而用EverNote来记录笔记，各有分工。</p></li>
+<li><p>Spectacle：这并非Google眼镜，而是一个超炫的Geek工具，因为它帮我们定义（或者自定义）了诸多快捷键，使得我们无需使用鼠标，即可非常方便地移动窗口，改变窗口大小。</p></li>
+<li><p>Skitch：来自EverNote，正如宣传所言“一圈一点”。在电脑、平板和手机上随时使用Skitch，轻松表情达意。堪称制作幻灯片神器啊。制作的图片还可以同步到EverNote中。</p></li>
+<li><p>AutoJump：自动补完不算什么，一键直达目录才是终极神器。autojump是一个命令行工具，通过执行autojump [target directory]，就可以直接到达你想要去的目录。</p></li>
+<li><p>Any.Do：非常简单方便的todo list工具，可以帮助你快速地安排好今天、明天、将来想要做的事情。它的使用极为简单，只需手指轻轻一划，即可添加或删除待办项，非常符合我们操作手机的习惯。</p></li>
+<li><p>Anki：要记住一些事情是需要方法的，同时还得善于利用时间。Anki通过创建flash card，然后自己编辑卡片的前后两面。前面为问题，后面为答案。一旦创建了卡片，随时就可以拿出来默记背诵。Anki支持Windows、Mac、Linux、iphone和Android等平台。利用Anki学习英语应该很不错，当然最重要的还在于持之以恒。</p></li>
+<li><p>VisualGDB：一款用于开发和调试的IDE，集成了GCC和GDB，并可以将Remote Machine当做后端。可用于嵌入式和Android开发。</p></li>
+<li><p>GoodReader：iPhone和iPad下的一款阅读软件，支持Office文档、PDF、TXT、HTML等文件浏览，支持视频、音频的播放(iPhone支持的媒体格式)，支持横屏，还可以通过WIFI与PC或MAC共享文件！GoodReader是收费软件，不过如果我们经常使用iPad阅读PDF文件，就非常值得购买该工具啦。</p></li>
+<li><p>CLion：ThoughtWorks似乎一直比较钟爱JetBrains开发的IDE，例如针对JVM开发的IntelliJ Idea，Ruby的RubyMine，Python的PyCharm，JavaScript的WebStorm。针对C和C++，之前JetBrains有AppCode，但它是基于Mac开发的。现在，有了CLion这个更好地支持跨平台的C/C++开发工具。</p></li>
+<li><p>FarBox：一个绝对轻量级的博客托管服务平台，因为它可以集成DropBox，操作博客如在本地创建文件一般简单。结合Markdown，可以更好地发挥威力。当然，如果是托管到GitHub上，则推荐使用Octorpress。</p></li>
+<li><p>youtube-dl：还在为不能方便地下载youtube视频而烦恼吗？可以试试youtube-dl命令行工具，可以通过homebrew安装。安装后，可以直接输入youbube-dl <url>即可下载。你若是觉得命令太长，也可以设置别名，例如dl。当然，前提是你能够访问youtube。</p></li>
+<li><p>Chrome vi：这是一款针对Chrome的插件，它使得你可以像操作vi那样操作Chrome。这样，在Chrome网页下就不需要操作鼠标去定位了，只需按下f键，chrome vi插件就会为网页上所有可定位的位置提供快捷键提示，然后通过敲击键盘对应的快捷键，就可快捷地将光标定位到对应位置进行操作。</p></li>
+<li><p>clang-format：代码格式化工具。</p></li>
+<li><p>cheat：linux命令小抄，比help和man命令更容易理解。cheat会告诉你一个命令如何使用，它没有提供其他额外多余的信息，只通过使用实例告诉你一个命令如何使用。</p></li>
+<li><p>Alfred：这个不用讲了吧，用Mac的人如果不用Alfred，只能说out了。而且通过Alfred还可以定制workflow，这样可以更好地发挥Alfred的强大功能。</p></li>
+</ol>
+
+
+<p>嗯，还有很多可以提高工作效率的工具。合理地使用这些工具，就可以留出更多的时间去学习、思考。这或许正是高效人士的秘诀。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ThoughtWorks读书雷达-方法学篇]]></title>
@@ -259,37 +293,6 @@ The McKinsey Way《麦肯锡方法》
 <p>{% blockquote %}
 Thinking, Fast and Slow《思考快与慢》
 {% endblockquote %}</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[纪念Aaron]]></title>
-    <link href="http://agiledon.github.com/blog/2013/01/14/remember-aaron/"/>
-    <updated>2013-01-14T10:40:00+08:00</updated>
-    <id>http://agiledon.github.com/blog/2013/01/14/remember-aaron</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2013/01/aaron-swartz.jpg %}
-今天的心情难以用言语表达。打开公司邮件，看到邮件“ThoughtWorks Declares Tuesday January 15, 2013 as Day of Remembrance for Aaron Swartz”，有一种被震惊的感觉。虽然我与Aaron素昧平生，但只要了解他的生平，就不由不对他产生敬意。这是一位天才，可是如今却像流星一般陨落了。让我感叹生命如此无常的，还在于我恰恰在大约1个月前的公司视频会议上看到过Aaron，当时Aaron身陷美国联邦检查官的起诉中。Roy为此表示愤慨，并组织召开了此次视频会议，Aaron也有出席。在视频中，Aaron瘦削的面庞，蓬松的头发，以及略带忧郁的眼神，确乎很有极客的风范。然而，怎么也想不到，这最初的一面，就成为了最后一面。生命真是残酷。</p>
-
-<p>正是这唯一的一面，让我产生的生死相隔之感，如此的强烈。Aaron的自杀看似是因为自己的抑郁症而起，但我更认为，他的自杀是殉道，是怒其社会对自由的钳制发起的呐喊，他在用生命维护自己的自由。然而，面对国家机器，他的反抗未免脆弱了点儿，他的愤怒未免不值一提。积蓄在他内心的悲愤是如此的不可宣泄，他就像是燃烧中的布鲁诺，殉道以明志！</p>
-
-<!--more-->
-
-
-<p>关于Aaron这次案件的来龙去脉，可以确定的几点是：</p>
-
-<ul>
-<li>Aaron确实利用了一些黑客手段，下载了MIT大量的JSTOR在线期刊资料；</li>
-<li>但是，可以确定Aaron绝对未曾将这些资料用于商业用途；</li>
-<li>JSTOR并无起诉Aaron的意愿，而是美国联邦检查官代表美国政府的决定；</li>
-</ul>
-
-
-<p>作为最年轻的计算机黑客，Aaron在14岁就合作编写了RSS 1.0规范，并是社会新闻网站Reddit的联合创始人之一。他在自杀之前是ThoughtWorks纽约Office的员工。在ThoughtWorks，他参与了大量社会公益项目，是一些项目的Team Leader，在纽约office以及Away Days上，做了大量的演讲。他还参与了大量纽约技术社区的活动，并使得ThoughtWorks纽约Office成为了纽约开发社区的中心。再补充一点：Aaron还是Markdown的关键贡献人。</p>
-
-<p>如下截图是可以在公司内部Wiki上找到的Aaron发表的文章：
-{% img center /images/2013/01/aaron-thread.png %}</p>
-
-<p>我们创建了<a href="http://www.rememberaaronsw.com">http://www.rememberaaronsw.com</a>来纪念这位卓越的计算机天才。明天是我们纪念Aaron的日子。明天晨9:00的Standup Meeting，让我们为Aaron Swartz默哀！</p>
 ]]></content>
   </entry>
   

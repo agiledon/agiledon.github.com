@@ -10,7 +10,7 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="这次参加TID会议，居然看到了这本耗时达3年的书《软件开发践行录——ThoughtWorks中国区文集》——终于出版了。很早以前，凯峰就提出这个想法，当时他作为InfoQ中文站原创社区的主编，着实策划了不少优秀的原创技术文章。凯峰作为ThoughtWorks的一份子， &hellip;">
+  <meta name="description" content="这是我去年写的一个小框架，专为自动化测试准备数据。以我个人的经验，进行自动化测试尤其是单元测试，除了技能的障碍外，最大的障碍有两点：1)难以解除依赖，因而无法为相关功能编写独立的测试；2)数据准备困难，导致编写测试的成本高。在我的一篇博客《推行TDD的思考》中有相关总结。尤其在企业级软件系统中， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,55 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/test-data-prepare-framework/">测试数据准备框架</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T21:25:00+08:00" pubdate data-updated="true">Aug 3<span>rd</span>, 2014</time>
+        
+         | <a href="/blog/2014/08/03/test-data-prepare-framework/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="/images/2014/sisyphus.jpg"></p>
+
+<p>这是我去年写的一个小框架，专为自动化测试准备数据。以我个人的经验，进行自动化测试尤其是单元测试，除了技能的障碍外，最大的障碍有两点：1)难以解除依赖，因而无法为相关功能编写独立的测试；2)数据准备困难，导致编写测试的成本高。在我的一篇博客《<a href="http://agiledon.github.io/blog/2013/12/25/thought-about-applying-tdd/">推行TDD的思考</a>》中有相关总结。尤其在企业级软件系统中，面对的领域相对复杂，被测接口常常需要输入复杂的数据，然后再返回复杂的数据。在面向对象开发中，这些数据常常被建模为对象。我们该怎么实例化这些对象？在单元测试中，我们常常会引入Builder模式，通过Fluent Interface的方式建立类似DSL的构建接口，以便于自由、流畅而可任意组合的方式，帮助编写测试的人实例化他想要创建的对象。然而，一旦这个对象内嵌了多层，或具有极多的属性时，创建就变得极为艰难了。</p>
+
+<p>在ThoughtWorks的一些项目中，尝试使用Yaml来准备数据。有一个极好的框架snakeyaml可以很好地支持我们处理yaml文件。正是基于此，启发我开发了这样一个小框架Sisyphus。它可以帮助更方便地以各种文件形式来准备数据，并提供了统一的接口。目前，支持的格式为我们最常使用的yaml与json。</p>
+
+<p>框架的开发并没有什么技术含量，但框架提供的功能却是基于实际项目中面临的困难逐步演化出来的。例如框架提供的模板功能，数据分节功能，在一开始并没有想到。正是因为这两个功能，让我觉得这个框架还有一些用处。之所以将这个框架命名为Sisyphus，缘由在于我将测试数据视为西西弗推动的那一块大石头，无法承受的如命运一般的沉重，却又不得不用力去承受，如此往返以致时时刻刻。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/03/test-data-prepare-framework/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -961,109 +1010,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/16/actor-system-in-akka/">Akka中的Actor System</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-16T20:36:00+08:00" pubdate data-updated="true">Feb 16<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/02/16/actor-system-in-akka/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2014/akka/actorsystem.png">
-图中表示的是一个Actor System，它显示了在这个Actor System中最重要实体之间的关系。</p>
-
-<h2>Actor Reference</h2>
-
-<p>一个Actor引用是ActorRef的子类型，主要目的是发送消息给它表示的Actor。Actor可以通过访问self字段来得到自身的引用；若要访问发送消息的Actor的引用，则访问sender字段。</p>
-
-<h2>Actor Path</h2>
-
-<p>可以认为Actor Path是通过字符串对Actor层级关系进行组合用以标识唯一Actor的一种方式。我们在创建Actor Path时，不用创建Actor；但如果没有创建对应的Actor，则不能创建Actor Reference。还可以创建一个Actor，再终止它，然后再以相同的Actor Path再创建一个新的Actor。新创建的Actor是Actor的新化身（Incarnation），但与旧的Actor并不是同一个。对于这个新化身而言，持有旧Actor的Actor Reference并不是有效的。消息发送给旧的Actor Reference，但不会被传递给新化身，即使它们具有相同的路径。</p>
-
-<p>Actor Path包含协议、位置和actor的层级。如下是一些Actor Path的实例：</p>
-
-<figure class='code'><div class="highlight"><table><tr></td><td class='code'><pre><code class=''><span class='line'>//purely local
-</span><span class='line'>"akka://my-sys/user/service-a/worker1"                   
-</span><span class='line'>
-</span><span class='line'>// remote"akka.tcp://my-sys@host.example.com:5678/user/service-b" 
-</span><span class='line'>
-</span><span class='line'>//clustered (Future Extension)"cluster://my-cluster/service-c"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有两种方式可以获得Actor Reference：创建Actor或查找。</p>
-
-<p>要创建Actor，可以调用ActorSystem.actorOf()，它创建的Actor在guardian actor之下；接着可以调用ActorContext.actorOf()在刚才创建的Actor内生成Actor树。这些方法会返回新创建的Actor的引用。每个Actor都可以直接访问Actor Context来或得它自身、Parent以及所有Children的引用。</p>
-
-<p>要查找Actor Reference，则可调用ActorSystem.actorSelection()方法。要获得限定到特定Actor的生命周期中的ActorRef，可以使用sender引用来发送一条消息如内建的Identity消息给Actor。</p>
-
-<p>在查找ActorRef时，可以使用绝对路径或相对路径。如果是相对路径，可以用两个点（..）表示parent actor。例如：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../brother&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用绝对路径的例子：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;/user/ServiceA&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>还可以使用通配符查询逻辑的Actor层级，例如下面的例子就是发送消息给除当前Actor之外的所有同级Actor（因为..代表parent，所以这里就意味找当前Actor的parent的下级Actor）：</p>
-
-<figure class='code'> <div class="highlight"><table><tr></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">context</span><span class="o">.</span><span class="n">actorSelection</span><span class="o">(</span><span class="s">&quot;../*&quot;</span><span class="o">)</span> <span class="o">!</span> <span class="n">msg</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>区别：actorOf vs. actorSelection vs. actorFor</h2>
-
-<ul>
-<li>actorOf：创建一个新的Actor。创建的Actor为调用该方法时所属的Context下的直接子Actor；</li>
-<li>actorSelection：当消息传递来时，只查找现有的Actor，而不会创建新的Actor；在创建了selection时，也不会验证目标Actors是否存在；</li>
-<li>actorFor（已经被actorSelection所deprecated）：只会查找现有的Actor，而不会创建新的Actor。</li>
-</ul>
-
-
-<h2>远程部署的相互影响</h2>
-
-<p>当一个Actor创建一个Child时，Actor的系统部署器会决定这个新的Actor究竟属于同一个JVM，还是另一个节点。如果是后一种情况，Actor的创建就会通过在不同JVM的网络连接而触发，这属于不同的Actor系统。远程系统会将新的Actor放在一个特定的路径下，且新Actor的Supervisor应该是一个远程的Actor引用。而且，context.parent（Supervisor的引用）与context.path.parent（actor path的父节点）表示的不是同一个Actor。如下图所示：
-<img class="center" src="/images/2014/akka/remote_actor.png"></p>
-
-<p>注意图中展现的两个不同的Actor系统之间的Route关系。在左边的Actor系统中，Child Actor属于Remote ActorRef，它指向了右边远端Actor系统中的一个Actor节点，该Actor对于右边的Actor系统而言，属于Local ActorRef，但它的Parent Actor却是一个Remote ActorRef，它指向了左边对应的Local ActorRef。</p>
-
-<h2>Actor Path的Top-Level Scopes</h2>
-
-<p>Actor路径的根为&#8221;/&#8221;，而后续层级包括：&#8221;/user&#8221;, &#8220;/system&#8221;, &#8220;deadLetters&#8221;, &#8220;/temp&#8221;, &#8220;/remote&#8221;。</p>
-
-<p>这里体现了Akka遵循“简单”原则的设计目标：<strong>层级中的任何事物都是Actor，且所有Actor的功能都采用同样的方式。</strong></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1102,6 +1048,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/05/efficient-tools-we-recommended/">Efficient Tools We Recommended</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/12/16/the-figure-of-code/">代码的体格</a>
       </li>
     
@@ -1115,10 +1065,6 @@
     
       <li class="post">
         <a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/25/event-modeling-in-ddd/">领域驱动设计中的事件建模</a>
       </li>
     
   </ul>
@@ -1156,6 +1102,7 @@
 <section>
   <h1>Tag Cloud</h1>
   <ul class="tag-cloud">
+<a style="font-size: 100%" href="/blog/tags/api/">API</a>
 <a style="font-size: 128%" href="/blog/tags/agile/">Agile</a>
 <a style="font-size: 100%" href="/blog/tags/agilechina/">AgileChina</a>
 <a style="font-size: 155%" href="/blog/tags/akka/">Akka</a>
@@ -1171,9 +1118,8 @@
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNET</a>
 <a style="font-size: 128%" href="/blog/tags/dotnet/">DotNet</a>
 <a style="font-size: 128%" href="/blog/tags/fp/">FP</a>
+<a style="font-size: 100%" href="/blog/tags/gae/">GAE</a>
 <a style="font-size: 100%" href="/blog/tags/go/">GO</a>
-<a style="font-size: 100%" href="/blog/tags/guava/">Guava</a>
-<a style="font-size: 100%" href="/blog/tags/hdfs/">HDFS</a>
 <a style="font-size: 144%" href="/blog/tags/hadoop/">Hadoop</a>
 <a style="font-size: 128%" href="/blog/tags/infoq/">InfoQ</a>
 <a style="font-size: 177%" href="/blog/tags/java/">Java</a>
@@ -1181,6 +1127,7 @@
 <a style="font-size: 100%" href="/blog/tags/language/">Language</a>
 <a style="font-size: 155%" href="/blog/tags/literature/">Literature</a>
 <a style="font-size: 128%" href="/blog/tags/mvc/">MVC</a>
+<a style="font-size: 100%" href="/blog/tags/mapreduce/">MapReduce</a>
 <a style="font-size: 128%" href="/blog/tags/mock/">Mock</a>
 <a style="font-size: 128%" href="/blog/tags/notes/">Notes</a>
 <a style="font-size: 128%" href="/blog/tags/novel/">Novel</a>
@@ -1203,8 +1150,7 @@
 <a style="font-size: 128%" href="/blog/tags/test/">Test</a>
 <a style="font-size: 128%" href="/blog/tags/thinking/">Thinking</a>
 <a style="font-size: 128%" href="/blog/tags/thought/">Thought</a>
-<a style="font-size: 164%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
-<a style="font-size: 100%" href="/blog/tags/transaltion/">Transaltion</a>
+<a style="font-size: 171%" href="/blog/tags/thoughtworks/">ThoughtWorks</a>
 <a style="font-size: 128%" href="/blog/tags/visualization/">Visualization</a>
 
   </ul>
@@ -1222,7 +1168,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - 张逸 -
+  Copyright &copy; 2015 - 张逸 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

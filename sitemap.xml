@@ -373,12 +373,16 @@
         <lastmod>2014-12-16T17:09:47+08:00</lastmod>
     </url>
     <url>
+        <loc>http://agiledon.github.com/blog/2015/01/05/efficient-tools-we-recommended/</loc>
+        <lastmod>2015-01-05T11:25:15+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://agiledon.github.com/about/</loc>
         <lastmod>2014-10-28T16:04:23+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/blog/archives/</loc>
-        <lastmod>2014-12-16T17:09:47+08:00</lastmod>
+        <lastmod>2015-01-05T11:25:15+08:00</lastmod>
     </url>
     <url>
         <loc>http://agiledon.github.com/categories/</loc>
@@ -386,6 +390,6 @@
     </url>
     <url>
         <loc>http://agiledon.github.com/</loc>
-        <lastmod>2014-12-16T17:09:47+08:00</lastmod>
+        <lastmod>2015-01-05T11:25:15+08:00</lastmod>
     </url>
 </urlset>
