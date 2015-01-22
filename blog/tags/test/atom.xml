@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Test | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/test/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2015-01-05T11:30:58+08:00</updated>
+  <updated>2015-01-22T09:25:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/10/28/are-you-writing-auto-test-today/"/>
     <updated>2014-10-28T16:08:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/10/28/are-you-writing-auto-test-today</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/ship.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/ship.jpg"></p>
 
 <p>一艘货轮满载着货物从港口启航，向浩瀚的大海深处破水而去。海面平静，微微皱起波浪，从容而显得宽容。然而，货轮的步履却有些蹒跚，发动机“轰轰轰”地嘶吼着，不堪重负，却无法让船只游得更快，倒像是海水咬住了船底往下在拖曳。</p>
 

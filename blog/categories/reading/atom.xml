@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Reading | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/categories/reading/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2015-01-05T11:30:58+08:00</updated>
+  <updated>2015-01-22T09:25:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2014/08/05/how-to-implement-ddd/"/>
     <updated>2014-08-05T19:34:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/08/05/how-to-implement-ddd</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/iddd.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/iddd.jpg">
 从Eric Evans写下经典名著Domain-Driven Design: Tackling Complexity in the Heart of Software至今，DDD刚好发展了十年的时间。它几乎成了开发复杂软件系统主要的领域设计方法，既是面向对象（组件）设计的补充，又超越了面向对象（组件）设计。DDD中提出的诸多概念如实体、值对象、聚合等，已经成为了耳熟能详的设计术语。DDD社区的发展也如火如荼，似乎并没有被层出不穷的设计思想所取代，相反，它仍在强劲地发展，吸收了许多新的概念与方法，例如函数式编程思想、Event Source、CQRS等。然而，就我个人所观察到的情况来看，许多项目虽然号称应用了DDD设计，但主要都停留在Eric所谓的“战术设计”层面。即使是战术层面，依旧有许多程序员没有弄明白实体与值对象之间的区别，不知道该怎么定义聚合以及聚合根，更谈不上合理地划分上下文（Context）。</p>
 
 <p>我不明白其中内含的真实原因，只能冒昧地揣测是否DDD显得高高在上？究其原因，会否还是Eric惹的祸，他的那本经典之作美则美矣，却显得有些不接地气？至少，我的阅读感受正是如此。虽然在之后，国内也引进了其他一些与DDD相关的著作，例如Jimmy Nilsson的著作《领域驱动设计与模式实战》。这些书好虽好，却并没有全面深入地阐述领域驱动设计，更谈不上完整地实践，直到Vaughn Vernon的《实现领域驱动设计（Implementing Domain-Driven Design）》的出现。</p>
@@ -47,7 +47,7 @@
     <link href="http://agiledon.github.com/blog/2014/08/01/thoughtworks-china-book/"/>
     <updated>2014-08-01T23:25:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/08/01/thoughtworks-china-book</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/tw_book.png %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/tw_book.png"></p>
 
 <p>这次参加TID会议，居然看到了这本耗时达3年的书《<a href="http://product.china-pub.com/4243605">软件开发践行录——ThoughtWorks中国区文集</a>》——终于出版了。很早以前，凯峰就提出这个想法，当时他作为InfoQ中文站原创社区的主编，着实策划了不少优秀的原创技术文章。凯峰作为ThoughtWorks的一份子，很好地搭建了ThoughtWorks实践与社区的分享桥梁。不少由TWer撰写的优秀文章陆续在InfoQ发表。然而，从想法到本书出版经历了如此漫长的时间，却也出乎我意料之外。大约一年前，在我提供了个人信息给负责此事的同事后，就没再关心此事，差不多就要淡忘了。如今看到这本漂亮的汇集了中国区TWer心得体会的小书，真是莫名的惊喜啊。就好似那些珍贵的东西你会忘记，却在再次遇见时，忽然发现这种珍贵一点都没有减少。</p>
 
@@ -60,7 +60,7 @@
     <link href="http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading/"/>
     <updated>2014-03-04T20:47:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/03/04/the-strength-of-reading</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/steiner.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/steiner.jpg"></p>
 
 <p>阅读，以灵魂融合的方式阅读，或许会战栗，恐惧，喜悦，哭泣，甚至紧张，却可以让你成为阅读的人存在，你既是独立的，又陷入作品中成为你臆想和理解的另一个人。这种阅读，使得你存在。</p>
 
@@ -89,7 +89,7 @@
     <link href="http://agiledon.github.com/blog/2014/01/11/excerpt-from-barone-rampante/"/>
     <updated>2014-01-11T19:32:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/01/11/excerpt-from-barone-rampante</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/barone_rampante.jpeg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/barone_rampante.jpeg"></p>
 
 <p>卡尔维诺《树上的男爵》书写了这么一段难以言说、无可名状的美丽的段落，让我惊叹，甚至是那种心悸的喜悦。这样的笔下的景色，仿佛让我身临其境，又似乎另有一种魔力，如夕阳之下各色景观都涂上了一层金色的光亮。这一段落并非那种精致的美，但却自有一种纤细与磅礴，很奇怪的矛盾杂糅，然后蹦出一种奇异的美。</p>
 
@@ -104,7 +104,7 @@
     <link href="http://agiledon.github.com/blog/2014/01/10/reading-the-captive-mind/"/>
     <updated>2014-01-10T22:24:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2014/01/10/reading-the-captive-mind</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2014/captivemind.jpg %}
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2014/captivemind.jpg">
 米沃什在《被禁锢的头脑》中，描述了战时东欧的白色恐怖：</p>
 
 <blockquote><p>此时带着套马索的骑马者就会出现。那就是‘囚车’，即停在街角，用帆布遮盖着的大卡车。行人根本预见不到那里会有危险，当他们路过那个街角时，会突然感觉有一支枪顶住他。它也许会被关进集中营，或者会被推到墙下，用胶布封上嘴巴以防止他喊出反对占领国的口号，然后就被枪毙。这一切都令城市居民心惊胆战，迫使他们俯首帖耳。为了避免这种不幸，最好的办法就是足不出户。但是作为一家之主的父亲必须外出挣钱，弄点供养他的妻儿老小的面包和菜汤。每到晚上，家里人就开始心绪不宁，担心父亲是否还回得来。这种情况已经持续多年，所以人们渐渐觉得他们居住的这座城市简直就是危机四伏的原始森林，20世纪人的命运，与那些每天跟毒蛇猛兽作生死搏斗的穴居人的命运没什么两样。</p></blockquote>

@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Tools | 逸言]]></title>
   <link href="http://agiledon.github.com/blog/tags/tools/atom.xml" rel="self"/>
   <link href="http://agiledon.github.com/"/>
-  <updated>2015-01-05T11:30:58+08:00</updated>
+  <updated>2015-01-22T09:25:28+08:00</updated>
   <id>http://agiledon.github.com/</id>
   <author>
     <name><![CDATA[张逸]]></name>
@@ -18,7 +18,7 @@
     <link href="http://agiledon.github.com/blog/2015/01/05/efficient-tools-we-recommended/"/>
     <updated>2015-01-05T11:17:00+08:00</updated>
     <id>http://agiledon.github.com/blog/2015/01/05/efficient-tools-we-recommended</id>
-    <content type="html"><![CDATA[<p>{% img center /images/2015/1/efficiency.jpg %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="/images/2015/1/efficiency.jpg"></p>
 
 <p>几天前，ThoughtWorks China咨询师团队召开了一次团结的大会，成功的大会。为期三天的会议，分享的内容并不亚于坊间举行的技术大会，包含了敏捷组织转型、C++重构、敏捷测试体系、持续交付整体解决方案、Spark执行模型、机器学习、Scala代码操练。课题五花八门，争辩激烈精彩。</p>
 

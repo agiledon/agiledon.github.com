@@ -10,7 +10,8 @@
   <meta name="author" content="张逸">
 
   
-  <meta name="description" content="几天前，ThoughtWorks China咨询师团队召开了一次团结的大会，成功的大会。为期三天的会议，分享的内容并不亚于坊间举行的技术大会，包含了敏捷组织转型、C++重构、敏捷测试体系、持续交付整体解决方案、Spark执行模型、机器学习、Scala代码操练。课题五花八门，争辩激烈精彩。 &hellip;">
+  <meta name="description" content="鉴于Farbox有更好的易用性，更新博客变得更方便。因而决定将github上的博客迁移到Farbox上。 新博客的地址为：http://zhangyi.farbox.com
+">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +66,46 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/21/notification/">博客搬迁通知</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-21T09:11:00+08:00" pubdate data-updated="true">Jan 21<span>st</span>, 2015</time>
+        
+         | <a href="/blog/2015/01/21/notification/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>鉴于Farbox有更好的易用性，更新博客变得更方便。因而决定将github上的博客迁移到Farbox上。</p>
+
+<p>新博客的地址为：<a href="http://zhangyi.farbox.com">http://zhangyi.farbox.com</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -608,54 +649,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/05/how-to-implement-ddd/">如何实现领域驱动设计</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-05T19:34:00+08:00" pubdate data-updated="true">Aug 5<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/08/05/how-to-implement-ddd/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="/images/2014/iddd.jpg">
-从Eric Evans写下经典名著Domain-Driven Design: Tackling Complexity in the Heart of Software至今，DDD刚好发展了十年的时间。它几乎成了开发复杂软件系统主要的领域设计方法，既是面向对象（组件）设计的补充，又超越了面向对象（组件）设计。DDD中提出的诸多概念如实体、值对象、聚合等，已经成为了耳熟能详的设计术语。DDD社区的发展也如火如荼，似乎并没有被层出不穷的设计思想所取代，相反，它仍在强劲地发展，吸收了许多新的概念与方法，例如函数式编程思想、Event Source、CQRS等。然而，就我个人所观察到的情况来看，许多项目虽然号称应用了DDD设计，但主要都停留在Eric所谓的“战术设计”层面。即使是战术层面，依旧有许多程序员没有弄明白实体与值对象之间的区别，不知道该怎么定义聚合以及聚合根，更谈不上合理地划分上下文（Context）。</p>
-
-<p>我不明白其中内含的真实原因，只能冒昧地揣测是否DDD显得高高在上？究其原因，会否还是Eric惹的祸，他的那本经典之作美则美矣，却显得有些不接地气？至少，我的阅读感受正是如此。虽然在之后，国内也引进了其他一些与DDD相关的著作，例如Jimmy Nilsson的著作《领域驱动设计与模式实战》。这些书好虽好，却并没有全面深入地阐述领域驱动设计，更谈不上完整地实践，直到Vaughn Vernon的《实现领域驱动设计（Implementing Domain-Driven Design）》的出现。</p>
-
-<p>这本书首先吸引我的是书中的第2章至第4章。虽然书中内容几乎忠实地反映了Eric Evans的DDD理论，但作者却创造性地在一开始就着眼于DDD的战略性设计，包括领域（Domain）、子域（Subdomain）、受限上下文（Unbounded Context）、上下文映射（Context Map）以及架构。以第4章架构为例，书中对DDD经典的分层架构进行了深入探讨与分析，并颠覆性地提出将基础设施层（Infrastructure Layer）置于用户接口层（User Interface Layer）之上。最初读来，简直让我莫名惊诧，然而仔细思索，从依赖倒置原则的角度来分析，实在是合乎情理。坦白说，它彻底解决了之前一直纠缠在我心底的一个问题：若我们视实体为Repository以及数据访问的对象，应将实体置于哪一层？在DDD中，实体对象承担了领域业务行为，但同时又可能通过ORM与数据表产生映射。基础设施层的数据访问对象（即传统的DAO）需要调用这些实体对象。若它处于最底层，则会造成业务行为与基础设施的混合。若将实体与数据映射对象分离，既会造成对象之间的重复，又会导致不好的贫血对象。而将基础设施层放在分层架构的上端，非常巧妙地解决了这一问题。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/05/how-to-implement-ddd/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -692,6 +685,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/21/notification/">博客搬迁通知</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/05/efficient-tools-we-recommended/">我们推荐的高效工具</a>
       </li>
     
@@ -705,10 +702,6 @@
     
       <li class="post">
         <a href="/blog/2014/10/28/are-you-writing-auto-test-today/">今天你写了自动化测试吗</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/08/change-and-stable-of-design/">设计中的变与不变</a>
       </li>
     
   </ul>
